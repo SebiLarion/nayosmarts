@@ -1,0 +1,205 @@
+{%- capture direction -%}{% render 'direction' %}{%- endcapture -%}
+<!doctype html>
+<html class="no-js{% if request.design_mode %} shopify-design-mode{% endif %}" lang="{{ request.locale.iso_code }}" dir="{{ direction }}">
+  <head>
+ {%- capture ecom_header_content -%}{%- render 'ecom_header' -%}{%- endcapture -%}{%- unless ecom_header_content contains 'Liquid error' -%}{{ ecom_header_content }}{%- endunless -%}
+    <meta name="google-site-verification" content="VoQlQhaPIJxfMuf_ITBce9KQIb2-zC8cypkW4MWc4to" />
+    {% comment %}
+{% render 'visually_io_sdk' %}
+{% endcomment %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="{{ settings.color_button_background }}">
+    <link rel="canonical" href="{{ canonical_url }}">
+    <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+    {%- comment %}theme-check-disable RemoteAsset{% endcomment %}
+    <link rel="dns-prefetch" href="https://ajax.googleapis.com">
+    <link rel="dns-prefetch" href="https://maps.googleapis.com">
+    <link rel="dns-prefetch" href="https://maps.gstatic.com">
+    {%- comment %}theme-check-enable RemoteAsset{% endcomment %}
+
+    {%- if settings.favicon != blank -%}
+      <link rel="shortcut icon" href="{{ settings.favicon | image_url: width: 32, height: 32 }}" type="image/png" />
+    {%- endif -%}
+
+    <title>
+      {{- page_title -}}
+      {%- if current_tags -%}
+        {%- assign meta_tags = current_tags | join: ', ' %} &ndash; {{ 'general.meta.tags' | t: tags: meta_tags -}}
+      {%- endif -%}
+      {%- if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif -%}
+      {%- if request.page_type == 'password' -%}
+        {{- shop.name -}}
+      {%- else -%}
+        {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+      {%- endif -%}
+    </title>
+
+    {%- if page_description -%}
+      <meta name="description" content="{{ page_description | escape }}">
+    {%- endif -%}
+
+    {%- liquid
+      render 'social-meta-tags'
+      
+      render 'css-variables'
+      echo 'theme.css' | asset_url | stylesheet_tag: preload: true
+
+      if direction == 'rtl'
+        echo 'rtl.css' | asset_url | stylesheet_tag: preload: true
+      endif
+    -%}
+
+    <link rel="stylesheet" href="{{ 'apps.css' | asset_url }}" media="print" fetchpriority="low" onload="this.media='all'">
+
+    {{ content_for_header }}
+
+    <script src="{{ 'vendor.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'theme.js' | asset_url }}" defer="defer"></script>
+
+    {%- if settings.enable_tab_attention -%}
+      <script src="{{ 'tab-attention.js' | asset_url }}" defer="defer"></script>
+    {%- endif -%}
+
+    {%- if request.page_type contains 'customers/' -%}
+      <script src="{{ 'shopify_common.js' | shopify_asset_url }}" defer="defer"></script>
+    {%- endif -%}
+
+    {%- render 'js-variables' -%}
+  </head>
+
+  <body class="template-{{ template | replace: '.', ' ' | truncatewords: 1, '' | handle }}{% if request.path == '/challenge' %} template-challange{% endif %}" data-rounded-button="{{ settings.rounded_button }}" data-rounded-input="{{ settings.rounded_input }}" data-rounded-block="{{ settings.rounded_block }}" data-rounded-card="{{ settings.rounded_card }}" data-button-hover="{{ settings.buttons_hover }}"{% if settings.enable_page_transition %} data-page-transition{% endif %}{% if settings.enable_lazy_image %} data-lazy-image{% endif %}{% unless settings.show_modal_close_button %} data-modal-swipe-only{% endunless %} data-title-animation data-page-rendering>
+    <a class="sr-only skip-link" href="#MainContent">{{ 'general.accessibility.skip_to_content' | t }}</a>
+
+    {%- liquid
+      if settings.enable_page_transition
+        render 'loading-bar'
+      endif
+      
+      render 'mouse-cursor'
+
+      sections 'header-group'
+      sections 'overlay-group'
+    -%}
+
+    <div class="page-container" id="PageContainer">
+      <main class="main-content relative" id="MainContent" role="main">
+        {{ content_for_layout }}
+      </main>
+
+      <footer class="footer-group block w-full" is="footer-group">
+        {%- sections 'footer-group' -%}
+      </footer>
+    </div>
+
+    <ul hidden>
+      <li id="a11y-refresh-page-message">{{ 'general.accessibility.refresh_page' | t }}</li>
+      <li id="a11y-new-window-message">{{ 'general.accessibility.link_messages.new_window' | t }}</li>
+    </ul>
+
+    {%- if request.design_mode == false and settings.preload_links -%}
+      <script src="{{ 'instant-page.js' | asset_url }}" type="module" fetchpriority="low" defer="defer"></script>
+    {%- endif -%}
+  {% include 'xchangeable-data' %}
+
+  <script>
+(function () {
+  const STORAGE_KEY = 'inbox_btn_pos';
+
+  function makeDraggable(el) {
+    let isDragging = false, hasMoved = false;
+    let startX, startY, origX, origY;
+
+    el.style.cursor = 'grab';
+
+    // 恢复上次保存的位置
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+    if (saved) {
+      el.style.left   = saved.left;
+      el.style.top    = saved.top;
+      el.style.right  = 'auto';
+      el.style.bottom = 'auto';
+    }
+
+    el.addEventListener('mousedown', onStart);
+    el.addEventListener('touchstart', onStart, { passive: true });
+
+    function onStart(e) {
+      isDragging = true;
+      hasMoved = false;
+      const touch = e.touches ? e.touches[0] : e;
+      startX = touch.clientX;
+      startY = touch.clientY;
+      const rect = el.getBoundingClientRect();
+      origX = rect.left;
+      origY = rect.top;
+      el.style.cursor = 'grabbing';
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('touchmove', onMove, { passive: true });
+      document.addEventListener('mouseup', onEnd);
+      document.addEventListener('touchend', onEnd);
+    }
+
+    function onMove(e) {
+      if (!isDragging) return;
+      const touch = e.touches ? e.touches[0] : e;
+      const dx = touch.clientX - startX;
+      const dy = touch.clientY - startY;
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
+      // 边界限制
+      const W = window.innerWidth, H = window.innerHeight;
+      const bw = el.offsetWidth, bh = el.offsetHeight;
+      const newX = Math.min(Math.max(origX + dx, 0), W - bw);
+      const newY = Math.min(Math.max(origY + dy, 0), H - bh);
+      el.style.left   = newX + 'px';
+      el.style.top    = newY + 'px';
+      el.style.right  = 'auto';
+      el.style.bottom = 'auto';
+    }
+
+    function onEnd(e) {
+      if (!isDragging) return;
+      isDragging = false;
+      el.style.cursor = 'grab';
+      // 如果有移动，阻止点击事件触发打开聊天窗口
+      if (hasMoved) {
+        e.stopPropagation && e.stopPropagation();
+        const block = function(ev) { ev.stopPropagation(); ev.preventDefault(); };
+        el.addEventListener('click', block, { once: true, capture: true });
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        left: el.style.left,
+        top:  el.style.top
+      }));
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('mouseup', onEnd);
+      document.removeEventListener('touchend', onEnd);
+    }
+  }
+
+  // 轮询等待 Shopify Inbox 容器渲染
+  function tryBind() {
+    // Shopify Inbox 外层容器 selector
+    const el = document.querySelector('#shopify-chat');
+
+    if (el) {
+      makeDraggable(el);
+    } else {
+      setTimeout(tryBind, 600);
+    }
+  }
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', tryBind);
+} else {
+  tryBind();
+}
+})();
+</script>
+
+
+{%- capture ecom_footer_content -%}{%- render 'ecom_footer' -%}{%- endcapture -%}{%- unless ecom_footer_content contains 'Liquid error' -%}{{ ecom_footer_content }}{%- endunless -%}</body>
+</html>
