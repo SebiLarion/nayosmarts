@@ -4575,6 +4575,24 @@
           "info": "Number of desktop images shown before Show more. Applies to the 2-column gallery."
         }
       }
+    },
+    "breadcrumbs-h1": {
+      "name": "Breadcrumbs",
+      "settings": {
+        "show_home": {
+          "label": "Show home link"
+        },
+        "show_collection": {
+          "label": "Show collection"
+        },
+        "collection": {
+          "label": "Collection",
+          "info": "Used when the product is not viewed from a collection. Defaults to the product’s first collection."
+        },
+        "show_product_title": {
+          "label": "Show page title"
+        }
+      }
     }
   },
   "settings_schema": {
