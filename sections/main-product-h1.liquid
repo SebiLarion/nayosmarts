@@ -108,6 +108,35 @@
     font-size: var(--text-sm);
     color: #171717;
   }
+
+  /* H1 buy button: black, square, 4px orange accent bottom + right (Figma 526x51) */
+  #shopify-section-{{ section.id }} .product-form__buttons .button--primary {
+    min-height: 3.1875rem;
+    padding: 1rem;
+    background: #171717 !important;
+    color: #f6f6f6 !important;
+    border: 0 !important;
+    border-bottom: 4px solid #e4452a !important;
+    border-right: 4px solid #e4452a !important;
+    border-radius: 0 !important;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    overflow: hidden;
+  }
+
+  #shopify-section-{{ section.id }} .product-form__buttons .button--primary .btn-fill {
+    display: none !important;
+  }
+
+  #shopify-section-{{ section.id }} .product-form__buttons .button--primary .btn-text {
+    color: inherit !important;
+  }
+
+  #shopify-section-{{ section.id }} .product-form__buttons .button--primary:hover {
+    background: #333333 !important;
+    color: #f6f6f6 !important;
+  }
 </style>
 
 {%- liquid
