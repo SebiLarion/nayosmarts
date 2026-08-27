@@ -71,12 +71,9 @@
             "picker_type": "button",
             "enable_color_swatches": true,
             "color_swatch_type": "color",
-            "size_chart": ""
+            "size_chart": "",
+            "size_description_metafield": "custom.size_description"
           }
-        },
-        "koala_upsells_gifts_product_page_banner_pmPz8w": {
-          "type": "shopify://apps/koala-upsells-gifts/blocks/product-page-banner/baf92dc5-8ffa-40c0-967e-57b74cddc9e3",
-          "settings": {}
         },
         "buy_buttons": {
           "type": "buy_buttons",
@@ -200,7 +197,6 @@
         "title",
         "product_variations_yiaQCW",
         "variant_picker",
-        "koala_upsells_gifts_product_page_banner_pmPz8w",
         "buy_buttons",
         "delivery_date_eta_eta_custom_position_with_section_VNNN8n",
         "qikify_upsell_product_rcmd_UdfXeJ",
@@ -1641,6 +1637,7 @@
         "judge_me_reviews_review_widget_kgrfet"
       ],
       "settings": {
+        "heading": "Ratings",
         "color_text": "",
         "color_background": "",
         "gradient_background": "",
