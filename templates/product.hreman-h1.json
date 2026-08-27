@@ -30,15 +30,6 @@
     "main-product": {
       "type": "main-product-h1",
       "blocks": {
-        "badges_jfrQgp": {
-          "type": "badges",
-          "disabled": true,
-          "settings": {
-            "show_sold_out": false,
-            "show_save_amount": true,
-            "save_type": "percent"
-          }
-        },
         "reviews_badge": {
           "type": "reviews_badge",
           "settings": {}
@@ -205,7 +196,6 @@
         }
       },
       "block_order": [
-        "badges_jfrQgp",
         "reviews_badge",
         "title",
         "product_variations_yiaQCW",
