@@ -27,6 +27,87 @@
   #shopify-section-{{ section.id }} .product__info > .reviews-badge-h1 + * {
     margin-block-start: var(--sp-2);
   }
+
+  /* Delivery Date - ETA app block, skinned to the H1 design (theme-side only) */
+  #shopify-section-{{ section.id }} .delivery_date_shortcode .deliverydate {
+    display: block;
+    width: 100%;
+    background: #fff !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    padding: 1.5rem !important;
+    margin: 0;
+    font-size: var(--text-sm) !important;
+    line-height: 1.7;
+    color: #171717 !important;
+  }
+
+  #shopify-section-{{ section.id }} .deliverydate .delivery_msg {
+    display: inline-block;
+    max-width: 21rem;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+  }
+
+  #shopify-section-{{ section.id }} .deliverydate .hightlight_date,
+  #shopify-section-{{ section.id }} .deliverydate .count_down_timer {
+    color: inherit !important;
+    font-weight: 400;
+    background: transparent !important;
+  }
+
+  @media screen and (min-width: 768px) {
+    #shopify-section-{{ section.id }} .delivery_date_shortcode .deliverydate {
+      font-size: var(--text-base) !important;
+      line-height: 1.5;
+    }
+
+    #shopify-section-{{ section.id }} .deliverydate .delivery_msg {
+      max-width: 24rem;
+    }
+  }
+
+  /* Zipcode checker form (shows when no zip is detected yet) */
+  #shopify-section-{{ section.id }} .sb_edd_div .sb_edd_form {
+    background: #fff !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    padding: 1.25rem !important;
+    margin: 0 !important;
+  }
+
+  #shopify-section-{{ section.id }} .sb_edd_formTitle,
+  #shopify-section-{{ section.id }} .sb_edd_formTitle span {
+    font-size: var(--text-base) !important;
+    font-weight: 600;
+    color: #171717 !important;
+  }
+
+  #shopify-section-{{ section.id }} .sb_edd_pincode_input {
+    border: 1px solid rgb(23 23 23 / 0.2) !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+    font-size: var(--text-sm) !important;
+    color: #171717 !important;
+    min-height: 2.75rem;
+  }
+
+  #shopify-section-{{ section.id }} .sb_edd_check_btn {
+    background: #171717 !important;
+    color: #f6f6f6 !important;
+    border: 0 !important;
+    border-bottom: 4px solid #e4452a !important;
+    border-right: 4px solid #e4452a !important;
+    border-radius: 0 !important;
+    font-weight: 600;
+    min-height: 2.75rem;
+  }
+
+  #shopify-section-{{ section.id }} .sb_edd_msgs {
+    font-size: var(--text-sm);
+    color: #171717;
+  }
 </style>
 
 {%- liquid
