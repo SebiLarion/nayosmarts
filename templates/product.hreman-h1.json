@@ -17,6 +17,9 @@
         "show_collection": true,
         "collection": "all-backpacks-collection",
         "show_product_title": true,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
         "padding_top": 16,
         "padding_bottom": 32,
         "divider": false,
@@ -50,34 +53,14 @@
             "show_rating": false
           }
         },
-        "text_YcdmV9": {
+        "text_bKd6GX": {
           "type": "text",
           "settings": {
-            "icon": "wallet",
+            "icon": "none",
             "iwidth": "custom",
             "icon_width": 24,
-            "text": "<a href=\"https://nayosmart.com/pages/sale\" target=\"_blank\"><strong>SUMMER SALE SITEWIDE 8% OFF | Use Code: SUMMER8</strong></a>",
-            "text_size": "text-sm"
-          }
-        },
-        "text_8cQwTL": {
-          "type": "text",
-          "settings": {
-            "icon": "gift",
-            "iwidth": "custom",
-            "icon_width": 24,
-            "text": "<a href=\"https://nayosmart.com/pages/sale\" target=\"_blank\" title=\"https://nayosmart.com/pages/sale\"><strong>Build Your Perfect Carry | 15% Off Backpack & Sling Bundles</strong></a>",
-            "text_size": "text-sm"
-          }
-        },
-        "text_QGDJCB": {
-          "type": "text",
-          "settings": {
-            "icon": "tags",
-            "iwidth": "custom",
-            "icon_width": 24,
-            "text": "<a href=\"https://nayosmart.com/pages/return-policy\" target=\"_blank\" title=\"https://nayosmart.com/pages/return-policy\"><strong>30 Days Return | 2 Years Warranty | Free Worldwide Shipping ：No Minimum</strong></a>",
-            "text_size": "text-sm"
+            "text": "",
+            "text_size": "text-base"
           }
         },
         "product_variations_yiaQCW": {
@@ -230,9 +213,7 @@
         "badges_jfrQgp",
         "reviews_badge",
         "title",
-        "text_YcdmV9",
-        "text_8cQwTL",
-        "text_QGDJCB",
+        "text_bKd6GX",
         "product_variations_yiaQCW",
         "variant_picker",
         "koala_upsells_gifts_product_page_banner_pmPz8w",
