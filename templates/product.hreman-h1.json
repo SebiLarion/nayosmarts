@@ -46,11 +46,16 @@
         "title": {
           "type": "title",
           "settings": {
-            "title_size": "product-title-sm",
-            "title_size_mobile": "product-title-sm",
-            "title_tag": "h2",
+            "title_size": "product-title-lg",
+            "title_size_mobile": "product-title-md",
+            "title_tag": "h1",
             "show_price": true,
-            "show_rating": false
+            "show_rating": false,
+            "short_description": "A versatile and durable backpack designed for urban commuters and outdoor adventurers.",
+            "show_fits_button": true,
+            "fits_button_label": "See what it fits",
+            "fits_option_1_label": "Half-Roll (20L)",
+            "fits_option_2_label": "Fully packed (25L)"
           }
         },
         "product_variations_yiaQCW": {

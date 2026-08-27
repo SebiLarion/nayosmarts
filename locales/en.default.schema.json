@@ -4583,6 +4583,35 @@
               "content": "Shows Judge.me stars, score, and review count above the product title. Links to the reviews section."
             }
           }
+        },
+        "title": {
+          "settings": {
+            "short_description": {
+              "label": "Short description"
+            },
+            "header__fits": {
+              "content": "See what it fits"
+            },
+            "show_fits_button": {
+              "label": "Show See what it fits button"
+            },
+            "fits_button_label": {
+              "label": "Button label"
+            },
+            "fits_option_1_label": {
+              "label": "First capacity label"
+            },
+            "fits_option_2_label": {
+              "label": "Second capacity label"
+            },
+            "fits_image_1": {
+              "label": "First capacity image",
+              "info": "Shown for the first toggle. Defaults to the product image if empty."
+            },
+            "fits_image_2": {
+              "label": "Second capacity image"
+            }
+          }
         }
       }
     },

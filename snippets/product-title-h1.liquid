@@ -1,0 +1,434 @@
+{%- doc -%}
+  H1 product title, short description, price row, and See what it fits modal.
+
+  @param {object} product - Product object
+  @param {object} block - Title block settings
+  @param {object} section - Parent product section
+  @param {string} section_id - Section id
+  @param {string} product_form_id - Add-to-cart form id
+
+  @example
+  {% render 'product-title-h1', product: product, block: block, section: section, section_id: section.id, product_form_id: product_form_id %}
+{%- enddoc -%}
+
+{%- liquid
+  assign fits_modal_id = 'FitsModal-' | append: section_id | append: '-' | append: product.id
+  assign fits_label = block.settings.fits_button_label | default: 'See what it fits'
+  assign option_1_label = block.settings.fits_option_1_label | default: 'Half-Roll (20L)'
+  assign option_2_label = block.settings.fits_option_2_label | default: 'Fully packed (25L)'
+  assign fits_image_1 = block.settings.fits_image_1 | default: product.featured_media
+  assign fits_image_2 = block.settings.fits_image_2
+  if fits_image_2 == blank and product.media.size > 1
+    assign fits_image_2 = product.media[2]
+  endif
+  if fits_image_2 == blank
+    assign fits_image_2 = fits_image_1
+  endif
+
+  assign variations_block = section.blocks | where: 'type', 'product_variations' | first
+  assign show_fits_colors = false
+  if variations_block and variations_block.settings.products.size > 0
+    assign show_fits_colors = true
+    assign metafield_parts = variations_block.settings.option_value_metafield | split: '.'
+    assign metafield_namespace = metafield_parts | first
+    assign metafield_key = metafield_parts | last
+  endif
+-%}
+
+<script src="{{ 'product-fits-h1.js' | asset_url }}" defer="defer"></script>
+
+<style>
+  #shopify-section-{{ section_id }} .product-title-h1 {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  #shopify-section-{{ section_id }} .product-title-h1__heading {
+    font-size: 2rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: rgb(var(--color-foreground));
+  }
+
+  @media screen and (min-width: 768px) {
+    #shopify-section-{{ section_id }} .product-title-h1__heading {
+      font-size: 3rem;
+      line-height: 1.1;
+    }
+  }
+
+  #shopify-section-{{ section_id }} .product-title-h1__excerpt {
+    margin: 0;
+    font-size: var(--text-sm);
+    line-height: 1.45;
+    font-weight: 400;
+    color: rgb(var(--color-foreground) / 0.72);
+  }
+
+  @media screen and (min-width: 768px) {
+    #shopify-section-{{ section_id }} .product-title-h1__excerpt {
+      font-size: var(--text-base);
+    }
+  }
+
+  #shopify-section-{{ section_id }} .product-title-h1__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-block-start: 0.25rem;
+  }
+
+  #shopify-section-{{ section_id }} .product-title-h1__price .price__regular {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: rgb(var(--color-foreground));
+  }
+
+  #shopify-section-{{ section_id }} .product-title-h1__fits {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+    min-height: 2.5rem;
+    padding: 0.45rem 0.85rem;
+    border: 1px solid rgb(var(--color-foreground) / 0.22);
+    border-radius: 0.5rem;
+    background: transparent;
+    color: rgb(var(--color-foreground));
+    font-size: var(--text-sm);
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  #shopify-section-{{ section_id }} .product-title-h1__fits .icon {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .fits-modal-h1.x-modal:not([hidden]) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .fits-modal-h1 .drawer__inner {
+    position: static;
+    inset: auto;
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 2rem);
+    max-width: 26.125rem;
+    height: auto;
+    max-height: 90vh;
+    overflow: hidden;
+    background: #fff;
+    color: #171717;
+    border-radius: 0;
+    transform: none;
+  }
+
+  @media screen and (min-width: 768px) {
+    .fits-modal-h1 .drawer__inner {
+      max-width: 36rem;
+    }
+  }
+
+  @media screen and (max-width: 639px) {
+    .js .fits-modal-h1.drawer .drawer__inner {
+      inset: auto;
+      width: calc(100% - 2rem);
+      max-width: 26.125rem;
+      height: auto;
+      max-height: 90vh;
+      border-radius: 0;
+      transform: scale(0.96);
+      opacity: 0;
+    }
+
+    .js .fits-modal-h1.drawer[active] > .drawer__inner {
+      transform: none;
+      opacity: 1;
+    }
+  }
+
+  .fits-modal-h1 .drawer__header,
+  .fits-modal-h1 .drawer__content {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .fits-modal-h1__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.1rem 1.25rem 0.75rem;
+  }
+
+  .fits-modal-h1__title {
+    margin: 0;
+    font-size: var(--text-lg);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .fits-modal-h1__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    color: inherit;
+  }
+
+  .fits-modal-h1__body {
+    display: grid;
+    gap: 1.1rem;
+    padding: 0 1.25rem 1.25rem;
+    overflow: auto;
+  }
+
+  .fits-modal-h1__media {
+    position: relative;
+    overflow: hidden;
+    max-height: 17.5rem;
+    background: #f4f1ea;
+  }
+
+  .fits-modal-h1__media img {
+    display: block;
+    width: 100%;
+    height: 17.5rem;
+    object-fit: cover;
+  }
+
+  .fits-modal-h1__options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .fits-modal-h1__option {
+    min-height: 2.75rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid transparent;
+    background: rgb(23 23 23 / 0.06);
+    color: #171717;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    line-height: 1.2;
+    cursor: pointer;
+  }
+
+  .fits-modal-h1__option.is-active {
+    background: #fff;
+    border-color: #171717;
+  }
+
+  .fits-modal-h1__swatches {
+    display: flex;
+    gap: 0.65rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .fits-modal-h1__swatches .color-swatch {
+    display: block;
+    position: relative;
+  }
+
+  .fits-modal-h1__swatches .color-swatch[aria-current='true'] {
+    box-shadow: 0 0 0 2px #fff, 0 0 0 3px #171717;
+  }
+
+  .fits-modal-h1__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem 1.25rem;
+    border-block-start: 1px solid rgb(23 23 23 / 0.12);
+  }
+
+  .fits-modal-h1__product {
+    min-width: 0;
+  }
+
+  .fits-modal-h1__product-title {
+    margin: 0;
+    font-size: var(--text-sm);
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .fits-modal-h1__product-price {
+    margin: 0.2rem 0 0;
+    font-size: var(--text-lg);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .fits-modal-h1__add {
+    flex-shrink: 0;
+    min-height: 3rem;
+    padding: 0.75rem 1.25rem;
+    border: 0;
+    background: #171717;
+    color: #f6f6f6;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .fits-modal-h1__add:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+</style>
+
+<div class="product-title-h1" {{ block.shopify_attributes }}>
+  <{{ block.settings.title_tag }} class="product-title-h1__heading heading">
+    {%- if settings.enable_heading_reveal -%}
+      <split-words class="split-words js-invisible block" data-animate="fade-up">{{ product.title }}</split-words>
+    {%- else -%}
+      {{- product.title -}}
+    {%- endif -%}
+  </{{ block.settings.title_tag }}>
+
+  {%- if block.settings.short_description != blank -%}
+    <p class="product-title-h1__excerpt">{{ block.settings.short_description | escape }}</p>
+  {%- endif -%}
+
+  {%- if block.settings.show_price -%}
+    <div class="product-title-h1__row">
+      <div id="Price-{{ section_id }}-{{ product.id }}" class="product-title-h1__price product__price">
+        {%- render 'product-price', product: product, use_variant: true, class: 'flex flex-wrap items-baseline gap-2' -%}
+      </div>
+
+      {%- if block.settings.show_fits_button -%}
+        <button
+          type="button"
+          class="product-title-h1__fits"
+          aria-controls="{{ fits_modal_id }}"
+          aria-expanded="false"
+        >
+          {%- render 'icon', icon: 'cart', size: 'sm', class: 'stroke-1' -%}
+          <span>{{ fits_label | escape }}</span>
+        </button>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</div>
+
+{%- if block.settings.show_fits_button -%}
+  <x-modal
+    id="{{ fits_modal_id }}"
+    class="fits-modal-h1 x-modal drawer z-40 fixed bottom-0 left-0 h-full w-full pointer-events-none"
+    role="dialog"
+    aria-modal="true"
+    aria-label="{{ fits_label | escape }}"
+    hidden
+  >
+    <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="{{ fits_modal_id }}" aria-expanded="false"></overlay-element>
+    <product-fits-h1 class="drawer__inner z-10">
+      <div class="fits-modal-h1__header drawer__header">
+        <h2 class="fits-modal-h1__title">{{ fits_label | escape }}</h2>
+        <button
+          class="fits-modal-h1__close"
+          type="button"
+          aria-controls="{{ fits_modal_id }}"
+          aria-expanded="false"
+          aria-label="{{ 'general.accessibility.close' | t | escape }}"
+        >
+          {%- render 'icon', icon: 'close', size: 'sm' -%}
+        </button>
+      </div>
+
+      <div class="fits-modal-h1__body drawer__content">
+        <div class="fits-modal-h1__media">
+          {%- if fits_image_1 != blank -%}
+            <div data-fits-image="1">
+              {{- fits_image_1 | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '400, 600, 800, 1200', sizes: '(max-width: 767px) 90vw, 576px', alt: option_1_label, is: 'lazy-image' -}}
+            </div>
+          {%- endif -%}
+          {%- if fits_image_2 != blank -%}
+            <div data-fits-image="2" hidden>
+              {{- fits_image_2 | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '400, 600, 800, 1200', sizes: '(max-width: 767px) 90vw, 576px', alt: option_2_label, is: 'lazy-image' -}}
+            </div>
+          {%- endif -%}
+        </div>
+
+        <div class="fits-modal-h1__options" role="group" aria-label="{{ fits_label | escape }}">
+          <button type="button" class="fits-modal-h1__option is-active" data-fits-option="1" aria-pressed="true">
+            {{ option_1_label | escape }}
+          </button>
+          <button type="button" class="fits-modal-h1__option" data-fits-option="2" aria-pressed="false">
+            {{ option_2_label | escape }}
+          </button>
+        </div>
+
+        {%- if show_fits_colors -%}
+          <ul class="fits-modal-h1__swatches swatches swatches--{{ settings.rounded_swatch }}{% if variations_block.settings.color_swatch_type == 'variant' %} swatches--variant{% endif %}">
+            {%- for product_variation in variations_block.settings.products -%}
+              {%- assign value = product_variation.metafields[metafield_namespace][metafield_key].value -%}
+              {%- liquid
+                assign swatch_image = blank
+                assign swatch_fallback = value | split: ' ' | last | handle
+                if variations_block.settings.color_swatch_type == 'variant' and product_variation.featured_media
+                  assign swatch_image = product_variation.featured_media | image_url: width: 128
+                elsif value.swatch.image
+                  assign swatch_image = value.swatch.image | image_url: width: 128
+                elsif value.swatch.color
+                  assign swatch_fallback = value.swatch.color
+                endif
+              -%}
+              <li>
+                <a
+                  href="{{ product_variation.url }}"
+                  class="color-swatch block relative{% if swatch_image != blank %} with-image{% endif %}"
+                  title="{{ value | escape }}"
+                  {% if product_variation == product %}aria-current="true"{% endif %}
+                  style="--swatch-background: {{ swatch_fallback }};{% if swatch_image != blank %}--swatch-background-image: url({{ swatch_image }});{% endif %}"
+                >
+                  <span class="sr-only">{{ value | escape }}</span>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      </div>
+
+      <div class="fits-modal-h1__footer">
+        <div class="fits-modal-h1__product">
+          <p class="fits-modal-h1__product-title">{{ product.title }}</p>
+          <p class="fits-modal-h1__product-price">
+            {%- if settings.currency_code_enabled -%}
+              {{ product.selected_or_first_available_variant.price | money_with_currency }}
+            {%- else -%}
+              {{ product.selected_or_first_available_variant.price | money }}
+            {%- endif -%}
+          </p>
+        </div>
+        <button
+          type="submit"
+          name="add"
+          form="{{ product_form_id }}"
+          class="fits-modal-h1__add"
+          {%- if product.selected_or_first_available_variant.available == false %} disabled{% endif -%}
+        >
+          {{ 'products.product.add_to_cart' | t }}
+        </button>
+      </div>
+    </product-fits-h1>
+  </x-modal>
+{%- endif -%}

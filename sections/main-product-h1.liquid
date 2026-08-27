@@ -257,39 +257,15 @@
               </div>
             
             {%- when 'title' -%}
-              {%- liquid
-                assign price_block = section.blocks | where: "type", "price" | first
-                assign rating_block = section.blocks | where: "type", "rating" | first
+              {%- render 'product-title-h1',
+                product: product,
+                block: block,
+                section: section,
+                section_id: section.id,
+                product_form_id: product_form_id
               -%}
-              <div class="product__title grid gap-3{% if price_block == blank and block.settings.show_price %} with-price{% if product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %} with-price--on-sale{% endif %}{% endif %}" {{ block.shopify_attributes }}>
-                <{{ block.settings.title_tag }} class="heading leading-none {{ block.settings.title_size }} mobile:{{ block.settings.title_size_mobile }} col-span-full">
-                  {%- if settings.enable_heading_reveal -%}
-                    <split-words class="split-words js-invisible block" data-animate="fade-up">{{ product.title }}</split-words>
-                  {%- else -%}
-                    {{- product.title -}}
-                  {%- endif -%}
-                </{{ block.settings.title_tag }}>
 
-                {%- if price_block == blank and block.settings.show_price -%}
-                  <div id="Price-{{ section.id }}-{{ product.id }}" class="product__price">
-                    {%- render 'product-price', product: product, use_variant: true, class: 'flex flex-wrap items-baseline gap-2 lg:flex-col xl:items-end lg:gap-1d5' -%}
-                    
-                    {%- if product.quantity_price_breaks_configured? -%}
-                      <div class="text-opacity text-sm font-medium leading-tight" id="VolumeNote-{{ section.id }}-{{ product.id }}">
-                        {{- 'products.volume_pricing.note' | t -}}
-                      </div>
-                    {%- endif -%}
-                  </div>
-                {%- endif -%}
-
-                {%- liquid
-                  if rating_block == blank and block.settings.show_rating
-                    render 'product-rating', product: product
-                  endif
-                -%}
-              </div>
-
-              {%- if price_block == blank and block.settings.show_price -%}
+              {%- if block.settings.show_price -%}
                 {%- assign product_form_installment_id = 'ProductFormInstallment-' | append: section.id | append: '-' | append: product.id -%}
                 {%- form 'product', product, id: product_form_installment_id, class: 'installment text-sm leading-tight' -%}
                   <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" />
@@ -1794,9 +1770,53 @@
         {
           "type": "checkbox",
           "id": "show_rating",
-          "default": true,
+          "default": false,
           "label": "t:sections.main-product.blocks.title.settings.show_rating.label",
           "info": "t:sections.main-product.blocks.title.settings.show_rating.info"
+        },
+        {
+          "type": "textarea",
+          "id": "short_description",
+          "label": "t:sections.main-product-h1.blocks.title.settings.short_description.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.main-product-h1.blocks.title.settings.header__fits.content"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_fits_button",
+          "default": true,
+          "label": "t:sections.main-product-h1.blocks.title.settings.show_fits_button.label"
+        },
+        {
+          "type": "text",
+          "id": "fits_button_label",
+          "default": "See what it fits",
+          "label": "t:sections.main-product-h1.blocks.title.settings.fits_button_label.label"
+        },
+        {
+          "type": "text",
+          "id": "fits_option_1_label",
+          "default": "Half-Roll (20L)",
+          "label": "t:sections.main-product-h1.blocks.title.settings.fits_option_1_label.label"
+        },
+        {
+          "type": "text",
+          "id": "fits_option_2_label",
+          "default": "Fully packed (25L)",
+          "label": "t:sections.main-product-h1.blocks.title.settings.fits_option_2_label.label"
+        },
+        {
+          "type": "image_picker",
+          "id": "fits_image_1",
+          "label": "t:sections.main-product-h1.blocks.title.settings.fits_image_1.label",
+          "info": "t:sections.main-product-h1.blocks.title.settings.fits_image_1.info"
+        },
+        {
+          "type": "image_picker",
+          "id": "fits_image_2",
+          "label": "t:sections.main-product-h1.blocks.title.settings.fits_image_2.label"
         }
       ]
     },
