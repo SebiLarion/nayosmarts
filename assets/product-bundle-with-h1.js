@@ -41,7 +41,7 @@ if (!customElements.get('product-bundle-with-h1')) {
         }
 
         if (this.priceEl && swatch.dataset.price) {
-          this.priceEl.textContent = swatch.dataset.price;
+          this.priceEl.textContent = swatch.dataset.price.replace(/<[^>]*>/g, '').trim();
         }
 
         if (this.colorEl && swatch.dataset.color) {
