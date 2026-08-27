@@ -14,11 +14,16 @@
       "blocks": {
         "badges_jfrQgp": {
           "type": "badges",
+          "disabled": true,
           "settings": {
             "show_sold_out": false,
             "show_save_amount": true,
             "save_type": "percent"
           }
+        },
+        "judge_me_reviews_preview_badge_UAVMKV": {
+          "type": "shopify://apps/judge-me-reviews/blocks/preview_badge/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {}
         },
         "title": {
           "type": "title",
@@ -29,10 +34,6 @@
             "show_price": true,
             "show_rating": false
           }
-        },
-        "judge_me_reviews_preview_badge_UAVMKV": {
-          "type": "shopify://apps/judge-me-reviews/blocks/preview_badge/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
-          "settings": {}
         },
         "text_YcdmV9": {
           "type": "text",
@@ -212,8 +213,8 @@
       },
       "block_order": [
         "badges_jfrQgp",
-        "title",
         "judge_me_reviews_preview_badge_UAVMKV",
+        "title",
         "text_YcdmV9",
         "text_8cQwTL",
         "text_QGDJCB",
