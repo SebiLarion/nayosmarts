@@ -172,19 +172,27 @@
     flex-direction: row-reverse !important;
     align-items: stretch;
     gap: 1rem;
+    background: transparent !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
   }
 
   #shopify-section-{{ section.id }} .qbk-offer__image {
+    display: block;
     width: 42% !important;
     min-width: 9rem;
     height: auto !important;
-    align-self: center;
+    min-height: 13rem;
+    align-self: stretch;
+    background-size: contain !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    border-radius: 0 !important;
   }
 
   #shopify-section-{{ section.id }} .qbk-offer__image img {
     width: 100% !important;
-    height: auto !important;
-    max-height: 16rem;
+    height: 100% !important;
     object-fit: contain;
     border-radius: 0 !important;
   }
@@ -192,6 +200,10 @@
   #shopify-section-{{ section.id }} .qbk-offer__sub-body {
     flex: 1 1 auto;
     min-width: 0;
+  }
+
+  #shopify-section-{{ section.id }} .qbk-offer__content-info {
+    display: block !important;
   }
 
   #shopify-section-{{ section.id }} .qbk-offer__content-info::before {
@@ -226,10 +238,15 @@
   }
 
   #shopify-section-{{ section.id }} .qbk-offer__content-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
     gap: 0.6rem;
+  }
+
+  #shopify-section-{{ section.id }} .qbk-offer__action-btn {
+    margin: 0 !important;
   }
 
   #shopify-section-{{ section.id }} .qbk-offer__action-btn {
@@ -1047,6 +1064,9 @@
 
             {%- when 'icon_list' -%}
               {{- icon_list_render -}}
+
+            {%- when 'icon_badges' -%}
+              {%- render 'product-icon-badges-h1', block: block, section_id: section.id -%}
 
             {%- when 'line_item_property' -%}
               {%- assign custom_name = block.settings.title | escape -%}
@@ -2444,6 +2464,25 @@
           "default": "text-base",
           "label": "t:sections.global.settings.text_size.label"
         }
+      ]
+    },
+    {
+      "type": "icon_badges",
+      "name": "Icon badges (H1)",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Circular icon badges row. Icon names come from the theme guarantee set, e.g. truck, return, shield, plane, gift, award, time, box, support."
+        },
+        { "type": "text", "id": "icon_1", "label": "Icon 1", "default": "truck" },
+        { "type": "text", "id": "label_1", "label": "Label 1", "default": "Free Shipping" },
+        { "type": "text", "id": "icon_2", "label": "Icon 2", "default": "return" },
+        { "type": "text", "id": "label_2", "label": "Label 2", "default": "30-Day trial" },
+        { "type": "text", "id": "icon_3", "label": "Icon 3", "default": "shield" },
+        { "type": "text", "id": "label_3", "label": "Label 3", "default": "2-year warranty" },
+        { "type": "text", "id": "icon_4", "label": "Icon 4" },
+        { "type": "text", "id": "label_4", "label": "Label 4" }
       ]
     },
     {

@@ -91,6 +91,17 @@
           "type": "shopify://apps/delivery-date-eta/blocks/ETA_custom_position_with_section/d8155dd1-6598-4174-aaeb-cbcf85a857bc",
           "settings": {}
         },
+        "icon_badges_h1": {
+          "type": "icon_badges",
+          "settings": {
+            "icon_1": "truck",
+            "label_1": "Free Shipping",
+            "icon_2": "return",
+            "label_2": "30-Day trial",
+            "icon_3": "shield",
+            "label_3": "2-year warranty"
+          }
+        },
         "qikify_upsell_product_rcmd_UdfXeJ": {
           "type": "shopify://apps/qikify-upsell/blocks/product_rcmd/2e94b962-8172-4839-8ad9-7837eb8b017a",
           "settings": {
@@ -200,6 +211,7 @@
         "delivery_date_eta_eta_custom_position_with_section_VNNN8n",
         "buy_buttons",
         "qikify_upsell_product_rcmd_UdfXeJ",
+        "icon_badges_h1",
         "text_44z9yi",
         "icon_list_XF9net",
         "collapsible_tab_bRQNFC",
@@ -230,8 +242,113 @@
         "rounded": false
       }
     },
+    "bundle_products_h1": {
+      "type": "bundle-products-h1",
+      "blocks": {
+        "bundle_prod_1": {
+          "type": "product",
+          "settings": {
+            "product": "herman-hl1-sling-bag",
+            "savings_text": "$35 USD cheaper"
+          }
+        },
+        "bundle_prod_2": {
+          "type": "product",
+          "settings": {
+            "product": "urban-ul1-sling-bag",
+            "savings_text": "$35 USD cheaper"
+          }
+        },
+        "bundle_prod_3": {
+          "type": "product",
+          "settings": {
+            "product": "nayo-smart-herman-h3-sling-bag",
+            "savings_text": "$35 USD cheaper"
+          }
+        },
+        "bundle_prod_4": {
+          "type": "product",
+          "settings": {
+            "product": "urban-ul2-sling-bag-black",
+            "savings_text": "$35 USD cheaper"
+          }
+        }
+      },
+      "block_order": ["bundle_prod_1", "bundle_prod_2", "bundle_prod_3", "bundle_prod_4"],
+      "settings": {
+        "heading_tag": "h2",
+        "heading": "Get the Backpack + Sling Bag bundle for an extra 15% off!",
+        "columns": "3",
+        "columns_mobile": "1",
+        "carousel_on_desktop": true,
+        "swipe_on_mobile": true,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "feature_strip_h1": {
+      "type": "feature-strip-h1",
+      "blocks": {
+        "feature_item_1": {
+          "type": "item",
+          "settings": {
+            "icon": "lake",
+            "text": "Durable, weather-resistant materials"
+          }
+        },
+        "feature_item_2": {
+          "type": "item",
+          "settings": {
+            "icon": "laptop",
+            "text": "Dedicated laptop compartment"
+          }
+        },
+        "feature_item_3": {
+          "type": "item",
+          "settings": {
+            "icon": "expand",
+            "text": "Expandable roll-top design"
+          }
+        },
+        "feature_item_4": {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "text": "Waterproof zippers"
+          }
+        },
+        "feature_item_5": {
+          "type": "item",
+          "settings": {
+            "icon": "circle-lock",
+            "text": "Waterproof zippers"
+          }
+        }
+      },
+      "block_order": [
+        "feature_item_1",
+        "feature_item_2",
+        "feature_item_3",
+        "feature_item_4",
+        "feature_item_5"
+      ],
+      "settings": {
+        "scrolling": true,
+        "direction": "left",
+        "speed": 12,
+        "show_separator": true,
+        "full_width": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "divider": false
+      }
+    },
     "scrolling_text_p96akq": {
       "type": "scrolling-text",
+      "disabled": true,
       "blocks": {
         "text_Q3hGdJ": {
           "type": "text",
@@ -1689,6 +1806,8 @@
   "order": [
     "breadcrumbs",
     "main-product",
+    "bundle_products_h1",
+    "feature_strip_h1",
     "scrolling_text_p96akq",
     "help-drawer",
     "video_with_text_phYkLr",

@@ -1,0 +1,304 @@
+<style>
+  #shopify-section-{{ section.id }} {
+    --section-padding-top: {{ section.settings.padding_top }}px;
+    --section-padding-bottom: {{ section.settings.padding_bottom }}px;
+    {%- render 'section-variables', section: section -%}
+  }
+
+  #shopify-section-{{ section.id }} .feature-strip-h1 {
+    overflow: hidden;
+  }
+  @supports (overflow: clip) {
+    #shopify-section-{{ section.id }} .feature-strip-h1 {
+      overflow-x: clip;
+      overflow-y: visible;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .feature-strip-h1__item {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    flex-shrink: 0;
+    font-size: var(--text-base);
+    line-height: 1.5;
+    color: rgb(var(--color-foreground));
+  }
+  #shopify-section-{{ section.id }} .feature-strip-h1__item svg,
+  #shopify-section-{{ section.id }} .feature-strip-h1__item img {
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  #shopify-section-{{ section.id }} .feature-strip-h1__star {
+    flex-shrink: 0;
+    width: 0.875rem;
+    height: 0.875rem;
+    color: rgb(var(--color-foreground) / 0.16);
+  }
+
+  #shopify-section-{{ section.id }} .feature-strip-h1__marquee .marquee {
+    gap: 0.5rem;
+    padding-inline: 0.25rem;
+  }
+
+  @media screen and (pointer: fine) {
+    #shopify-section-{{ section.id }} .feature-strip-h1__marquee:hover .marquee {
+      animation-play-state: paused;
+    }
+  }
+  #shopify-section-{{ section.id }} .feature-strip-h1__marquee.paused .marquee {
+    animation-play-state: paused;
+  }
+
+  #shopify-section-{{ section.id }} .feature-strip-h1__list {
+    row-gap: 1rem;
+  }
+</style>
+
+<div class="section section--padding{% if section.settings.divider %} section--divider{% endif %}">
+  <div class="{% unless section.settings.full_width %}page-width{% endunless %}">
+    <div class="feature-strip-h1 relative">
+      {%- if section.blocks.size > 0 -%}
+        {%- capture items -%}
+          {%- for block in section.blocks -%}
+            <div class="feature-strip-h1__item" {{ block.shopify_attributes }}>
+              {%- if block.settings.custom_icon != blank -%}
+                {{- block.settings.custom_icon | image_url: width: 48 | image_tag: loading: 'lazy', sizes: '24px', widths: '24, 48' -}}
+              {%- else -%}
+                {%- render 'icon-feature-h1', icon: block.settings.icon -%}
+              {%- endif -%}
+              <span>{{ block.settings.text | escape }}</span>
+            </div>
+            {%- if section.settings.show_separator -%}
+              <svg class="feature-strip-h1__star" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" focusable="false">
+                <polygon points="7,0.5 8.46,4.99 13.18,4.99 9.36,7.77 10.82,12.26 7,9.48 3.18,12.26 4.64,7.77 0.82,4.99 5.54,4.99" stroke="currentColor" stroke-width="1" fill="none"/>
+              </svg>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endcapture -%}
+
+        {%- if section.settings.scrolling -%}
+          <marquee-element class="feature-strip-h1__marquee hidden md:flex items-center" data-speed="{{ section.settings.speed }}" data-direction="{{ section.settings.direction }}">
+            <div class="marquee flex items-center shrink-0 whitespace-nowrap">
+              {{- items -}}
+            </div>
+          </marquee-element>
+        {%- else -%}
+          <div class="feature-strip-h1__marquee hidden md:flex items-center justify-center flex-wrap gap-4">
+            {{- items -}}
+          </div>
+        {%- endif -%}
+
+        <div class="feature-strip-h1__list flex flex-col items-start md:hidden">
+          {%- for block in section.blocks -%}
+            <div class="feature-strip-h1__item" {{ block.shopify_attributes }}>
+              {%- if block.settings.custom_icon != blank -%}
+                {{- block.settings.custom_icon | image_url: width: 48 | image_tag: loading: 'lazy', sizes: '24px', widths: '24, 48' -}}
+              {%- else -%}
+                {%- render 'icon-feature-h1', icon: block.settings.icon -%}
+              {%- endif -%}
+              <span>{{ block.settings.text | escape }}</span>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Feature strip (H1)",
+  "class": "feature-strip-h1-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "scrolling",
+      "label": "Scrolling on desktop",
+      "info": "Items scroll continuously on desktop and stack vertically on mobile.",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:sections.scrolling-text.settings.direction.options__1.label"
+        },
+        {
+          "value": "right",
+          "label": "t:sections.scrolling-text.settings.direction.options__2.label"
+        }
+      ],
+      "default": "left",
+      "label": "t:sections.scrolling-text.settings.direction.label"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "label": "t:sections.scrolling-text.settings.speed.label",
+      "unit": "x",
+      "default": 12
+    },
+    {
+      "type": "checkbox",
+      "id": "show_separator",
+      "label": "Show star separator",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "default": false,
+      "label": "t:sections.global.settings.full_width.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.header__colors.content",
+      "info": "t:sections.global.settings.header__colors.info"
+    },
+    {
+      "type": "color",
+      "id": "color_text",
+      "label": "t:sections.global.settings.color_text.label"
+    },
+    {
+      "type": "color",
+      "id": "color_background",
+      "label": "t:sections.global.settings.color_background.label"
+    },
+    {
+      "type": "color_background",
+      "id": "gradient_background",
+      "label": "t:sections.global.settings.gradient_background.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.header__section.content"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.global.settings.padding_top.label",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.global.settings.padding_bottom.label",
+      "default": 40
+    },
+    {
+      "type": "checkbox",
+      "id": "divider",
+      "label": "t:sections.global.settings.divider.label",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            {
+              "value": "lake",
+              "label": "Water resistant"
+            },
+            {
+              "value": "laptop",
+              "label": "Laptop"
+            },
+            {
+              "value": "expand",
+              "label": "Expandable"
+            },
+            {
+              "value": "shield",
+              "label": "Shield"
+            },
+            {
+              "value": "circle-lock",
+              "label": "Lock"
+            }
+          ],
+          "default": "lake"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_icon",
+          "label": "Custom icon",
+          "info": "Overrides the icon above. Use a 24x24 SVG or PNG."
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:sections.global.settings.text.label",
+          "default": "Durable, weather-resistant materials"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Feature strip (H1)",
+      "blocks": [
+        {
+          "type": "item",
+          "settings": {
+            "icon": "lake",
+            "text": "Durable, weather-resistant materials"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "icon": "laptop",
+            "text": "Dedicated laptop compartment"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "icon": "expand",
+            "text": "Expandable roll-top design"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "text": "Waterproof zippers"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "icon": "circle-lock",
+            "text": "Waterproof zippers"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
