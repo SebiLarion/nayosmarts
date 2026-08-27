@@ -1,0 +1,351 @@
+{%- doc -%}
+  Herman H1 variant picker: a bordered "Size: value" trigger row that opens a
+  "Choose size" drawer with one card per option value (image, radio, name, description).
+
+  Radios follow the theme's variant-picker conventions so dynamic variant selection,
+  price, and media updates keep working.
+
+  @param {object} product - Product object with variants and options
+  @param {object} block - variant_picker block
+  @param {string} product_form_id - Form ID for variant inputs
+  @param {string} product_id - Product ID for targeting
+  @param {string} section_id - Section ID for uniqueness
+
+  @example
+  {% render 'product-variant-picker-h1',
+    product: product,
+    block: block,
+    product_form_id: product_form_id,
+    product_id: product.id,
+    section_id: section.id
+  %}
+{%- enddoc -%}
+
+{%- unless product.has_only_default_variant -%}
+  <script src="{{ 'product-size-drawer-h1.js' | asset_url }}" defer="defer"></script>
+
+  <style>
+    .variant-picker-h1 fieldset {
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    .variant-picker-h1__trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      width: 100%;
+      padding: 1rem;
+      background: rgb(var(--color-foreground) / 0.05);
+      border: 1px solid rgb(var(--color-border));
+      border-radius: 0;
+      color: rgb(var(--color-foreground));
+      text-align: start;
+      cursor: pointer;
+    }
+
+    .variant-picker-h1__trigger-label {
+      display: flex;
+      gap: 0.625rem;
+      font-size: var(--text-base);
+      line-height: 1.4;
+    }
+
+    .variant-picker-h1__trigger-label strong {
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .variant-picker-h1__trigger .icon {
+      flex-shrink: 0;
+    }
+
+    .size-drawer-h1-modal.x-modal:not([hidden]) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .size-drawer-h1-modal .drawer__inner {
+      position: static;
+      inset: auto;
+      display: flex;
+      flex-direction: column;
+      width: calc(100% - 2rem);
+      max-width: 26.125rem;
+      height: auto;
+      max-height: 90vh;
+      overflow: hidden;
+      background: #fff;
+      color: #171717;
+      border-radius: 0;
+      transform: none;
+    }
+
+    @media screen and (min-width: 768px) {
+      .size-drawer-h1-modal .drawer__inner {
+        max-width: 28rem;
+      }
+    }
+
+    @media screen and (max-width: 639px) {
+      .js .size-drawer-h1-modal.drawer .drawer__inner {
+        inset: auto;
+        width: calc(100% - 2rem);
+        max-width: 26.125rem;
+        height: auto;
+        max-height: 90vh;
+        border-radius: 0;
+        transform: scale(0.96);
+        opacity: 0;
+      }
+
+      .js .size-drawer-h1-modal.drawer[active] > .drawer__inner {
+        transform: none;
+        opacity: 1;
+      }
+    }
+
+    .size-drawer-h1-modal .drawer__header,
+    .size-drawer-h1-modal .drawer__content {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .size-drawer-h1__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.1rem 1.25rem 0.75rem;
+    }
+
+    .size-drawer-h1__title {
+      margin: 0;
+      font-size: var(--text-lg);
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .size-drawer-h1__close {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      color: inherit;
+    }
+
+    .size-drawer-h1__body {
+      display: grid;
+      gap: 1.5rem;
+      padding: 0 1.25rem 1.25rem;
+      overflow: auto;
+    }
+
+    .size-card-h1 {
+      display: block;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .size-card-h1__media {
+      display: block;
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 3 / 2;
+      background: #f1f1f1;
+    }
+
+    .size-card-h1__media img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .size-card-h1__radio {
+      position: absolute;
+      inset-block-start: 0.75rem;
+      inset-inline-end: 0.75rem;
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 50%;
+      border: 1.5px solid rgb(23 23 23 / 0.35);
+      background: #fff;
+      transition: background var(--animation-fast, 0.15s ease), border-color var(--animation-fast, 0.15s ease);
+    }
+
+    .size-card-h1__input:checked ~ .size-card-h1__media .size-card-h1__radio {
+      background: #e4452a;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 1px rgb(23 23 23 / 0.15);
+    }
+
+    .size-card-h1__input.disabled ~ * {
+      opacity: 0.5;
+    }
+
+    .size-card-h1__name {
+      display: block;
+      margin: 0.75rem 0 0;
+      font-size: var(--text-base);
+      font-weight: 700;
+      line-height: 1.3;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .size-card-h1__description {
+      display: block;
+      margin: 0.35rem 0 0;
+      font-size: var(--text-sm);
+      line-height: 1.5;
+      color: rgb(23 23 23 / 0.72);
+    }
+  </style>
+
+  {%- liquid
+    assign metafield_parts = block.settings.size_description_metafield | default: 'custom.size_description' | split: '.'
+    assign description_namespace = metafield_parts | first
+    assign description_key = metafield_parts | last
+  -%}
+
+  <variant-picker
+    id="VariantPicker-{{ section_id }}-{{ product_id }}"
+    class="variant-picker-h1 no-js-hidden"
+    {% if block.settings.enable_dynamic_variants %}data-dynamic-variants{% endif %}
+    {{ block.shopify_attributes }}
+  >
+    {%- for option in product.options_with_values -%}
+      {%- liquid
+        assign option_index_0 = forloop.index0
+        assign drawer_id = 'SizeDrawer-' | append: section_id | append: '-' | append: product_id | append: '-' | append: option.position
+        assign option_name_down = option.name | downcase
+      -%}
+      <fieldset
+        class="js product-form__input variant-input-wrapper relative"
+        data-option-index="option{{ forloop.index }}"
+        data-option-slug="{{ option.name | handleize }}"
+      >
+        <legend class="sr-only">{{ option.name }}</legend>
+
+        <button
+          type="button"
+          class="variant-picker-h1__trigger"
+          aria-controls="{{ drawer_id }}"
+          aria-expanded="false"
+        >
+          <span class="variant-picker-h1__trigger-label">
+            <strong>{{ option.name | escape }}:</strong>
+            <span id="{{ section_id }}-{{ product_id }}-option{{ option.position }}">{{ option.selected_value }}</span>
+          </span>
+          {%- render 'icon', icon: 'chevron-right', size: 'sm', class: 'shrink-0' -%}
+        </button>
+
+        <x-modal
+          id="{{ drawer_id }}"
+          class="size-drawer-h1-modal x-modal drawer z-40 fixed bottom-0 left-0 h-full w-full pointer-events-none"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Choose {{ option_name_down | escape }}"
+          hidden
+        >
+          <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="{{ drawer_id }}" aria-expanded="false"></overlay-element>
+          <size-drawer-h1 class="drawer__inner z-10">
+            <div class="size-drawer-h1__header drawer__header">
+              <h2 class="size-drawer-h1__title">Choose {{ option_name_down }}</h2>
+              <button
+                class="size-drawer-h1__close"
+                type="button"
+                data-size-drawer-close
+                aria-controls="{{ drawer_id }}"
+                aria-expanded="false"
+                aria-label="{{ 'general.accessibility.close' | t | escape }}"
+              >
+                {%- render 'icon', icon: 'close', size: 'sm' -%}
+              </button>
+            </div>
+
+            <div class="size-drawer-h1__body drawer__content">
+              {%- for value in option.values -%}
+                {%- liquid
+                  assign matched_variant = blank
+                  for variant in product.variants
+                    if variant.options[option_index_0] == value.name
+                      assign matched_variant = variant
+                      break
+                    endif
+                  endfor
+
+                  assign card_media = matched_variant.featured_media | default: product.featured_media
+                  assign card_description = blank
+                  if matched_variant != blank
+                    assign card_description = matched_variant.metafields[description_namespace][description_key].value
+                  endif
+                -%}
+                <label class="size-card-h1" for="{{ section_id }}-{{ product_id }}-{{ option.name | handle }}-{{ forloop.index0 }}">
+                  <input
+                    type="radio"
+                    class="size-card-h1__input sr-only{% unless value.available %} disabled{% endunless %}"
+                    id="{{ section_id }}-{{ product_id }}-{{ option.name | handle }}-{{ forloop.index0 }}"
+                    name="{{ option.name }}-{{ section_id }}-{{ product_id }}"
+                    value="{{ value | escape }}"
+                    {% if option.selected_value == value %}checked{% endif %}
+                    {% if value.product_url != blank and value.product_url != product.url %}data-product-url="{{ value.variant.url | default: value.product_url }}"{% endif %}
+                    data-option-value="{{ value | escape }}"
+                    data-option-value-id="{{ value.id }}"
+                    data-option-index="{{ option.position }}"
+                  />
+                  <span class="size-card-h1__media">
+                    {%- if card_media != blank -%}
+                      {{- card_media | image_url: width: 900 | image_tag: loading: 'lazy', widths: '400, 600, 900', sizes: '(max-width: 767px) 90vw, 400px', alt: value.name, is: 'lazy-image' -}}
+                    {%- endif -%}
+                    <span class="size-card-h1__radio" aria-hidden="true"></span>
+                  </span>
+                  <span class="size-card-h1__name">{{ value.name | escape }}</span>
+                  {%- if card_description != blank -%}
+                    <span class="size-card-h1__description">{{ card_description }}</span>
+                  {%- endif -%}
+                </label>
+              {%- endfor -%}
+            </div>
+          </size-drawer-h1>
+        </x-modal>
+      </fieldset>
+    {%- endfor -%}
+
+    <script type="application/json" data-selected-variant>{{ product.selected_or_first_available_variant | json }}</script>
+    {%- if product.variants_count <= 250 -%}
+      <script type="application/json" data-variants>{{ product.variants | json }}</script>
+    {%- endif -%}
+  </variant-picker>
+{%- endunless -%}
+
+<noscript>
+  <div class="product-form__input{% if product.has_only_default_variant %} hidden{% endif %}">
+    <label class="form__label flex gap-2" for="Variants-{{ section_id }}-{{ product_id }}">{{ 'products.product.product_variants' | t }}</label>
+    <div class="field">
+      <select name="id" id="Variants-{{ section_id }}-{{ product_id }}" class="select" form="{{ product_form_id }}">
+        {%- for variant in product.variants -%}
+          <option
+            {% if variant == product.selected_or_first_available_variant %}selected{% endif %}
+            {% if variant.available == false %}disabled{% endif %}
+            value="{{ variant.id }}"
+          >
+            {{ variant.title }}
+            {%- if variant.available == false %} - {{ 'products.product.sold_out' | t }}{% endif %}
+            - {{ variant.price | money | strip_html }}
+          </option>
+        {%- endfor -%}
+      </select>
+      {%- render 'icon', icon: 'chevron-up', size: 'sm', class: 'absolute pointer-events-none' -%}
+    </div>
+  </div>
+</noscript>

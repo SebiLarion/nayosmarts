@@ -497,26 +497,20 @@
               {%- endif -%}
 
             {%- when 'variant_picker' -%}
-              {%- render 'product-variant-picker',
+              {%- render 'product-variant-picker-h1',
                 block: block,
                 product: product,
                 product_id: product.id,
                 section_id: section.id,
-                product_form_id: product_form_id,
-                image_ratio: section.settings.image_ratio,
-                image_ratio_mobile: section.settings.image_ratio_mobile,
-                image_fill: settings.product_image_fill
+                product_form_id: product_form_id
               -%}
               
             {%- when 'product_variations' -%}
-              {%- render 'product-variants',
+              {%- render 'product-variations-h1',
                 block: block,
                 product: product,
                 product_id: product.id,
-                section_id: section.id,
-                image_ratio: section.settings.image_ratio,
-                image_ratio_mobile: section.settings.image_ratio_mobile,
-                image_fill: settings.product_image_fill
+                section_id: section.id
               -%}
 
             {%- when 'buy_buttons' -%}
@@ -2044,6 +2038,13 @@
           "type": "page",
           "id": "size_chart",
           "label": "t:sections.main-product.blocks.variant_picker.settings.size_chart.label"
+        },
+        {
+          "type": "text",
+          "id": "size_description_metafield",
+          "label": "Size description variant metafield",
+          "info": "Variant metafield rendered under each size in the drawer, e.g. custom.size_description",
+          "default": "custom.size_description"
         }
       ]
     },

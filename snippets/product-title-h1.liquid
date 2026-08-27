@@ -134,7 +134,7 @@
 
   @media screen and (min-width: 768px) {
     .fits-modal-h1 .drawer__inner {
-      max-width: 36rem;
+      max-width: min(53.5rem, calc(100vw - 4rem));
     }
   }
 
@@ -200,15 +200,21 @@
   .fits-modal-h1__media {
     position: relative;
     overflow: hidden;
-    max-height: 17.5rem;
-    background: #f4f1ea;
+    background: #f1f1f1;
   }
 
   .fits-modal-h1__media img {
     display: block;
     width: 100%;
-    height: 17.5rem;
-    object-fit: cover;
+    height: auto;
+    max-height: 20rem;
+    object-fit: contain;
+  }
+
+  @media screen and (min-width: 768px) {
+    .fits-modal-h1__media img {
+      max-height: 30rem;
+    }
   }
 
   .fits-modal-h1__options {
@@ -237,18 +243,28 @@
   .fits-modal-h1__swatches {
     display: flex;
     gap: 0.65rem;
-    padding: 0;
+    padding: 1.1rem 0 0;
     margin: 0;
     list-style: none;
+    border-block-start: 1px solid rgb(23 23 23 / 0.1);
   }
 
   .fits-modal-h1__swatches .color-swatch {
     display: block;
     position: relative;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 0.25rem;
+    border: 1px solid rgb(23 23 23 / 0.12);
+    background-color: var(--swatch-background, rgb(23 23 23 / 0.1));
+    background-image: var(--swatch-background-image, none);
+    background-size: cover;
+    background-position: center;
   }
 
   .fits-modal-h1__swatches .color-swatch[aria-current='true'] {
-    box-shadow: 0 0 0 2px #fff, 0 0 0 3px #171717;
+    border-color: transparent;
+    box-shadow: 0 0 0 3px #fff, 0 0 0 5px #171717;
   }
 
   .fits-modal-h1__footer {
@@ -295,6 +311,43 @@
   .fits-modal-h1__add:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  @media screen and (min-width: 768px) {
+    .fits-modal-h1__header {
+      padding: 1.5rem 2.5rem 1rem;
+    }
+
+    .fits-modal-h1__title {
+      font-size: 1.5rem;
+    }
+
+    .fits-modal-h1__body {
+      gap: 1.5rem;
+      padding: 0 2.5rem 1.5rem;
+    }
+
+    .fits-modal-h1__options {
+      grid-template-columns: repeat(2, minmax(0, 13rem));
+      justify-content: center;
+    }
+
+    .fits-modal-h1__swatches {
+      justify-content: center;
+    }
+
+    .fits-modal-h1__footer {
+      padding: 1.25rem 2.5rem 1.75rem;
+    }
+
+    .fits-modal-h1__product-price {
+      font-size: 1.5rem;
+    }
+
+    .fits-modal-h1__add {
+      min-height: 3.25rem;
+      padding: 0.85rem 2rem;
+    }
   }
 </style>
 
@@ -394,6 +447,22 @@
                   assign swatch_image = value.swatch.image | image_url: width: 128
                 elsif value.swatch.color
                   assign swatch_fallback = value.swatch.color
+                endif
+
+                if swatch_image == blank and value.swatch == blank and settings.swatch_config != blank
+                  assign value_downcase = value | downcase | strip
+                  assign swatch_config = settings.swatch_config | newline_to_br | split: '<br />'
+                  for swatch in swatch_config
+                    assign swatch_parts = swatch | strip | split: ':'
+                    assign swatch_name = swatch_parts.first | downcase | strip
+                    if swatch_name == value_downcase
+                      assign swatch_value = swatch_parts.last | strip
+                      if swatch_value contains '#'
+                        assign swatch_fallback = swatch_value
+                      endif
+                      break
+                    endif
+                  endfor
                 endif
               -%}
               <li>

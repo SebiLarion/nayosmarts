@@ -1,0 +1,162 @@
+{%- doc -%}
+  Herman H1 color variations row: "Color: Value" label above rounded-square swatches
+  linking sibling products through a shared metafield, with dividers above and below.
+
+  Swatch source follows the block settings like the theme's product-variants snippet:
+  variant featured image, metafield swatch, swatch config, or a color fallback.
+
+  @param {object} product - Current product object
+  @param {object} block - product_variations block
+  @param {string} section_id - Section identifier
+  @param {string} product_id - Product identifier
+
+  @example
+  {% render 'product-variations-h1',
+    product: product,
+    block: block,
+    section_id: section.id,
+    product_id: product.id
+  %}
+{%- enddoc -%}
+
+{%- liquid
+  assign contains_product = false
+  for product_variation in block.settings.products
+    if product_variation == product
+      assign contains_product = true
+      break
+    endif
+  endfor
+-%}
+
+{%- if contains_product -%}
+  {%- liquid
+    assign metafield_parts = block.settings.option_value_metafield | split: '.'
+    assign metafield_namespace = metafield_parts | first
+    assign metafield_key = metafield_parts | last
+    assign current_value = product.metafields[metafield_namespace][metafield_key].value
+  -%}
+
+  <style>
+    .product-variations-h1 {
+      display: grid;
+      gap: 0.75rem;
+      padding-block: 1.25rem;
+      border-block: 1px solid rgb(var(--color-border));
+    }
+
+    .product-variations-h1__label {
+      margin: 0;
+      font-size: var(--text-base);
+      line-height: 1.2;
+      color: rgb(var(--color-foreground));
+    }
+
+    .product-variations-h1__label strong {
+      font-weight: 600;
+    }
+
+    .product-variations-h1__swatches {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .product-variations-h1__swatch {
+      display: block;
+      width: 3.25rem;
+      height: 3.25rem;
+      border-radius: 0.25rem;
+      border: 1px solid rgb(23 23 23 / 0.12);
+      background-color: var(--swatch-background, rgb(var(--color-foreground) / 0.1));
+      background-image: var(--swatch-background-image, none);
+      background-size: cover;
+      background-position: center;
+      transition: box-shadow var(--animation-short, 0.2s ease);
+    }
+
+    .product-variations-h1__swatch[aria-current='true'] {
+      border-color: transparent;
+      box-shadow:
+        0 0 0 3px rgb(var(--color-background)),
+        0 0 0 5px #171717;
+    }
+
+    .product-variations-h1__swatch:hover:not([aria-current='true']) {
+      box-shadow:
+        0 0 0 3px rgb(var(--color-background)),
+        0 0 0 5px rgb(23 23 23 / 0.35);
+    }
+
+    .product-variations-h1__swatch.is-unavailable {
+      opacity: 0.4;
+    }
+  </style>
+
+  <div class="product-variations-h1" {{ block.shopify_attributes }}>
+    <p class="product-variations-h1__label">
+      <strong>{{ block.settings.option_name | escape }}:</strong>
+      <span>{{ current_value | escape }}</span>
+    </p>
+
+    <ul class="product-variations-h1__swatches" role="list" aria-label="{{ block.settings.option_name | escape }}">
+      {%- for product_variation in block.settings.products -%}
+        {%- assign value = product_variation.metafields[metafield_namespace][metafield_key].value -%}
+        {%- liquid
+          assign swatch_image = blank
+          assign swatch_fallback = value | split: ' ' | last | handle
+          assign swatch_fallback_override = false
+
+          if value.swatch != blank
+            if value.swatch.image
+              assign swatch_image = value.swatch.image | image_url: width: 128
+            elsif value.swatch.color
+              assign swatch_fallback = value.swatch.color
+              assign swatch_fallback_override = true
+            endif
+          elsif settings.swatch_config != blank
+            assign value_downcase = value | downcase | strip
+            assign swatch_config = settings.swatch_config | newline_to_br | split: '<br />'
+            for swatch in swatch_config
+              assign swatch_parts = swatch | strip | split: ':'
+              assign swatch_name = swatch_parts.first | downcase | strip
+              if swatch_name == value_downcase
+                assign swatch_value = swatch_parts.last | strip
+                if swatch_value contains '#'
+                  assign swatch_fallback = swatch_value
+                  assign swatch_fallback_override = true
+                else
+                  if images[swatch_value] != blank
+                    assign swatch_image = images[swatch_value] | image_url: width: 128
+                  elsif swatch_value contains '//cdn.shopify.com/'
+                    assign swatch_image = swatch_value
+                  endif
+                endif
+                break
+              endif
+            endfor
+          endif
+
+          if block.settings.color_swatch_type == 'variant' and product_variation.featured_media
+            assign swatch_image = product_variation.featured_media | image_url: width: 128
+            assign swatch_fallback_override = false
+          endif
+        -%}
+        <li>
+          <a
+            href="{{ product_variation.url }}"
+            class="product-variations-h1__swatch{% if swatch_image != blank %} with-image{% endif %}{% unless product_variation.available %} is-unavailable{% endunless %}"
+            title="{{ value | escape }}"
+            {% if product_variation == product %}aria-current="true"{% endif %}
+            style="--swatch-background: {{ swatch_fallback }};{% if swatch_fallback_override == false and swatch_image != blank %}--swatch-background-image: url({{ swatch_image }});{% endif %}"
+          >
+            <span class="sr-only">{{ value | escape }}</span>
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+{%- endif -%}
