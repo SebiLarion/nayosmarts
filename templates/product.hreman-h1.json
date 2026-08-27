@@ -267,6 +267,108 @@
         "divider": false
       }
     },
+    "faq_specs_h1": {
+      "type": "faq-h1",
+      "blocks": {
+        "faq_item_size": {
+          "type": "item",
+          "settings": {
+            "title": "Size and Features",
+            "content": "<p><strong>Capacity</strong><br/>17L min, 20L max</p><p><strong>Max Laptop Carry</strong><br/>38.1cm x 25.4cm x 2.5cm (15\"x10\"x1\") Holds 15/16\" Macbook Pro</p><p><strong>Max Tablet Carry</strong><br/>30.6cm x 22.1cm x .7cm (12\" x 8.7\" x 0.3\") Holds 12.9\" iPad Pro</p><p><strong>Cord Hook™ External Carry Strap Lengths</strong><br/>Long: 49cm (19.3\")<br/>Short: 27cm (10.62\")</p><p><strong>Dimensions</strong><br/>See diagram</p><p><strong>Weight</strong><br/>Without Dividers: 1.66kg (3.66lb)<br/>With Dividers: 2.01kg (4.43lb)</p>",
+            "open": false
+          }
+        },
+        "faq_item_fitment": {
+          "type": "item",
+          "settings": {
+            "title": "Laptop Fitment",
+            "open": false
+          }
+        },
+        "faq_fitment_laptop": {
+          "type": "icon_row",
+          "settings": {
+            "icon": "laptop",
+            "text": "Fits laptops up to 16 inch displays"
+          }
+        },
+        "faq_fitment_tablet": {
+          "type": "icon_row",
+          "settings": {
+            "icon": "tablet",
+            "text": "Fits tablets up to 12.9 inch displays"
+          }
+        },
+        "faq_item_luggage": {
+          "type": "item",
+          "settings": {
+            "title": "Cabin Luggage Compliance",
+            "open": false
+          }
+        },
+        "faq_region_europe": {
+          "type": "region",
+          "settings": {
+            "label": "Europe"
+          }
+        },
+        "faq_region_na": {
+          "type": "region",
+          "settings": {
+            "label": "North America"
+          }
+        },
+        "faq_region_asia": {
+          "type": "region",
+          "settings": {
+            "label": "Asia"
+          }
+        },
+        "faq_region_mena": {
+          "type": "region",
+          "settings": {
+            "label": "MENA"
+          }
+        },
+        "faq_disclaimer": {
+          "type": "disclaimer",
+          "settings": {
+            "label": "Disclaimer:",
+            "text": "Weight compliance may vary based on how much you're carrying, check with your airline to learn the latest weight allowance."
+          }
+        },
+        "faq_item_warranty": {
+          "type": "item",
+          "settings": {
+            "title": "Warranty / Shipping / Returns",
+            "content": "<p><strong>Warranty</strong><br/>2-year warranty on materials and workmanship.</p><p><strong>Shipping</strong><br/>Free shipping on qualifying orders.</p><p><strong>Returns</strong><br/>30-day returns.</p>",
+            "open": false
+          }
+        }
+      },
+      "block_order": [
+        "faq_item_size",
+        "faq_item_fitment",
+        "faq_fitment_laptop",
+        "faq_fitment_tablet",
+        "faq_item_luggage",
+        "faq_region_europe",
+        "faq_region_na",
+        "faq_region_asia",
+        "faq_region_mena",
+        "faq_disclaimer",
+        "faq_item_warranty"
+      ],
+      "settings": {
+        "full_width": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "padding_top": 24,
+        "padding_bottom": 60,
+        "divider": false
+      }
+    },
     "scrolling_text_p96akq": {
       "type": "scrolling-text",
       "blocks": {
@@ -1729,6 +1831,7 @@
     "main-product",
     "bundle_products_h1",
     "feature_strip_h1",
+    "faq_specs_h1",
     "scrolling_text_p96akq",
     "help-drawer",
     "video_with_text_phYkLr",
