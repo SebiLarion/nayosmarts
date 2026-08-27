@@ -214,8 +214,8 @@
         "share"
       ],
       "settings": {
-        "enable_sticky_info": true,
-        "media_size": 50,
+        "enable_sticky_info": false,
+        "media_size": 60,
         "gallery_layout": "columns",
         "collapsed_media_count": 4,
         "thumbnail_position": "beside",
