@@ -34,9 +34,23 @@
     text-align: start;
   }
 
+  {%- if section.settings.heading != blank %}
+  #shopify-section-{{ section.id }} .jdgm-rev-widg__title {
+    font-size: 0 !important;
+    line-height: 0;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev-widg__title::before {
+    content: '{{ section.settings.heading | escape }}';
+    display: block;
+    font-size: clamp(var(--text-xl), 2.2vw, var(--title-sm));
+    line-height: 1.2;
+  }
+  {% endif -%}
+
   #shopify-section-{{ section.id }} .jdgm-star,
   #shopify-section-{{ section.id }} .jdgm-star:before {
-    color: rgb(var(--color-rating)) !important;
+    color: rgb(var(--color-foreground)) !important;
   }
 
   #shopify-section-{{ section.id }} .jdgm-star.jdgm--off:before,
@@ -85,6 +99,12 @@
     box-shadow: none !important;
   }
 
+  #shopify-section-{{ section.id }} .jdgm-write-rev-link {
+    color: #171717 !important;
+    background: transparent !important;
+    border: 1px solid #171717 !important;
+  }
+
   #shopify-section-{{ section.id }} .jdgm-rev {
     border-color: rgb(var(--color-border)) !important;
   }
@@ -102,17 +122,23 @@
   }
 
   #shopify-section-{{ section.id }} .jdgm-rev-widg__header {
-    align-items: flex-start;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
   }
 
-  @media screen and (max-width: 767px) {
-    #shopify-section-{{ section.id }} .jdgm-rev-widg__header {
-      flex-direction: column;
-    }
+  #shopify-section-{{ section.id }} .jdgm-rev-widg__summary,
+  #shopify-section-{{ section.id }} .jdgm-histogram {
+    display: none !important;
+  }
 
-    #shopify-section-{{ section.id }} .jdgm-btn,
-    #shopify-section-{{ section.id }} .jdgm-write-rev-link {
-      width: 100%;
+  @media screen and (min-width: 1024px) {
+    #shopify-section-{{ section.id }} .jdgm-rev-widg__reviews {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 3rem;
+      align-items: start;
     }
   }
 
@@ -136,6 +162,12 @@
   "name": "t:sections.reviews-h1.name",
   "class": "section-reviews-h1",
   "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.global.settings.heading.label",
+      "default": "Ratings"
+    },
     {
       "type": "header",
       "content": "t:sections.global.settings.header__colors.content",
