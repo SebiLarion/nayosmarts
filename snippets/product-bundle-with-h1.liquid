@@ -126,10 +126,12 @@
 
     #shopify-section-{{ section_id }} .bundle-with-h1__title {
       margin: 0;
-      font-size: 1rem;
-      line-height: 1.3;
+      font-family: var(--font-heading-family);
+      font-style: var(--font-heading-style);
+      font-size: 1.125rem;
+      line-height: 1.2;
       font-weight: 700;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.02em;
       color: #171717;
     }
 
@@ -191,23 +193,24 @@
     #shopify-section-{{ section_id }} .bundle-with-h1__form,
     #shopify-section-{{ section_id }} .bundle-with-h1__form form {
       display: block;
-      width: 100%;
+      width: auto;
       margin: 0;
     }
 
     #shopify-section-{{ section_id }} .bundle-with-h1__add {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 100%;
-      min-height: 2.5rem;
-      padding: 0.55rem 1rem;
+      box-sizing: border-box;
+      width: 11.25rem;
+      max-width: 100%;
+      height: 2.1875rem;
+      padding: 0.5rem 1rem;
       background: #171717;
       color: #f6f6f6;
       border: 0;
-      border-bottom: 4px solid #e4452a;
-      border-right: 4px solid #e4452a;
       border-radius: 0;
+      box-shadow: 4px 4px 0 0 #e4452a;
       font-size: 0.875rem;
       font-weight: 600;
       line-height: 1;
@@ -242,9 +245,9 @@
   {%- liquid
     assign featured_media = current_variant.featured_media | default: bundle_product.featured_media
     if settings.currency_code_enabled
-      assign current_price = current_variant.price | money_with_currency
+      assign current_price = current_variant.price | money_with_currency | strip_html
     else
-      assign current_price = current_variant.price | money
+      assign current_price = current_variant.price | money | strip_html
     endif
   -%}
 
@@ -358,9 +361,9 @@
 
                     assign item_media = matched_variant.featured_media | default: bundle_product.featured_media
                     if settings.currency_code_enabled
-                      assign item_price = matched_variant.price | money_with_currency
+                      assign item_price = matched_variant.price | money_with_currency | strip_html
                     else
-                      assign item_price = matched_variant.price | money
+                      assign item_price = matched_variant.price | money | strip_html
                     endif
                   endif
                 -%}
@@ -434,3 +437,23 @@
     </div>
   </product-bundle-with-h1>
 {%- endif -%}
+
+<style>
+  #shopify-section-{{ section_id }} .product-info__separator {
+    display: block;
+    width: 100%;
+    height: 0;
+    margin: 0;
+    border: 0;
+    border-block-start: 1px solid rgb(var(--color-border));
+  }
+
+  #shopify-section-{{ section_id }} .product__info > .product-info__separator {
+    margin-block-start: 1.5rem;
+  }
+
+  #shopify-section-{{ section_id }} .product__info > .product-info__separator ~ .icon-badges-h1 {
+    margin-block-start: 1.5rem;
+  }
+</style>
+<hr class="product-info__separator" aria-hidden="true">
