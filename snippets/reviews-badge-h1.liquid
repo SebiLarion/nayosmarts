@@ -31,7 +31,9 @@
   endif
 
   assign rating_display = review_rating | times: 10 | round | divided_by: 10.0
-  assign rating_percent = review_rating | times: 20.0
+  assign full_stars = review_rating | floor
+  assign star_fraction = review_rating | minus: full_stars
+  assign partial_star_index = full_stars | plus: 1
 -%}
 
 <style>
@@ -44,21 +46,26 @@
   }
 
   .reviews-badge-h1__stars {
-    --rating-percent: 0%;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.08em;
     vertical-align: middle;
     white-space: nowrap;
     font-size: 1rem;
     line-height: 1;
-    letter-spacing: 0.06em;
   }
 
-  .reviews-badge-h1__stars::before {
-    content: '\2605\2605\2605\2605\2605';
+  .reviews-badge-h1__star {
+    --star-fill: 0%;
+    display: inline-block;
+  }
+
+  .reviews-badge-h1__star::before {
+    content: '\2605';
     background: linear-gradient(
       calc(90deg * var(--transform-logical, 1)),
-      rgb(var(--color-rating)) var(--rating-percent),
-      rgb(var(--color-foreground) / 0.15) var(--rating-percent)
+      rgb(var(--color-rating)) var(--star-fill),
+      rgb(var(--color-foreground) / 0.15) var(--star-fill)
     );
     -webkit-background-clip: text;
     background-clip: text;
@@ -93,10 +100,25 @@
   <div class="reviews-badge-h1" {{ block.shopify_attributes }}>
     <span
       class="reviews-badge-h1__stars"
-      style="--rating-percent: {{ rating_percent }}%;"
       role="img"
       aria-label="{{ 'general.accessibility.star_reviews_info' | t: rating_value: rating_display, rating_max: 5 }}"
-    ></span>
+    >
+      {%- for i in (1..5) -%}
+        {%- liquid
+          assign star_fill = 0
+          if i <= full_stars
+            assign star_fill = 100
+          elsif i == partial_star_index
+            if star_fraction >= 0.95
+              assign star_fill = 100
+            elsif star_fraction > 0.05
+              assign star_fill = 50
+            endif
+          endif
+        -%}
+        <span class="reviews-badge-h1__star" style="--star-fill: {{ star_fill }}%;" aria-hidden="true"></span>
+      {%- endfor -%}
+    </span>
     <span class="reviews-badge-h1__score" aria-hidden="true">{{ rating_display }}</span>
     <a class="reviews-badge-h1__count" href="#judgeme_product_reviews">
       ({{ 'general.accessibility.star_reviews_count' | t: count: review_count }})
