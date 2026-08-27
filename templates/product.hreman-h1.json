@@ -9,6 +9,21 @@
  */
 {
   "sections": {
+    "breadcrumbs": {
+      "type": "breadcrumbs-h1",
+      "settings": {
+        "show_home": true,
+        "show_collections_link": false,
+        "show_collection": true,
+        "collection": "all-backpacks-collection",
+        "show_product_title": true,
+        "padding_top": 16,
+        "padding_bottom": 32,
+        "divider": false,
+        "full_width": true,
+        "rounded": false
+      }
+    },
     "main-product": {
       "type": "main-product-h1",
       "blocks": {
@@ -1710,6 +1725,7 @@
     }
   },
   "order": [
+    "breadcrumbs",
     "main-product",
     "scrolling_text_p96akq",
     "help-drawer",
