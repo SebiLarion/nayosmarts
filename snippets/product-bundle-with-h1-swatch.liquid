@@ -1,0 +1,83 @@
+{%- doc -%}
+  One color swatch for the H1 Bundle with card. Used for linked color products.
+
+  @param {object} item_product - Product this swatch represents
+  @param {string} option_name - Visible option label, e.g. Color
+  @param {string} metafield_namespace - Color metafield namespace
+  @param {string} metafield_key - Color metafield key
+  @param {boolean} use_variant_images - Use featured image as the swatch
+  @param {boolean} selected - Whether this swatch is the current product
+{%- enddoc -%}
+
+{%- liquid
+  assign item_variant = item_product.selected_or_first_available_variant
+  assign item_color = item_product.metafields[metafield_namespace][metafield_key].value | default: item_product.title
+  assign item_media = item_variant.featured_media | default: item_product.featured_media
+
+  if settings.currency_code_enabled
+    assign item_price = item_variant.price | money_with_currency
+  else
+    assign item_price = item_variant.price | money
+  endif
+
+  assign swatch_image = blank
+  assign swatch_fallback = item_color | split: ' ' | last | handle
+  assign swatch_fallback_override = false
+
+  if item_color.swatch != blank
+    if item_color.swatch.image
+      assign swatch_image = item_color.swatch.image | image_url: width: 128
+    elsif item_color.swatch.color
+      assign swatch_fallback = item_color.swatch.color
+      assign swatch_fallback_override = true
+    endif
+  elsif settings.swatch_config != blank
+    assign value_downcase = item_color | downcase | strip
+    assign swatch_config = settings.swatch_config | newline_to_br | split: '<br />'
+    for swatch in swatch_config
+      assign swatch_parts = swatch | strip | split: ':'
+      assign swatch_name = swatch_parts.first | downcase | strip
+      if swatch_name == value_downcase
+        assign swatch_value = swatch_parts.last | strip
+        if swatch_value contains '#'
+          assign swatch_fallback = swatch_value
+          assign swatch_fallback_override = true
+        else
+          if images[swatch_value] != blank
+            assign swatch_image = images[swatch_value] | image_url: width: 128
+          elsif swatch_value contains '//cdn.shopify.com/'
+            assign swatch_image = swatch_value
+          endif
+        endif
+        break
+      endif
+    endfor
+  endif
+
+  if use_variant_images and item_media
+    assign swatch_image = item_media | image_url: width: 128
+    assign swatch_fallback_override = false
+  endif
+-%}
+
+<li>
+  <button
+    type="button"
+    class="bundle-with-h1__swatch{% if swatch_image != blank %} with-image{% endif %}{% unless item_variant.available %} is-unavailable{% endunless %}"
+    data-bundle-swatch
+    data-variant-id="{{ item_variant.id }}"
+    data-title="{{ item_product.title | escape }}"
+    data-color="{{ item_color | escape }}"
+    data-price="{{ item_price | escape }}"
+    data-available="{% if item_variant.available %}true{% else %}false{% endif %}"
+    {% if item_media %}
+      data-image="{{ item_media | image_url: width: 600 }}"
+      data-image-srcset="{{ item_media | image_url: width: 280 }} 280w, {{ item_media | image_url: width: 400 }} 400w, {{ item_media | image_url: width: 600 }} 600w"
+    {% endif %}
+    aria-current="{% if selected %}true{% else %}false{% endif %}"
+    aria-label="{{ option_name | escape }}: {{ item_color | escape }}"
+    style="--swatch-background: {{ swatch_fallback }};{% if swatch_fallback_override == false and swatch_image != blank %}--swatch-background-image: url({{ swatch_image }});{% endif %}"
+  >
+    <span class="sr-only">{{ item_color | escape }}</span>
+  </button>
+</li>

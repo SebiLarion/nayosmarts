@@ -1,0 +1,436 @@
+{%- doc -%}
+  Herman H1 "Bundle with" card: pick a complementary product in the theme editor.
+  Color swatches come from a product list (linked color products) or the product's Color option.
+
+  @param {object} block - bundle_with block settings
+  @param {object} section - Parent product section
+  @param {string} section_id - Section id
+
+  @example
+  {% render 'product-bundle-with-h1', block: block, section: section, section_id: section.id %}
+{%- enddoc -%}
+
+{%- liquid
+  assign bundle_product = block.settings.product
+  assign heading = block.settings.heading | default: 'Bundle with'
+  assign option_name = block.settings.option_name | default: 'Color'
+  assign option_name_down = option_name | downcase
+  assign use_variant_images = false
+  if block.settings.color_swatch_type == 'variant'
+    assign use_variant_images = true
+  endif
+
+  assign metafield_namespace = ''
+  assign metafield_key = ''
+  if block.settings.option_value_metafield != blank
+    assign metafield_parts = block.settings.option_value_metafield | split: '.'
+    assign metafield_namespace = metafield_parts | first
+    assign metafield_key = metafield_parts | last
+  endif
+
+  assign color_products = block.settings.products
+  assign has_color_products = false
+  if color_products != blank and color_products.size > 0
+    assign has_color_products = true
+  endif
+
+  assign color_option = blank
+  assign color_option_index = 0
+  if bundle_product != blank and has_color_products == false
+    for option in bundle_product.options_with_values
+      assign option_down = option.name | downcase
+      if option_down == option_name_down or option_down == 'color' or option_down == 'colour'
+        assign color_option = option
+        assign color_option_index = forloop.index0
+        break
+      endif
+    endfor
+  endif
+
+  assign current_variant = blank
+  assign current_color = ''
+  if bundle_product != blank
+    assign current_variant = bundle_product.selected_or_first_available_variant
+    if has_color_products
+      assign current_color = bundle_product.metafields[metafield_namespace][metafield_key].value | default: ''
+    elsif color_option != blank
+      assign current_color = current_variant.options[color_option_index]
+    endif
+  endif
+
+  assign form_id = 'BundleWithForm-' | append: section_id | append: '-' | append: block.id
+-%}
+
+{%- if bundle_product == blank -%}
+  <style>
+    #shopify-section-{{ section_id }} .bundle-with-h1--placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 12rem;
+      padding: 1.5rem;
+      background: #fff;
+      border: 1px solid rgb(var(--color-border));
+      font-size: var(--text-sm);
+      color: rgb(23 23 23 / 0.55);
+      text-align: center;
+    }
+  </style>
+  <div class="bundle-with-h1 bundle-with-h1--placeholder" {{ block.shopify_attributes }}>
+    Pick a product for this Bundle with card in the theme editor.
+  </div>
+{%- else -%}
+  <script src="{{ 'product-bundle-with-h1.js' | asset_url }}" defer="defer"></script>
+
+  <style>
+    #shopify-section-{{ section_id }} .bundle-with-h1 {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(7.5rem, 0.95fr);
+      align-items: stretch;
+      min-height: 19.625rem;
+      background: #fff;
+      border: 1px solid rgb(var(--color-border));
+      color: #171717;
+    }
+
+    #shopify-section-{{ section_id }} .bundle-with-h1--placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      font-size: var(--text-sm);
+      color: rgb(23 23 23 / 0.55);
+    }
+
+    #shopify-section-{{ section_id }} .bundle-with-h1__content {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.75rem;
+      min-width: 0;
+      padding: 1rem 0.75rem 1rem 1rem;
+    }
+
+    #shopify-section-{{ section_id }} .bundle-with-h1__copy {
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    #shopify-section-{{ section_id }} .bundle-with-h1__eyebrow {
+      margin: 0;
+      font-size: 0.75rem;
+      line-height: 1.3;
+      font-weight: 400;
+      color: rgb(23 23 23 / 0.6);
+    }
+
+    #shopify-section-{{ section_id }} .bundle-with-h1__title {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.3;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: #171717;
+    }
+
+    #shopify-section-{{ section_id }} .bundle-with-h1__price {
+      margin: 0.15rem 0 0;
+      font-size: 1.25rem;
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #171717;
+    }
+
+    #shopify-section-{{ section_id }} .bundle-with-h1__colors {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    #shopify-section-{{ section_id }} .bundle-with-h1__color-label {
+      margin: 0;
+      font-size: var(--text-sm);
+      line-height: 1.3;
+      color: #171717;
+    }
+
+    #shopify-section-{{ section_id }} .bundle-with-h1__swatches {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    #shopify-section-{{ section_id }} .bundle-with-h1__swatch {
+      display: block;
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      border: 1px solid rgb(23 23 23 / 0.12);
+      border-radius: 0.125rem;
+      background-color: var(--swatch-background, rgb(23 23 23 / 0.1));
+      background-image: var(--swatch-background-image, none);
+      background-size: cover;
+      background-position: center;
+      cursor: pointer;
+    }
+
+    #shopify-section-{{ section_id }} .bundle-with-h1__swatch[aria-current='true'] {
+      border-color: transparent;
+      box-shadow:
+        0 0 0 2px #fff,
+        0 0 0 3px #171717;
+    }
+
+    #shopify-section-{{ section_id }} .bundle-with-h1__swatch.is-unavailable {
+      opacity: 0.4;
+    }
+
+    #shopify-section-{{ section_id }} .bundle-with-h1__form,
+    #shopify-section-{{ section_id }} .bundle-with-h1__form form {
+      display: block;
+      width: 100%;
+      margin: 0;
+    }
+
+    #shopify-section-{{ section_id }} .bundle-with-h1__add {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 2.5rem;
+      padding: 0.55rem 1rem;
+      background: #171717;
+      color: #f6f6f6;
+      border: 0;
+      border-bottom: 4px solid #e4452a;
+      border-right: 4px solid #e4452a;
+      border-radius: 0;
+      font-size: 0.875rem;
+      font-weight: 600;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    #shopify-section-{{ section_id }} .bundle-with-h1__add:hover {
+      background: #333;
+    }
+
+    #shopify-section-{{ section_id }} .bundle-with-h1__add:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #shopify-section-{{ section_id }} .bundle-with-h1__media {
+      display: block;
+      min-width: 0;
+      min-height: 100%;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    #shopify-section-{{ section_id }} .bundle-with-h1__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+    }
+  </style>
+
+  {%- liquid
+    assign featured_media = current_variant.featured_media | default: bundle_product.featured_media
+    if settings.currency_code_enabled
+      assign current_price = current_variant.price | money_with_currency
+    else
+      assign current_price = current_variant.price | money
+    endif
+  -%}
+
+  <product-bundle-with-h1 class="bundle-with-h1" {{ block.shopify_attributes }}>
+    <div class="bundle-with-h1__content">
+      <div class="bundle-with-h1__copy">
+        <p class="bundle-with-h1__eyebrow">{{ heading | escape }}</p>
+        <h3 class="bundle-with-h1__title" data-bundle-title>{{ bundle_product.title | escape }}</h3>
+        <p class="bundle-with-h1__price" data-bundle-price>{{ current_price }}</p>
+      </div>
+
+      {%- if has_color_products or color_option != blank -%}
+        <div class="bundle-with-h1__colors">
+          <p class="bundle-with-h1__color-label">
+            {{ option_name | escape }}:
+            <span data-bundle-color>{{ current_color | escape }}</span>
+          </p>
+          <ul class="bundle-with-h1__swatches" role="list" aria-label="{{ option_name | escape }}">
+            {%- if has_color_products -%}
+              {%- liquid
+                assign list_contains_product = false
+                for color_product in color_products
+                  if color_product == bundle_product
+                    assign list_contains_product = true
+                    break
+                  endif
+                endfor
+              -%}
+              {%- unless list_contains_product -%}
+                {%- render 'product-bundle-with-h1-swatch',
+                  item_product: bundle_product,
+                  option_name: option_name,
+                  metafield_namespace: metafield_namespace,
+                  metafield_key: metafield_key,
+                  use_variant_images: use_variant_images,
+                  selected: true
+                -%}
+              {%- endunless -%}
+              {%- for color_product in color_products -%}
+                {%- liquid
+                  assign is_selected = false
+                  if color_product == bundle_product
+                    assign is_selected = true
+                  endif
+                -%}
+                {%- render 'product-bundle-with-h1-swatch',
+                  item_product: color_product,
+                  option_name: option_name,
+                  metafield_namespace: metafield_namespace,
+                  metafield_key: metafield_key,
+                  use_variant_images: use_variant_images,
+                  selected: is_selected
+                -%}
+              {%- endfor -%}
+            {%- else -%}
+              {%- for value in color_option.values -%}
+                {%- liquid
+                  assign value_name = value.name | default: value
+                  assign matched_variant = blank
+                  for variant in bundle_product.variants
+                    if variant.options[color_option_index] == value_name
+                      assign matched_variant = variant
+                      break
+                    endif
+                  endfor
+
+                  assign is_selected = false
+                  if matched_variant != blank and current_color == value_name
+                    assign is_selected = true
+                  endif
+
+                  assign swatch_image = blank
+                  assign swatch_fallback = value_name | split: ' ' | last | handle
+                  assign swatch_fallback_override = false
+
+                  if matched_variant != blank
+                    if value.swatch != blank
+                      if value.swatch.image
+                        assign swatch_image = value.swatch.image | image_url: width: 128
+                      elsif value.swatch.color
+                        assign swatch_fallback = value.swatch.color
+                        assign swatch_fallback_override = true
+                      endif
+                    elsif settings.swatch_config != blank
+                      assign value_downcase = value_name | downcase | strip
+                      assign swatch_config = settings.swatch_config | newline_to_br | split: '<br />'
+                      for swatch in swatch_config
+                        assign swatch_parts = swatch | strip | split: ':'
+                        assign swatch_name = swatch_parts.first | downcase | strip
+                        if swatch_name == value_downcase
+                          assign swatch_value = swatch_parts.last | strip
+                          if swatch_value contains '#'
+                            assign swatch_fallback = swatch_value
+                            assign swatch_fallback_override = true
+                          else
+                            if images[swatch_value] != blank
+                              assign swatch_image = images[swatch_value] | image_url: width: 128
+                            elsif swatch_value contains '//cdn.shopify.com/'
+                              assign swatch_image = swatch_value
+                            endif
+                          endif
+                          break
+                        endif
+                      endfor
+                    endif
+
+                    if use_variant_images and matched_variant.featured_media
+                      assign swatch_image = matched_variant.featured_media | image_url: width: 128
+                      assign swatch_fallback_override = false
+                    endif
+
+                    assign item_media = matched_variant.featured_media | default: bundle_product.featured_media
+                    if settings.currency_code_enabled
+                      assign item_price = matched_variant.price | money_with_currency
+                    else
+                      assign item_price = matched_variant.price | money
+                    endif
+                  endif
+                -%}
+                {%- if matched_variant != blank -%}
+                  <li>
+                    <button
+                      type="button"
+                      class="bundle-with-h1__swatch{% if swatch_image != blank %} with-image{% endif %}{% unless matched_variant.available %} is-unavailable{% endunless %}"
+                      data-bundle-swatch
+                      data-variant-id="{{ matched_variant.id }}"
+                      data-title="{{ bundle_product.title | escape }}"
+                      data-color="{{ value_name | escape }}"
+                      data-price="{{ item_price | escape }}"
+                      data-available="{% if matched_variant.available %}true{% else %}false{% endif %}"
+                      {% if item_media %}
+                        data-image="{{ item_media | image_url: width: 600 }}"
+                        data-image-srcset="{{ item_media | image_url: width: 280 }} 280w, {{ item_media | image_url: width: 400 }} 400w, {{ item_media | image_url: width: 600 }} 600w"
+                      {% endif %}
+                      aria-current="{% if is_selected %}true{% else %}false{% endif %}"
+                      aria-label="{{ option_name | escape }}: {{ value_name | escape }}"
+                      style="--swatch-background: {{ swatch_fallback }};{% if swatch_fallback_override == false and swatch_image != blank %}--swatch-background-image: url({{ swatch_image }});{% endif %}"
+                    >
+                      <span class="sr-only">{{ value_name | escape }}</span>
+                    </button>
+                  </li>
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endif -%}
+          </ul>
+        </div>
+      {%- endif -%}
+
+      <div class="bundle-with-h1__form">
+        {%- form 'product', bundle_product, is: 'product-form', id: form_id, data-type: 'add-to-cart-form', class: 'bundle-with-h1__product-form' -%}
+          <input type="hidden" name="id" value="{{ current_variant.id }}">
+          <input type="hidden" name="quantity" value="1">
+          <button
+            type="submit"
+            name="add"
+            class="bundle-with-h1__add"
+            data-bundle-add
+            data-add-label="{{ 'products.product.add_to_cart' | t | escape }}"
+            data-sold-out-label="{{ 'products.product.sold_out' | t | escape }}"
+            {% unless current_variant.available %}disabled{% endunless %}
+          >
+            <span data-bundle-add-label>
+              {%- if current_variant.available -%}
+                {{- 'products.product.add_to_cart' | t -}}
+              {%- else -%}
+                {{- 'products.product.sold_out' | t -}}
+              {%- endif -%}
+            </span>
+          </button>
+        {%- endform -%}
+      </div>
+    </div>
+
+    <div class="bundle-with-h1__media">
+      {%- if featured_media -%}
+        <img
+          data-bundle-image
+          src="{{ featured_media | image_url: width: 600 }}"
+          srcset="{{ featured_media | image_url: width: 280 }} 280w, {{ featured_media | image_url: width: 400 }} 400w, {{ featured_media | image_url: width: 600 }} 600w"
+          sizes="(max-width: 767px) 40vw, 220px"
+          alt="{{ bundle_product.title | escape }}"
+          width="{{ featured_media.width }}"
+          height="{{ featured_media.height }}"
+          loading="lazy"
+        >
+      {%- endif -%}
+    </div>
+  </product-bundle-with-h1>
+{%- endif -%}
