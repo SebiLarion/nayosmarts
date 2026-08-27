@@ -95,6 +95,11 @@
           "type": "bundle_with",
           "settings": {
             "heading": "Bundle with",
+            "product": "nayo-smart-herman-h3-sling-bag",
+            "products": [
+              "nayo-smart-herman-h3-sling-bag",
+              "herman-h3-sling-bag-green"
+            ],
             "option_name": "Color",
             "option_value_metafield": "custom.color",
             "color_swatch_type": "color"
