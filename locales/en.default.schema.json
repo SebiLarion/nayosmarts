@@ -4574,7 +4574,20 @@
           "label": "Collapsed image count",
           "info": "Number of desktop images shown before Show more. Applies to the 2-column gallery."
         }
+      },
+      "blocks": {
+        "reviews_badge": {
+          "name": "Reviews badge",
+          "settings": {
+            "paragraph": {
+              "content": "Shows Judge.me stars, score, and review count above the product title. Links to the reviews section."
+            }
+          }
+        }
       }
+    },
+    "reviews-h1": {
+      "name": "Reviews"
     },
     "breadcrumbs-h1": {
       "name": "Breadcrumbs",

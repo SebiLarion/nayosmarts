@@ -23,6 +23,10 @@
       --aspect-ratio: {{ first_media.aspect_ratio }};
     }
   }
+
+  #shopify-section-{{ section.id }} .product__info > .reviews-badge-h1 + * {
+    margin-block-start: var(--sp-2);
+  }
 </style>
 
 {%- liquid
@@ -163,6 +167,9 @@
           {%- case block.type -%}
             {%- when '@app' -%}
               {%- render block -%}
+
+            {%- when 'reviews_badge' -%}
+              {%- render 'reviews-badge-h1', product: product, block: block -%}
 
             {%- when 'breadcrumb' -%}
               {%- render 'product-breadcrumb', product: product, block: block -%}
@@ -2307,6 +2314,17 @@
           "id": "liquid",
           "label": "t:sections.custom-liquid.settings.liquid.label",
           "info": "t:sections.custom-liquid.settings.liquid.info"
+        }
+      ]
+    },
+    {
+      "type": "reviews_badge",
+      "name": "t:sections.main-product-h1.blocks.reviews_badge.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "t:sections.main-product-h1.blocks.reviews_badge.settings.paragraph.content"
         }
       ]
     },

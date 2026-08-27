@@ -1,0 +1,245 @@
+<style>
+  #shopify-section-{{ section.id }} {
+    --section-padding-top: {{ section.settings.padding_top }}px;
+    --section-padding-bottom: {{ section.settings.padding_bottom }}px;
+    {%- render 'section-variables', section: section -%}
+  }
+
+  #shopify-section-{{ section.id }} .page-width > div,
+  #shopify-section-{{ section.id }} .jdgm-widget,
+  #shopify-section-{{ section.id }} .jdgm-rev-widg,
+  #shopify-section-{{ section.id }} #judgeme_product_reviews {
+    max-width: none !important;
+    width: 100%;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev-widg {
+    padding: 0 !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    font-family: inherit;
+    color: rgb(var(--color-foreground));
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev-widg__title {
+    font-family: var(--font-heading-family);
+    font-style: var(--font-heading-style);
+    font-weight: var(--font-heading-weight);
+    letter-spacing: var(--font-heading-letter-spacing);
+    text-transform: var(--font-heading-text-transform);
+    font-size: clamp(var(--text-xl), 2.2vw, var(--title-sm));
+    line-height: 1.2;
+    color: rgb(var(--color-foreground));
+    text-align: start;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-star,
+  #shopify-section-{{ section.id }} .jdgm-star:before {
+    color: rgb(var(--color-rating)) !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-star.jdgm--off:before,
+  #shopify-section-{{ section.id }} .jdgm-star.jdgm--half:after {
+    color: rgb(var(--color-foreground) / 0.18) !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-histogram__bar-content {
+    background-color: rgb(var(--color-foreground)) !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-histogram__bar {
+    background-color: rgb(var(--color-foreground) / 0.12) !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-link,
+  #shopify-section-{{ section.id }} .jdgm-rev-widg__summary-text {
+    color: rgb(var(--color-foreground));
+  }
+
+  #shopify-section-{{ section.id }} a.jdgm-link:not(.jdgm-btn) {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  #shopify-section-{{ section.id }} #judgeme_product_reviews {
+    scroll-margin-top: calc(var(--header-height, 5rem) + 1rem);
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-btn,
+  #shopify-section-{{ section.id }} .jdgm-write-rev-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3.1875rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1;
+    color: #f6f6f6 !important;
+    background: #171717 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    border-bottom: 4px solid #e4452a !important;
+    border-right: 4px solid #e4452a !important;
+    box-shadow: none !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev {
+    border-color: rgb(var(--color-border)) !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev__author,
+  #shopify-section-{{ section.id }} .jdgm-rev__title {
+    color: rgb(var(--color-foreground));
+    font-family: inherit;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev__body {
+    color: rgb(var(--color-foreground));
+    font-size: var(--text-base);
+    line-height: 1.5;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev-widg__header {
+    align-items: flex-start;
+  }
+
+  @media screen and (max-width: 767px) {
+    #shopify-section-{{ section.id }} .jdgm-rev-widg__header {
+      flex-direction: column;
+    }
+
+    #shopify-section-{{ section.id }} .jdgm-btn,
+    #shopify-section-{{ section.id }} .jdgm-write-rev-link {
+      width: 100%;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-medal,
+  #shopify-section-{{ section.id }} .jdgm-widget-actions-wrapper,
+  #shopify-section-{{ section.id }} .jdgm-rev-widg__footer {
+    color: rgb(var(--color-foreground) / 0.65);
+  }
+</style>
+
+<div class="section section--padding{% if section.settings.divider %} section--divider{% endif %}{% if section.settings.rounded %} section--rounded relative{% endif %}">
+  <div class="page-width{% if section.settings.full_width %} page-width--full{% endif %} relative">
+    {%- for block in section.blocks -%}
+      {% render block %}
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.reviews-h1.name",
+  "class": "section-reviews-h1",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.header__colors.content",
+      "info": "t:sections.global.settings.header__colors.info"
+    },
+    {
+      "type": "color",
+      "id": "color_text",
+      "label": "t:sections.global.settings.color_text.label"
+    },
+    {
+      "type": "color",
+      "id": "color_background",
+      "label": "t:sections.global.settings.color_background.label"
+    },
+    {
+      "type": "color_background",
+      "id": "gradient_background",
+      "label": "t:sections.global.settings.gradient_background.label"
+    },
+    {
+      "type": "color",
+      "id": "color_highlight",
+      "label": "t:sections.global.settings.color_highlight.label"
+    },
+    {
+      "type": "color_background",
+      "id": "gradient_highlight",
+      "label": "t:sections.global.settings.gradient_highlight.label"
+    },
+    {
+      "type": "color",
+      "id": "color_button_text",
+      "label": "t:sections.global.settings.color_button_text.label"
+    },
+    {
+      "type": "color",
+      "id": "color_button_background",
+      "label": "t:sections.global.settings.color_button_background.label"
+    },
+    {
+      "type": "color_background",
+      "id": "color_button_gradient",
+      "label": "t:sections.global.settings.color_button_gradient.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.header__section.content"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.global.settings.padding_top.label",
+      "default": 72
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.global.settings.padding_bottom.label",
+      "default": 72
+    },
+    {
+      "type": "checkbox",
+      "id": "divider",
+      "label": "t:sections.global.settings.divider.label",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "t:sections.global.settings.full_width.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "rounded",
+      "default": false,
+      "label": "t:sections.global.settings.rounded.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@app"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.reviews-h1.name",
+      "category": "t:categories.products"
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "header",
+      "custom.overlay"
+    ]
+  }
+}
+{% endschema %}

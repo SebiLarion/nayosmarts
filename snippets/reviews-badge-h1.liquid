@@ -1,0 +1,105 @@
+{%- doc -%}
+  Compact Judge.me rating row for the H1 product info: stars, score, and an underlined review count that jumps to the reviews section.
+
+  @param {object} product - Product with Judge.me or Shopify review metafields
+  @param {object} [block] - Optional section block for theme editor attributes
+
+  @example
+  {% render 'reviews-badge-h1', product: product, block: block %}
+{%- enddoc -%}
+
+{%- liquid
+  assign review_rating = 0
+  assign review_count = 0
+  assign badge_html = product.metafields.judgeme.badge | append: ''
+
+  if badge_html contains "data-average-rating='"
+    assign review_rating = badge_html | split: "data-average-rating='" | last | split: "'" | first | plus: 0
+  elsif badge_html contains 'data-average-rating="'
+    assign review_rating = badge_html | split: 'data-average-rating="' | last | split: '"' | first | plus: 0
+  endif
+
+  if badge_html contains "data-number-of-reviews='"
+    assign review_count = badge_html | split: "data-number-of-reviews='" | last | split: "'" | first | plus: 0
+  elsif badge_html contains 'data-number-of-reviews="'
+    assign review_count = badge_html | split: 'data-number-of-reviews="' | last | split: '"' | first | plus: 0
+  endif
+
+  if review_count == 0 and product.metafields.reviews.rating.value != blank and product.metafields.reviews.rating_count.value > 0
+    assign review_rating = product.metafields.reviews.rating.value.rating
+    assign review_count = product.metafields.reviews.rating_count.value
+  endif
+
+  assign rating_display = review_rating | times: 10 | round | divided_by: 10.0
+  assign rating_percent = review_rating | times: 20.0
+-%}
+
+<style>
+  .reviews-badge-h1 {
+    display: block;
+    max-width: 100%;
+    font-size: var(--text-sm);
+    line-height: 1.4;
+    color: rgb(var(--color-foreground));
+  }
+
+  .reviews-badge-h1__stars {
+    --rating-percent: 0%;
+    display: inline-block;
+    vertical-align: middle;
+    white-space: nowrap;
+    font-size: 1rem;
+    line-height: 1;
+    letter-spacing: 0.06em;
+  }
+
+  .reviews-badge-h1__stars::before {
+    content: '\2605\2605\2605\2605\2605';
+    background: linear-gradient(
+      calc(90deg * var(--transform-logical, 1)),
+      rgb(var(--color-rating)) var(--rating-percent),
+      rgb(var(--color-foreground) / 0.15) var(--rating-percent)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .reviews-badge-h1__score,
+  .reviews-badge-h1__count {
+    display: inline;
+    vertical-align: middle;
+    white-space: normal;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+  }
+
+  .reviews-badge-h1__score {
+    margin-inline-start: 0.4em;
+    font-weight: 500;
+  }
+
+  .reviews-badge-h1__count {
+    margin-inline-start: 0.35em;
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+    text-decoration-thickness: 1px;
+  }
+</style>
+
+{%- if review_count > 0 -%}
+  <div class="reviews-badge-h1" {{ block.shopify_attributes }}>
+    <span
+      class="reviews-badge-h1__stars"
+      style="--rating-percent: {{ rating_percent }}%;"
+      role="img"
+      aria-label="{{ 'general.accessibility.star_reviews_info' | t: rating_value: rating_display, rating_max: 5 }}"
+    ></span>
+    <span class="reviews-badge-h1__score" aria-hidden="true">{{ rating_display }}</span>
+    <a class="reviews-badge-h1__count" href="#judgeme_product_reviews">
+      ({{ 'general.accessibility.star_reviews_count' | t: count: review_count }})
+    </a>
+  </div>
+{%- endif -%}
