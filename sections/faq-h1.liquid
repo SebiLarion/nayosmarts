@@ -15,7 +15,7 @@
 
   #shopify-section-{{ section.id }} .faq-h1 .details .details__summary,
   #shopify-section-{{ section.id }} .faq-h1 .details:first-child .details__summary {
-    padding-block: 1rem;
+    padding-block: 1.25rem 0.625rem;
   }
 
   #shopify-section-{{ section.id }} .faq-h1__title {
@@ -43,11 +43,11 @@
     content: none;
   }
   #shopify-section-{{ section.id }} .faq-h1__content {
-    padding-block-end: 2rem;
+    padding-block-end: 1.25rem;
     color: rgb(var(--color-foreground));
   }
   #shopify-section-{{ section.id }} .faq-h1__content > * + * {
-    margin-block-start: 1.5rem;
+    margin-block-start: 1rem;
   }
 
   #shopify-section-{{ section.id }} .faq-h1__rte p {
@@ -56,7 +56,7 @@
     line-height: 1.5;
   }
   #shopify-section-{{ section.id }} .faq-h1__rte p + p {
-    margin-block-start: 1.5rem;
+    margin-block-start: 1rem;
   }
   #shopify-section-{{ section.id }} .faq-h1__rte p strong {
     display: block;
@@ -86,7 +86,7 @@
     font-weight: 600;
     font-size: 1.125rem;
     line-height: 1;
-    margin: 0 0 1rem;
+    margin: 0 0 0.75rem;
   }
   #shopify-section-{{ section.id }} .faq-h1__logos {
     display: flex;
@@ -95,6 +95,7 @@
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     padding-block-end: 0.75rem;
+    scroll-behavior: smooth;
     scrollbar-width: thin;
     scrollbar-color: #bfbab1 transparent;
   }
@@ -109,14 +110,13 @@
     border-radius: 9999px;
   }
   #shopify-section-{{ section.id }} .faq-h1__logos img {
-    height: 1.75rem;
+    height: var(--logo-h, 1.75rem);
     width: auto;
     max-width: none;
     flex: none;
   }
 
   #shopify-section-{{ section.id }} .faq-h1__disclaimer {
-    margin: 0;
     font-size: var(--text-base);
     line-height: 1.5;
   }
@@ -131,6 +131,18 @@
     #shopify-section-{{ section.id }} .faq-h1 .details:first-child .details__summary {
       padding-block: 1.5rem;
     }
+    #shopify-section-{{ section.id }} .faq-h1__content > * + * {
+      margin-block-start: 1.5rem;
+    }
+    #shopify-section-{{ section.id }} .faq-h1__rte p + p {
+      margin-block-start: 1.5rem;
+    }
+    #shopify-section-{{ section.id }} .faq-h1__region-label {
+      margin-block-end: 1.25rem;
+    }
+    #shopify-section-{{ section.id }} .faq-h1__logos {
+      padding-block-end: 1.25rem;
+    }
     #shopify-section-{{ section.id }} .faq-h1__title {
       font-size: 2.25rem;
       letter-spacing: -0.48px;
@@ -140,7 +152,7 @@
       height: 1.5rem;
     }
     #shopify-section-{{ section.id }} .faq-h1__content {
-      padding-block-end: 2.5rem;
+      padding-block-end: 1.5rem;
     }
     #shopify-section-{{ section.id }} .faq-h1__rte p strong,
     #shopify-section-{{ section.id }} .faq-h1__region-label {
@@ -209,6 +221,18 @@
                         {{- logo | image_url: width: 480 | image_tag: loading: 'lazy', sizes: logo_sizes, widths: '160, 240, 320, 480' -}}
                       {%- endif -%}
                     {%- endfor -%}
+                    {%- if block.settings.logos != blank -%}
+                      {%- assign logo_items = block.settings.logos | split: ',' -%}
+                      {%- for logo_item in logo_items -%}
+                        {%- assign logo_parts = logo_item | strip | split: '|' -%}
+                        {%- assign logo_file = logo_parts[0] | strip -%}
+                        {%- if logo_file != blank -%}
+                          {%- assign logo_h = logo_parts[1] | strip | default: 28 -%}
+                          {%- assign logo_alt = logo_file | remove: 'airline-' | remove: '-h1' | split: '.' | first | replace: '-', ' ' | capitalize -%}
+                          <img src="{{ logo_file | asset_url }}" alt="{{ logo_alt | escape }}" loading="lazy" style="--logo-h: {{ logo_h }}px">
+                        {%- endif -%}
+                      {%- endfor -%}
+                    {%- endif -%}
                   </div>
                 </div>
               {%- endif -%}
@@ -366,7 +390,13 @@
         { "type": "image_picker", "id": "logo_5", "label": "Logo 5" },
         { "type": "image_picker", "id": "logo_6", "label": "Logo 6" },
         { "type": "image_picker", "id": "logo_7", "label": "Logo 7" },
-        { "type": "image_picker", "id": "logo_8", "label": "Logo 8" }
+        { "type": "image_picker", "id": "logo_8", "label": "Logo 8" },
+        {
+          "type": "textarea",
+          "id": "logos",
+          "label": "Logos from theme assets",
+          "info": "Comma-separated asset file names, optionally with a display height, e.g. airline-lufthansa-h1.png|28. Rendered after the picked images."
+        }
       ]
     },
     {

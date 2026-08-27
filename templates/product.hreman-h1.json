@@ -309,25 +309,29 @@
         "faq_region_europe": {
           "type": "region",
           "settings": {
-            "label": "Europe"
+            "label": "Europe",
+          "logos": "airline-lufthansa-h1.png|28, airline-airfrance-h1.png|19, airline-klm-h1.png|54, airline-british-airways-h1.png|36, airline-ryanair-h1.png|24, airline-easyjet-h1.png|28"
           }
         },
         "faq_region_na": {
           "type": "region",
           "settings": {
-            "label": "North America"
+            "label": "North America",
+          "logos": "airline-american-airlines-h1.png|54, airline-delta-h1.png|32, airline-united-airlines-h1.png|36, airline-southwest-h1.png|36, airline-air-canada-h1.png|48"
           }
         },
         "faq_region_asia": {
           "type": "region",
           "settings": {
-            "label": "Asia"
+            "label": "Asia",
+          "logos": "airline-singapore-airlines-h1.png|54, airline-cathay-pacific-h1.png|38, airline-ana-h1.png|32, airline-japan-airlines-h1.png|48, airline-korean-air-h1.png|28, airline-air-china-h1.png|36, airline-china-eastern-h1.png|36, airline-china-southern-h1.png|36"
           }
         },
         "faq_region_mena": {
           "type": "region",
           "settings": {
-            "label": "MENA"
+            "label": "MENA",
+          "logos": "airline-emirates-h1.png|46, airline-qatar-airways-h1.png|41, airline-etihad-h1.png|41, airline-saudia-h1.png|41, airline-egyptair-h1.png|27"
           }
         },
         "faq_disclaimer": {
