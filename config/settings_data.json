@@ -216,11 +216,6 @@
         "disabled": false,
         "settings": {}
       },
-      "6770548097779500122": {
-        "type": "shopify://apps/koala-upsells-gifts/blocks/gifts-embed/baf92dc5-8ffa-40c0-967e-57b74cddc9e3",
-        "disabled": false,
-        "settings": {}
-      },
       "2567389343055140935": {
         "type": "shopify://apps/microsoft-clarity/blocks/clarity_js/31c3d126-8116-4b4a-8ba1-baeda7c4aeea",
         "disabled": false,
@@ -299,6 +294,11 @@
       "9468172321995857178": {
         "type": "shopify://apps/qikify-upsell/blocks/app-embed/2e94b962-8172-4839-8ad9-7837eb8b017a",
         "disabled": false,
+        "settings": {}
+      },
+      "6770548097779500122": {
+        "type": "shopify://apps/koala-upsells-gifts/blocks/gifts-embed/baf92dc5-8ffa-40c0-967e-57b74cddc9e3",
+        "disabled": true,
         "settings": {}
       }
     }
