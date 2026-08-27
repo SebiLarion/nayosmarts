@@ -53,16 +53,6 @@
             "show_rating": false
           }
         },
-        "text_bKd6GX": {
-          "type": "text",
-          "settings": {
-            "icon": "none",
-            "iwidth": "custom",
-            "icon_width": 24,
-            "text": "A versatile and durable backpack designed for urban commuters and outdoor adventurers.",
-            "text_size": "text-base"
-          }
-        },
         "product_variations_yiaQCW": {
           "type": "product_variations",
           "settings": {
@@ -213,7 +203,6 @@
         "badges_jfrQgp",
         "reviews_badge",
         "title",
-        "text_bKd6GX",
         "product_variations_yiaQCW",
         "variant_picker",
         "koala_upsells_gifts_product_page_banner_pmPz8w",
