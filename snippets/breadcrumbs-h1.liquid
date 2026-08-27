@@ -1,0 +1,120 @@
+{%- doc -%}
+  Renders a text breadcrumb trail for product, collection, article, and page templates.
+
+  Visible on mobile and desktop. Uses Home as text (not an icon) to match the H1 product layout.
+
+  @param {boolean} show_home - Show the Home link
+  @param {boolean} show_collections_link - Show the all-collections link
+  @param {boolean} show_collection - Show the current or selected collection
+  @param {object} [selected_collection] - Optional collection chosen in the section settings
+  @param {boolean} show_product_title - Show the product, article, or page title
+
+  @example
+  {% render 'breadcrumbs-h1',
+     show_home: true,
+     show_collections_link: false,
+     show_collection: true,
+     show_product_title: true
+  %}
+{%- enddoc -%}
+
+{%- liquid
+  assign breadcrumb_collection = selected_collection
+  if breadcrumb_collection == blank and collection != blank
+    assign breadcrumb_collection = collection
+  endif
+  if breadcrumb_collection == blank and product != blank
+    for product_collection in product.collections
+      unless product_collection.handle == 'all' or product_collection.handle == 'all-products' or product_collection.handle == 'frontpage' or product_collection.handle contains 'spo-filter'
+        assign breadcrumb_collection = product_collection
+        break
+      endunless
+    endfor
+  endif
+  if breadcrumb_collection == blank and product != blank
+    assign breadcrumb_collection = product.collections | first
+  endif
+
+  assign current_title = page_title
+  if request.page_type == 'product' and product != blank
+    assign current_title = product.title
+  elsif request.page_type == 'article' and article != blank
+    assign current_title = article.title
+  elsif request.page_type == 'page' and page != blank
+    assign current_title = page.title
+  elsif request.page_type == 'collection' and collection != blank
+    assign current_title = collection.title
+  endif
+
+  assign show_collection_crumb = false
+  if show_collection and breadcrumb_collection != blank and breadcrumb_collection.title != blank
+    if request.page_type == 'collection'
+      assign show_collection_crumb = true
+    elsif request.page_type == 'product'
+      assign show_collection_crumb = true
+    endif
+  endif
+
+  assign collection_is_current = false
+  if request.page_type == 'collection' and show_collection_crumb
+    assign collection_is_current = true
+  endif
+
+  assign show_current_crumb = false
+  if show_product_title
+    if request.page_type == 'product' or request.page_type == 'article' or request.page_type == 'page'
+      assign show_current_crumb = true
+    endif
+  endif
+-%}
+
+<nav class="breadcrumb breadcrumbs-h1" role="navigation" aria-label="breadcrumbs">
+  <ul class="breadcrumbs-h1__list">
+    {%- if show_home -%}
+      <li class="breadcrumbs-h1__item">
+        <a
+          class="breadcrumbs-h1__link reversed-link"
+          href="{{ routes.root_url }}"
+          title="{{ 'general.breadcrumbs.home_link_title' | t | escape }}"
+          is="magnet-link"
+        >
+          {{- 'general.breadcrumbs.home' | t -}}
+        </a>
+      </li>
+    {%- endif -%}
+
+    {%- if show_collections_link -%}
+      <li class="breadcrumbs-h1__item">
+        <a class="breadcrumbs-h1__link reversed-link" href="{{ routes.collections_url }}" is="magnet-link">
+          {{- 'general.breadcrumbs.collections' | t -}}
+        </a>
+      </li>
+    {%- endif -%}
+
+    {%- if request.page_type == 'article' and blog != blank -%}
+      <li class="breadcrumbs-h1__item">
+        <a class="breadcrumbs-h1__link reversed-link" href="{{ blog.url }}" is="magnet-link">
+          {{- blog.title | escape -}}
+        </a>
+      </li>
+    {%- endif -%}
+
+    {%- if show_collection_crumb -%}
+      <li class="breadcrumbs-h1__item"{% if collection_is_current %} aria-current="page"{% endif %}>
+        {%- if collection_is_current -%}
+          <span class="breadcrumbs-h1__current">{{ breadcrumb_collection.title | escape }}</span>
+        {%- else -%}
+          <a class="breadcrumbs-h1__link reversed-link" href="{{ breadcrumb_collection.url }}" is="magnet-link">
+            {{- breadcrumb_collection.title | escape -}}
+          </a>
+        {%- endif -%}
+      </li>
+    {%- endif -%}
+
+    {%- if show_current_crumb -%}
+      <li class="breadcrumbs-h1__item" aria-current="page">
+        <span class="breadcrumbs-h1__current">{{ current_title | escape }}</span>
+      </li>
+    {%- endif -%}
+  </ul>
+</nav>
