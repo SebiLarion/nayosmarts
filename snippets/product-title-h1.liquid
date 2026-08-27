@@ -283,6 +283,8 @@
     min-height: 3rem;
     padding: 0.75rem 1.25rem;
     border: 0;
+    border-bottom: 4px solid #e4452a;
+    border-right: 4px solid #e4452a;
     background: #171717;
     color: #f6f6f6;
     font-size: var(--text-sm);
@@ -322,7 +324,9 @@
           aria-controls="{{ fits_modal_id }}"
           aria-expanded="false"
         >
-          {%- render 'icon', icon: 'cart', size: 'sm', class: 'stroke-1' -%}
+          <svg class="icon icon-bag stroke-1" viewBox="0 0 24 24" stroke="currentColor" fill="none" xmlns="http://www.w3.org/2000/svg" role="presentation" aria-hidden="true">
+            <path stroke-linecap="round" stroke-miterlimit="10" d="M7.70023 9.14V6.36C7.70023 3.81 9.76023 1.75 12.3002 1.75C14.8402 1.75 16.9102 3.81 16.9102 6.36V9.14M21.8502 19.59L21.1902 9.15C21.1102 7.89 20.0502 6.91 18.7702 6.91H5.83023C4.55023 6.91 3.49023 7.89 3.41023 9.15L2.75023 19.59C2.66023 20.96 3.77023 22.13 5.17023 22.13H19.4402C20.8402 22.13 21.9402 20.97 21.8602 19.59H21.8502Z"></path>
+          </svg>
           <span>{{ fits_label | escape }}</span>
         </button>
       {%- endif -%}
