@@ -32,15 +32,15 @@
   }
 
   #shopify-section-{{ section.id }} .breadcrumbs-h1__item:not(:last-child)::after {
-    content: '›';
+    content: '>';
     margin-inline: 0.5rem;
-    color: rgb(var(--color-foreground) / 0.45);
+    color: rgb(var(--color-foreground));
     pointer-events: none;
     speak: never;
   }
 
   [dir='rtl'] #shopify-section-{{ section.id }} .breadcrumbs-h1__item:not(:last-child)::after {
-    content: '‹';
+    content: '<';
   }
 
   #shopify-section-{{ section.id }} .breadcrumbs-h1__link,
