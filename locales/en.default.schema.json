@@ -3166,8 +3166,7 @@
         },
         "promotion-video": {
           "name": "Promotion video",
-          "settings": {
-          }
+          "settings": {}
         }
       }
     },
@@ -4558,6 +4557,15 @@
     },
     "video-with-text-overlay": {
       "name": "Video with text overlay"
+    },
+    "main-product-h1": {
+      "name": "Product information H1",
+      "settings": {
+        "collapsed_media_count": {
+          "label": "Collapsed image count",
+          "info": "Number of desktop images shown before Show more. Applies to the 2-column gallery."
+        }
+      }
     }
   },
   "settings_schema": {

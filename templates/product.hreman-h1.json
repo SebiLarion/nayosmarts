@@ -10,7 +10,7 @@
 {
   "sections": {
     "main-product": {
-      "type": "main-product",
+      "type": "main-product-h1",
       "blocks": {
         "badges_jfrQgp": {
           "type": "badges",
@@ -236,6 +236,7 @@
         "enable_sticky_info": true,
         "media_size": 50,
         "gallery_layout": "columns",
+        "collapsed_media_count": 4,
         "thumbnail_position": "beside",
         "image_ratio": "adapt_first",
         "image_zoom": "lightbox",
