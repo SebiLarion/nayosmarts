@@ -1,0 +1,448 @@
+<style>
+  #shopify-section-{{ section.id }} {
+    --section-padding-top: {{ section.settings.padding_top }}px;
+    --section-padding-bottom: {{ section.settings.padding_bottom }}px;
+    {%- render 'section-variables', section: section -%}
+  }
+
+  #shopify-section-{{ section.id }} .faq-h1 {
+    border-block-start: 1px solid rgb(var(--color-foreground) / 0.16);
+  }
+
+  #shopify-section-{{ section.id }} .faq-h1 .details {
+    border-block-end: 1px solid rgb(var(--color-foreground) / 0.16);
+  }
+
+  #shopify-section-{{ section.id }} .faq-h1 .details .details__summary,
+  #shopify-section-{{ section.id }} .faq-h1 .details:first-child .details__summary {
+    padding-block: 1rem;
+  }
+
+  #shopify-section-{{ section.id }} .faq-h1__title {
+    font-family: var(--font-heading-family);
+    font-weight: 600;
+    font-size: 1.25rem;
+    line-height: 1.5;
+    letter-spacing: -0.013em;
+    color: rgb(var(--color-foreground));
+  }
+
+  #shopify-section-{{ section.id }} .faq-h1__plus {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: rgb(var(--color-foreground));
+  }
+  #shopify-section-{{ section.id }} .faq-h1__plus path {
+    transition: opacity var(--animation-primary);
+  }
+  #shopify-section-{{ section.id }} .faq-h1 .details[aria-expanded="true"] .faq-h1__plus path[data-vertical] {
+    opacity: 0;
+  }
+
+  #shopify-section-{{ section.id }} .faq-h1 .details .details__content::after {
+    content: none;
+  }
+  #shopify-section-{{ section.id }} .faq-h1__content {
+    padding-block-end: 2rem;
+    color: rgb(var(--color-foreground));
+  }
+  #shopify-section-{{ section.id }} .faq-h1__content > * + * {
+    margin-block-start: 1.5rem;
+  }
+
+  #shopify-section-{{ section.id }} .faq-h1__rte p {
+    margin: 0;
+    font-size: var(--text-base);
+    line-height: 1.5;
+  }
+  #shopify-section-{{ section.id }} .faq-h1__rte p + p {
+    margin-block-start: 1.5rem;
+  }
+  #shopify-section-{{ section.id }} .faq-h1__rte p strong {
+    display: block;
+    font-weight: 600;
+    font-size: 1.125rem;
+    line-height: 1;
+    margin-block-end: 0.5rem;
+  }
+
+  #shopify-section-{{ section.id }} .faq-h1__row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: var(--text-base);
+    line-height: 1.5;
+  }
+  #shopify-section-{{ section.id }} .faq-h1__row svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+  }
+  #shopify-section-{{ section.id }} .faq-h1__row + .faq-h1__row {
+    margin-block-start: 1rem;
+  }
+
+  #shopify-section-{{ section.id }} .faq-h1__region-label {
+    font-weight: 600;
+    font-size: 1.125rem;
+    line-height: 1;
+    margin: 0 0 1rem;
+  }
+  #shopify-section-{{ section.id }} .faq-h1__logos {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-block-end: 0.75rem;
+    scrollbar-width: thin;
+    scrollbar-color: #bfbab1 transparent;
+  }
+  #shopify-section-{{ section.id }} .faq-h1__logos::-webkit-scrollbar {
+    height: 6px;
+  }
+  #shopify-section-{{ section.id }} .faq-h1__logos::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  #shopify-section-{{ section.id }} .faq-h1__logos::-webkit-scrollbar-thumb {
+    background: #bfbab1;
+    border-radius: 9999px;
+  }
+  #shopify-section-{{ section.id }} .faq-h1__logos img {
+    height: 1.75rem;
+    width: auto;
+    max-width: none;
+    flex: none;
+  }
+
+  #shopify-section-{{ section.id }} .faq-h1__disclaimer {
+    margin: 0;
+    font-size: var(--text-base);
+    line-height: 1.5;
+  }
+  #shopify-section-{{ section.id }} .faq-h1__disclaimer strong {
+    color: #e4452a;
+    font-weight: 600;
+    text-decoration: underline;
+  }
+
+  @media screen and (min-width: 768px) {
+    #shopify-section-{{ section.id }} .faq-h1 .details .details__summary,
+    #shopify-section-{{ section.id }} .faq-h1 .details:first-child .details__summary {
+      padding-block: 1.5rem;
+    }
+    #shopify-section-{{ section.id }} .faq-h1__title {
+      font-size: 2.25rem;
+      letter-spacing: -0.48px;
+    }
+    #shopify-section-{{ section.id }} .faq-h1__plus {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+    #shopify-section-{{ section.id }} .faq-h1__content {
+      padding-block-end: 2.5rem;
+    }
+    #shopify-section-{{ section.id }} .faq-h1__rte p strong,
+    #shopify-section-{{ section.id }} .faq-h1__region-label {
+      font-size: 1.5rem;
+    }
+    #shopify-section-{{ section.id }} .faq-h1__row svg {
+      width: 2rem;
+      height: 2rem;
+    }
+    #shopify-section-{{ section.id }} .faq-h1__logos {
+      gap: 3rem;
+    }
+  }
+</style>
+
+<div class="section section--padding{% if section.settings.divider %} section--divider{% endif %}">
+  <div class="{% unless section.settings.full_width %}page-width{% endunless %}">
+    {%- if section.blocks.size > 0 -%}
+      {%- liquid
+        assign has_open_item = false
+      -%}
+      {%- capture plus_icon -%}
+        <svg class="faq-h1__plus shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><path d="M2 12H22" stroke-linecap="round"/><path data-vertical d="M12 2V22" stroke-linecap="round"/></svg>
+      {%- endcapture -%}
+      <div class="faq-h1 relative">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'item' -%}
+              {%- if has_open_item -%}
+                {%- comment %}theme-check-disable UnclosedHTMLElement{% endcomment %}
+                </div></details>
+                {%- comment %}theme-check-enable UnclosedHTMLElement{% endcomment %}
+              {%- endif -%}
+              {%- assign has_open_item = true -%}
+              <details class="details" is="accordion-details"{% if block.settings.open %} open{% endif %} {{ block.shopify_attributes }}>
+                <summary class="details__summary flex items-center justify-between gap-4 cursor-pointer">
+                  <span class="faq-h1__title">{{ block.settings.title | escape }}</span>
+                  {{ plus_icon }}
+                </summary>
+                <div class="details__content faq-h1__content">
+                  {%- if block.settings.content != blank -%}
+                    <div class="faq-h1__rte">{{ block.settings.content }}</div>
+                  {%- endif -%}
+
+            {%- when 'icon_row' -%}
+              {%- if has_open_item -%}
+                <div class="faq-h1__row" {{ block.shopify_attributes }}>
+                  {%- render 'icon-feature-h1', icon: block.settings.icon -%}
+                  <span>{{ block.settings.text | escape }}</span>
+                </div>
+              {%- endif -%}
+
+            {%- when 'region' -%}
+              {%- if has_open_item -%}
+                <div class="faq-h1__region" {{ block.shopify_attributes }}>
+                  {%- if block.settings.label != blank -%}
+                    <p class="faq-h1__region-label">{{ block.settings.label | escape }}</p>
+                  {%- endif -%}
+                  <div class="faq-h1__logos">
+                    {%- for i in (1..8) -%}
+                      {%- assign logo_key = 'logo_' | append: i -%}
+                      {%- assign logo = block.settings[logo_key] -%}
+                      {%- if logo != blank -%}
+                        {%- assign logo_width = 112 | times: logo.aspect_ratio | round -%}
+                        {%- capture logo_sizes -%}{{ logo_width }}px{%- endcapture -%}
+                        {{- logo | image_url: width: 480 | image_tag: loading: 'lazy', sizes: logo_sizes, widths: '160, 240, 320, 480' -}}
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </div>
+                </div>
+              {%- endif -%}
+
+            {%- when 'disclaimer' -%}
+              {%- if has_open_item -%}
+                <p class="faq-h1__disclaimer" {{ block.shopify_attributes }}>
+                  {%- if block.settings.label != blank -%}<strong>{{ block.settings.label | escape }}</strong> {% endif -%}
+                  {{- block.settings.text | escape -}}
+                </p>
+              {%- endif -%}
+          {%- endcase -%}
+        {%- endfor -%}
+        {%- if has_open_item -%}
+          {%- comment %}theme-check-disable UnclosedHTMLElement{% endcomment %}
+          </div></details>
+          {%- comment %}theme-check-enable UnclosedHTMLElement{% endcomment %}
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "FAQ accordion (H1)",
+  "class": "faq-h1-section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Accordion with rich content. Add an Item, then place Icon row, Airline logos, and Disclaimer blocks below it to fill that item."
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "default": false,
+      "label": "t:sections.global.settings.full_width.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.header__colors.content",
+      "info": "t:sections.global.settings.header__colors.info"
+    },
+    {
+      "type": "color",
+      "id": "color_text",
+      "label": "t:sections.global.settings.color_text.label"
+    },
+    {
+      "type": "color",
+      "id": "color_background",
+      "label": "t:sections.global.settings.color_background.label"
+    },
+    {
+      "type": "color_background",
+      "id": "gradient_background",
+      "label": "t:sections.global.settings.gradient_background.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.header__section.content"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.global.settings.padding_top.label",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.global.settings.padding_bottom.label",
+      "default": 60
+    },
+    {
+      "type": "checkbox",
+      "id": "divider",
+      "label": "t:sections.global.settings.divider.label",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.global.settings.heading.label",
+          "default": "Size and Features"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content",
+          "info": "Bold text on its own line becomes a sub-heading, e.g. Capacity."
+        },
+        {
+          "type": "checkbox",
+          "id": "open",
+          "label": "Open by default",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "icon_row",
+      "name": "Icon row",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "laptop", "label": "Laptop" },
+            { "value": "tablet", "label": "Tablet" },
+            { "value": "lake", "label": "Water resistant" },
+            { "value": "expand", "label": "Expandable" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "circle-lock", "label": "Lock" }
+          ],
+          "default": "laptop"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:sections.global.settings.text.label",
+          "default": "Fits laptops up to 16 inch displays"
+        }
+      ]
+    },
+    {
+      "type": "region",
+      "name": "Airline logos",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Region label",
+          "default": "Europe"
+        },
+        { "type": "image_picker", "id": "logo_1", "label": "Logo 1" },
+        { "type": "image_picker", "id": "logo_2", "label": "Logo 2" },
+        { "type": "image_picker", "id": "logo_3", "label": "Logo 3" },
+        { "type": "image_picker", "id": "logo_4", "label": "Logo 4" },
+        { "type": "image_picker", "id": "logo_5", "label": "Logo 5" },
+        { "type": "image_picker", "id": "logo_6", "label": "Logo 6" },
+        { "type": "image_picker", "id": "logo_7", "label": "Logo 7" },
+        { "type": "image_picker", "id": "logo_8", "label": "Logo 8" }
+      ]
+    },
+    {
+      "type": "disclaimer",
+      "name": "Disclaimer",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Disclaimer:"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:sections.global.settings.text.label",
+          "default": "Weight compliance may vary based on how much you're carrying, check with your airline to learn the latest weight allowance."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 40,
+  "presets": [
+    {
+      "name": "FAQ accordion (H1)",
+      "blocks": [
+        {
+          "type": "item",
+          "settings": {
+            "title": "Size and Features"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "title": "Laptop Fitment"
+          }
+        },
+        {
+          "type": "icon_row",
+          "settings": {
+            "icon": "laptop",
+            "text": "Fits laptops up to 16 inch displays"
+          }
+        },
+        {
+          "type": "icon_row",
+          "settings": {
+            "icon": "tablet",
+            "text": "Fits tablets up to 12.9 inch displays"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "title": "Cabin Luggage Compliance"
+          }
+        },
+        {
+          "type": "region",
+          "settings": {
+            "label": "Europe"
+          }
+        },
+        {
+          "type": "disclaimer",
+          "settings": {}
+        },
+        {
+          "type": "item",
+          "settings": {
+            "title": "Warranty / Shipping / Returns"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
