@@ -80,11 +80,11 @@
   @media screen and (min-width: 768px) {
     #shopify-section-{{ section.id }} .fine-details-h1__scene {
       inset: auto;
-      top: 0;
+      top: 3rem;
       bottom: 5.5rem;
       left: 50%;
       width: auto;
-      height: calc(100% - 5.5rem);
+      height: calc(100% - 8.5rem);
       aspect-ratio: 1 / 1;
       max-width: 100%;
       transform: translateX(-50%);
@@ -102,11 +102,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
   }
 
   @media screen and (max-width: 767px) {
     #shopify-section-{{ section.id }} .fine-details-h1__scene {
-      inset: 0 0 5.5rem;
+      inset: 1rem 0 5.5rem;
     }
 
     #shopify-section-{{ section.id }} .fine-details-h1__media {
