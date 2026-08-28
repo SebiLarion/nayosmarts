@@ -282,6 +282,7 @@
           "type": "item",
           "settings": {
             "title": "Laptop Fitment",
+            "content": "",
             "open": false
           }
         },
@@ -303,6 +304,7 @@
           "type": "item",
           "settings": {
             "title": "Cabin Luggage Compliance",
+            "content": "",
             "open": false
           }
         },
@@ -310,28 +312,28 @@
           "type": "region",
           "settings": {
             "label": "Europe",
-          "logos": "airline-lufthansa-h1.png|28, airline-airfrance-h1.png|19, airline-klm-h1.png|54, airline-british-airways-h1.png|36, airline-ryanair-h1.png|24, airline-easyjet-h1.png|28"
+            "logos": "airline-lufthansa-h1.png|28, airline-airfrance-h1.png|19, airline-klm-h1.png|54, airline-british-airways-h1.png|36, airline-ryanair-h1.png|24, airline-easyjet-h1.png|28"
           }
         },
         "faq_region_na": {
           "type": "region",
           "settings": {
             "label": "North America",
-          "logos": "airline-american-airlines-h1.png|54, airline-delta-h1.png|32, airline-united-airlines-h1.png|36, airline-southwest-h1.png|36, airline-air-canada-h1.png|48"
+            "logos": "airline-american-airlines-h1.png|54, airline-delta-h1.png|32, airline-united-airlines-h1.png|36, airline-southwest-h1.png|36, airline-air-canada-h1.png|48"
           }
         },
         "faq_region_asia": {
           "type": "region",
           "settings": {
             "label": "Asia",
-          "logos": "airline-singapore-airlines-h1.png|54, airline-cathay-pacific-h1.png|38, airline-ana-h1.png|32, airline-japan-airlines-h1.png|48, airline-korean-air-h1.png|28, airline-air-china-h1.png|36, airline-china-eastern-h1.png|36, airline-china-southern-h1.png|36"
+            "logos": "airline-singapore-airlines-h1.png|54, airline-cathay-pacific-h1.png|38, airline-ana-h1.png|32, airline-japan-airlines-h1.png|48, airline-korean-air-h1.png|28, airline-air-china-h1.png|36, airline-china-eastern-h1.png|36, airline-china-southern-h1.png|36"
           }
         },
         "faq_region_mena": {
           "type": "region",
           "settings": {
             "label": "MENA",
-          "logos": "airline-emirates-h1.png|46, airline-qatar-airways-h1.png|41, airline-etihad-h1.png|41, airline-saudia-h1.png|41, airline-egyptair-h1.png|27"
+            "logos": "airline-emirates-h1.png|46, airline-qatar-airways-h1.png|41, airline-etihad-h1.png|41, airline-saudia-h1.png|41, airline-egyptair-h1.png|27"
           }
         },
         "faq_disclaimer": {
@@ -417,42 +419,6 @@
         "divider": false
       }
     },
-    "scrolling_text_p96akq": {
-      "type": "scrolling-text",
-      "blocks": {
-        "text_Q3hGdJ": {
-          "type": "text",
-          "settings": {
-            "text": "<strong>Backpacks & Slings Style Combos → 15% Off</strong>",
-            "text_size": 24,
-            "text_font": "heading",
-            "highlighted_text": "half_text",
-            "highlighted_scribble": "circle"
-          }
-        }
-      },
-      "block_order": [
-        "text_Q3hGdJ"
-      ],
-      "disabled": true,
-      "name": "t:sections.scrolling-text.name",
-      "settings": {
-        "direction": "left",
-        "speed": 20,
-        "grid_horizontal": 70,
-        "enable_twin": false,
-        "enable_parallax": true,
-        "color_text": "#e4452a",
-        "color_background": "",
-        "gradient_background": "",
-        "color_highlight": "",
-        "gradient_highlight": "",
-        "padding_top": 0,
-        "padding_bottom": 36,
-        "divider": false,
-        "rounded": false
-      }
-    },
     "help-drawer": {
       "type": "help-drawer",
       "blocks": {
@@ -507,6 +473,7 @@
         "content-3",
         "content-4"
       ],
+      "disabled": true,
       "settings": {
         "heading": "Need help?",
         "description": "<p>If you have any questions, you are always welcome to contact us. We'll get back to you as soon as possible, within 24 hours on weekdays.</p>"
@@ -1881,7 +1848,6 @@
     "feature_strip_h1",
     "faq_specs_h1",
     "carry_it_h1",
-    "scrolling_text_p96akq",
     "help-drawer",
     "video_with_text_phYkLr",
     "lookbook_Ei4qfD",
