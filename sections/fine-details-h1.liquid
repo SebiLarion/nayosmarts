@@ -22,8 +22,13 @@
   }
 
   @media screen and (min-width: 768px) {
+    #shopify-section-{{ section.id }} {
+      --section-padding-top: 24px;
+      --section-padding-bottom: 24px;
+    }
+
     #shopify-section-{{ section.id }} .fine-details-h1__heading {
-      margin-bottom: 3rem;
+      margin-bottom: 1rem;
       font-size: 3rem;
     }
   }
@@ -36,9 +41,24 @@
     overflow: hidden;
   }
 
+  #shopify-section-{{ section.id }} .fine-details-h1 {
+    container-type: inline-size;
+  }
+
+  #shopify-section-{{ section.id }} .fine-details-h1__canvas {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
   @media screen and (min-width: 768px) {
     #shopify-section-{{ section.id }} .fine-details-h1__stage {
-      aspect-ratio: 1 / 1;
+      aspect-ratio: auto;
+      width: 100%;
+      height: calc(100svh - var(--header-height, 0px) - var(--section-padding-top) - 3.25rem);
+      min-height: 42rem;
+      max-height: 81rem;
+      margin-inline: 0;
     }
   }
 
@@ -49,6 +69,26 @@
 
   #shopify-section-{{ section.id }} .fine-details-h1__view[hidden] {
     display: none !important;
+  }
+
+  #shopify-section-{{ section.id }} .fine-details-h1__scene {
+    position: absolute;
+    inset: 0 0 6.75rem;
+    overflow: hidden;
+  }
+
+  @media screen and (min-width: 768px) {
+    #shopify-section-{{ section.id }} .fine-details-h1__scene {
+      inset: auto;
+      top: 0;
+      bottom: 5.75rem;
+      left: 50%;
+      width: auto;
+      height: calc(100% - 5.75rem);
+      aspect-ratio: 1 / 1;
+      max-width: 100%;
+      transform: translateX(-50%);
+    }
   }
 
   #shopify-section-{{ section.id }} .fine-details-h1__media {
@@ -66,20 +106,38 @@
 
   @media screen and (min-width: 768px) {
     #shopify-section-{{ section.id }} .fine-details-h1__media {
-      top: 46.3%;
-      width: 79.55%;
-      height: 68%;
+      top: 50%;
+      width: 100%;
+      height: 100%;
     }
+
+    #shopify-section-{{ section.id }} .fine-details-h1__media img {
+      transform: scale(1.08);
+    }
+  }
+
+  #shopify-section-{{ section.id }} .fine-details-h1__media picture {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
   }
 
   #shopify-section-{{ section.id }} .fine-details-h1__media picture,
   #shopify-section-{{ section.id }} .fine-details-h1__media img,
   #shopify-section-{{ section.id }} .fine-details-h1__media svg {
-    display: block;
-    width: auto;
-    height: auto;
     max-width: 100%;
     max-height: 100%;
+    object-fit: contain;
+  }
+
+  #shopify-section-{{ section.id }} .fine-details-h1__media img,
+  #shopify-section-{{ section.id }} .fine-details-h1__media svg {
+    display: block;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
   }
 
@@ -141,7 +199,7 @@
     #shopify-section-{{ section.id }} .fine-details-h1__tabs {
       left: 50%;
       right: auto;
-      bottom: 3rem;
+      bottom: 1.5rem;
       width: max-content;
       justify-content: center;
       transform: translateX(-50%);
@@ -406,6 +464,7 @@
     <div class="{% unless section.settings.full_width %}page-width{% endunless %}">
       <fine-details-h1 class="fine-details-h1">
         <div class="fine-details-h1__stage">
+          <div class="fine-details-h1__canvas">
           {%- for view in views -%}
             {%- liquid
               assign view_image = view.settings.image
@@ -459,6 +518,7 @@
               data-image-alt="{{ popup_title | escape }}"
               {% unless forloop.first %}hidden{% endunless %}
             >
+              <div class="fine-details-h1__scene">
               <div class="fine-details-h1__media">
                 {%- if view_image != blank -%}
                   <picture>
@@ -488,6 +548,7 @@
                   </span>
                 {%- endif -%}
               {%- endfor -%}
+              </div>
 
               <template data-fine-details-copy>
                 {{ view.settings.popup_text }}
@@ -509,6 +570,7 @@
                 {{ view_label | escape }}
               </button>
             {%- endfor -%}
+          </div>
           </div>
         </div>
 
