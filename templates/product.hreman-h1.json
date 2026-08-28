@@ -473,20 +473,24 @@
             "popup_text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966,</p>"
           }
         },
-        "view_bm6jXy": {
+        "view_dTi4EH": {
           "type": "view",
           "settings": {
             "view_key": "interior",
-            "label": "Interior",
+            "label": "Front",
+            "image": "shopify://shop_images/61e1c820f78e1e1efbf48def925a881b294e3b46.png",
+            "image_mobile": "shopify://shop_images/61e1c820f78e1e1efbf48def925a881b294e3b46.png",
             "popup_title": "",
             "popup_text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966,</p>"
           }
         },
-        "view_4dNC6t": {
+        "view_jiizUD": {
           "type": "view",
           "settings": {
             "view_key": "back",
-            "label": "Back",
+            "label": "Front",
+            "image": "shopify://shop_images/61e1c820f78e1e1efbf48def925a881b294e3b46.png",
+            "image_mobile": "shopify://shop_images/61e1c820f78e1e1efbf48def925a881b294e3b46.png",
             "popup_title": "",
             "popup_text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966,</p>"
           }
@@ -498,8 +502,8 @@
         "hotspot_NAATLx",
         "hotspot_aFdwQe",
         "view_tyWmJp",
-        "view_bm6jXy",
-        "view_4dNC6t"
+        "view_dTi4EH",
+        "view_jiizUD"
       ],
       "name": "Fine details (H1)",
       "settings": {
