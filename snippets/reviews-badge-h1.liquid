@@ -124,4 +124,35 @@
       ({{ 'general.accessibility.star_reviews_count' | t: count: review_count }})
     </a>
   </div>
+
+  <script>
+    (function () {
+      if (window.__reviewsBadgeH1Smooth) return;
+      window.__reviewsBadgeH1Smooth = true;
+
+      document.addEventListener('click', function (event) {
+        var link = event.target.closest && event.target.closest('.reviews-badge-h1__count');
+        if (!link) return;
+
+        var id = (link.getAttribute('href') || '').replace('#', '');
+        var target = id && document.getElementById(id);
+        if (!target) return;
+
+        event.preventDefault();
+
+        var reduced =
+          (window.theme && theme.config && theme.config.motionReduced) ||
+          (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+        target.scrollIntoView({
+          behavior: reduced ? 'auto' : 'smooth',
+          block: 'start'
+        });
+
+        if (history.pushState) {
+          history.pushState(null, '', '#' + id);
+        }
+      });
+    })();
+  </script>
 {%- endif -%}
