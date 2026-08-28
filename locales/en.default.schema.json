@@ -4618,6 +4618,9 @@
     "reviews-h1": {
       "name": "Reviews"
     },
+    "compare-h1": {
+      "name": "Compare products"
+    },
     "breadcrumbs-h1": {
       "name": "Breadcrumbs",
       "settings": {

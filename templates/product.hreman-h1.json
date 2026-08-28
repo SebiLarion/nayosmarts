@@ -644,6 +644,72 @@
         "description": "<p>If you have any questions, you are always welcome to contact us. We'll get back to you as soon as possible, within 24 hours on weekdays.</p>"
       }
     },
+    "compare_h1": {
+      "type": "compare-h1",
+      "blocks": {
+        "compare_prod_1": {
+          "type": "product",
+          "settings": {
+            "product": "nayo-smart-herman-h2-half-roll-top-backpack",
+            "capacity": "25L",
+            "dimensions": "15” × 18” × 6\"",
+            "weight": "14 lbs",
+            "water_resistance": "Waterproof",
+            "laptop_fit": "18\"",
+            "best_for": "Nomads"
+          }
+        },
+        "compare_prod_2": {
+          "type": "product",
+          "settings": {
+            "product": "herman-h6-half-roll-top-backpack",
+            "capacity": "25L",
+            "dimensions": "15” × 18” × 6\"",
+            "weight": "14 lbs",
+            "water_resistance": "Waterproof",
+            "laptop_fit": "18\"",
+            "best_for": "Nomads"
+          }
+        },
+        "compare_prod_3": {
+          "type": "product",
+          "settings": {
+            "product": "herman-h8-multifunctional-backpack",
+            "capacity": "25L",
+            "dimensions": "15” × 18” × 6\"",
+            "weight": "14 lbs",
+            "water_resistance": "Waterproof",
+            "laptop_fit": "18\"",
+            "best_for": "Nomads"
+          }
+        }
+      },
+      "block_order": [
+        "compare_prod_1",
+        "compare_prod_2",
+        "compare_prod_3"
+      ],
+      "settings": {
+        "heading": "Compare similar products",
+        "show_inside_label": "Show Inside",
+        "show_outside_label": "Show Outside",
+        "go_to_product_label": "Go to product",
+        "icon_1": "truck",
+        "label_1": "Free Shipping",
+        "icon_2": "return",
+        "label_2": "30-Day trial",
+        "icon_3": "shield",
+        "label_3": "2-year warranty",
+        "full_width": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "padding_top": 48,
+        "padding_bottom": 72,
+        "divider": false,
+        "rounded": false
+      }
+    },
     "1745459688e1b8f795": {
       "type": "reviews-h1",
       "blocks": {
@@ -722,6 +788,7 @@
     "bundle_promo_h1",
     "help-drawer",
     "1745459688e1b8f795",
+    "compare_h1",
     "product-recommendations"
   ]
 }
