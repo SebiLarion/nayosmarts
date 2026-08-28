@@ -477,7 +477,7 @@
           "type": "view",
           "settings": {
             "view_key": "interior",
-            "label": "Front",
+            "label": "Interior",
             "image": "shopify://shop_images/61e1c820f78e1e1efbf48def925a881b294e3b46.png",
             "image_mobile": "shopify://shop_images/61e1c820f78e1e1efbf48def925a881b294e3b46.png",
             "popup_title": "",
