@@ -403,7 +403,11 @@
           }
         }
       },
-      "block_order": ["carry_urban", "carry_weekend", "carry_hiking"],
+      "block_order": [
+        "carry_urban",
+        "carry_weekend",
+        "carry_hiking"
+      ],
       "settings": {
         "heading": "See how they carry it",
         "full_width": false,
@@ -415,145 +419,45 @@
         "divider": false
       }
     },
-    "fine_details_h1": {
+    "fine_details_h1_QyWBmX": {
       "type": "fine-details-h1",
       "blocks": {
-        "view_front": {
+        "view_tyWmJp": {
           "type": "view",
           "settings": {
             "view_key": "front",
             "label": "Front",
-            "popup_title": "Front",
+            "image": "shopify://shop_images/61e1c820f78e1e1efbf48def925a881b294e3b46.png",
+            "image_mobile": "shopify://shop_images/61e1c820f78e1e1efbf48def925a881b294e3b46.png",
+            "popup_title": "",
             "popup_text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966,</p>"
           }
         },
-        "view_interior": {
+        "view_bm6jXy": {
           "type": "view",
           "settings": {
             "view_key": "interior",
             "label": "Interior",
-            "image": "shopify://shop_images/PC-HMB_181b8046-8395-40a7-ae75-1484e2e57991.jpg",
-            "image_mobile": "shopify://shop_images/HMB_81729578-5e23-468c-a0e5-3a882c243c28.jpg",
-            "popup_title": "Interior",
+            "popup_title": "",
             "popup_text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966,</p>"
           }
         },
-        "view_back": {
+        "view_4dNC6t": {
           "type": "view",
           "settings": {
             "view_key": "back",
             "label": "Back",
-            "image": "shopify://shop_images/PC-HMB-2.jpg",
-            "image_mobile": "shopify://shop_images/HMB-2.jpg",
-            "popup_title": "Back",
+            "popup_title": "",
             "popup_text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966,</p>"
-          }
-        },
-        "hotspot_front_1": {
-          "type": "hotspot",
-          "settings": {
-            "view_key": "front",
-            "horizontal": 42,
-            "vertical": 27,
-            "horizontal_mobile": 43,
-            "vertical_mobile": 26
-          }
-        },
-        "hotspot_front_2": {
-          "type": "hotspot",
-          "settings": {
-            "view_key": "front",
-            "horizontal": 42,
-            "vertical": 57,
-            "horizontal_mobile": 43,
-            "vertical_mobile": 49
-          }
-        },
-        "hotspot_front_3": {
-          "type": "hotspot",
-          "settings": {
-            "view_key": "front",
-            "horizontal": 69,
-            "vertical": 44,
-            "horizontal_mobile": 68,
-            "vertical_mobile": 38
-          }
-        },
-        "hotspot_front_4": {
-          "type": "hotspot",
-          "settings": {
-            "view_key": "front",
-            "horizontal": 71,
-            "vertical": 18,
-            "horizontal_mobile": 69,
-            "vertical_mobile": 19
-          }
-        },
-        "hotspot_back_1": {
-          "type": "hotspot",
-          "settings": {
-            "view_key": "back",
-            "horizontal": 53,
-            "vertical": 25,
-            "horizontal_mobile": 68,
-            "vertical_mobile": 37
-          }
-        },
-        "hotspot_back_2": {
-          "type": "hotspot",
-          "settings": {
-            "view_key": "back",
-            "horizontal": 40,
-            "vertical": 52,
-            "horizontal_mobile": 30,
-            "vertical_mobile": 52
-          }
-        },
-        "hotspot_back_3": {
-          "type": "hotspot",
-          "settings": {
-            "view_key": "back",
-            "horizontal": 43,
-            "vertical": 23,
-            "horizontal_mobile": 54,
-            "vertical_mobile": 34
-          }
-        },
-        "hotspot_back_4": {
-          "type": "hotspot",
-          "settings": {
-            "view_key": "back",
-            "horizontal": 49,
-            "vertical": 57,
-            "horizontal_mobile": 45,
-            "vertical_mobile": 56
-          }
-        },
-        "hotspot_back_5": {
-          "type": "hotspot",
-          "settings": {
-            "view_key": "back",
-            "horizontal": 53,
-            "vertical": 63,
-            "horizontal_mobile": 60,
-            "vertical_mobile": 60
           }
         }
       },
       "block_order": [
-        "view_front",
-        "view_interior",
-        "view_back",
-        "hotspot_front_1",
-        "hotspot_front_2",
-        "hotspot_front_3",
-        "hotspot_front_4",
-        "hotspot_back_1",
-        "hotspot_back_2",
-        "hotspot_back_3",
-        "hotspot_back_4",
-        "hotspot_back_5"
+        "view_tyWmJp",
+        "view_bm6jXy",
+        "view_4dNC6t"
       ],
+      "name": "Fine details (H1)",
       "settings": {
         "heading": "Fine details for every work trip",
         "full_width": false,
@@ -563,40 +467,6 @@
         "padding_top": 48,
         "padding_bottom": 48,
         "divider": false
-      }
-    },
-    "scrolling_text_p96akq": {
-      "type": "scrolling-text",
-      "blocks": {
-        "text_Q3hGdJ": {
-          "type": "text",
-          "settings": {
-            "text": "<strong>Backpacks & Slings Style Combos → 15% Off</strong>",
-            "text_size": 24,
-            "text_font": "heading",
-            "highlighted_text": "half_text",
-            "highlighted_scribble": "circle"
-          }
-        }
-      },
-      "block_order": ["text_Q3hGdJ"],
-      "disabled": true,
-      "name": "t:sections.scrolling-text.name",
-      "settings": {
-        "direction": "left",
-        "speed": 20,
-        "grid_horizontal": 70,
-        "enable_twin": false,
-        "enable_parallax": true,
-        "color_text": "#e4452a",
-        "color_background": "",
-        "gradient_background": "",
-        "color_highlight": "",
-        "gradient_highlight": "",
-        "padding_top": 0,
-        "padding_bottom": 36,
-        "divider": false,
-        "rounded": false
       }
     },
     "help-drawer": {
@@ -648,7 +518,11 @@
           }
         }
       },
-      "block_order": ["content-1", "content-3", "content-4"],
+      "block_order": [
+        "content-1",
+        "content-3",
+        "content-4"
+      ],
       "disabled": true,
       "settings": {
         "heading": "Need help?",
@@ -685,7 +559,10 @@
           }
         }
       },
-      "block_order": ["heading_qRyNM9", "text_EmUPrt"],
+      "block_order": [
+        "heading_qRyNM9",
+        "text_EmUPrt"
+      ],
       "name": "t:sections.video-with-text.name",
       "settings": {
         "video": "shopify://files/videos/H1 nayo smart video.mp4",
@@ -1602,7 +1479,9 @@
           }
         }
       },
-      "block_order": ["judge_me_reviews_review_widget_kgrfet"],
+      "block_order": [
+        "judge_me_reviews_review_widget_kgrfet"
+      ],
       "settings": {
         "heading": "Ratings",
         "color_text": "",
@@ -1622,6 +1501,7 @@
     },
     "product-recommendations": {
       "type": "product-recommendations",
+      "disabled": true,
       "settings": {
         "product_limit": 6,
         "columns": 5,
@@ -1660,7 +1540,7 @@
     "feature_strip_h1",
     "faq_specs_h1",
     "carry_it_h1",
-    "scrolling_text_p96akq",
+    "fine_details_h1_QyWBmX",
     "help-drawer",
     "video_with_text_phYkLr",
     "lookbook_Ei4qfD",
