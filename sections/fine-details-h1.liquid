@@ -458,6 +458,28 @@
   .fine-details-h1-modal__arrow.is-next img {
     transform: scaleX(-1);
   }
+
+  .js [data-modal-swipe-only] .fine-details-h1-hotspot-modal .drawer__close,
+  .fine-details-h1-hotspot-modal .drawer__close {
+    display: flex;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    z-index: 2;
+  }
+
+  @media screen and (max-width: 639px) {
+    .js [data-modal-swipe-only] .fine-details-h1-hotspot-modal .drawer__close,
+    .fine-details-h1-hotspot-modal .drawer__close {
+      position: absolute;
+      top: 0.25rem;
+      right: 0.25rem;
+    }
+
+    .fine-details-h1-hotspot-modal .drawer__title {
+      padding-inline-end: 2.75rem;
+    }
+  }
 </style>
 
 {%- liquid
@@ -581,7 +603,7 @@
                   </a>
                   <x-modal
                     id="{{ hotspot_modal_id }}"
-                    class="x-modal drawer z-30 fixed bottom-0 left-0 h-full w-full pointer-events-none"
+                    class="fine-details-h1-hotspot-modal x-modal drawer z-30 fixed bottom-0 left-0 h-full w-full pointer-events-none"
                     role="dialog"
                     aria-modal="true"
                     aria-label="{{ hotspot_heading | default: heading | escape }}"
@@ -591,7 +613,7 @@
                     <div class="drawer__inner z-10 absolute top-0 flex flex-col w-full h-full overflow-hidden">
                       <gesture-element class="drawer__header flex justify-between opacity-0 invisible relative" tabindex="0">
                         <span class="drawer__title heading title-md">{{ hotspot_heading | escape }}</span>
-                        <button class="button button--secondary button--close drawer__close hidden sm:flex items-center justify-center" type="button" is="hover-button" aria-controls="{{ hotspot_modal_id }}" aria-expanded="false" aria-label="{{ 'general.accessibility.close' | t | escape }}">
+                        <button class="button button--secondary button--close drawer__close flex items-center justify-center" type="button" is="hover-button" aria-controls="{{ hotspot_modal_id }}" aria-expanded="false" aria-label="{{ 'general.accessibility.close' | t | escape }}">
                           <span class="btn-fill" data-fill></span>
                           <span class="btn-text">
                             {%- render 'icon', icon: 'close', size: 'sm' -%}
