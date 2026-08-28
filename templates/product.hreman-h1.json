@@ -429,17 +429,17 @@
             "horizontal": 74,
             "vertical": 47,
             "horizontal_mobile": 50,
-            "vertical_mobile": 50
+            "vertical_mobile": 47
           }
         },
         "hotspot_wpKB8f": {
           "type": "hotspot",
           "settings": {
             "view_key": "front",
-            "horizontal": 68,
-            "vertical": 26,
-            "horizontal_mobile": 50,
-            "vertical_mobile": 50
+            "horizontal": 77,
+            "vertical": 14,
+            "horizontal_mobile": 77,
+            "vertical_mobile": 14
           }
         },
         "hotspot_NAATLx": {
