@@ -24,8 +24,47 @@
     }
   }
 
-  #shopify-section-{{ section.id }} .product__info > .reviews-badge-h1 + * {
-    margin-block-start: var(--sp-2);
+  #shopify-section-{{ section.id }} .product__info {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #shopify-section-{{ section.id }} .product__info > * + * {
+    margin-block-start: 0;
+  }
+
+  /* Reviews + title/price share one 16px stack, matching Figma "Product details". */
+  #shopify-section-{{ section.id }} .product-title-h1 {
+    margin-block-start: 1rem;
+  }
+
+  /* 24px + 1px rule + 24px between the remaining product-info blocks. */
+  #shopify-section-{{ section.id }} .product-variations-h1,
+  #shopify-section-{{ section.id }} .variant-picker-h1,
+  #shopify-section-{{ section.id }} .shopify-app-block,
+  #shopify-section-{{ section.id }} .product-form-wrapper,
+  #shopify-section-{{ section.id }} .bundle-with-h1,
+  #shopify-section-{{ section.id }} .icon-badges-h1 {
+    margin-block-start: 1.5rem;
+    padding-block-start: 1.5rem;
+    border-block-start: 1px solid rgb(26 26 26 / 0.12);
+  }
+
+  #shopify-section-{{ section.id }} .product-form-wrapper {
+    margin-block-start: 1.5rem;
+  }
+
+  #shopify-section-{{ section.id }} .product-form__buttons {
+    gap: 1rem;
+  }
+
+  #shopify-section-{{ section.id }} .shopify-payment-terms {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: center;
+    color: #171717;
   }
 
   /* Delivery Date - ETA app block, skinned to the H1 design (theme-side only) */
@@ -380,14 +419,6 @@
                 section_id: section.id,
                 product_form_id: product_form_id
               -%}
-
-              {%- if block.settings.show_price -%}
-                {%- assign product_form_installment_id = 'ProductFormInstallment-' | append: section.id | append: '-' | append: product.id -%}
-                {%- form 'product', product, id: product_form_installment_id, class: 'installment text-sm leading-tight' -%}
-                  <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" />
-                  {{ form | payment_terms }}
-                {%- endform -%}
-              {%- endif -%}
 
             {%- when 'price' -%}
               <div class="product__price grid gap-3" {{ block.shopify_attributes }}>

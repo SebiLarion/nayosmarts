@@ -38,20 +38,24 @@
 
 <style>
   .reviews-badge-h1 {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
     max-width: 100%;
-    font-size: var(--text-sm);
-    line-height: 1.4;
-    color: rgb(var(--color-foreground));
+    font-family: var(--font-body-family);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.2;
+    color: #171717;
   }
 
   .reviews-badge-h1__stars {
     display: inline-flex;
     align-items: center;
-    gap: 0.08em;
+    gap: 0;
     vertical-align: middle;
     white-space: nowrap;
-    font-size: 1rem;
+    font-size: 1.5625rem;
     line-height: 1;
   }
 
@@ -82,13 +86,22 @@
     color: inherit;
   }
 
+  .reviews-badge-h1__meta {
+    display: inline;
+    font-size: inherit;
+    font-weight: 500;
+    line-height: inherit;
+    color: inherit;
+    white-space: nowrap;
+  }
+
   .reviews-badge-h1__score {
-    margin-inline-start: 0.4em;
+    margin-inline-start: 0;
     font-weight: 500;
   }
 
   .reviews-badge-h1__count {
-    margin-inline-start: 0.35em;
+    margin-inline-start: 0.25em;
     color: inherit;
     text-decoration: underline;
     text-underline-offset: 0.18em;
@@ -119,10 +132,12 @@
         <span class="reviews-badge-h1__star" style="--star-fill: {{ star_fill }}%;" aria-hidden="true"></span>
       {%- endfor -%}
     </span>
-    <span class="reviews-badge-h1__score" aria-hidden="true">{{ rating_display }}</span>
-    <a class="reviews-badge-h1__count" href="#judgeme_product_reviews">
-      ({{ 'general.accessibility.star_reviews_count' | t: count: review_count }})
-    </a>
+    <span class="reviews-badge-h1__meta">
+      <span class="reviews-badge-h1__score" aria-hidden="true">{{ rating_display }}</span>
+      <a class="reviews-badge-h1__count" href="#judgeme_product_reviews">
+        ({{ 'general.accessibility.star_reviews_count' | t: count: review_count }})
+      </a>
+    </span>
   </div>
 
   <script>

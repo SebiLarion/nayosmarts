@@ -40,26 +40,31 @@
   <style>
     .product-variations-h1 {
       display: grid;
-      gap: 0.75rem;
-      padding-block: 1.25rem;
-      border-block: 1px solid rgb(var(--color-border));
+      gap: 1rem;
     }
 
     .product-variations-h1__label {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
       margin: 0;
-      font-size: var(--text-base);
+      font-size: 1rem;
       line-height: 1.2;
-      color: rgb(var(--color-foreground));
+      color: #171717;
     }
 
     .product-variations-h1__label strong {
       font-weight: 600;
     }
 
+    .product-variations-h1__label span {
+      font-weight: 400;
+    }
+
     .product-variations-h1__swatches {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.75rem;
+      gap: 1rem;
       list-style: none;
       margin: 0;
       padding: 0;
@@ -67,28 +72,27 @@
 
     .product-variations-h1__swatch {
       display: block;
-      width: 3.25rem;
-      height: 3.25rem;
-      border-radius: 0.25rem;
-      border: 1px solid rgb(23 23 23 / 0.12);
+      box-sizing: border-box;
+      width: 3.875rem;
+      height: 3.875rem;
+      padding: 0.3125rem;
+      border: 0;
+      border-radius: 0.375rem;
       background-color: var(--swatch-background, rgb(var(--color-foreground) / 0.1));
       background-image: var(--swatch-background-image, none);
       background-size: cover;
       background-position: center;
+      background-origin: content-box;
+      background-clip: content-box;
       transition: box-shadow var(--animation-short, 0.2s ease);
     }
 
     .product-variations-h1__swatch[aria-current='true'] {
-      border-color: transparent;
-      box-shadow:
-        0 0 0 3px rgb(var(--color-background)),
-        0 0 0 5px #171717;
+      box-shadow: inset 0 0 0 2px #171717;
     }
 
     .product-variations-h1__swatch:hover:not([aria-current='true']) {
-      box-shadow:
-        0 0 0 3px rgb(var(--color-background)),
-        0 0 0 5px rgb(23 23 23 / 0.35);
+      box-shadow: inset 0 0 0 2px rgb(23 23 23 / 0.35);
     }
 
     .product-variations-h1__swatch.is-unavailable {
