@@ -104,6 +104,22 @@
     justify-content: center;
   }
 
+  @media screen and (max-width: 767px) {
+    #shopify-section-{{ section.id }} .fine-details-h1__scene {
+      inset: 0 0 5.5rem;
+    }
+
+    #shopify-section-{{ section.id }} .fine-details-h1__media {
+      top: 50%;
+      width: 100%;
+      height: 100%;
+    }
+
+    #shopify-section-{{ section.id }} .fine-details-h1__media img {
+      transform: scale(1.28);
+    }
+  }
+
   @media screen and (min-width: 768px) {
     #shopify-section-{{ section.id }} .fine-details-h1__media {
       top: 50%;
