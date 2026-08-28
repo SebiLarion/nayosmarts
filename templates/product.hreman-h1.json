@@ -422,6 +422,16 @@
     "fine_details_h1_QyWBmX": {
       "type": "fine-details-h1",
       "blocks": {
+        "hotspot_He83fD": {
+          "type": "hotspot",
+          "settings": {
+            "view_key": "front",
+            "horizontal": 68,
+            "vertical": 50,
+            "horizontal_mobile": 50,
+            "vertical_mobile": 50
+          }
+        },
         "view_tyWmJp": {
           "type": "view",
           "settings": {
@@ -453,6 +463,7 @@
         }
       },
       "block_order": [
+        "hotspot_He83fD",
         "view_tyWmJp",
         "view_bm6jXy",
         "view_4dNC6t"
