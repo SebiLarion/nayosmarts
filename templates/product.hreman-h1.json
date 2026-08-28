@@ -428,7 +428,7 @@
             "view_key": "front",
             "horizontal": 74,
             "vertical": 47,
-            "horizontal_mobile": 50,
+            "horizontal_mobile": 74,
             "vertical_mobile": 47
           }
         },
@@ -446,10 +446,10 @@
           "type": "hotspot",
           "settings": {
             "view_key": "front",
-            "horizontal": 44,
+            "horizontal": 41,
             "vertical": 63,
-            "horizontal_mobile": 50,
-            "vertical_mobile": 50
+            "horizontal_mobile": 41,
+            "vertical_mobile": 63
           }
         },
         "hotspot_aFdwQe": {
