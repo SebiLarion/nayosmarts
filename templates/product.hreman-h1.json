@@ -432,6 +432,16 @@
             "vertical_mobile": 50
           }
         },
+        "hotspot_wpKB8f": {
+          "type": "hotspot",
+          "settings": {
+            "view_key": "front",
+            "horizontal": 68,
+            "vertical": 26,
+            "horizontal_mobile": 50,
+            "vertical_mobile": 50
+          }
+        },
         "hotspot_NAATLx": {
           "type": "hotspot",
           "settings": {
@@ -484,6 +494,7 @@
       },
       "block_order": [
         "hotspot_He83fD",
+        "hotspot_wpKB8f",
         "hotspot_NAATLx",
         "hotspot_aFdwQe",
         "view_tyWmJp",
