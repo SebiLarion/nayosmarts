@@ -429,7 +429,10 @@
             "horizontal": 74,
             "vertical": 47,
             "horizontal_mobile": 74,
-            "vertical_mobile": 47
+            "vertical_mobile": 47,
+            "heading": "Quick-access buckle",
+            "text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
+            "color_text": "#e4452a"
           }
         },
         "hotspot_wpKB8f": {
@@ -439,7 +442,10 @@
             "horizontal": 77,
             "vertical": 14,
             "horizontal_mobile": 77,
-            "vertical_mobile": 14
+            "vertical_mobile": 14,
+            "heading": "Roll-top closure",
+            "text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
+            "color_text": "#e4452a"
           }
         },
         "hotspot_NAATLx": {
@@ -449,7 +455,10 @@
             "horizontal": 41,
             "vertical": 63,
             "horizontal_mobile": 41,
-            "vertical_mobile": 63
+            "vertical_mobile": 63,
+            "heading": "Front strap",
+            "text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
+            "color_text": "#e4452a"
           }
         },
         "hotspot_aFdwQe": {
@@ -459,7 +468,10 @@
             "horizontal": 41,
             "vertical": 24,
             "horizontal_mobile": 41,
-            "vertical_mobile": 24
+            "vertical_mobile": 24,
+            "heading": "Side attachment",
+            "text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
+            "color_text": "#e4452a"
           }
         },
         "view_tyWmJp": {
