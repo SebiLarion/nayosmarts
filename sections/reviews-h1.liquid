@@ -5,91 +5,186 @@
     {%- render 'section-variables', section: section -%}
   }
 
+  #shopify-section-{{ section.id }} .reviews-h1 {
+    position: relative;
+    z-index: 1;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: clip;
+  }
+
   #shopify-section-{{ section.id }} .page-width > div,
   #shopify-section-{{ section.id }} .jdgm-widget,
   #shopify-section-{{ section.id }} .jdgm-rev-widg,
   #shopify-section-{{ section.id }} #judgeme_product_reviews {
-    max-width: none !important;
-    width: 100%;
-  }
-
-  #shopify-section-{{ section.id }} .jdgm-rev-widg {
-    padding: 0 !important;
-    background: transparent !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    font-family: inherit;
-    color: rgb(var(--color-foreground));
-  }
-
-  #shopify-section-{{ section.id }} .jdgm-rev-widg__title {
-    font-family: var(--font-heading-family);
-    font-style: var(--font-heading-style);
-    font-weight: var(--font-heading-weight);
-    letter-spacing: var(--font-heading-letter-spacing);
-    text-transform: var(--font-heading-text-transform);
-    font-size: clamp(var(--text-xl), 2.2vw, var(--title-sm));
-    line-height: 1.2;
-    color: rgb(var(--color-foreground));
-    text-align: start;
-  }
-
-  {%- if section.settings.heading != blank %}
-  #shopify-section-{{ section.id }} .jdgm-rev-widg__title {
-    font-size: 0 !important;
-    line-height: 0;
-  }
-
-  #shopify-section-{{ section.id }} .jdgm-rev-widg__title::before {
-    content: '{{ section.settings.heading | escape }}';
-    display: block;
-    font-size: clamp(var(--text-xl), 2.2vw, var(--title-sm));
-    line-height: 1.2;
-  }
-  {% endif -%}
-
-  #shopify-section-{{ section.id }} .jdgm-star,
-  #shopify-section-{{ section.id }} .jdgm-star:before {
-    color: rgb(var(--color-foreground)) !important;
-  }
-
-  #shopify-section-{{ section.id }} .jdgm-star.jdgm--off:before,
-  #shopify-section-{{ section.id }} .jdgm-star.jdgm--half:after {
-    color: rgb(var(--color-foreground) / 0.18) !important;
-  }
-
-  #shopify-section-{{ section.id }} .jdgm-histogram__bar-content {
-    background-color: rgb(var(--color-foreground)) !important;
-  }
-
-  #shopify-section-{{ section.id }} .jdgm-histogram__bar {
-    background-color: rgb(var(--color-foreground) / 0.12) !important;
-  }
-
-  #shopify-section-{{ section.id }} .jdgm-link,
-  #shopify-section-{{ section.id }} .jdgm-rev-widg__summary-text {
-    color: rgb(var(--color-foreground));
-  }
-
-  #shopify-section-{{ section.id }} a.jdgm-link:not(.jdgm-btn) {
-    text-decoration: underline;
-    text-underline-offset: 0.15em;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin-inline: 0 !important;
+    left: auto !important;
+    right: auto !important;
+    transform: none !important;
   }
 
   #shopify-section-{{ section.id }} #judgeme_product_reviews {
     scroll-margin-top: calc(var(--header-height, 5rem) + 1rem);
   }
 
+  #shopify-section-{{ section.id }} .jdgm-rev-widg {
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    font-family: inherit !important;
+    color: #171717 !important;
+  }
+
+  /* Header: Ratings + Write a review on one row; photos/videos + badges below */
+  #shopify-section-{{ section.id }} .jdgm-rev-widg__header {
+    position: relative !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'title write'
+      'media media';
+    grid-auto-flow: row;
+    align-items: center;
+    column-gap: 1rem;
+    row-gap: 1.5rem;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 0 3rem !important;
+    padding: 0 !important;
+    border: 0 !important;
+    overflow: visible !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev-widg__header > *:not(.jdgm-rev-widg__title):not(.jdgm-row-stars):not(.jdgm-row-media):not(.jdgm-widget-actions-wrapper) {
+    display: none !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev-widg__title {
+    grid-area: title;
+    min-width: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-family: var(--font-heading-family) !important;
+    font-weight: 600 !important;
+    font-size: 2rem !important;
+    line-height: normal !important;
+    letter-spacing: -0.48px !important;
+    color: #1a1a1a !important;
+    text-align: start !important;
+    text-transform: none !important;
+  }
+
+  @media screen and (min-width: 768px) {
+    #shopify-section-{{ section.id }} .jdgm-rev-widg__title {
+      font-size: 3rem !important;
+    }
+  }
+
+  {%- if section.settings.heading != blank %}
+  #shopify-section-{{ section.id }} .jdgm-rev-widg__title {
+    font-size: 0 !important;
+    line-height: 0 !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev-widg__title::before {
+    content: {{ section.settings.heading | json }};
+    display: block;
+    font-family: var(--font-heading-family);
+    font-weight: 600;
+    font-size: 2rem;
+    line-height: normal;
+    letter-spacing: -0.48px;
+    color: #1a1a1a;
+  }
+
+  @media screen and (min-width: 768px) {
+    #shopify-section-{{ section.id }} .jdgm-rev-widg__title::before {
+      font-size: 3rem;
+    }
+  }
+  {% endif -%}
+
+  #shopify-section-{{ section.id }} .jdgm-row-stars,
+  #shopify-section-{{ section.id }} .jdgm-widget-actions-wrapper {
+    grid-area: write;
+    position: static !important;
+    float: none !important;
+    inset: auto !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-end;
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev-widg__summary,
+  #shopify-section-{{ section.id }} .jdgm-histogram,
+  #shopify-section-{{ section.id }} .jdgm-row-actions {
+    display: none !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-row-media {
+    grid-area: media;
+    position: static !important;
+    float: none !important;
+    inset: auto !important;
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 1.5rem;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-gallery-wrapper {
+    flex: 1 1 16rem;
+    min-width: 0;
+    margin: 0 !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-medals-wrapper {
+    flex: 0 1 auto;
+    margin: 0 !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-gallery-title {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: #171717 !important;
+    margin: 0 0 0.75rem !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-star,
+  #shopify-section-{{ section.id }} .jdgm-star:before {
+    color: #171717 !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-star.jdgm--off:before,
+  #shopify-section-{{ section.id }} .jdgm-star.jdgm--half:after {
+    color: rgb(23 23 23 / 0.18) !important;
+  }
+
+  /* Buttons */
   #shopify-section-{{ section.id }} .jdgm-btn,
-  #shopify-section-{{ section.id }} .jdgm-write-rev-link {
-    display: inline-flex;
+  #shopify-section-{{ section.id }} .jdgm-paginate__load-more {
+    display: inline-flex !important;
     align-items: center;
     justify-content: center;
-    min-height: 3.1875rem;
-    padding: 0.75rem 1.25rem;
-    font-size: 1rem;
-    font-weight: 600;
-    line-height: 1;
+    min-height: 2.6875rem;
+    padding: 0.75rem 1rem !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    line-height: normal !important;
     color: #f6f6f6 !important;
     background: #171717 !important;
     border: 0 !important;
@@ -97,65 +192,295 @@
     border-bottom: 4px solid #e4452a !important;
     border-right: 4px solid #e4452a !important;
     box-shadow: none !important;
+    text-transform: none !important;
   }
 
   #shopify-section-{{ section.id }} .jdgm-write-rev-link {
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: static !important;
+    float: none !important;
+    inset: auto !important;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box !important;
+    width: auto !important;
+    min-width: 9.6875rem;
+    max-width: 100%;
+    min-height: 2.6875rem;
+    margin: 0 !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    line-height: normal !important;
     color: #171717 !important;
     background: transparent !important;
     border: 1px solid #171717 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    text-decoration: none !important;
+    text-transform: none !important;
+    white-space: nowrap;
   }
 
-  #shopify-section-{{ section.id }} .jdgm-rev {
-    border-color: rgb(var(--color-border)) !important;
+  #shopify-section-{{ section.id }} .jdgm-paginate {
+    display: flex !important;
+    justify-content: center;
+    margin: 1.5rem 0 0 !important;
   }
 
-  #shopify-section-{{ section.id }} .jdgm-rev__author,
-  #shopify-section-{{ section.id }} .jdgm-rev__title {
-    color: rgb(var(--color-foreground));
-    font-family: inherit;
+  #shopify-section-{{ section.id }} .jdgm-paginate__load-more {
+    width: 13.25rem;
+    font-size: 0 !important;
   }
 
-  #shopify-section-{{ section.id }} .jdgm-rev__body {
-    color: rgb(var(--color-foreground));
-    font-size: var(--text-base);
-    line-height: 1.5;
+  #shopify-section-{{ section.id }} .jdgm-paginate__load-more::after {
+    content: 'See More';
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: normal;
+    color: #f6f6f6;
   }
 
-  #shopify-section-{{ section.id }} .jdgm-rev-widg__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
+  /* Review cards */
+  #shopify-section-{{ section.id }} .jdgm-rev-widg__body {
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
-  #shopify-section-{{ section.id }} .jdgm-rev-widg__summary,
-  #shopify-section-{{ section.id }} .jdgm-histogram {
-    display: none !important;
+  #shopify-section-{{ section.id }} .jdgm-rev-widg__reviews {
+    display: flex !important;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
   }
 
-  @media screen and (min-width: 1024px) {
+  @media screen and (min-width: 768px) {
     #shopify-section-{{ section.id }} .jdgm-rev-widg__reviews {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      column-gap: 3rem;
-      align-items: start;
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      column-gap: 1.5rem;
+      row-gap: 3rem;
     }
   }
 
-  #shopify-section-{{ section.id }} .jdgm-medal,
-  #shopify-section-{{ section.id }} .jdgm-widget-actions-wrapper,
-  #shopify-section-{{ section.id }} .jdgm-rev-widg__footer {
-    color: rgb(var(--color-foreground) / 0.65);
+  #shopify-section-{{ section.id }} .jdgm-rev {
+    display: flex !important;
+    flex-direction: column !important;
+    float: none !important;
+    clear: both !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 0 1.5rem !important;
+    border: 0 !important;
+    border-bottom: 1px solid rgb(26 26 26 / 0.12) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  @media screen and (min-width: 768px) {
+    #shopify-section-{{ section.id }} .jdgm-rev {
+      padding-bottom: 0 !important;
+      border-bottom: 0 !important;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev__header,
+  #shopify-section-{{ section.id }} .jdgm-rev__content,
+  #shopify-section-{{ section.id }} .jdgm-rev__actions {
+    float: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev__header {
+    display: block !important;
+    margin: 0 0 0.5rem !important;
+    padding: 0 !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-row-product,
+  #shopify-section-{{ section.id }} .jdgm-rev__br,
+  #shopify-section-{{ section.id }} .jdgm-row-extra,
+  #shopify-section-{{ section.id }} .jdgm-rev__social,
+  #shopify-section-{{ section.id }} .jdgm-rev__custom-form {
+    display: none !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-row-profile {
+    display: flex !important;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev__icon {
+    display: flex !important;
+    float: none !important;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 3rem !important;
+    height: 3rem !important;
+    margin: 0 !important;
+    border-radius: 50% !important;
+    background-color: #e4452a !important;
+    color: #f6f6f6 !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    line-height: 1.4 !important;
+    overflow: hidden;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev__icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev__author-wrapper {
+    display: flex !important;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev__author {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    color: #171717 !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev__buyer-badge-wrapper {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgb(23 23 23 / 0.48) !important;
+    font-size: 1rem !important;
+    font-weight: 400 !important;
+    line-height: 1.4 !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev__content {
+    display: flex !important;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-row-rating {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev__rating {
+    display: inline-flex !important;
+    gap: 0.125rem;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev__timestamp {
+    float: none !important;
+    margin: 0 !important;
+    font-size: 1rem !important;
+    font-weight: 400 !important;
+    line-height: 1.5 !important;
+    color: #171717 !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev__title {
+    display: block !important;
+    margin: 0 !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    color: #171717 !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev__body,
+  #shopify-section-{{ section.id }} .jdgm-rev__body p {
+    margin: 0 !important;
+    font-size: 1rem !important;
+    font-weight: 400 !important;
+    line-height: 1.5 !important;
+    color: #171717 !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev__actions {
+    display: flex !important;
+    justify-content: flex-end;
+    margin: 1rem 0 0 !important;
+    padding: 0 !important;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev__votes {
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev__votes-inner {
+    display: flex !important;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev__votes::before {
+    content: 'Was this helpful?';
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.5;
+    color: #171717;
+  }
+
+  #shopify-section-{{ section.id }} .jdgm-rev__thumb-btn,
+  #shopify-section-{{ section.id }} .jdgm-rev__thumb-count {
+    color: #171717 !important;
+    font-size: 0.75rem !important;
   }
 </style>
 
 <div class="section section--padding{% if section.settings.divider %} section--divider{% endif %}{% if section.settings.rounded %} section--rounded relative{% endif %}">
-  <div class="page-width{% if section.settings.full_width %} page-width--full{% endif %} relative">
+  <div class="page-width{% if section.settings.full_width %} page-width--full{% endif %} relative reviews-h1">
     {%- for block in section.blocks -%}
       {% render block %}
     {%- endfor -%}
   </div>
 </div>
+
+<script>
+  (function () {
+    var root = document.getElementById('shopify-section-{{ section.id }}');
+    if (!root) return;
+
+    var revealWriteReview = function () {
+      root.querySelectorAll('.jdgm-write-rev-link').forEach(function (el) {
+        if (el.style.display === 'inline-flex') return;
+        el.style.setProperty('display', 'inline-flex', 'important');
+        el.style.setProperty('visibility', 'visible', 'important');
+        el.style.setProperty('opacity', '1', 'important');
+      });
+    };
+
+    revealWriteReview();
+    new MutationObserver(revealWriteReview).observe(root, {
+      childList: true,
+      subtree: true
+    });
+  })();
+</script>
 
 {% schema %}
 {
