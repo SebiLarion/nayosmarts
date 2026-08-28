@@ -456,10 +456,10 @@
           "type": "hotspot",
           "settings": {
             "view_key": "front",
-            "horizontal": 44,
-            "vertical": 35,
-            "horizontal_mobile": 50,
-            "vertical_mobile": 50
+            "horizontal": 41,
+            "vertical": 24,
+            "horizontal_mobile": 41,
+            "vertical_mobile": 24
           }
         },
         "view_tyWmJp": {
