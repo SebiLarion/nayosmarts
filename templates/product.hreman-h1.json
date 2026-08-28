@@ -426,8 +426,8 @@
           "type": "hotspot",
           "settings": {
             "view_key": "front",
-            "horizontal": 68,
-            "vertical": 50,
+            "horizontal": 74,
+            "vertical": 47,
             "horizontal_mobile": 50,
             "vertical_mobile": 50
           }
