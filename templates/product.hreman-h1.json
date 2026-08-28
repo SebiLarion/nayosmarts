@@ -529,6 +529,61 @@
         "divider": false
       }
     },
+    "bundle_promo_h1": {
+      "type": "bundle-promo-h1",
+      "blocks": {
+        "row_ergonomic": {
+          "type": "row",
+          "settings": {
+            "layout": "image_first",
+            "heading": "Ergonomic Design",
+            "text": "Comfortable shoulder straps and back panel for all-day wear."
+          }
+        },
+        "row_modular": {
+          "type": "row",
+          "settings": {
+            "layout": "text_first",
+            "heading": "Modular Storage",
+            "text": "Customizable compartments to fit your specific needs."
+          }
+        },
+        "row_hydration": {
+          "type": "row",
+          "settings": {
+            "layout": "image_first",
+            "heading": "Integrated Hydration",
+            "text": "Pocket for a water bladder and hose routing."
+          }
+        },
+        "row_toiletry": {
+          "type": "row",
+          "settings": {
+            "layout": "text_first",
+            "heading": "Included in your purchase: Waterproof Toiletry Bag",
+            "text": "Keep your essentials organized and dry with this bonus gift."
+          }
+        }
+      },
+      "block_order": [
+        "row_ergonomic",
+        "row_modular",
+        "row_hydration",
+        "row_toiletry"
+      ],
+      "name": "Bundle promo (H1)",
+      "settings": {
+        "heading": "Get the Backpack + Sling Bag bundle for an extra 15% off!",
+        "caption": "Crafted with military-grade materials, this backpack is built to withstand the harshest conditions, ensuring your gear stays safe and dry.",
+        "full_width": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "padding_top": 48,
+        "padding_bottom": 48,
+        "divider": false
+      }
+    },
     "help-drawer": {
       "type": "help-drawer",
       "blocks": {
@@ -1601,6 +1656,7 @@
     "faq_specs_h1",
     "carry_it_h1",
     "fine_details_h1_QyWBmX",
+    "bundle_promo_h1",
     "help-drawer",
     "video_with_text_phYkLr",
     "lookbook_Ei4qfD",
