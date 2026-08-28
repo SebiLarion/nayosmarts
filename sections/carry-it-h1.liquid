@@ -1,0 +1,753 @@
+<script src="{{ 'carry-it-h1.js' | asset_url }}" defer="defer"></script>
+
+<style>
+  #shopify-section-{{ section.id }} {
+    --section-padding-top: {{ section.settings.padding_top }}px;
+    --section-padding-bottom: {{ section.settings.padding_bottom }}px;
+    {%- render 'section-variables', section: section -%}
+  }
+
+  #shopify-section-{{ section.id }} .carry-it-h1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #shopify-section-{{ section.id }} .carry-it-h1__heading {
+    margin: 0 auto 1.5rem;
+    width: 100%;
+    font-family: var(--font-heading-family);
+    font-weight: 600;
+    font-size: 2rem;
+    line-height: normal;
+    letter-spacing: -0.48px;
+    text-align: center;
+    color: #1a1a1a;
+    position: relative;
+    z-index: 1;
+  }
+
+  @media screen and (min-width: 768px) {
+    #shopify-section-{{ section.id }} .carry-it-h1__heading {
+      margin-bottom: 3rem;
+      font-size: 3rem;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .carry-it-h1__viewport {
+    width: 100%;
+  }
+
+  @media screen and (max-width: 767px) {
+    #shopify-section-{{ section.id }} .carry-it-h1__viewport {
+      margin-inline: calc(50% - 50vw);
+      width: 100vw;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .carry-it-h1__scroller {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #shopify-section-{{ section.id }} .carry-it-h1__scroller::-webkit-scrollbar {
+    display: none;
+  }
+
+  #shopify-section-{{ section.id }} .carry-it-h1__track {
+    display: flex;
+    gap: 1rem;
+    width: max-content;
+    margin-inline: auto;
+    padding-block-end: 0.25rem;
+  }
+
+  @media screen and (min-width: 768px) {
+    #shopify-section-{{ section.id }} .carry-it-h1__scroller {
+      overflow: visible;
+    }
+
+    #shopify-section-{{ section.id }} .carry-it-h1__track {
+      display: grid;
+      grid-template-columns: repeat(var(--carry-it-cols, 3), minmax(0, 1fr));
+      gap: 1.5rem;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .carry-it-h1__item {
+    width: 11.8125rem;
+  }
+
+  #shopify-section-{{ section.id }} .carry-it-h1__card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  @media screen and (min-width: 768px) {
+    #shopify-section-{{ section.id }} .carry-it-h1__item,
+    #shopify-section-{{ section.id }} .carry-it-h1__card {
+      width: auto;
+    }
+
+    #shopify-section-{{ section.id }} .carry-it-h1__card {
+      gap: 1.5rem;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .carry-it-h1__media {
+    position: relative;
+    width: 11.8125rem;
+    height: 11.25rem;
+    overflow: hidden;
+    background: rgb(var(--color-foreground) / 0.06);
+  }
+
+  @media screen and (min-width: 768px) {
+    #shopify-section-{{ section.id }} .carry-it-h1__media {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 416 / 382;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .carry-it-h1__media img,
+  #shopify-section-{{ section.id }} .carry-it-h1__media svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  #shopify-section-{{ section.id }} .carry-it-h1__play {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    display: block;
+    width: 1.5rem;
+    height: 1.5rem;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  @media screen and (min-width: 768px) {
+    #shopify-section-{{ section.id }} .carry-it-h1__play {
+      width: 3rem;
+      height: 3rem;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .carry-it-h1__play img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  #shopify-section-{{ section.id }} .carry-it-h1__caption {
+    margin: 0;
+    width: 100%;
+    font-family: var(--font-heading-family);
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1;
+    color: #171717;
+    text-align: center;
+  }
+
+  @media screen and (min-width: 768px) {
+    #shopify-section-{{ section.id }} .carry-it-h1__caption {
+      font-size: 1.5rem;
+    }
+  }
+
+  .carry-it-h1-modal.x-modal:not([hidden]) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .carry-it-h1-modal[hidden] {
+    display: none !important;
+  }
+
+  .carry-it-h1-modal .drawer__inner {
+    position: static;
+    inset: auto;
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 1.5rem);
+    max-width: 44.5625rem;
+    height: auto;
+    max-height: 90vh;
+    overflow: hidden;
+    background: #f6f6f6;
+    color: #171717;
+    border-radius: 0;
+    transform: none;
+  }
+
+  @media screen and (max-width: 639px) {
+    .js .carry-it-h1-modal.drawer .drawer__inner {
+      inset: auto;
+      width: calc(100% - 1.5rem);
+      max-width: 44.5625rem;
+      height: auto;
+      max-height: 90vh;
+      border-radius: 0;
+      transform: scale(0.96);
+      opacity: 0;
+    }
+
+    .js .carry-it-h1-modal.drawer[active] > .drawer__inner {
+      transform: none;
+      opacity: 1;
+    }
+
+    .js .carry-it-h1-modal .drawer__header::before {
+      content: none;
+    }
+  }
+
+  .carry-it-h1-modal .drawer__header,
+  .carry-it-h1-modal .drawer__content {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .carry-it-h1-modal__panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-block-start: 0.75rem;
+    background: #f6f6f6;
+  }
+
+  .carry-it-h1-modal__header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
+    padding: 0 3rem;
+  }
+
+  .carry-it-h1-modal__title {
+    margin: 0;
+    font-family: var(--font-heading-family);
+    font-weight: 600;
+    font-size: 1.5rem;
+    line-height: 1.5;
+    letter-spacing: -0.48px;
+    text-align: center;
+    color: #1a1a1a;
+  }
+
+  @media screen and (min-width: 768px) {
+    .carry-it-h1-modal__title {
+      font-size: 2.25rem;
+    }
+  }
+
+  .carry-it-h1-modal__close {
+    position: absolute;
+    top: 0.3125rem;
+    right: 0.9375rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  @media screen and (min-width: 768px) {
+    .carry-it-h1-modal__close {
+      top: 0.5rem;
+      right: 1.6875rem;
+    }
+  }
+
+  .carry-it-h1-modal__close img {
+    width: 1.5rem;
+    height: 1.5rem;
+    display: block;
+  }
+
+  .carry-it-h1-modal__media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 713 / 523;
+    overflow: hidden;
+    background: #171717;
+  }
+
+  .carry-it-h1-modal__poster,
+  .carry-it-h1-modal__player,
+  .carry-it-h1-modal__player video,
+  .carry-it-h1-modal__player iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    border: 0;
+  }
+
+  .carry-it-h1-modal__player:empty {
+    display: none;
+  }
+
+  .carry-it-h1-modal__media.is-playing .carry-it-h1-modal__poster,
+  .carry-it-h1-modal__media.is-playing .carry-it-h1-modal__play {
+    display: none;
+  }
+
+  .carry-it-h1-modal__play {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+  }
+
+  .carry-it-h1-modal__play img {
+    width: 3rem;
+    height: 3rem;
+    display: block;
+  }
+
+  .carry-it-h1-modal__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    min-height: 5.5rem;
+    padding-inline-end: 0.75rem;
+    background: #f6f6f6;
+  }
+
+  @media screen and (min-width: 768px) {
+    .carry-it-h1-modal__footer {
+      min-height: 8.0625rem;
+      padding-inline-end: 1.5rem;
+    }
+  }
+
+  .carry-it-h1-modal__product {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  .carry-it-h1-modal__thumb {
+    position: relative;
+    flex-shrink: 0;
+    width: 4.5rem;
+    height: 4.5rem;
+    background: #d9d4cb;
+  }
+
+  @media screen and (min-width: 768px) {
+    .carry-it-h1-modal__thumb {
+      width: 8.0625rem;
+      height: 8.0625rem;
+    }
+  }
+
+  .carry-it-h1-modal__thumb img {
+    position: absolute;
+    inset: 12%;
+    width: 76%;
+    height: 76%;
+    object-fit: contain;
+  }
+
+  .carry-it-h1-modal__product-title {
+    margin: 0;
+    max-width: 22.0625rem;
+    font-family: var(--font-heading-family);
+    font-weight: 600;
+    font-size: 0.875rem;
+    line-height: 1.2;
+    color: #171717;
+  }
+
+  @media screen and (min-width: 768px) {
+    .carry-it-h1-modal__product-title {
+      font-size: 1.5rem;
+      line-height: 1.2;
+    }
+  }
+
+  .carry-it-h1-modal__form {
+    flex-shrink: 0;
+  }
+
+  .carry-it-h1-modal__add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-width: 5.875rem;
+    padding: 0.5rem 1rem;
+    background: #171717;
+    color: #f6f6f6;
+    border: 0;
+    border-bottom: 2px solid #e4452a;
+    border-right: 2px solid #e4452a;
+    border-radius: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .carry-it-h1-modal__add:hover {
+    background: #333;
+  }
+
+  .carry-it-h1-modal__add:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+</style>
+
+{%- liquid
+  assign heading = section.settings.heading | default: 'See how they carry it'
+  assign modal_id = 'CarryItModal-' | append: section.id
+  assign form_id = 'CarryItForm-' | append: section.id
+  assign cols = section.blocks.size | at_most: 3 | at_least: 1
+  assign current_variant = product.selected_or_first_available_variant
+  assign product_media = current_variant.featured_media | default: product.featured_media
+-%}
+
+<div class="section section--padding{% if section.settings.divider %} section--divider{% endif %}">
+  {%- if heading != blank -%}
+    <div class="{% unless section.settings.full_width %}page-width{% endunless %}">
+      <h2 class="heading carry-it-h1__heading">{{ heading | escape }}</h2>
+    </div>
+  {%- endif -%}
+
+  <div class="{% unless section.settings.full_width %}page-width{% endunless %}">
+    {%- if section.blocks.size > 0 -%}
+      <carry-it-h1 class="carry-it-h1" style="--carry-it-cols: {{ cols }};">
+        <div class="carry-it-h1__viewport">
+          <div class="carry-it-h1__scroller" data-carry-it-h1-scroller>
+            <div class="carry-it-h1__track">
+              {%- for block in section.blocks -%}
+                {%- liquid
+                  assign cover = block.settings.image
+                  assign fallback_asset = blank
+                  if cover == blank
+                    case forloop.index
+                      when 1
+                        assign fallback_asset = 'carry-it-h1-urban.jpg'
+                      when 2
+                        assign fallback_asset = 'carry-it-h1-weekend.jpg'
+                      when 3
+                        assign fallback_asset = 'carry-it-h1-hiking.jpg'
+                    endcase
+                  endif
+
+                  assign cover_url = blank
+                  if cover != blank
+                    assign cover_url = cover | image_url: width: 1400
+                  elsif fallback_asset != blank
+                    assign cover_url = fallback_asset | asset_url
+                  endif
+
+                  assign caption = block.settings.heading | default: heading
+                -%}
+                <div
+                  class="carry-it-h1__item"
+                  data-carry-it-h1-card
+                  data-heading="{{ caption | escape }}"
+                  data-cover="{{ cover_url | escape }}"
+                  {%- if block.settings.video == blank and block.settings.video_url != blank -%}
+                    data-video-host="{{ block.settings.video_url.type }}"
+                    data-video-id="{{ block.settings.video_url.id }}"
+                  {%- endif -%}
+                  {{ block.shopify_attributes }}
+                >
+                  <button
+                    type="button"
+                    class="carry-it-h1__card"
+                    aria-label="{{ 'general.accessibility.play_video' | t | escape }}: {{ caption | escape }}"
+                  >
+                    <span class="carry-it-h1__media">
+                      {%- if cover != blank -%}
+                        {{- cover | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '378, 416, 800, 1200', sizes: '(min-width: 768px) 33vw, 189px', alt: caption, is: 'lazy-image' -}}
+                      {%- elsif fallback_asset != blank -%}
+                        <img src="{{ fallback_asset | asset_url }}" alt="{{ caption | escape }}" width="416" height="382" loading="lazy">
+                      {%- else -%}
+                        {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder' }}
+                      {%- endif -%}
+                      <span class="carry-it-h1__play" aria-hidden="true">
+                        <img src="{{ 'icon-carry-play-h1.svg' | asset_url }}" alt="" width="48" height="48">
+                      </span>
+                    </span>
+                    {%- if caption != blank -%}
+                      <span class="carry-it-h1__caption">{{ caption | escape }}</span>
+                    {%- endif -%}
+                  </button>
+                  {%- if block.settings.video != blank -%}
+                    <template data-carry-it-h1-video>
+                      {{ block.settings.video | video_tag: playsinline: true, controls: true, preload: 'metadata', image_size: '800x' }}
+                    </template>
+                  {%- endif -%}
+                </div>
+              {%- endfor -%}
+            </div>
+          </div>
+        </div>
+
+        <x-modal
+          id="{{ modal_id }}"
+          class="carry-it-h1-modal x-modal drawer z-40 fixed bottom-0 left-0 h-full w-full pointer-events-none"
+          role="dialog"
+          aria-modal="true"
+          aria-label="{{ heading | escape }}"
+          hidden
+        >
+          <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="{{ modal_id }}" aria-expanded="false"></overlay-element>
+          <div class="drawer__inner z-10">
+            <div class="carry-it-h1-modal__panel">
+              <div class="carry-it-h1-modal__header drawer__header">
+                <h2 class="carry-it-h1-modal__title">{{ heading | escape }}</h2>
+                <button
+                  class="carry-it-h1-modal__close"
+                  type="button"
+                  aria-controls="{{ modal_id }}"
+                  aria-expanded="false"
+                  aria-label="{{ 'general.accessibility.close' | t | escape }}"
+                >
+                  <img src="{{ 'icon-carry-close-h1.svg' | asset_url }}" alt="" width="24" height="24">
+                </button>
+              </div>
+
+              <div class="carry-it-h1-modal__media drawer__content" data-carry-it-h1-media>
+                <img
+                  class="carry-it-h1-modal__poster"
+                  data-carry-it-h1-poster
+                  src="{{ 'carry-it-h1-hiking.jpg' | asset_url }}"
+                  alt=""
+                  width="713"
+                  height="523"
+                >
+                <div class="carry-it-h1-modal__player" data-carry-it-h1-player></div>
+                <button
+                  type="button"
+                  class="carry-it-h1-modal__play"
+                  data-carry-it-h1-play
+                  aria-label="{{ 'general.accessibility.play_video' | t | escape }}"
+                >
+                  <img src="{{ 'icon-carry-play-h1.svg' | asset_url }}" alt="" width="48" height="48">
+                </button>
+              </div>
+
+              {%- if product != blank -%}
+                <div class="carry-it-h1-modal__footer">
+                  <div class="carry-it-h1-modal__product">
+                    {%- if product_media != blank -%}
+                      <div class="carry-it-h1-modal__thumb">
+                        {{- product_media | image_url: width: 240 | image_tag: loading: 'lazy', widths: '96, 192, 240', sizes: '96px', alt: product.title -}}
+                      </div>
+                    {%- endif -%}
+                    <p class="carry-it-h1-modal__product-title">{{ product.title | escape }}</p>
+                  </div>
+
+                  {%- form 'product', product, is: 'product-form', id: form_id, data-type: 'add-to-cart-form', class: 'carry-it-h1-modal__form' -%}
+                    <input type="hidden" name="id" value="{{ current_variant.id }}" data-carry-it-h1-variant>
+                    <input type="hidden" name="quantity" value="1">
+                    <button
+                      type="submit"
+                      name="add"
+                      class="carry-it-h1-modal__add"
+                      data-carry-it-h1-add
+                      data-add-label="{{ 'products.product.add_to_cart' | t | escape }}"
+                      data-sold-out-label="{{ 'products.product.sold_out' | t | escape }}"
+                      {%- unless current_variant.available %} disabled{% endunless -%}
+                    >
+                      <span data-carry-it-h1-add-label>
+                        {%- if current_variant.available -%}
+                          {{- 'products.product.add_to_cart' | t -}}
+                        {%- else -%}
+                          {{- 'products.product.sold_out' | t -}}
+                        {%- endif -%}
+                      </span>
+                    </button>
+                  {%- endform -%}
+                </div>
+              {%- endif -%}
+            </div>
+          </div>
+        </x-modal>
+      </carry-it-h1>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Carry it videos (H1)",
+  "class": "carry-it-h1-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.global.settings.heading.label",
+      "default": "See how they carry it"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "default": false,
+      "label": "t:sections.global.settings.full_width.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.header__colors.content",
+      "info": "t:sections.global.settings.header__colors.info"
+    },
+    {
+      "type": "color",
+      "id": "color_text",
+      "label": "t:sections.global.settings.color_text.label"
+    },
+    {
+      "type": "color",
+      "id": "color_background",
+      "label": "t:sections.global.settings.color_background.label"
+    },
+    {
+      "type": "color_background",
+      "id": "gradient_background",
+      "label": "t:sections.global.settings.gradient_background.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.global.settings.header__section.content"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.global.settings.padding_top.label",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.global.settings.padding_bottom.label",
+      "default": 48
+    },
+    {
+      "type": "checkbox",
+      "id": "divider",
+      "label": "t:sections.global.settings.divider.label",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "video",
+      "name": "Video",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Caption",
+          "default": "Urban Commute"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Cover image",
+          "info": "Shown on the card and in the popup before play. Leave empty to use the design fallback."
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": "t:sections.video.settings.video.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.video.settings.header__video_url.content",
+          "info": "t:sections.video.settings.header__video_url.info"
+        },
+        {
+          "type": "video_url",
+          "id": "video_url",
+          "accept": ["youtube", "vimeo"],
+          "label": "t:sections.video.settings.video_url.label",
+          "info": "t:sections.video.settings.video_url.info"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "Carry it videos (H1)",
+      "blocks": [
+        {
+          "type": "video",
+          "settings": {
+            "heading": "Urban Commute"
+          }
+        },
+        {
+          "type": "video",
+          "settings": {
+            "heading": "Weekend Trip"
+          }
+        },
+        {
+          "type": "video",
+          "settings": {
+            "heading": "Hiking Adventure"
+          }
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "header",
+      "custom.overlay"
+    ]
+  }
+}
+{% endschema %}

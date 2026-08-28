@@ -373,6 +373,50 @@
         "divider": false
       }
     },
+    "carry_it_h1": {
+      "type": "carry-it-h1",
+      "blocks": {
+        "carry_urban": {
+          "type": "video",
+          "settings": {
+            "heading": "Urban Commute",
+            "video": "shopify://files/videos/H1 nayo smart video.mp4",
+            "video_url": ""
+          }
+        },
+        "carry_weekend": {
+          "type": "video",
+          "settings": {
+            "heading": "Weekend Trip",
+            "video": "shopify://files/videos/H1 nayo smart video.mp4",
+            "video_url": ""
+          }
+        },
+        "carry_hiking": {
+          "type": "video",
+          "settings": {
+            "heading": "Hiking Adventure",
+            "video": "shopify://files/videos/H1 nayo smart video.mp4",
+            "video_url": ""
+          }
+        }
+      },
+      "block_order": [
+        "carry_urban",
+        "carry_weekend",
+        "carry_hiking"
+      ],
+      "settings": {
+        "heading": "See how they carry it",
+        "full_width": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "padding_top": 48,
+        "padding_bottom": 48,
+        "divider": false
+      }
+    },
     "scrolling_text_p96akq": {
       "type": "scrolling-text",
       "blocks": {
@@ -1836,6 +1880,7 @@
     "bundle_products_h1",
     "feature_strip_h1",
     "faq_specs_h1",
+    "carry_it_h1",
     "scrolling_text_p96akq",
     "help-drawer",
     "video_with_text_phYkLr",
