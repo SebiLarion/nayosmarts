@@ -160,6 +160,7 @@
   {%- for block in section.blocks -%}
     {%- if block.type == 'hotspot' -%}
       #shopify-section-{{ section.id }} #shopify-block-{{ block.id }} {
+        --hotspot-color: {{ block.settings.color_text.rgb }};
         --hotspot-x: {{ block.settings.horizontal }}%;
         --hotspot-y: {{ block.settings.vertical }}%;
       }
@@ -178,26 +179,21 @@
   }
 
   #shopify-section-{{ section.id }} .fine-details-h1__hotspot {
-    position: absolute;
-    z-index: 1;
-    left: var(--hotspot-x);
-    top: var(--hotspot-y);
-    width: 8.29%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
+    z-index: 3;
+    pointer-events: auto;
+  }
+
+  #shopify-section-{{ section.id }} .fine-details-h1__hotspot .hotspot__content {
+    z-index: 4;
   }
 
   @media screen and (min-width: 768px) {
-    #shopify-section-{{ section.id }} .fine-details-h1__hotspot {
-      width: 9.11%;
+    #shopify-section-{{ section.id }} .fine-details-h1__stage,
+    #shopify-section-{{ section.id }} .fine-details-h1__canvas,
+    #shopify-section-{{ section.id }} .fine-details-h1__view,
+    #shopify-section-{{ section.id }} .fine-details-h1__scene {
+      overflow: visible;
     }
-  }
-
-  #shopify-section-{{ section.id }} .fine-details-h1__hotspot img {
-    display: block;
-    width: 100%;
-    height: auto;
-    animation: hotspot 2s ease infinite;
   }
 
   #shopify-section-{{ section.id }} .fine-details-h1__tabs {
@@ -555,13 +551,59 @@
 
               {%- for block in section.blocks -%}
                 {%- if block.type == 'hotspot' and block.settings.view_key == view.settings.view_key -%}
-                  <span
-                    class="fine-details-h1__hotspot"
+                  {%- liquid
+                    assign hotspot_heading = block.settings.heading
+                    assign hotspot_text = block.settings.text
+                    assign hotspot_modal_id = 'FineDetailsHotspot-' | append: section.id | append: '-' | append: block.id
+                  -%}
+                  <a
+                    class="hotspot with-content fine-details-h1__hotspot flex items-center justify-center absolute z-1 cursor-pointer"
+                    role="link"
+                    aria-disabled="true"
+                    aria-controls="{{ hotspot_modal_id }}"
+                    aria-expanded="false"
+                    aria-label="{{ hotspot_heading | default: heading | escape }}"
                     id="shopify-block-{{ block.id }}"
                     {{ block.shopify_attributes }}
                   >
-                    <img src="{{ 'icon-fine-details-hotspot-h1.svg' | asset_url }}" alt="" width="118" height="118">
-                  </span>
+                    {%- if hotspot_heading != blank or hotspot_text != blank -%}
+                      <div class="hotspot__content hidden md:flex gap-2 items-center absolute z-1 pointer-events-none{% if block.settings.horizontal < 15 %} with-left{% elsif block.settings.horizontal > 85 %} with-right{% endif %}{% if block.settings.vertical > 70 %} with-bottom{% endif %}">
+                        <div class="rte text-sm leading-tight grid gap-2 md:gap-3">
+                          {%- if hotspot_heading != blank -%}
+                            <p class="horizontal-product__title lg:text-base lg:font-medium leading-tight">{{ hotspot_heading }}</p>
+                          {%- endif -%}
+                          {{- hotspot_text -}}
+                        </div>
+                        {%- render 'icon', icon: 'caret', class: 'absolute' -%}
+                      </div>
+                    {%- endif -%}
+                  </a>
+                  <x-modal
+                    id="{{ hotspot_modal_id }}"
+                    class="x-modal drawer z-30 fixed bottom-0 left-0 h-full w-full pointer-events-none"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="{{ hotspot_heading | default: heading | escape }}"
+                    hidden
+                  >
+                    <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="{{ hotspot_modal_id }}" aria-expanded="false"></overlay-element>
+                    <div class="drawer__inner z-10 absolute top-0 flex flex-col w-full h-full overflow-hidden">
+                      <gesture-element class="drawer__header flex justify-between opacity-0 invisible relative" tabindex="0">
+                        <span class="drawer__title heading title-md">{{ hotspot_heading | escape }}</span>
+                        <button class="button button--secondary button--close drawer__close hidden sm:flex items-center justify-center" type="button" is="hover-button" aria-controls="{{ hotspot_modal_id }}" aria-expanded="false" aria-label="{{ 'general.accessibility.close' | t | escape }}">
+                          <span class="btn-fill" data-fill></span>
+                          <span class="btn-text">
+                            {%- render 'icon', icon: 'close', size: 'sm' -%}
+                          </span>
+                        </button>
+                      </gesture-element>
+                      <div class="drawer__content opacity-0 invisible flex flex-col h-full grow shrink">
+                        <div class="drawer__scrollable relative flex flex-col gap-5 md:gap-7 grow shrink">
+                          <div class="rte text-base md:text-lg">{{ hotspot_text }}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </x-modal>
                 {%- endif -%}
               {%- endfor -%}
               </div>
@@ -836,6 +878,24 @@
           "step": 1,
           "unit": "%",
           "default": 50
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.global.settings.heading.label",
+          "default": "Feature highlight"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "t:sections.global.settings.text.label",
+          "default": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>"
+        },
+        {
+          "type": "color",
+          "id": "color_text",
+          "label": "t:sections.lookbook.blocks.global.settings.color.label",
+          "default": "#e4452a"
         }
       ]
     }
