@@ -55,6 +55,12 @@
     margin-block-start: 1.5rem;
   }
 
+  /* Delivery/ETA leaves an empty .shopify-app-block when the widget is hidden
+     (country targeting, product tags). Hide it so the separator is not left behind. */
+  #shopify-section-{{ section.id }} .product__info > .shopify-app-block:has(.delivery_date_shortcode):not(:has(.deliverydate, .sb_edd_div, .sb_edd_form)) {
+    display: none;
+  }
+
   #shopify-section-{{ section.id }} .product-form__buttons {
     gap: 1rem;
   }
