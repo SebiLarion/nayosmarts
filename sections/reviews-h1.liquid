@@ -465,6 +465,24 @@
     var root = document.getElementById('shopify-section-{{ section.id }}');
     if (!root) return;
 
+    var MIN_REVIEWS = 4;
+    var MAX_LOAD_MORE_CLICKS = 3;
+    var loadMoreClicks = 0;
+    var loadingMore = false;
+    var autoLoadDone = false;
+
+    var reviewCount = function () {
+      return root.querySelectorAll('.jdgm-rev').length;
+    };
+
+    var loadMoreButton = function () {
+      return root.querySelector('.jdgm-paginate__load-more');
+    };
+
+    var widgetReady = function () {
+      return !!(root.querySelector('.jdgm--done-setup-widget') && window.jdgm && jdgm.$);
+    };
+
     var revealWriteReview = function () {
       root.querySelectorAll('.jdgm-write-rev-link').forEach(function (el) {
         if (el.style.display === 'inline-flex') return;
@@ -474,11 +492,71 @@
       });
     };
 
+    var triggerLoadMore = function (btn) {
+      if (window.jdgm && jdgm.$) {
+        jdgm.$(btn).trigger('click');
+        return;
+      }
+      btn.click();
+    };
+
+    var prefetchReviews = function () {
+      if (autoLoadDone || loadingMore) return;
+      if (reviewCount() >= MIN_REVIEWS) {
+        autoLoadDone = true;
+        return;
+      }
+      if (!widgetReady()) return;
+
+      var btn = loadMoreButton();
+      if (!btn) {
+        autoLoadDone = true;
+        return;
+      }
+      if (loadMoreClicks >= MAX_LOAD_MORE_CLICKS) {
+        autoLoadDone = true;
+        return;
+      }
+
+      loadMoreClicks += 1;
+      loadingMore = true;
+      var before = reviewCount();
+      triggerLoadMore(btn);
+
+      var elapsed = 0;
+      var timer = setInterval(function () {
+        elapsed += 100;
+        if (reviewCount() > before) {
+          loadingMore = false;
+          clearInterval(timer);
+          prefetchReviews();
+        } else if (elapsed >= 3000) {
+          loadingMore = false;
+          clearInterval(timer);
+          if (loadMoreClicks >= MAX_LOAD_MORE_CLICKS) autoLoadDone = true;
+        }
+      }, 100);
+    };
+
     revealWriteReview();
-    new MutationObserver(revealWriteReview).observe(root, {
+    prefetchReviews();
+    new MutationObserver(function () {
+      revealWriteReview();
+      prefetchReviews();
+    }).observe(root, {
       childList: true,
-      subtree: true
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class']
     });
+
+    var polls = 0;
+    var poll = setInterval(function () {
+      polls += 1;
+      revealWriteReview();
+      prefetchReviews();
+      if (autoLoadDone || polls >= 40) clearInterval(poll);
+    }, 250);
   })();
 </script>
 
