@@ -3,7 +3,7 @@ if (!customElements.get('fine-details-h1')) {
     'fine-details-h1',
     class FineDetailsH1 extends HTMLElement {
       connectedCallback() {
-        this.modal = this.querySelector('x-modal');
+        this.modal = this.querySelector('.fine-details-h1-modal');
         this.tabs = Array.from(this.querySelectorAll('[data-fine-details-tab]'));
         this.views = Array.from(this.querySelectorAll('[data-fine-details-view]'));
         this.titleEl = this.modal?.querySelector('[data-fine-details-title]');
@@ -16,11 +16,15 @@ if (!customElements.get('fine-details-h1')) {
           this.tabs.findIndex((tab) => tab.getAttribute('aria-selected') === 'true')
         );
 
+        this.hotspots = Array.from(this.querySelectorAll('.fine-details-h1__hotspot'));
+
         this.onTabClick = this.onTabClick.bind(this);
         this.onPrev = this.onPrev.bind(this);
         this.onNext = this.onNext.bind(this);
+        this.onHotspotClick = this.onHotspotClick.bind(this);
 
         this.tabs.forEach((tab) => tab.addEventListener('click', this.onTabClick));
+        this.hotspots.forEach((hotspot) => hotspot.addEventListener('click', this.onHotspotClick, true));
         this.prevBtn?.addEventListener('click', this.onPrev);
         this.nextBtn?.addEventListener('click', this.onNext);
 
@@ -33,8 +37,18 @@ if (!customElements.get('fine-details-h1')) {
 
       disconnectedCallback() {
         this.tabs.forEach((tab) => tab.removeEventListener('click', this.onTabClick));
+        this.hotspots?.forEach((hotspot) => hotspot.removeEventListener('click', this.onHotspotClick, true));
         this.prevBtn?.removeEventListener('click', this.onPrev);
         this.nextBtn?.removeEventListener('click', this.onNext);
+      }
+
+      onHotspotClick(event) {
+        const desktopHover = window.matchMedia('(min-width: 768px) and (pointer: fine)').matches;
+        if (desktopHover && event.detail !== 0) {
+          event.preventDefault();
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+        }
       }
 
       onTabClick(event) {
