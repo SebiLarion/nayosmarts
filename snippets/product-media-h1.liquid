@@ -109,7 +109,59 @@
     {%- if gang_exist == true %} data-gang-option="{{ gang_option_name }}" data-gang-connect="{{ gang_connect }}"{% if gang_media_active == false %} hidden{% endif %}{% else %} data-gang-default{% endif -%}
     {%- if image_ratio == 'adapt' or image_ratio_mobile == 'adapt' %} style="--aspect-ratio: {{ media.aspect_ratio }};"{% endif -%}
   >
-    {%- render 'media', section_id: section_id, product_id: product_id, media: media, media_alt: media_alt, sizes: sizes, preload: preload, autoplay: autoplay, loop: loop -%}
+    {%- if media.media_type == 'video' or media.media_type == 'external_video' -%}
+      {%- liquid
+        assign video_src = ''
+        assign video_width = 0
+        if media.media_type == 'video'
+          for source in media.sources
+            if source.format == 'mp4' and source.width > video_width
+              assign video_src = source.url
+              assign video_width = source.width
+            endif
+          endfor
+          if video_src == blank and media.sources.first
+            assign video_src = media.sources.first.url
+          endif
+        endif
+        assign watch_label = 'products.media.watch_video' | t
+        if watch_label contains 'products.media'
+          assign watch_label = 'Watch video'
+        endif
+        if preload
+          assign video_loading = 'eager'
+          assign video_fetchpriority = 'high'
+        else
+          assign video_loading = 'lazy'
+          assign video_fetchpriority = 'auto'
+        endif
+      -%}
+      <button
+        type="button"
+        class="product-media-h1__watch"
+        data-video-modal-h1
+        data-video-src="{{ video_src | escape }}"
+        data-video-type="{{ media.media_type }}"
+        {% if media.host %}
+          data-video-host="{{ media.host }}"
+          data-video-id="{{ media.external_id }}"
+        {% endif %}
+        data-video-poster="{{ media.preview_image | image_url: width: 1600 }}"
+        aria-haspopup="dialog"
+        aria-label="{{ watch_label | escape }}"
+      >
+        {{- media.preview_image | image_url: width: media.preview_image.width | image_tag: loading: video_loading, fetchpriority: video_fetchpriority, sizes: sizes, widths: '200,300,400,500,600,700,800,1000,1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,3200', class: 'w-full', alt: media_alt -}}
+        <span class="product-media-h1__watch-label">
+          {{ watch_label | escape }}
+          <svg class="product-media-h1__watch-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+            <circle cx="10" cy="10" r="8.25" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
+            <path d="M8.15 6.7v6.6L13.7 10 8.15 6.7z" fill="currentColor"></path>
+          </svg>
+        </span>
+      </button>
+    {%- else -%}
+      {%- render 'media', section_id: section_id, product_id: product_id, media: media, media_alt: media_alt, sizes: sizes, preload: preload, autoplay: autoplay, loop: loop -%}
+    {%- endif -%}
 
     {%- if image_zoom != 'none' and media.media_type == 'image' -%}
       <button
