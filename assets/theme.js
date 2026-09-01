@@ -6062,11 +6062,17 @@ class MediaGallery extends HTMLElement {
   }
 
   openZoom(index = 0) {
-    let dataSource = this.sliderGallery.itemsToShow.map((media) => {
-      const image = media.querySelector('img');
+    const items = this.sliderGallery.itemsToShow;
+    const dataSource = [];
+    let openIndex = index;
 
-      if (media.getAttribute('data-media-type') === 'image') {
-        return {
+    items.forEach((media, itemIndex) => {
+      const image = media.querySelector('img');
+      const mediaType = media.getAttribute('data-media-type');
+      let item;
+
+      if (mediaType === 'image' && image) {
+        item = {
           thumbnailElement: image,
           src: image.src,
           srcset: image.srcset,
@@ -6076,22 +6082,28 @@ class MediaGallery extends HTMLElement {
           alt: image.alt,
           thumbCropped: true
         };
-      }
-      
-      if (media.getAttribute('data-media-type') === 'video' || media.getAttribute('data-media-type') === 'external_video' || media.getAttribute('data-media-type') === 'model') {
+      } else if ((mediaType === 'video' || mediaType === 'external_video' || mediaType === 'model') && image) {
         const video = media.querySelector('.deferred-media');
-        return {
-          thumbnailElement: image,
-          domElement: video,
-          type: media.getAttribute('data-media-type'),
-          src: image.src,
-          srcset: image.srcset,
-          msrc: image.currentSrc || image.src,
-          width: 800,
-          height: 800 / video.getAttribute('data-aspect-ratio'),
-          alt: image.alt,
-          thumbCropped: true
-        };
+        if (video) {
+          item = {
+            thumbnailElement: image,
+            domElement: video,
+            type: mediaType,
+            src: image.src,
+            srcset: image.srcset,
+            msrc: image.currentSrc || image.src,
+            width: 800,
+            height: 800 / video.getAttribute('data-aspect-ratio'),
+            alt: image.alt,
+            thumbCropped: true
+          };
+        }
+      }
+
+      if (item) {
+        dataSource.push(item);
+      } else if (index >= 0 && itemIndex < index) {
+        openIndex -= 1;
       }
     });
     
@@ -6110,12 +6122,12 @@ class MediaGallery extends HTMLElement {
         });
 
         if (index === -1) {
-          index = dataSource.length - 1;
+          openIndex = dataSource.length - 1;
         }
       }
     }
 
-    this.photoswipe.loadAndOpen(index, dataSource);
+    this.photoswipe.loadAndOpen(Math.max(openIndex, 0), dataSource);
   }
 
   countMediaGallery() {
