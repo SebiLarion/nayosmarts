@@ -100,7 +100,7 @@
     }
   </style>
 
-  <div class="product-variations-h1" {{ block.shopify_attributes }}>
+  <div class="product-variations-h1" data-section-id="{{ section_id }}" {{ block.shopify_attributes }}>
     <p class="product-variations-h1__label">
       <strong>{{ block.settings.option_name | escape }}:</strong>
       <span>{{ current_value | escape }}</span>
@@ -109,6 +109,12 @@
     <ul class="product-variations-h1__swatches" role="list" aria-label="{{ block.settings.option_name | escape }}">
       {%- for product_variation in block.settings.products -%}
         {%- assign value = product_variation.metafields[metafield_namespace][metafield_key].value -%}
+        {%- liquid
+          assign variation_page_title = product_variation.metafields.global.title_tag | default: product_variation.title
+          unless variation_page_title contains shop.name
+            assign variation_page_title = variation_page_title | append: ' – ' | append: shop.name
+          endunless
+        -%}
         {%- liquid
           assign swatch_image = blank
           assign swatch_fallback = value | split: ' ' | last | handle
@@ -154,6 +160,10 @@
             href="{{ product_variation.url }}"
             class="product-variations-h1__swatch{% if swatch_image != blank %} with-image{% endif %}{% unless product_variation.available %} is-unavailable{% endunless %}"
             title="{{ value | escape }}"
+            data-color-swap
+            data-product-url="{{ product_variation.url }}"
+            data-color="{{ value | escape }}"
+            data-page-title="{{ variation_page_title | escape }}"
             {% if product_variation == product %}aria-current="true"{% endif %}
             style="--swatch-background: {{ swatch_fallback }};{% if swatch_fallback_override == false and swatch_image != blank %}--swatch-background-image: url({{ swatch_image }});{% endif %}"
           >

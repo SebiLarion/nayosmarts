@@ -55,6 +55,13 @@
     margin-block-start: 1.5rem;
   }
 
+  /* Sibling colour products are swapped in place; dim the section while fetching. */
+  #shopify-section-{{ section.id }}.is-swapping {
+    opacity: 0.6;
+    pointer-events: none;
+    transition: opacity var(--animation-short, 0.2s ease);
+  }
+
   /* Delivery/ETA leaves an empty .shopify-app-block when the widget is hidden
      (country targeting, product tags). Hide it so the separator is not left behind. */
   #shopify-section-{{ section.id }} .product__info > .shopify-app-block:has(.delivery_date_shortcode):not(:has(.deliverydate, .sb_edd_div, .sb_edd_form)) {
@@ -219,6 +226,8 @@
   {{ 'volume-pricing.css' | asset_url | stylesheet_tag }}
   <script src="{{ 'volume-pricing.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
+
+<script src="{{ 'product-color-swap-h1.js' | asset_url }}" defer="defer"></script>
 
 {%- if icon_list_block -%}
   {%- capture icon_list_render -%}
@@ -1082,6 +1091,27 @@
           {%- endcase -%}
         {%- endfor -%}
       </product-info>
+
+      {%- comment -%}
+        The Delivery/ETA app reads its product context from globals set by its app embed in
+        the layout, which are not re-rendered on a sibling colour swap. Publish the same
+        values per product here so the swap script can refresh them before re-running the app.
+      {%- endcomment -%}
+      {%- capture edd_collection_ids -%}
+        [{% for collection in product.collections %}"{{ collection.id }}"{% unless forloop.last %},{% endunless %}{% endfor %}]
+      {%- endcapture -%}
+      <script type="application/json" data-edd-product-h1>
+        {
+          "id": "{{ product.id }}",
+          "title": {{ product.title | json }},
+          "handle": {{ product.handle | json }},
+          "type": {{ product.type | json }},
+          "vendor": {{ product.vendor | json }},
+          "tags": {{ product.tags | json }},
+          "collections": {{ edd_collection_ids | strip }},
+          "quantity": "{{ product.selected_or_first_available_variant.inventory_quantity }}"
+        }
+      </script>
     </div>
 
     {%- assign sticky_buy_button = section.blocks | where: "type", "sticky_buy_button" | first -%}
