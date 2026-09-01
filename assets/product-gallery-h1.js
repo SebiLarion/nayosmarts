@@ -17,10 +17,12 @@ if (!customElements.get('product-gallery-h1')) {
 
         this.syncToggleVisibility();
         this.applyDesktopHeight(false);
+        this.syncProductInfoSticky();
         this.toggleButton.addEventListener('click', () => this.toggle());
         this.addEventListener('variant:change', () => {
           this.syncToggleVisibility();
           this.applyDesktopHeight(false);
+          this.syncProductInfoSticky();
         });
       }
 
@@ -224,9 +226,24 @@ if (!customElements.get('product-gallery-h1')) {
         this.setViewportHeight(height, animate);
       }
 
+      syncProductInfoSticky() {
+        const product = this.closest('.product--h1');
+        if (!product) return;
+
+        const userExpanded =
+          Boolean(this.isDesktop) &&
+          this.expanded &&
+          this.toggleButton &&
+          !this.toggleButton.hidden;
+
+        product.classList.toggle('is-gallery-expanded', userExpanded);
+        product.querySelector('.product__info')?.style.removeProperty('--product-info-sticky-inset');
+      }
+
       onResize() {
         if (this.isAnimating) return;
         this.applyDesktopHeight(false);
+        this.syncProductInfoSticky();
       }
 
       toggle() {
@@ -238,6 +255,7 @@ if (!customElements.get('product-gallery-h1')) {
           this.setAttribute('data-expanded', String(next));
           this.updateLabels(next);
           this.applyDesktopHeight(false);
+          this.syncProductInfoSticky();
           if (!next && this.isDesktop) this.scrollIntoView({ behavior: 'auto', block: 'start' });
           return;
         }
@@ -245,6 +263,7 @@ if (!customElements.get('product-gallery-h1')) {
         const from = this.viewport.getBoundingClientRect().height;
         this.setAttribute('data-expanded', String(next));
         this.updateLabels(next);
+        this.syncProductInfoSticky();
         const to = next ? this.measureExpandedHeight() : this.measureCollapsedHeight();
 
         this.isAnimating = true;
