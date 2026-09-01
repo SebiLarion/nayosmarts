@@ -125,7 +125,7 @@
           {%- if image_zoom != 'none' and featured_media.media_type == 'image' -%}
             <button type="button" class="product-media-h1__zoom-button" is="media-{{ image_zoom }}-button" aria-label="{{ 'products.media.open_media' | t: index: featured_media.position | escape }}" tabindex="-1">
               <span class="product-media-h1__zoom-icon" aria-hidden="true">
-                <img src="{{ 'icon-product-media-zoom.svg' | asset_url }}" width="48" height="48" alt="">
+                <img src="{{ 'icon-product-media-zoom.svg' | asset_url }}" width="56" height="56" alt="">
               </span>
             </button>
           {%- endif -%}
@@ -321,6 +321,16 @@
     --gallery-h1-collapsed-rows: 2;
   }
 
+  /* Keep the photo cropped, but let the zoom disc paint outside the cell. */
+  .product-gallery-h1 .product-media-h1 {
+    overflow: visible;
+  }
+
+  .product-gallery-h1 .product-media-h1 > :not(.product-media-h1__zoom-button) {
+    overflow: hidden;
+    border-radius: inherit;
+  }
+
   .product-gallery-h1 .product-media-h1__zoom-button,
   .product-gallery-h1 .product-media-h1__zoom-button[is='media-lightbox-button'],
   .product-gallery-h1 .product-media-h1__zoom-button[is='media-hover-button'] {
@@ -331,7 +341,7 @@
     display: flex;
     align-items: flex-end;
     justify-content: flex-end;
-    padding: 16px;
+    padding: 16px 16px 20px 16px;
     margin: 0;
     border: 0 !important;
     border-radius: 0 !important;
@@ -344,11 +354,12 @@
 
   .product-media-h1__zoom-icon {
     display: block;
-    width: 48px;
-    height: 48px;
-    overflow: clip;
+    width: 56px;
+    height: 56px;
+    overflow: visible;
     flex-shrink: 0;
     pointer-events: none;
+    line-height: 0;
   }
 
   .product-media-h1__zoom-icon img {
@@ -376,7 +387,7 @@
     .product-gallery-h1 .product-media-h1__zoom-button,
     .product-gallery-h1 .product-media-h1__zoom-button[is='media-lightbox-button'],
     .product-gallery-h1 .product-media-h1__zoom-button[is='media-hover-button'] {
-      padding: 24px;
+      padding: 24px 24px 28px 24px;
     }
 
     .product--columns .product-gallery-h1 .product-gallery-h1__list {
