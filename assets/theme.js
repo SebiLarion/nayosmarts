@@ -6061,41 +6061,71 @@ class MediaGallery extends HTMLElement {
     });
   }
 
+  getLightboxMediaImage(media) {
+    return Array.from(media.querySelectorAll('img')).find((image) => {
+      return !image.closest('.product-media-h1__zoom-icon, .product-media-h1__zoom-button, .play-button');
+    });
+  }
+
+  getLightboxImageSrc(image, nativeWidth) {
+    const source = image.getAttribute('data-zoom-src') || image.getAttribute('src') || image.src;
+    if (!source) return image.currentSrc || image.src;
+
+    const dpr = window.devicePixelRatio || 1;
+    const viewportNeed = Math.ceil(Math.max(window.innerWidth, window.innerHeight) * dpr);
+    const maxNative = nativeWidth || parseInt(image.getAttribute('width'), 10) || 0;
+    const targetWidth = maxNative
+      ? Math.min(maxNative, Math.max(2048, viewportNeed * 2))
+      : Math.max(2048, viewportNeed * 2);
+
+    try {
+      const url = new URL(source, window.location.origin);
+      if (url.searchParams.has('width') || /\/cdn\/shop\//.test(url.pathname)) {
+        url.searchParams.set('width', String(targetWidth));
+        url.searchParams.delete('height');
+      }
+      return url.href;
+    } catch (error) {
+      return source;
+    }
+  }
+
+  getLightboxItemData(image) {
+    const width = parseInt(image.getAttribute('data-zoom-width') || image.getAttribute('width'), 10) || image.naturalWidth;
+    const height = parseInt(image.getAttribute('data-zoom-height') || image.getAttribute('height'), 10) || image.naturalHeight;
+
+    return {
+      thumbnailElement: image,
+      src: this.getLightboxImageSrc(image, width),
+      msrc: image.currentSrc || image.src,
+      width,
+      height,
+      alt: image.alt,
+      thumbCropped: true
+    };
+  }
+
   openZoom(index = 0) {
     const items = this.sliderGallery.itemsToShow;
     const dataSource = [];
     let openIndex = index;
 
     items.forEach((media, itemIndex) => {
-      const image = media.querySelector('img');
+      const image = this.getLightboxMediaImage(media);
       const mediaType = media.getAttribute('data-media-type');
       let item;
 
       if (mediaType === 'image' && image) {
-        item = {
-          thumbnailElement: image,
-          src: image.src,
-          srcset: image.srcset,
-          msrc: image.currentSrc || image.src,
-          width: parseInt(image.getAttribute('width')),
-          height: parseInt(image.getAttribute('height')),
-          alt: image.alt,
-          thumbCropped: true
-        };
+        item = this.getLightboxItemData(image);
       } else if ((mediaType === 'video' || mediaType === 'external_video' || mediaType === 'model') && image) {
         const video = media.querySelector('.deferred-media');
         if (video) {
           item = {
-            thumbnailElement: image,
+            ...this.getLightboxItemData(image),
             domElement: video,
             type: mediaType,
-            src: image.src,
-            srcset: image.srcset,
-            msrc: image.currentSrc || image.src,
             width: 800,
-            height: 800 / video.getAttribute('data-aspect-ratio'),
-            alt: image.alt,
-            thumbCropped: true
+            height: 800 / video.getAttribute('data-aspect-ratio')
           };
         }
       }
@@ -6109,20 +6139,13 @@ class MediaGallery extends HTMLElement {
     
     if (this.mediaPreview && this.mediaPreview.offsetParent) {
       if (this.mediaPreview.getAttribute('data-media-type') === 'image') {
-        const image = this.mediaPreview.querySelector('img');
-        dataSource.push({
-          thumbnailElement: image,
-          src: image.src,
-          srcset: image.srcset,
-          msrc: image.currentSrc || image.src,
-          width: parseInt(image.getAttribute('width')),
-          height: parseInt(image.getAttribute('height')),
-          alt: image.alt,
-          thumbCropped: true
-        });
+        const image = this.getLightboxMediaImage(this.mediaPreview);
+        if (image) {
+          dataSource.push(this.getLightboxItemData(image));
 
-        if (index === -1) {
-          openIndex = dataSource.length - 1;
+          if (index === -1) {
+            openIndex = dataSource.length - 1;
+          }
         }
       }
     }
