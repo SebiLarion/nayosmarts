@@ -44,6 +44,18 @@
       color: #171717;
       text-align: start;
       cursor: pointer;
+      transition: background-color 0.125s ease-in-out;
+    }
+
+    @media (hover: hover) {
+      .variant-picker-h1__trigger:hover {
+        background-color: #cec9c0;
+      }
+    }
+
+    .variant-picker-h1__trigger:focus-visible {
+      outline: 2px solid #171717;
+      outline-offset: 2px;
     }
 
     .variant-picker-h1__trigger-label {
@@ -167,6 +179,18 @@
       overflow: hidden;
       aspect-ratio: 3 / 2;
       background: #f1f1f1;
+      outline: 1px solid transparent;
+      transition: outline-color 0.2s ease;
+    }
+
+    @media (hover: hover) {
+      .size-card-h1:hover .size-card-h1__media {
+        outline-color: rgb(23 23 23 / 0.35);
+      }
+
+      .size-card-h1:hover .size-card-h1__radio {
+        border-color: rgb(23 23 23 / 0.6);
+      }
     }
 
     .size-card-h1__media img {
@@ -188,13 +212,13 @@
       transition: background var(--animation-fast, 0.15s ease), border-color var(--animation-fast, 0.15s ease);
     }
 
-    .size-card-h1__input:checked ~ .size-card-h1__media .size-card-h1__radio {
+    .size-card-h1.is-selected .size-card-h1__radio {
       background: #e4452a;
       border: 2px solid #fff;
       box-shadow: 0 0 0 1px rgb(23 23 23 / 0.15);
     }
 
-    .size-card-h1__input.disabled ~ * {
+    .size-card-h1.is-unavailable {
       opacity: 0.5;
     }
 
@@ -241,6 +265,26 @@
         data-option-slug="{{ option.name | handleize }}"
       >
         <legend class="sr-only">{{ option.name }}</legend>
+
+        {%- comment -%}
+          Radios stay in the fieldset. The size modal is appended to document.body
+          when opened, so inputs inside it would leave variant-picker and never
+          update the selected variant.
+        {%- endcomment -%}
+        {%- for value in option.values -%}
+          <input
+            type="radio"
+            class="sr-only{% unless value.available %} disabled{% endunless %}"
+            id="{{ section_id }}-{{ product_id }}-{{ option.name | handle }}-{{ forloop.index0 }}"
+            name="{{ option.name }}-{{ section_id }}-{{ product_id }}"
+            value="{{ value | escape }}"
+            {% if option.selected_value == value %}checked{% endif %}
+            {% if value.product_url != blank and value.product_url != product.url %}data-product-url="{{ value.variant.url | default: value.product_url }}"{% endif %}
+            data-option-value="{{ value | escape }}"
+            data-option-value-id="{{ value.id }}"
+            data-option-index="{{ option.position }}"
+          />
+        {%- endfor -%}
 
         <button
           type="button"
@@ -296,19 +340,10 @@
                     assign card_description = matched_variant.metafields[description_namespace][description_key].value
                   endif
                 -%}
-                <label class="size-card-h1" for="{{ section_id }}-{{ product_id }}-{{ option.name | handle }}-{{ forloop.index0 }}">
-                  <input
-                    type="radio"
-                    class="size-card-h1__input sr-only{% unless value.available %} disabled{% endunless %}"
-                    id="{{ section_id }}-{{ product_id }}-{{ option.name | handle }}-{{ forloop.index0 }}"
-                    name="{{ option.name }}-{{ section_id }}-{{ product_id }}"
-                    value="{{ value | escape }}"
-                    {% if option.selected_value == value %}checked{% endif %}
-                    {% if value.product_url != blank and value.product_url != product.url %}data-product-url="{{ value.variant.url | default: value.product_url }}"{% endif %}
-                    data-option-value="{{ value | escape }}"
-                    data-option-value-id="{{ value.id }}"
-                    data-option-index="{{ option.position }}"
-                  />
+                <label
+                  class="size-card-h1{% if option.selected_value == value %} is-selected{% endif %}{% unless value.available %} is-unavailable{% endunless %}"
+                  for="{{ section_id }}-{{ product_id }}-{{ option.name | handle }}-{{ forloop.index0 }}"
+                >
                   <span class="size-card-h1__media">
                     {%- if card_media != blank -%}
                       {{- card_media | image_url: width: 900 | image_tag: loading: 'lazy', widths: '400, 600, 900', sizes: '(max-width: 767px) 90vw, 400px', alt: value.name, is: 'lazy-image' -}}
