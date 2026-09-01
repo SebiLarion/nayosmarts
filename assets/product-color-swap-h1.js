@@ -15,16 +15,20 @@
   var cache = new Map();
   var controllers = new Map();
 
-  function getSection(el) {
-    return el.closest('.shopify-section');
-  }
-
   function getSectionId(el) {
     var row = el.closest('[data-section-id]');
     if (row) return row.getAttribute('data-section-id');
 
-    var section = getSection(el);
-    return section ? section.id.replace('shopify-section-', '') : null;
+    var nested = el.closest('.shopify-section');
+    return nested ? nested.id.replace('shopify-section-', '') : null;
+  }
+
+  function getSection(el) {
+    var nested = el.closest('.shopify-section');
+    if (nested) return nested;
+
+    var sectionId = getSectionId(el);
+    return sectionId ? document.getElementById('shopify-section-' + sectionId) : null;
   }
 
   function buildRequestUrl(productUrl, sectionId) {
@@ -124,12 +128,65 @@
     }
   }
 
+  function getOpenFitsModal() {
+    return document.querySelector('body > x-modal.fits-modal-h1[open], x-modal.fits-modal-h1[open]');
+  }
+
+  /**
+   * x-modal moves the fits drawer to document.body. A section innerHTML swap
+   * would leave that open drawer on the old product, and hide() would try to
+   * put it back on a detached parent. Copy the new product's drawer panels
+   * into the live modal and retarget it at the new section slot.
+   */
+  function syncOpenFitsModal(section) {
+    var openModal = getOpenFitsModal();
+    var incoming = section.querySelector('x-modal.fits-modal-h1');
+    if (!openModal || !incoming || openModal === incoming) return;
+
+    var selected = openModal.querySelector('[data-fits-option].is-active');
+    var optionId = selected ? selected.dataset.fitsOption : '1';
+    var incomingFits = incoming.querySelector('product-fits-h1');
+    var openFits = openModal.querySelector('product-fits-h1');
+
+    if (incomingFits && openFits) {
+      ['[data-fits-swap="body"]', '[data-fits-swap="footer"]'].forEach(function (selector) {
+        var next = incomingFits.querySelector(selector);
+        var prev = openFits.querySelector(selector);
+        if (next && prev) prev.replaceWith(next);
+      });
+
+      if (incomingFits.hasAttribute('data-section-id')) {
+        openFits.setAttribute('data-section-id', incomingFits.getAttribute('data-section-id'));
+      }
+    }
+
+    var newId = incoming.id;
+    openModal.id = newId;
+    openModal.querySelectorAll('[aria-controls]').forEach(function (el) {
+      el.setAttribute('aria-controls', newId);
+    });
+
+    openModal.originalParentBeforeAppend = incoming.parentNode;
+    incoming.remove();
+
+    if (openFits && typeof openFits.select === 'function') {
+      openFits.select(optionId);
+    }
+
+    var trigger = section.querySelector('.product-title-h1__fits');
+    if (trigger) {
+      trigger.setAttribute('aria-controls', newId);
+      trigger.setAttribute('aria-expanded', 'true');
+    }
+  }
+
   function swap(section, html) {
     var parsed = new DOMParser().parseFromString(html, 'text/html');
     var incoming = parsed.querySelector('.shopify-section');
     if (!incoming) throw new Error('No section found in response');
 
     setInnerHTML(section, incoming.innerHTML);
+    syncOpenFitsModal(section);
     reinitDeliveryApp(section);
 
     // Apps and theme components that hook the theme editor lifecycle re-init here.
@@ -151,7 +208,9 @@
 
   function render(section, productUrl, pageTitle, options) {
     var sectionId = section.id.replace('shopify-section-', '');
+    var openFits = getOpenFitsModal();
     section.classList.add('is-swapping');
+    if (openFits) openFits.classList.add('is-swapping');
 
     return fetchSection(productUrl, sectionId)
       .then(function (html) {
@@ -163,11 +222,13 @@
         updateHead(productUrl, pageTitle);
         swap(section, html);
         section.classList.remove('is-swapping');
+        if (openFits) openFits.classList.remove('is-swapping');
       })
       .catch(function (error) {
         if (error.name === 'AbortError') return;
         console.error('[color-swap-h1]', error);
         section.classList.remove('is-swapping');
+        if (openFits) openFits.classList.remove('is-swapping');
         window.location.href = productUrl;
       });
   }
