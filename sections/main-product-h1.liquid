@@ -68,6 +68,26 @@
     display: none;
   }
 
+  /* After Show more, pin the top of product info under the header.
+     Desktop only — mobile keeps the stacked layout. */
+  @media screen and (min-width: 1024px) {
+    #shopify-section-{{ section.id }} .product--h1.is-gallery-expanded .product__info {
+      position: sticky;
+      inset-block-start: var(--sp-6);
+      align-self: start;
+      z-index: 2;
+      transform: none !important;
+    }
+
+    .header-sticky ~ .page-container #shopify-section-{{ section.id }} .product--h1.is-gallery-expanded .product__info {
+      inset-block-start: calc(var(--header-height) + var(--sp-3));
+    }
+
+    .header-hidden[data-sticky-type='on-scroll-up'] ~ .page-container #shopify-section-{{ section.id }} .product--h1.is-gallery-expanded .product__info {
+      inset-block-start: var(--sp-6);
+    }
+  }
+
   #shopify-section-{{ section.id }} .product-form__buttons {
     gap: 1rem;
   }
