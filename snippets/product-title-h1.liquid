@@ -14,15 +14,20 @@
 {%- liquid
   assign fits_modal_id = 'FitsModal-' | append: section_id | append: '-' | append: product.id
   assign fits_label = block.settings.fits_button_label | default: 'See what it fits'
-  assign option_1_label = block.settings.fits_option_1_label | default: 'Half-Roll (20L)'
-  assign option_2_label = block.settings.fits_option_2_label | default: 'Fully packed (25L)'
-  assign fits_image_1 = block.settings.fits_image_1 | default: product.featured_media
-  assign fits_image_2 = block.settings.fits_image_2
-  if fits_image_2 == blank and product.media.size > 1
-    assign fits_image_2 = product.media[2]
-  endif
-  if fits_image_2 == blank
-    assign fits_image_2 = fits_image_1
+
+  assign size_option = blank
+  assign size_option_index = 0
+  for option in product.options_with_values
+    assign option_name_down = option.name | downcase
+    if option_name_down == 'size' or option_name_down contains 'size'
+      assign size_option = option
+      assign size_option_index = forloop.index0
+      break
+    endif
+  endfor
+  if size_option == blank and product.has_only_default_variant == false and product.options_with_values.size == 1
+    assign size_option = product.options_with_values.first
+    assign size_option_index = 0
   endif
 
   assign variations_block = section.blocks | where: 'type', 'product_variations' | first
@@ -228,7 +233,7 @@
 
   .fits-modal-h1__options {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
     gap: 0.5rem;
   }
 
@@ -241,6 +246,8 @@
     font-size: var(--text-sm);
     font-weight: 500;
     line-height: 1.2;
+    text-align: center;
+    overflow-wrap: anywhere;
     cursor: pointer;
   }
 
@@ -427,27 +434,69 @@
       </div>
 
       <div class="fits-modal-h1__body drawer__content" data-fits-swap="body">
-        <div class="fits-modal-h1__media">
-          {%- if fits_image_1 != blank -%}
-            <div data-fits-image="1">
-              {{- fits_image_1 | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '400, 600, 800, 1200', sizes: '(max-width: 767px) 90vw, 576px', alt: option_1_label, is: 'lazy-image' -}}
-            </div>
-          {%- endif -%}
-          {%- if fits_image_2 != blank -%}
-            <div data-fits-image="2" hidden>
-              {{- fits_image_2 | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '400, 600, 800, 1200', sizes: '(max-width: 767px) 90vw, 576px', alt: option_2_label, is: 'lazy-image' -}}
-            </div>
-          {%- endif -%}
-        </div>
+        {%- if size_option != blank -%}
+          <div class="fits-modal-h1__media">
+            {%- for value in size_option.values -%}
+              {%- liquid
+                assign matched_variant = blank
+                for variant in product.variants
+                  if variant.options[size_option_index] == value.name or variant.options[size_option_index] == value
+                    assign matched_variant = variant
+                    break
+                  endif
+                endfor
+                assign fits_image = matched_variant.featured_media | default: product.featured_media
+                assign is_selected_size = false
+                if size_option.selected_value == value or size_option.selected_value == value.name
+                  assign is_selected_size = true
+                endif
+              -%}
+              {%- if fits_image != blank -%}
+                <div data-fits-image="{{ value.name | escape }}"{% unless is_selected_size %} hidden{% endunless %}>
+                  {{- fits_image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '400, 600, 800, 1200', sizes: '(max-width: 767px) 90vw, 576px', alt: value.name, is: 'lazy-image' -}}
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
 
-        <div class="fits-modal-h1__options" role="group" aria-label="{{ fits_label | escape }}">
-          <button type="button" class="fits-modal-h1__option is-active" data-fits-option="1" aria-pressed="true">
-            {{ option_1_label | escape }}
-          </button>
-          <button type="button" class="fits-modal-h1__option" data-fits-option="2" aria-pressed="false">
-            {{ option_2_label | escape }}
-          </button>
-        </div>
+          <div class="fits-modal-h1__options" role="group" aria-label="{{ size_option.name | escape }}">
+            {%- for value in size_option.values -%}
+              {%- liquid
+                assign matched_variant = blank
+                for variant in product.variants
+                  if variant.options[size_option_index] == value.name or variant.options[size_option_index] == value
+                    assign matched_variant = variant
+                    break
+                  endif
+                endfor
+                assign is_selected_size = false
+                if size_option.selected_value == value or size_option.selected_value == value.name
+                  assign is_selected_size = true
+                endif
+                assign fits_price = blank
+                if matched_variant != blank
+                  if settings.currency_code_enabled
+                    assign fits_price = matched_variant.price | money_with_currency | strip_html
+                  else
+                    assign fits_price = matched_variant.price | money | strip_html
+                  endif
+                endif
+              -%}
+              <button
+                type="button"
+                class="fits-modal-h1__option{% if is_selected_size %} is-active{% endif %}"
+                data-fits-option="{{ value.name | escape }}"
+                data-option-value="{{ value.name | escape }}"
+                data-option-value-id="{{ value.id }}"
+                data-price="{{ fits_price | escape }}"
+                data-available="{% if matched_variant != blank and matched_variant.available %}true{% else %}false{% endif %}"
+                aria-pressed="{% if is_selected_size %}true{% else %}false{% endif %}"
+              >
+                {{ value.name | escape }}
+              </button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
 
         {%- if show_fits_colors -%}
           <ul
@@ -511,7 +560,7 @@
       <div class="fits-modal-h1__footer" data-fits-swap="footer">
         <div class="fits-modal-h1__product">
           <p class="fits-modal-h1__product-title">{{ product.title }}</p>
-          <p class="fits-modal-h1__product-price">
+          <p class="fits-modal-h1__product-price" data-fits-price>
             {%- if settings.currency_code_enabled -%}
               {{ product.selected_or_first_available_variant.price | money_with_currency }}
             {%- else -%}
