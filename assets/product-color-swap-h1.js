@@ -144,7 +144,7 @@
     if (!openModal || !incoming || openModal === incoming) return;
 
     var selected = openModal.querySelector('[data-fits-option].is-active');
-    var optionId = selected ? selected.dataset.fitsOption : '1';
+    var optionId = selected ? selected.dataset.fitsOption : '';
     var incomingFits = incoming.querySelector('product-fits-h1');
     var openFits = openModal.querySelector('product-fits-h1');
 
@@ -170,7 +170,13 @@
     incoming.remove();
 
     if (openFits && typeof openFits.select === 'function') {
-      openFits.select(optionId);
+      var hasSavedSize = optionId && openFits.querySelector('[data-fits-option="' + (window.CSS && CSS.escape ? CSS.escape(optionId) : optionId) + '"]');
+      if (hasSavedSize) {
+        openFits.select(optionId, { applyVariant: true });
+      } else {
+        var fallback = openFits.querySelector('[data-fits-option].is-active') || openFits.querySelector('[data-fits-option]');
+        if (fallback) openFits.select(fallback.dataset.fitsOption);
+      }
     }
 
     var trigger = section.querySelector('.product-title-h1__fits');
