@@ -322,6 +322,12 @@
     cursor: not-allowed;
   }
 
+  .fits-modal-h1.is-swapping .drawer__inner {
+    opacity: 0.6;
+    pointer-events: none;
+    transition: opacity var(--animation-short, 0.2s ease);
+  }
+
   @media screen and (min-width: 768px) {
     .fits-modal-h1__header {
       padding: 1.5rem 2.5rem 1rem;
@@ -406,7 +412,7 @@
     hidden
   >
     <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="{{ fits_modal_id }}" aria-expanded="false"></overlay-element>
-    <product-fits-h1 class="drawer__inner z-10">
+    <product-fits-h1 class="drawer__inner z-10" data-section-id="{{ section_id }}">
       <div class="fits-modal-h1__header drawer__header">
         <h2 class="fits-modal-h1__title">{{ fits_label | escape }}</h2>
         <button
@@ -420,7 +426,7 @@
         </button>
       </div>
 
-      <div class="fits-modal-h1__body drawer__content">
+      <div class="fits-modal-h1__body drawer__content" data-fits-swap="body">
         <div class="fits-modal-h1__media">
           {%- if fits_image_1 != blank -%}
             <div data-fits-image="1">
@@ -444,10 +450,18 @@
         </div>
 
         {%- if show_fits_colors -%}
-          <ul class="fits-modal-h1__swatches swatches swatches--{{ settings.rounded_swatch }}{% if variations_block.settings.color_swatch_type == 'variant' %} swatches--variant{% endif %}">
+          <ul
+            class="fits-modal-h1__swatches swatches swatches--{{ settings.rounded_swatch }}{% if variations_block.settings.color_swatch_type == 'variant' %} swatches--variant{% endif %}"
+            data-section-id="{{ section_id }}"
+          >
             {%- for product_variation in variations_block.settings.products -%}
               {%- assign value = product_variation.metafields[metafield_namespace][metafield_key].value -%}
               {%- liquid
+                assign variation_page_title = product_variation.metafields.global.title_tag | default: product_variation.title
+                unless variation_page_title contains shop.name
+                  assign variation_page_title = variation_page_title | append: ' – ' | append: shop.name
+                endunless
+
                 assign swatch_image = blank
                 assign swatch_fallback = value | split: ' ' | last | handle
                 if variations_block.settings.color_swatch_type == 'variant' and product_variation.featured_media
@@ -479,6 +493,10 @@
                   href="{{ product_variation.url }}"
                   class="color-swatch block relative{% if swatch_image != blank %} with-image{% endif %}"
                   title="{{ value | escape }}"
+                  data-color-swap
+                  data-product-url="{{ product_variation.url }}"
+                  data-color="{{ value | escape }}"
+                  data-page-title="{{ variation_page_title | escape }}"
                   {% if product_variation == product %}aria-current="true"{% endif %}
                   style="--swatch-background: {{ swatch_fallback }};{% if swatch_image != blank %}--swatch-background-image: url({{ swatch_image }});{% endif %}"
                 >
@@ -490,7 +508,7 @@
         {%- endif -%}
       </div>
 
-      <div class="fits-modal-h1__footer">
+      <div class="fits-modal-h1__footer" data-fits-swap="footer">
         <div class="fits-modal-h1__product">
           <p class="fits-modal-h1__product-title">{{ product.title }}</p>
           <p class="fits-modal-h1__product-price">
