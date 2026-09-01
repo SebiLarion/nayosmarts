@@ -3,6 +3,8 @@ if (!customElements.get('product-gallery-h1')) {
     'product-gallery-h1',
     class ProductGalleryH1 extends HTMLElement {
       connectedCallback() {
+        this.initVideoModal();
+
         this.toggleButton = this.querySelector('[data-gallery-toggle]');
         this.viewport = this.querySelector('.product-gallery-h1__viewport');
         this.list = this.querySelector('.product-gallery-h1__list');
@@ -25,6 +27,127 @@ if (!customElements.get('product-gallery-h1')) {
       disconnectedCallback() {
         this.mediaQuery?.removeEventListener('change', this.onResize);
         window.removeEventListener('resize', this.onResize);
+        this.teardownVideoModal();
+      }
+
+      initVideoModal() {
+        this.videoDialog = this.querySelector('[data-video-modal-dialog-h1]');
+        this.videoPlayer = this.querySelector('[data-video-modal-player-h1]');
+        if (!this.videoDialog || !this.videoPlayer) return;
+
+        this.onVideoTriggerClick = this.onVideoTriggerClick.bind(this);
+        this.onVideoDialogClick = this.onVideoDialogClick.bind(this);
+        this.onVideoDialogClose = this.onVideoDialogClose.bind(this);
+
+        this.addEventListener('click', this.onVideoTriggerClick);
+        this.videoDialog.addEventListener('click', this.onVideoDialogClick);
+        this.videoDialog.addEventListener('close', this.onVideoDialogClose);
+      }
+
+      teardownVideoModal() {
+        this.removeEventListener('click', this.onVideoTriggerClick);
+        if (this.videoDialog) {
+          this.videoDialog.removeEventListener('click', this.onVideoDialogClick);
+          this.videoDialog.removeEventListener('close', this.onVideoDialogClose);
+        }
+        this.clearVideoPlayer();
+      }
+
+      onVideoTriggerClick(event) {
+        const trigger = event.target.closest('[data-video-modal-h1]');
+        if (!trigger || !this.contains(trigger)) return;
+
+        event.preventDefault();
+        this.openVideoModal(trigger);
+      }
+
+      onVideoDialogClick(event) {
+        if (event.target.closest('[data-video-modal-close-h1]') || event.target === this.videoDialog) {
+          this.closeVideoModal();
+        }
+      }
+
+      onVideoDialogClose() {
+        this.clearVideoPlayer();
+      }
+
+      openVideoModal(trigger) {
+        if (!this.videoDialog || !this.videoPlayer) return;
+
+        this.clearVideoPlayer();
+        const media = this.createVideoMedia(trigger);
+        if (!media) return;
+
+        this.videoPlayer.appendChild(media);
+
+        if (typeof this.videoDialog.showModal === 'function') {
+          this.videoDialog.showModal();
+        } else {
+          this.videoDialog.setAttribute('open', '');
+        }
+
+        if (media.play) {
+          const playPromise = media.play();
+          if (playPromise && typeof playPromise.catch === 'function') {
+            playPromise.catch(function () {});
+          }
+        }
+      }
+
+      closeVideoModal() {
+        if (!this.videoDialog) return;
+
+        if (typeof this.videoDialog.close === 'function' && this.videoDialog.open) {
+          this.videoDialog.close();
+          return;
+        }
+
+        this.videoDialog.removeAttribute('open');
+        this.clearVideoPlayer();
+      }
+
+      clearVideoPlayer() {
+        if (!this.videoPlayer) return;
+
+        this.videoPlayer.querySelectorAll('video').forEach(function (video) {
+          video.pause();
+          video.removeAttribute('src');
+          video.load();
+        });
+        this.videoPlayer.innerHTML = '';
+      }
+
+      createVideoMedia(trigger) {
+        const type = trigger.dataset.videoType;
+        const src = trigger.dataset.videoSrc;
+        const poster = trigger.dataset.videoPoster;
+        const host = trigger.dataset.videoHost;
+        const id = trigger.dataset.videoId;
+
+        if (type === 'video' && src) {
+          const video = document.createElement('video');
+          video.controls = true;
+          video.autoplay = true;
+          video.playsInline = true;
+          if (poster) video.poster = poster;
+
+          const source = document.createElement('source');
+          source.src = src;
+          source.type = 'video/mp4';
+          video.appendChild(source);
+          return video;
+        }
+
+        if (host === 'youtube' && id) {
+          const iframe = document.createElement('iframe');
+          iframe.src = 'https://www.youtube.com/embed/' + encodeURIComponent(id) + '?autoplay=1&rel=0&modestbranding=1&playsinline=1';
+          iframe.allow = 'autoplay; encrypted-media; fullscreen';
+          iframe.allowFullscreen = true;
+          iframe.title = 'Product video';
+          return iframe;
+        }
+
+        return null;
       }
 
       get expanded() {
