@@ -291,7 +291,7 @@
           "type": "item",
           "settings": {
             "title": "Size and Features",
-            "content": "<p><strong>Capacity</strong><br/>17L min, 20L max</p><p><strong>Max Laptop Carry</strong><br/>38.1cm x 25.4cm x 2.5cm (15\"x10\"x1\") Holds 15/16\" Macbook Pro</p><p><strong>Max Tablet Carry</strong><br/>30.6cm x 22.1cm x .7cm (12\" x 8.7\" x 0.3\") Holds 12.9\" iPad Pro</p><p><strong>Cord Hook™ External Carry Strap Lengths</strong><br/>Long: 49cm (19.3\")<br/>Short: 27cm (10.62\")</p><p><strong>Dimensions</strong><br/>See diagram</p><p><strong>Weight</strong><br/>Without Dividers: 1.66kg (3.66lb)<br/>With Dividers: 2.01kg (4.43lb)</p>",
+            "content": "<p><strong>Capacity</strong>17L min, 20L max</p><p><strong>Max Laptop Carry</strong>38.1cm x 25.4cm x 2.5cm (15\"x10\"x1\") Holds 15/16\" Macbook Pro</p><p><strong>Max Tablet Carry</strong>30.6cm x 22.1cm x .7cm (12\" x 8.7\" x 0.3\") Holds 12.9\" iPad Pro</p><p><strong>Cord Hook™ External Carry Strap Lengths</strong>Long: 49cm (19.3\")<br/>Short: 27cm (10.62\")</p><p><strong>Dimensions</strong>See diagram</p><p><strong>Weight</strong>Without Dividers: 1.66kg (3.66lb)<br/>With Dividers: 2.01kg (4.43lb)</p>",
             "open": false
           }
         },
@@ -364,7 +364,7 @@
           "type": "item",
           "settings": {
             "title": "Warranty / Shipping / Returns",
-            "content": "<p><strong>Warranty</strong><br/>2-year warranty on materials and workmanship.</p><p><strong>Shipping</strong><br/>Free shipping on qualifying orders.</p><p><strong>Returns</strong><br/>30-day returns.</p>",
+            "content": "<p><strong>Warranty</strong>2-year warranty on materials and workmanship.</p><p><strong>Shipping</strong>Free shipping on qualifying orders.</p><p><strong>Returns</strong>30-day returns.</p>",
             "open": false
           }
         }
