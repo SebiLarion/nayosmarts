@@ -128,8 +128,73 @@
     }
   }
 
+  var STICKY_SELECTOR = 'product-sticky-form.product-sticky-form-h1';
+
   function getOpenFitsModal() {
     return document.querySelector('body > x-modal.fits-modal-h1[open], x-modal.fits-modal-h1[open]');
+  }
+
+  function getStickyForm(root) {
+    return (root || document).querySelector(STICKY_SELECTOR);
+  }
+
+  function isStickyVisible(sticky) {
+    var card = sticky && sticky.querySelector('.product-sticky-form-h1__card');
+    if (!card) return false;
+    var style = window.getComputedStyle(card);
+    return parseFloat(style.opacity) > 0 && style.visibility !== 'hidden';
+  }
+
+  function showStickyCard(sticky) {
+    var card = sticky && sticky.firstElementChild;
+    if (!card) return;
+
+    sticky.scopeFromPassed = true;
+    sticky.scopeToReached = false;
+    card.classList.remove('opacity-0', 'invisible');
+
+    if (window.Motion && typeof Motion.animate === 'function') {
+      Motion.animate(card, { opacity: 1, visibility: 'visible', transform: 'none' }, { duration: 0 });
+    } else {
+      card.style.opacity = '1';
+      card.style.visibility = 'visible';
+      card.style.transform = 'none';
+    }
+  }
+
+  function parkVisibleSticky(section) {
+    var sticky = getStickyForm(section) || document.querySelector('body > ' + STICKY_SELECTOR);
+    if (!sticky) return null;
+    if (sticky.parentNode === document.body) return sticky;
+    if (!isStickyVisible(sticky)) return null;
+    document.body.appendChild(sticky);
+    return sticky;
+  }
+
+  function keepStickyVisible(sticky) {
+    if (!sticky) return;
+    showStickyCard(sticky);
+
+    if (typeof sticky.handleIntersection === 'function' && !sticky._h1KeepVisiblePatched) {
+      sticky._h1KeepVisiblePatched = true;
+      var original = sticky.handleIntersection.bind(sticky);
+      sticky.handleIntersection = function (entries) {
+        original(entries);
+        if (sticky._h1KeepVisible) showStickyCard(sticky);
+      };
+    }
+
+    sticky._h1KeepVisible = true;
+    window.setTimeout(function () {
+      sticky._h1KeepVisible = false;
+    }, 500);
+  }
+
+  function restoreStickyAfterSwap(section, parked) {
+    var incoming = getStickyForm(section);
+    if (parked && parked.parentNode) parked.remove();
+    if (!incoming || !parked) return;
+    keepStickyVisible(incoming);
   }
 
   /**
@@ -186,13 +251,14 @@
     }
   }
 
-  function swap(section, html) {
+  function swap(section, html, options) {
     var parsed = new DOMParser().parseFromString(html, 'text/html');
     var incoming = parsed.querySelector('.shopify-section');
     if (!incoming) throw new Error('No section found in response');
 
     setInnerHTML(section, incoming.innerHTML);
     syncOpenFitsModal(section);
+    restoreStickyAfterSwap(section, options && options.parkedSticky);
     reinitDeliveryApp(section);
 
     // Apps and theme components that hook the theme editor lifecycle re-init here.
@@ -215,6 +281,7 @@
   function render(section, productUrl, pageTitle, options) {
     var sectionId = section.id.replace('shopify-section-', '');
     var openFits = getOpenFitsModal();
+    var parkedSticky = parkVisibleSticky(section);
     section.classList.add('is-swapping');
     if (openFits) openFits.classList.add('is-swapping');
 
@@ -226,13 +293,16 @@
         }
 
         updateHead(productUrl, pageTitle);
-        swap(section, html);
+        swap(section, html, { parkedSticky: parkedSticky });
         section.classList.remove('is-swapping');
         if (openFits) openFits.classList.remove('is-swapping');
       })
       .catch(function (error) {
         if (error.name === 'AbortError') return;
         console.error('[color-swap-h1]', error);
+        if (parkedSticky && parkedSticky.parentNode === document.body) {
+          section.appendChild(parkedSticky);
+        }
         section.classList.remove('is-swapping');
         if (openFits) openFits.classList.remove('is-swapping');
         window.location.href = productUrl;
