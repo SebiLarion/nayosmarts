@@ -547,6 +547,7 @@
     var loadingMore = false;
     var autoLoadDone = false;
     var expandTarget = 0;
+    var expandRetries = 0;
 
     var reviewCount = function () {
       return root.querySelectorAll('.jdgm-rev').length;
@@ -644,7 +645,12 @@
       waitForIncrease(before, function (grew) {
         loadingMore = false;
         if (grew) {
-          setTimeout(expandToTarget, 350);
+          setTimeout(expandToTarget, 700);
+          return;
+        }
+        expandRetries += 1;
+        if (expandRetries < 5 && reviewCount() < expandTarget && loadMoreButton()) {
+          setTimeout(expandToTarget, 700);
           return;
         }
         expandTarget = 0;
@@ -658,9 +664,10 @@
         if (!btn || !event.isTrusted || !autoLoadDone || expandTarget) return;
 
         var before = reviewCount();
+        expandRetries = 0;
         expandTarget = before + BATCH_SIZE;
         waitForIncrease(before, function (grew) {
-          if (grew) setTimeout(expandToTarget, 350);
+          if (grew) setTimeout(expandToTarget, 700);
           else expandTarget = 0;
         });
       },
