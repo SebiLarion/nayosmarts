@@ -447,7 +447,7 @@
             "vertical": 47,
             "horizontal_mobile": 74,
             "vertical_mobile": 47,
-            "text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
+            "text": "<p>Bottom right lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
             "color_text": "#e4452a"
           }
         },
@@ -459,7 +459,7 @@
             "vertical": 14,
             "horizontal_mobile": 77,
             "vertical_mobile": 14,
-            "text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
+            "text": "<p>Top right lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
             "color_text": "#e4452a"
           }
         },
@@ -471,7 +471,7 @@
             "vertical": 63,
             "horizontal_mobile": 41,
             "vertical_mobile": 63,
-            "text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
+            "text": "<p>Bottom left Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
             "color_text": "#e4452a"
           }
         },
@@ -483,7 +483,7 @@
             "vertical": 24,
             "horizontal_mobile": 41,
             "vertical_mobile": 24,
-            "text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
+            "text": "<p>Top left Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
             "color_text": "#e4452a"
           }
         },
