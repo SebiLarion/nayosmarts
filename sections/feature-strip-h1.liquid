@@ -43,6 +43,15 @@
     padding-inline: 0.25rem;
   }
 
+  #shopify-section-{{ section.id }} .feature-strip-h1__marquee--no-separator {
+    gap: 2.5rem;
+  }
+
+  #shopify-section-{{ section.id }} .feature-strip-h1__marquee--no-separator .marquee {
+    gap: 2.5rem;
+    padding-inline: 0;
+  }
+
   @media screen and (pointer: fine) {
     #shopify-section-{{ section.id }} .feature-strip-h1__marquee:hover .marquee {
       animation-play-state: paused;
@@ -80,13 +89,13 @@
         {%- endcapture -%}
 
         {%- if section.settings.scrolling -%}
-          <marquee-element class="feature-strip-h1__marquee hidden md:flex items-center" data-speed="{{ section.settings.speed }}" data-direction="{{ section.settings.direction }}">
+          <marquee-element class="feature-strip-h1__marquee hidden md:flex items-center{% unless section.settings.show_separator %} feature-strip-h1__marquee--no-separator{% endunless %}" data-speed="{{ section.settings.speed }}" data-direction="{{ section.settings.direction }}">
             <div class="marquee flex items-center shrink-0 whitespace-nowrap">
               {{- items -}}
             </div>
           </marquee-element>
         {%- else -%}
-          <div class="feature-strip-h1__marquee hidden md:flex items-center justify-center flex-wrap gap-4">
+          <div class="feature-strip-h1__marquee feature-strip-h1__static hidden md:flex items-center justify-center flex-wrap gap-4{% unless section.settings.show_separator %} feature-strip-h1__marquee--no-separator{% endunless %}">
             {{- items -}}
           </div>
         {%- endif -%}
