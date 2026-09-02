@@ -184,8 +184,7 @@
   /* H1 buy button: black, square, 4px orange accent bottom + right (Figma 526x51).
      Reset theme pill radius, inset ::after stroke, hover fill, and drop-shadow. */
   #shopify-section-{{ section.id }} .product-form__buttons .button,
-  #shopify-section-{{ section.id }} .product-form__buttons .button--primary,
-  #shopify-section-{{ section.id }} .product-sticky-form .button--primary {
+  #shopify-section-{{ section.id }} .product-form__buttons .button--primary {
     --buttons-radius: 0;
     --buttons-border-width: 0;
     --border-opacity: 0;
@@ -208,26 +207,22 @@
   }
 
   #shopify-section-{{ section.id }} .product-form__buttons .button::after,
-  #shopify-section-{{ section.id }} .product-form__buttons .button--primary::after,
-  #shopify-section-{{ section.id }} .product-sticky-form .button--primary::after {
+  #shopify-section-{{ section.id }} .product-form__buttons .button--primary::after {
     content: none !important;
     display: none !important;
     border: 0 !important;
   }
 
   #shopify-section-{{ section.id }} .product-form__buttons .button .btn-fill,
-  #shopify-section-{{ section.id }} .product-form__buttons .button--primary .btn-fill,
-  #shopify-section-{{ section.id }} .product-sticky-form .button--primary .btn-fill {
+  #shopify-section-{{ section.id }} .product-form__buttons .button--primary .btn-fill {
     display: none !important;
   }
 
-  #shopify-section-{{ section.id }} .product-form__buttons .button--primary .btn-text,
-  #shopify-section-{{ section.id }} .product-sticky-form .button--primary .btn-text {
+  #shopify-section-{{ section.id }} .product-form__buttons .button--primary .btn-text {
     color: inherit !important;
   }
 
-  #shopify-section-{{ section.id }} .product-form__buttons .button--primary:hover,
-  #shopify-section-{{ section.id }} .product-sticky-form .button--primary:hover {
+  #shopify-section-{{ section.id }} .product-form__buttons .button--primary:hover {
     background: #333333 !important;
     color: #f6f6f6 !important;
   }
@@ -1156,157 +1151,7 @@
       </script>
     </div>
 
-    {%- assign sticky_buy_button = section.blocks | where: "type", "sticky_buy_button" | first -%}
-    {%- if product.available and sticky_buy_button -%}
-      <product-sticky-form
-        class="product-sticky-form w-full fixed z-20 bottom-0 right-0 pointer-events-none"
-        id="ProductStickyForm-{{ section.id }}-{{ product.id }}"
-        form="{{ product_form_id }}"
-      >
-        <div class="product-sticky-form__card grid gap-4 opacity-0 invisible pointer-events-auto">
-          {%- assign featured_media = product.selected_or_first_available_variant.featured_media | default: product.featured_media -%}
-          <div class="product-sticky-form__variant{% if featured_media == blank %} no-image{% endif %} grid items-center gap-4">
-            {%- if featured_media != blank -%}
-              {%- assign max_width = featured_media.width -%}
-              {%- capture sizes -%}80px{%- endcapture -%}
-              {%- capture widths -%}{{ 80 | times: 1.5 | at_most: max_width | round }}, {{ 80 | times: 2 | at_most: max_width }}, {{ 80 | times: 3 | at_most: max_width }}{%- endcapture -%}
-              <div class="hidden md:block media media--adapt relative overflow-hidden" data-widths="{{ widths }}" data-sticky-product-media>
-                {{- featured_media | image_url: width: max_width | image_tag: loading: 'lazy', sizes: sizes, widths: widths, is: 'lazy-image' -}}
-              </div>
-            {%- endif -%}
-
-            <div class="grid gap-2">
-              <div class="grid gap-1">
-                <p class="text-base font-medium leading-tight">{{ product.title }}</p>
-                {%- unless product.has_only_default_variant -%}
-                  <div class="text-xs text-opacity leading-tight" data-sticky-product-options>
-                    {{- product.selected_or_first_available_variant.title -}}
-                  </div>
-                {%- endunless -%}
-              </div>
-              <div id="StickyPrice-{{ section.id }}-{{ product.id }}">
-                {%- if product.quantity_price_breaks_configured? != true -%}
-                  {%- render 'product-price', product: product, use_variant: true, class: 'flex flex-wrap items-center gap-2 lg:gap-1d5' -%}
-                {%- else -%}
-                  {%- liquid
-                    assign assign cart_qty = cart | item_count_for_variant: product.selected_or_first_available_variant.id
-                    assign volume_pricing_array = product.selected_or_first_available_variant.quantity_price_breaks | sort: 'quantity' | reverse
-                    assign current_qty_for_volume_pricing = cart_qty | plus: product.selected_or_first_available_variant.quantity_rule.min
-                    if cart_qty > 0
-                      assign current_qty_for_volume_pricing = cart_qty | plus: product.selected_or_first_available_variant.quantity_rule.increment
-                    endif
-                    assign variant_price_compare = product.selected_or_first_available_variant.compare_at_price
-                  -%}
-                  <price-per-item
-                    id="PricePerItem-{{ section.id }}-{{ product.id }}-2nd"
-                    class="price flex flex-wrap items-center gap-2 lg:gap-1d5"
-                    data-section-id="{{ section.id }}"
-                    data-product-id="{{ product.id }}"
-                    data-variant-id="{{ product.selected_or_first_available_variant.id }}"
-                  >
-                    {%- if variant_price_compare -%}
-                      <span class="sr-only">{{ 'products.price.regular_price' | t }}</span>
-                      <span class="price__sale inline-flex items-center h-auto relative">
-                        {%- liquid
-                          if settings.currency_code_enabled
-                            echo variant_price_compare | money_with_currency
-                          else
-                            echo variant_price_compare | money
-                          endif
-                        -%}
-                      </span>
-                      <span class="sr-only">{{ 'products.price.sale_price' | t }}</span>
-                    {%- endif -%}
-                    
-                    {%- if product.selected_or_first_available_variant.quantity_price_breaks.size > 0 -%}
-                      {%- if current_qty_for_volume_pricing < volume_pricing_array.last.minimum_quantity -%}
-                        {%- liquid
-                          if settings.currency_code_enabled
-                            assign variant_price = product.selected_or_first_available_variant.price | money_with_currency
-                          else
-                            assign variant_price = product.selected_or_first_available_variant.price | money
-                          endif
-                        -%}
-                        <span class="price-per-item--current price__regular whitespace-nowrap">
-                          {{- 'products.volume_pricing.price_at_each' | t: price: variant_price -}}
-                        </span>
-                      {%- else -%}
-                        {%- for price_break in volume_pricing_array -%}
-                          {%- if current_qty_for_volume_pricing >= price_break.minimum_quantity -%}
-                            {%- liquid
-                              if settings.currency_code_enabled
-                                assign price_break_price = price_break.price | money_with_currency
-                              else
-                                assign price_break_price = price_break.price | money
-                              endif
-                            -%}
-                            <span class="price-per-item--current price__regular whitespace-nowrap">
-                              {{- 'products.volume_pricing.price_at_each' | t: price: price_break_price -}}
-                            </span>
-                            {%- break -%}
-                          {%- endif -%}
-                        {%- endfor -%}
-                      {%- endif -%}
-                    {%- else -%}
-                      <span class="price-per-item--current price__regular whitespace-nowrap">
-                        {%- liquid
-                          if settings.currency_code_enabled
-                            assign variant_price = product.selected_or_first_available_variant.price | money_with_currency
-                          else
-                            assign variant_price = product.selected_or_first_available_variant.price | money
-                          endif
-                        -%}
-                        {{- 'products.volume_pricing.price_at_each' | t: price: variant_price -}}
-                      </span>
-                    {%- endif -%}
-                  </price-per-item>
-                {%- endif -%}
-              </div>
-            </div>
-
-            {%- liquid
-              assign check_against_inventory = true
-              if product.selected_or_first_available_variant.inventory_management != 'shopify' or  product.selected_or_first_available_variant.inventory_policy == 'continue'
-                assign check_against_inventory = false
-              endif
-              if product.selected_or_first_available_variant.quantity_rule.min > product.selected_or_first_available_variant.inventory_quantity and check_against_inventory
-                assign quantity_rule_soldout = true
-              endif
-
-              if product.selected_or_first_available_variant.available == false or quantity_rule_soldout
-                assign add_to_cart_label = 'products.product.sold_out' | t
-                assign add_to_cart_aria = 'products.product.sold_out' | t
-              elsif product.template_suffix != 'pre-order'
-                assign add_to_cart_label = 'products.product.add_to_cart' | t
-                assign add_to_cart_aria = 'products.product.add_to_cart_label' | t: title: product.title
-              else
-                assign add_to_cart_label = 'products.product.pre_order' | t
-                assign add_to_cart_aria = 'products.product.pre_order_label' | t: title: product.title
-              endif
-            -%}
-            <button
-              type="submit"
-              name="add"
-              form="{{ product_form_id }}"
-              class="button button--primary"
-              is="hover-button"
-              aria-label="{{ add_to_cart_aria | escape }}"
-              {%- if product.selected_or_first_available_variant.available == false or quantity_rule_soldout %} disabled{% endif -%}
-              {%- if product.template_suffix == 'pre-order' %} data-pre-order{% endif -%}
-            >
-              <span class="btn-fill" data-fill></span>
-              <span class="btn-text">
-                {%- render 'icon', icon: 'cart', size: 'sm', class: 'md:hidden' -%}
-                <span class="hidden md:block" data-sold-out="{{ 'products.product.sold_out' | t | escape }}">
-                  {{- add_to_cart_label -}}
-                </span>
-              </span>
-            </button>
-          </div>
-          <div class="product-form__error-message alert alert--error text-sm font-medium leading-tight" role="alert" hidden></div>
-        </div>
-      </product-sticky-form>
-    {%- endif -%}
+    {%- render 'product-sticky-form-h1', product: product, section: section, product_form_id: product_form_id -%}
   </div>
 
   {%- if first_3d_model -%}
