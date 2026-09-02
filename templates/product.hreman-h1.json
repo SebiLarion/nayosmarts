@@ -171,6 +171,10 @@
           "type": "product",
           "settings": {
             "product": "nayo-smart-herman-h3-sling-bag",
+            "products": [
+              "nayo-smart-herman-h3-sling-bag",
+              "herman-h3-sling-bag-green"
+            ],
             "savings_text": "$35 USD cheaper"
           }
         },
