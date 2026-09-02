@@ -51,19 +51,25 @@
   }
 
   #shopify-section-{{ section.id }} .faq-h1__rte p {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-4);
     margin: 0;
     font-size: var(--text-base);
     line-height: 1.5;
   }
   #shopify-section-{{ section.id }} .faq-h1__rte p + p {
-    margin-block-start: 1rem;
+    margin-block-start: var(--sp-6);
+  }
+  #shopify-section-{{ section.id }} .faq-h1__rte p br {
+    display: none;
   }
   #shopify-section-{{ section.id }} .faq-h1__rte p strong {
     display: block;
     font-weight: 600;
     font-size: 1.125rem;
     line-height: 1;
-    margin-block-end: 0.5rem;
   }
 
   #shopify-section-{{ section.id }} .faq-h1__row {
@@ -135,7 +141,7 @@
       margin-block-start: 1.5rem;
     }
     #shopify-section-{{ section.id }} .faq-h1__rte p + p {
-      margin-block-start: 1.5rem;
+      margin-block-start: var(--sp-6);
     }
     #shopify-section-{{ section.id }} .faq-h1__region-label {
       margin-block-end: 1.25rem;
@@ -194,7 +200,13 @@
                 </summary>
                 <div class="details__content faq-h1__content">
                   {%- if block.settings.content != blank -%}
-                    <div class="faq-h1__rte">{{ block.settings.content }}</div>
+                    {%- liquid
+                      assign faq_content = block.settings.content
+                      assign faq_content = faq_content | replace: '</strong><br/>', '</strong>'
+                      assign faq_content = faq_content | replace: '</strong><br />', '</strong>'
+                      assign faq_content = faq_content | replace: '</strong><br>', '</strong>'
+                    -%}
+                    <div class="faq-h1__rte">{{ faq_content }}</div>
                   {%- endif -%}
 
             {%- when 'icon_row' -%}
@@ -337,7 +349,7 @@
           "type": "richtext",
           "id": "content",
           "label": "Content",
-          "info": "Bold text on its own line becomes a sub-heading, e.g. Capacity."
+          "info": "Bold the label, then the value. Spacing after labels is handled in CSS — do not add blank lines or extra line breaks after Capacity, Max Laptop Carry, and similar labels."
         },
         {
           "type": "checkbox",
