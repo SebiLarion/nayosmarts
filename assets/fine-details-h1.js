@@ -6,17 +6,16 @@ if (!customElements.get('fine-details-h1')) {
         this.modal = this.querySelector('.fine-details-h1-modal');
         this.tabs = Array.from(this.querySelectorAll('[data-fine-details-tab]'));
         this.views = Array.from(this.querySelectorAll('[data-fine-details-view]'));
-        this.titleEl = this.modal?.querySelector('[data-fine-details-title]');
-        this.textEl = this.modal?.querySelector('[data-fine-details-text]');
-        this.imageEl = this.modal?.querySelector('[data-fine-details-image]');
         this.prevBtn = this.modal?.querySelector('[data-fine-details-prev]');
         this.nextBtn = this.modal?.querySelector('[data-fine-details-next]');
-        this.index = Math.max(
+        this.hotspots = Array.from(this.querySelectorAll('[data-fine-details-hotspot]')).sort(
+          (a, b) => Number(a.dataset.hotspotIndex) - Number(b.dataset.hotspotIndex)
+        );
+        this.viewIndex = Math.max(
           0,
           this.tabs.findIndex((tab) => tab.getAttribute('aria-selected') === 'true')
         );
-
-        this.hotspots = Array.from(this.querySelectorAll('.fine-details-h1__hotspot'));
+        this.hotspotIndex = 0;
 
         this.onTabClick = this.onTabClick.bind(this);
         this.onPrev = this.onPrev.bind(this);
@@ -24,61 +23,60 @@ if (!customElements.get('fine-details-h1')) {
         this.onHotspotClick = this.onHotspotClick.bind(this);
 
         this.tabs.forEach((tab) => tab.addEventListener('click', this.onTabClick));
-        this.hotspots.forEach((hotspot) => hotspot.addEventListener('click', this.onHotspotClick, true));
+        this.hotspots.forEach((hotspot) => hotspot.addEventListener('click', this.onHotspotClick));
         this.prevBtn?.addEventListener('click', this.onPrev);
         this.nextBtn?.addEventListener('click', this.onNext);
 
-        const hideNav = this.views.length < 2;
+        const hideNav = this.hotspots.length < 2;
         if (this.prevBtn) this.prevBtn.hidden = hideNav;
         if (this.nextBtn) this.nextBtn.hidden = hideNav;
 
-        this.activate(this.index, { open: false });
+        this.activateView(this.viewIndex);
       }
 
       disconnectedCallback() {
         this.tabs.forEach((tab) => tab.removeEventListener('click', this.onTabClick));
-        this.hotspots?.forEach((hotspot) => hotspot.removeEventListener('click', this.onHotspotClick, true));
+        this.hotspots.forEach((hotspot) => hotspot.removeEventListener('click', this.onHotspotClick));
         this.prevBtn?.removeEventListener('click', this.onPrev);
         this.nextBtn?.removeEventListener('click', this.onNext);
-      }
-
-      onHotspotClick(event) {
-        const desktopHover = window.matchMedia('(min-width: 768px) and (pointer: fine)').matches;
-        if (desktopHover && event.detail !== 0) {
-          event.preventDefault();
-          event.stopPropagation();
-          event.stopImmediatePropagation();
-        }
       }
 
       onTabClick(event) {
         event.preventDefault();
         const index = this.tabs.indexOf(event.currentTarget);
         if (index < 0) return;
-        this.activate(index, { open: true, trigger: event.currentTarget });
+        this.activateView(index);
+      }
+
+      onHotspotClick(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const index = Number(event.currentTarget.dataset.hotspotIndex);
+        if (Number.isNaN(index)) return;
+        this.openHotspot(index);
       }
 
       onPrev(event) {
         event.preventDefault();
         event.stopPropagation();
-        this.activate(this.wrap(this.index - 1), { open: true });
+        this.openHotspot(this.wrap(this.hotspotIndex - 1));
       }
 
       onNext(event) {
         event.preventDefault();
         event.stopPropagation();
-        this.activate(this.wrap(this.index + 1), { open: true });
+        this.openHotspot(this.wrap(this.hotspotIndex + 1));
       }
 
       wrap(index) {
-        const total = this.views.length;
+        const total = this.hotspots.length;
         if (total < 1) return 0;
         return (index + total) % total;
       }
 
-      activate(index, { open = false, trigger = null } = {}) {
+      activateView(index) {
         if (!this.views[index]) return;
-        this.index = index;
+        this.viewIndex = index;
 
         this.tabs.forEach((tab, i) => {
           const selected = i === index;
@@ -89,47 +87,56 @@ if (!customElements.get('fine-details-h1')) {
         this.views.forEach((view, i) => {
           view.hidden = i !== index;
         });
+      }
 
-        this.syncModal();
+      openHotspot(index) {
+        const hotspot = this.hotspots.find((item) => Number(item.dataset.hotspotIndex) === index);
+        if (!hotspot) return;
 
-        if (open && this.modal) {
-          if (this.modal.open) return;
-          this.modal.show(trigger || this.tabs[index] || this);
+        this.hotspotIndex = index;
+
+        const viewIndex = this.views.findIndex((view) => view.dataset.viewKey === hotspot.dataset.viewKey);
+        if (viewIndex >= 0) this.activateView(viewIndex);
+
+        this.syncModal(hotspot);
+
+        if (this.modal && !this.modal.open) {
+          this.modal.show(hotspot);
         }
       }
 
-      syncModal() {
-        const view = this.views[this.index];
-        if (!view) return;
+      syncModal(hotspot) {
+        const title = hotspot.dataset.title || '';
+        const text = hotspot.querySelector('[data-hotspot-copy]')?.innerHTML || '';
+        const image = this.popupImage(hotspot);
+        const alt = hotspot.dataset.imageAlt || title;
+        const titleEl = this.modal?.querySelector('[data-fine-details-title]');
+        const textEl = this.modal?.querySelector('[data-fine-details-text]');
+        const imageEl = this.modal?.querySelector('[data-fine-details-image]');
 
-        const title = view.dataset.title || '';
-        const text = view.querySelector('[data-fine-details-copy]')?.innerHTML || '';
-        const image = this.popupImage(view);
-        const alt = view.dataset.imageAlt || title;
-
-        if (this.titleEl) this.titleEl.textContent = title;
-        if (this.textEl) this.textEl.innerHTML = text;
-        if (this.imageEl) {
+        if (titleEl) titleEl.textContent = title;
+        if (textEl) textEl.innerHTML = text;
+        if (imageEl) {
           if (image) {
-            this.imageEl.hidden = false;
-            this.imageEl.src = image;
-            this.imageEl.alt = alt;
+            imageEl.hidden = false;
+            imageEl.src = image;
+            imageEl.alt = alt;
           } else {
-            this.imageEl.hidden = true;
-            this.imageEl.removeAttribute('src');
-            this.imageEl.alt = '';
+            imageEl.hidden = true;
+            imageEl.removeAttribute('src');
+            imageEl.alt = '';
           }
         }
 
         this.modal?.setAttribute('aria-label', title);
       }
 
-      popupImage(view) {
+      popupImage(hotspot) {
         const mobile = window.matchMedia('(max-width: 767px)').matches;
         if (mobile) {
-          return view.dataset.popupImageMobile || view.dataset.popupImage || view.dataset.imageMobile || view.dataset.image || '';
+          return hotspot.dataset.imageMobile || hotspot.dataset.image || '';
         }
-        return view.dataset.popupImage || view.dataset.image || view.dataset.imageMobile || '';
+        return hotspot.dataset.image || hotspot.dataset.imageMobile || '';
       }
     }
   );

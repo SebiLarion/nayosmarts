@@ -447,7 +447,6 @@
             "vertical": 47,
             "horizontal_mobile": 74,
             "vertical_mobile": 47,
-            "heading": "Quick-access buckle",
             "text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
             "color_text": "#e4452a"
           }
@@ -460,7 +459,6 @@
             "vertical": 14,
             "horizontal_mobile": 77,
             "vertical_mobile": 14,
-            "heading": "Roll-top closure",
             "text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
             "color_text": "#e4452a"
           }
@@ -473,7 +471,6 @@
             "vertical": 63,
             "horizontal_mobile": 41,
             "vertical_mobile": 63,
-            "heading": "Front strap",
             "text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
             "color_text": "#e4452a"
           }
@@ -486,7 +483,6 @@
             "vertical": 24,
             "horizontal_mobile": 41,
             "vertical_mobile": 24,
-            "heading": "Side attachment",
             "text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
             "color_text": "#e4452a"
           }
@@ -516,7 +512,7 @@
         "view_jiizUD": {
           "type": "view",
           "settings": {
-            "view_key": "interior",
+            "view_key": "back",
             "label": "Back",
             "image": "shopify://shop_images/61e1c820f78e1e1efbf48def925a881b294e3b46.png",
             "image_mobile": "shopify://shop_images/61e1c820f78e1e1efbf48def925a881b294e3b46.png",

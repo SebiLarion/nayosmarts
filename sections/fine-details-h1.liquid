@@ -180,12 +180,19 @@
   }
 
   #shopify-section-{{ section.id }} .fine-details-h1__hotspot {
+    appearance: none;
+    -webkit-appearance: none;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    color: inherit;
     z-index: 3;
     pointer-events: auto;
   }
 
   #shopify-section-{{ section.id }} .fine-details-h1__hotspot .hotspot__content {
-    z-index: 4;
+    display: none !important;
   }
 
   @media screen and (min-width: 768px) {
@@ -255,6 +262,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    pointer-events: none !important;
+  }
+
+  .fine-details-h1-modal.x-modal .overlay,
+  .fine-details-h1-modal .drawer__inner {
+    pointer-events: auto;
   }
 
   .fine-details-h1-modal[hidden] {
@@ -267,7 +280,7 @@
   }
 
   .fine-details-h1-modal .drawer__inner {
-    position: static;
+    position: relative;
     inset: auto;
     display: flex;
     flex-direction: column;
@@ -280,6 +293,7 @@
     color: #171717;
     border-radius: 0;
     transform: none;
+    z-index: 10;
   }
 
   @media screen and (max-width: 639px) {
@@ -412,15 +426,17 @@
 
   .fine-details-h1-modal__media img {
     display: block;
-    width: 15.625rem;
-    height: 16.375rem;
+    width: auto;
+    max-width: 15.625rem;
+    height: auto;
+    max-height: min(16.375rem, 42vh);
     object-fit: contain;
   }
 
   @media screen and (min-width: 640px) {
     .fine-details-h1-modal__media img {
-      width: 27.5625rem;
-      height: 28.875rem;
+      max-width: 27.5625rem;
+      max-height: min(28.875rem, 50vh);
     }
   }
 
@@ -459,27 +475,6 @@
     transform: scaleX(-1);
   }
 
-  .js [data-modal-swipe-only] .fine-details-h1-hotspot-modal .drawer__close,
-  .fine-details-h1-hotspot-modal .drawer__close {
-    display: flex;
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-    z-index: 2;
-  }
-
-  @media screen and (max-width: 639px) {
-    .js [data-modal-swipe-only] .fine-details-h1-hotspot-modal .drawer__close,
-    .fine-details-h1-hotspot-modal .drawer__close {
-      position: absolute;
-      top: 0.25rem;
-      right: 0.25rem;
-    }
-
-    .fine-details-h1-hotspot-modal .drawer__title {
-      padding-inline-end: 2.75rem;
-    }
-  }
 </style>
 
 {%- liquid
@@ -545,12 +540,7 @@
             <div
               class="fine-details-h1__view"
               data-fine-details-view
-              data-title="{{ popup_title | escape }}"
-              data-image="{{ image_url | escape }}"
-              data-image-mobile="{{ image_mobile_url | escape }}"
-              data-popup-image="{{ popup_image_url | escape }}"
-              data-popup-image-mobile="{{ popup_image_mobile_url | escape }}"
-              data-image-alt="{{ popup_title | escape }}"
+              data-view-key="{{ view.settings.view_key | escape }}"
               {% unless forloop.first %}hidden{% endunless %}
             >
               <div class="fine-details-h1__scene">
@@ -575,65 +565,53 @@
               {%- for block in section.blocks -%}
                 {%- if block.type == 'hotspot' and block.settings.view_key == view.settings.view_key -%}
                   {%- liquid
-                    assign hotspot_heading = block.settings.heading
                     assign hotspot_text = block.settings.text
-                    assign hotspot_modal_id = 'FineDetailsHotspot-' | append: section.id | append: '-' | append: block.id
+                    assign hotspot_title = view_label
+                    assign hotspot_index = 0
+                    for hs in section.blocks
+                      if hs.type == 'hotspot'
+                        if hs.id == block.id
+                          break
+                        endif
+                        assign hotspot_index = hotspot_index | plus: 1
+                      endif
+                    endfor
+
+                    assign hotspot_image = block.settings.popup_image
+                    assign hotspot_image_mobile = block.settings.popup_image_mobile | default: hotspot_image
+                    assign hotspot_image_url = blank
+                    assign hotspot_image_mobile_url = blank
+                    if hotspot_image != blank
+                      assign hotspot_image_url = hotspot_image | image_url: width: 900
+                    else
+                      assign hotspot_image_url = popup_image_url
+                    endif
+                    if hotspot_image_mobile != blank
+                      assign hotspot_image_mobile_url = hotspot_image_mobile | image_url: width: 600
+                    else
+                      assign hotspot_image_mobile_url = hotspot_image_url
+                    endif
                   -%}
-                  <a
-                    class="hotspot with-content fine-details-h1__hotspot flex items-center justify-center absolute z-1 cursor-pointer"
-                    role="link"
-                    aria-disabled="true"
-                    aria-controls="{{ hotspot_modal_id }}"
-                    aria-expanded="false"
-                    aria-label="{{ hotspot_heading | default: heading | escape }}"
+                  <button
+                    type="button"
+                    class="hotspot fine-details-h1__hotspot flex items-center justify-center absolute z-1 cursor-pointer"
+                    data-fine-details-hotspot
+                    data-hotspot-index="{{ hotspot_index }}"
+                    data-view-key="{{ block.settings.view_key | escape }}"
+                    data-title="{{ hotspot_title | escape }}"
+                    data-image="{{ hotspot_image_url | escape }}"
+                    data-image-mobile="{{ hotspot_image_mobile_url | escape }}"
+                    data-image-alt="{{ hotspot_title | escape }}"
+                    aria-label="{{ hotspot_title | escape }}"
                     id="shopify-block-{{ block.id }}"
                     {{ block.shopify_attributes }}
                   >
-                    {%- if hotspot_heading != blank or hotspot_text != blank -%}
-                      <div class="hotspot__content hidden md:flex gap-2 items-center absolute z-1 pointer-events-none{% if block.settings.horizontal < 15 %} with-left{% elsif block.settings.horizontal > 85 %} with-right{% endif %}{% if block.settings.vertical > 70 %} with-bottom{% endif %}">
-                        <div class="rte text-sm leading-tight grid gap-2 md:gap-3">
-                          {%- if hotspot_heading != blank -%}
-                            <p class="horizontal-product__title lg:text-base lg:font-medium leading-tight">{{ hotspot_heading }}</p>
-                          {%- endif -%}
-                          {{- hotspot_text -}}
-                        </div>
-                        {%- render 'icon', icon: 'caret', class: 'absolute' -%}
-                      </div>
-                    {%- endif -%}
-                  </a>
-                  <x-modal
-                    id="{{ hotspot_modal_id }}"
-                    class="fine-details-h1-hotspot-modal x-modal drawer z-30 fixed bottom-0 left-0 h-full w-full pointer-events-none"
-                    role="dialog"
-                    aria-modal="true"
-                    aria-label="{{ hotspot_heading | default: heading | escape }}"
-                    hidden
-                  >
-                    <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="{{ hotspot_modal_id }}" aria-expanded="false"></overlay-element>
-                    <div class="drawer__inner z-10 absolute top-0 flex flex-col w-full h-full overflow-hidden">
-                      <gesture-element class="drawer__header flex justify-between opacity-0 invisible relative" tabindex="0">
-                        <span class="drawer__title heading title-md">{{ hotspot_heading | escape }}</span>
-                        <button class="button button--secondary button--close drawer__close flex items-center justify-center" type="button" is="hover-button" aria-controls="{{ hotspot_modal_id }}" aria-expanded="false" aria-label="{{ 'general.accessibility.close' | t | escape }}">
-                          <span class="btn-fill" data-fill></span>
-                          <span class="btn-text">
-                            {%- render 'icon', icon: 'close', size: 'sm' -%}
-                          </span>
-                        </button>
-                      </gesture-element>
-                      <div class="drawer__content opacity-0 invisible flex flex-col h-full grow shrink">
-                        <div class="drawer__scrollable relative flex flex-col gap-5 md:gap-7 grow shrink">
-                          <div class="rte text-base md:text-lg">{{ hotspot_text }}</div>
-                        </div>
-                      </div>
-                    </div>
-                  </x-modal>
+                    <template data-hotspot-copy>{{ hotspot_text }}</template>
+                  </button>
                 {%- endif -%}
               {%- endfor -%}
               </div>
 
-              <template data-fine-details-copy>
-                {{ view.settings.popup_text }}
-              </template>
             </div>
           {%- endfor -%}
 
@@ -817,7 +795,7 @@
           "type": "text",
           "id": "popup_title",
           "label": "Popup title",
-          "info": "Leave blank to use the button label."
+          "info": "Unused. Popup content now comes from each hotspot."
         },
         {
           "type": "richtext",
@@ -829,7 +807,7 @@
           "type": "image_picker",
           "id": "popup_image",
           "label": "Popup image",
-          "info": "Leave blank to reuse the view image."
+          "info": "Fallback image if a hotspot has no popup image."
         },
         {
           "type": "image_picker",
@@ -903,16 +881,24 @@
           "default": 50
         },
         {
-          "type": "text",
-          "id": "heading",
-          "label": "t:sections.global.settings.heading.label",
-          "default": "Feature highlight"
+          "type": "header",
+          "content": "Popup"
         },
         {
           "type": "richtext",
           "id": "text",
           "label": "t:sections.global.settings.text.label",
           "default": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>"
+        },
+        {
+          "type": "image_picker",
+          "id": "popup_image",
+          "label": "Popup image"
+        },
+        {
+          "type": "image_picker",
+          "id": "popup_image_mobile",
+          "label": "Popup image - mobile"
         },
         {
           "type": "color",
