@@ -146,9 +146,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 0.5rem 0.75rem;
-    min-height: 2rem;
+    min-height: 1.75rem;
   }
 
   #shopify-section-{{ section.id }} .bundle-card-h1__color-label {
@@ -169,7 +169,7 @@
 
   #shopify-section-{{ section.id }} .bundle-card-h1__swatches {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: center;
     gap: 0.4rem;
@@ -192,11 +192,12 @@
     background-position: center;
     background-origin: content-box;
     background-clip: content-box;
+    box-shadow: inset 0 0 0 1px rgb(23 23 23 / 0.28);
     cursor: pointer;
   }
 
   #shopify-section-{{ section.id }} .bundle-card-h1__swatch[aria-current='true'] {
-    box-shadow: inset 0 0 0 1.2px #171717;
+    box-shadow: inset 0 0 0 1.5px #171717;
   }
 
   #shopify-section-{{ section.id }} .bundle-card-h1__swatch.is-unavailable {
@@ -312,8 +313,8 @@
                   <a href="{{ card_product.url }}" data-bundle-title>{{ card_product.title | escape }}</a>
                 </h3>
 
+                <div class="bundle-card-h1__colors">
                 {%- if show_color_swatches -%}
-                  <div class="bundle-card-h1__colors">
                     <p class="bundle-card-h1__color-label">
                       <strong>{{ option_name | escape }}:</strong>
                       <span data-bundle-color>{{ current_color | escape }}</span>
@@ -442,8 +443,8 @@
                         {%- endfor -%}
                       {%- endif -%}
                     </ul>
-                  </div>
                 {%- endif -%}
+                </div>
 
                 {%- if size_option != blank and has_color_products == false -%}
                   <div class="bundle-card-h1__field">
@@ -686,7 +687,7 @@
       "type": "text",
       "id": "option_value_metafield",
       "label": "Color metafield",
-      "info": "Used when a product block has Color products. Example: custom.color",
+      "info": "Label for Color products, e.g. custom.color. Swatch fill uses the Color category metafield (shopify.color-pattern) first.",
       "default": "custom.color"
     },
     {
