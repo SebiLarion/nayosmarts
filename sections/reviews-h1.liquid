@@ -542,23 +542,19 @@
     if (!root) return;
 
     var BATCH_SIZE = 6;
-    var MAX_LOAD_MORE_CLICKS = 8;
-    var loadMoreClicks = 0;
-    var loadingMore = false;
-    var autoLoadDone = false;
-    var expandTarget = 0;
-    var expandRetries = 0;
+    var applied = false;
+    var requestInFlight = false;
 
     var reviewCount = function () {
       return root.querySelectorAll('.jdgm-rev').length;
     };
 
-    var loadMoreButton = function () {
-      return root.querySelector('.jdgm-paginate__load-more');
+    var widgetEl = function () {
+      return root.querySelector('.jdgm-review-widget, [data-widget="review"]');
     };
 
     var widgetReady = function () {
-      return !!(root.querySelector('.jdgm--done-setup-widget') && window.jdgm && jdgm.$);
+      return !!(root.querySelector('.jdgm--done-setup-widget') && window.jdgm && jdgm.$ && widgetEl());
     };
 
     var revealWriteReview = function () {
@@ -571,114 +567,63 @@
       });
     };
 
-    var triggerLoadMore = function (btn) {
-      if (window.jdgm && jdgm.$) {
-        jdgm.$(btn).trigger('click');
-        return;
-      }
-      btn.click();
+    var finishSetup = function ($widget) {
+      if (typeof jdgm.customizeReviews === 'function') jdgm.customizeReviews();
+      if (typeof jdgm.setupMediaGallery === 'function') jdgm.setupMediaGallery($widget);
+      revealWriteReview();
     };
 
-    var waitForIncrease = function (before, callback) {
-      var elapsed = 0;
-      var timer = setInterval(function () {
-        elapsed += 100;
-        if (reviewCount() > before) {
-          clearInterval(timer);
-          callback(true);
-        } else if (elapsed >= 3000) {
-          clearInterval(timer);
-          callback(false);
+    var applyBatchSize = function () {
+      if (applied || requestInFlight || !widgetReady()) return;
+
+      var $widget = jdgm.$(widgetEl());
+      var $paginate = $widget.find('.jdgm-paginate').first();
+      if (!$paginate.length) {
+        applied = true;
+        return;
+      }
+
+      var currentPerPage = parseInt($paginate.attr('data-per-page'), 10) || 0;
+      if (currentPerPage >= BATCH_SIZE && reviewCount() >= BATCH_SIZE) {
+        applied = true;
+        return;
+      }
+
+      var url = $paginate.attr('data-url') || $paginate.data('url');
+      if (!url) {
+        applied = true;
+        return;
+      }
+
+      requestInFlight = true;
+      var params = jdgm.$.extend(jdgm.ajaxParamsFor($widget), {
+        page: 1,
+        per_page: BATCH_SIZE
+      });
+
+      jdgm.$.ajax({
+        url: jdgm.toCdnUrl(url),
+        data: params,
+        success: function (res) {
+          requestInFlight = false;
+          if (!res || !res.html) return;
+          var $body = $widget.find('.jdgm-rev-widg__body');
+          if (!$body.length) $body = $widget;
+          $body.html(res.html);
+          applied = true;
+          finishSetup($widget);
+        },
+        error: function () {
+          requestInFlight = false;
         }
-      }, 100);
-    };
-
-    var prefetchReviews = function () {
-      if (autoLoadDone || loadingMore) return;
-      if (reviewCount() >= BATCH_SIZE) {
-        autoLoadDone = true;
-        return;
-      }
-      if (!widgetReady()) return;
-
-      var btn = loadMoreButton();
-      if (!btn) {
-        autoLoadDone = true;
-        return;
-      }
-      if (loadMoreClicks >= MAX_LOAD_MORE_CLICKS) {
-        autoLoadDone = true;
-        return;
-      }
-
-      loadMoreClicks += 1;
-      loadingMore = true;
-      var before = reviewCount();
-      triggerLoadMore(btn);
-
-      waitForIncrease(before, function (grew) {
-        loadingMore = false;
-        if (grew) {
-          prefetchReviews();
-          return;
-        }
-        if (loadMoreClicks >= MAX_LOAD_MORE_CLICKS) autoLoadDone = true;
       });
     };
-
-    var expandToTarget = function () {
-      if (!expandTarget || loadingMore) return;
-      if (reviewCount() >= expandTarget) {
-        expandTarget = 0;
-        return;
-      }
-
-      var btn = loadMoreButton();
-      if (!btn) {
-        expandTarget = 0;
-        return;
-      }
-
-      loadingMore = true;
-      var before = reviewCount();
-      triggerLoadMore(btn);
-      waitForIncrease(before, function (grew) {
-        loadingMore = false;
-        if (grew) {
-          setTimeout(expandToTarget, 700);
-          return;
-        }
-        expandRetries += 1;
-        if (expandRetries < 5 && reviewCount() < expandTarget && loadMoreButton()) {
-          setTimeout(expandToTarget, 700);
-          return;
-        }
-        expandTarget = 0;
-      });
-    };
-
-    root.addEventListener(
-      'click',
-      function (event) {
-        var btn = event.target.closest && event.target.closest('.jdgm-paginate__load-more');
-        if (!btn || !event.isTrusted || !autoLoadDone || expandTarget) return;
-
-        var before = reviewCount();
-        expandRetries = 0;
-        expandTarget = before + BATCH_SIZE;
-        waitForIncrease(before, function (grew) {
-          if (grew) setTimeout(expandToTarget, 700);
-          else expandTarget = 0;
-        });
-      },
-      true
-    );
 
     revealWriteReview();
-    prefetchReviews();
+    applyBatchSize();
     new MutationObserver(function () {
       revealWriteReview();
-      prefetchReviews();
+      applyBatchSize();
     }).observe(root, {
       childList: true,
       subtree: true,
@@ -690,8 +635,8 @@
     var poll = setInterval(function () {
       polls += 1;
       revealWriteReview();
-      prefetchReviews();
-      if (autoLoadDone || polls >= 60) clearInterval(poll);
+      applyBatchSize();
+      if (applied || polls >= 60) clearInterval(poll);
     }, 250);
   })();
 </script>
