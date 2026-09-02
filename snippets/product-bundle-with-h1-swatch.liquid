@@ -16,7 +16,11 @@
 
 {%- liquid
   assign item_variant = item_product.selected_or_first_available_variant
-  assign item_color = item_product.metafields[metafield_namespace][metafield_key].value | default: item_product.title
+  assign item_color_raw = item_product.metafields[metafield_namespace][metafield_key].value
+  assign item_color = item_color_raw | default: item_product.title
+  if item_color_raw.label != blank
+    assign item_color = item_color_raw.label
+  endif
   assign item_media = item_variant.featured_media | default: item_product.featured_media
 
   if settings.currency_code_enabled
@@ -29,34 +33,76 @@
   assign swatch_fallback = item_color | split: ' ' | last | handle
   assign swatch_fallback_override = false
 
-  if item_color.swatch != blank
-    if item_color.swatch.image
-      assign swatch_image = item_color.swatch.image | image_url: width: 128
-    elsif item_color.swatch.color
-      assign swatch_fallback = item_color.swatch.color
+  assign category_value = item_product.metafields.shopify['color-pattern'].value
+  assign category_entry = blank
+  if category_value != blank
+    if category_value.color != blank or category_value.image != blank
+      assign category_entry = category_value
+    else
+      assign category_entry = category_value | first
+    endif
+  endif
+  if category_entry == blank
+    assign category_value = item_product.metafields.shopify.color.value
+    if category_value != blank
+      if category_value.color != blank or category_value.image != blank
+        assign category_entry = category_value
+      else
+        assign category_entry = category_value | first
+      endif
+    endif
+  endif
+
+  if category_entry != blank
+    if category_entry.image
+      assign swatch_image = category_entry.image | image_url: width: 128
+    elsif category_entry.color != blank
+      assign swatch_fallback = category_entry.color
+      assign swatch_fallback_override = true
+    elsif category_entry.swatch.image
+      assign swatch_image = category_entry.swatch.image | image_url: width: 128
+    elsif category_entry.swatch.color
+      assign swatch_fallback = category_entry.swatch.color
       assign swatch_fallback_override = true
     endif
-  elsif settings.swatch_config != blank
-    assign value_downcase = item_color | downcase | strip
-    assign swatch_config = settings.swatch_config | newline_to_br | split: '<br />'
-    for swatch in swatch_config
-      assign swatch_parts = swatch | strip | split: ':'
-      assign swatch_name = swatch_parts.first | downcase | strip
-      if swatch_name == value_downcase
-        assign swatch_value = swatch_parts.last | strip
-        if swatch_value contains '#'
-          assign swatch_fallback = swatch_value
-          assign swatch_fallback_override = true
-        else
-          if images[swatch_value] != blank
-            assign swatch_image = images[swatch_value] | image_url: width: 128
-          elsif swatch_value contains '//cdn.shopify.com/'
-            assign swatch_image = swatch_value
-          endif
-        endif
-        break
+    if item_color_raw == blank and category_entry.label != blank
+      assign item_color = category_entry.label
+    endif
+  endif
+
+  if swatch_fallback_override == false and swatch_image == blank
+    if item_color_raw.swatch != blank
+      if item_color_raw.swatch.image
+        assign swatch_image = item_color_raw.swatch.image | image_url: width: 128
+      elsif item_color_raw.swatch.color
+        assign swatch_fallback = item_color_raw.swatch.color
+        assign swatch_fallback_override = true
       endif
-    endfor
+    elsif item_color_raw.color != blank
+      assign swatch_fallback = item_color_raw.color
+      assign swatch_fallback_override = true
+    elsif settings.swatch_config != blank
+      assign value_downcase = item_color | downcase | strip
+      assign swatch_config = settings.swatch_config | newline_to_br | split: '<br />'
+      for swatch in swatch_config
+        assign swatch_parts = swatch | strip | split: ':'
+        assign swatch_name = swatch_parts.first | downcase | strip
+        if swatch_name == value_downcase
+          assign swatch_value = swatch_parts.last | strip
+          if swatch_value contains '#'
+            assign swatch_fallback = swatch_value
+            assign swatch_fallback_override = true
+          else
+            if images[swatch_value] != blank
+              assign swatch_image = images[swatch_value] | image_url: width: 128
+            elsif swatch_value contains '//cdn.shopify.com/'
+              assign swatch_image = swatch_value
+            endif
+          endif
+          break
+        endif
+      endfor
+    endif
   endif
 
   if use_variant_images and item_media
