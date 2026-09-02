@@ -585,13 +585,21 @@
                     assign hotspot_text = block.settings.text
                     assign hotspot_title = view_label
                     assign hotspot_index = 0
-                    for hs in section.blocks
-                      if hs.type == 'hotspot'
-                        if hs.id == block.id
-                          break
-                        endif
-                        assign hotspot_index = hotspot_index | plus: 1
+                    assign hotspot_found = false
+                    assign view_order = 'front,interior,back' | split: ','
+                    for view_key in view_order
+                      if hotspot_found
+                        break
                       endif
+                      for hs in section.blocks
+                        if hs.type == 'hotspot' and hs.settings.view_key == view_key
+                          if hs.id == block.id
+                            assign hotspot_found = true
+                            break
+                          endif
+                          assign hotspot_index = hotspot_index | plus: 1
+                        endif
+                      endfor
                     endfor
 
                     assign hotspot_image = block.settings.popup_image
