@@ -109,6 +109,14 @@
     line-height: 1;
     white-space: nowrap;
     cursor: pointer;
+    transition: background-color 0.125s ease-in-out, border-color 0.2s ease;
+  }
+
+  @media (hover: hover) {
+    #shopify-section-{{ section_id }} .product-title-h1__fits:hover {
+      background-color: #cec9c0;
+      border-color: rgb(23 23 23 / 0.35);
+    }
   }
 
   @media screen and (min-width: 768px) {
@@ -249,11 +257,23 @@
     text-align: center;
     overflow-wrap: anywhere;
     cursor: pointer;
+    transition: background-color 0.125s ease-in-out, border-color 0.2s ease;
   }
 
   .fits-modal-h1__option.is-active {
     background: #fff;
     border-color: #171717;
+  }
+
+  @media (hover: hover) {
+    .fits-modal-h1__option:hover {
+      background-color: #cec9c0;
+      border-color: rgb(23 23 23 / 0.35);
+    }
+
+    .fits-modal-h1__option.is-active:hover {
+      border-color: #171717;
+    }
   }
 
   .fits-modal-h1__swatches {
