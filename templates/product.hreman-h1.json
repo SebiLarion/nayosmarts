@@ -495,20 +495,6 @@
             "color_text": "#e4452a"
           }
         },
-        "hotspot_6GEiqc": {
-          "type": "hotspot",
-          "settings": {
-            "view_key": "interior",
-            "horizontal": 41,
-            "vertical": 24,
-            "horizontal_mobile": 41,
-            "vertical_mobile": 24,
-            "text": "<p>Interior top left lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
-            "popup_image": "shopify://shop_images/11_b4041bc5-dcf6-48a9-8c06-c5a95101d44d.jpg",
-            "popup_image_mobile": "shopify://shop_images/11_b4041bc5-dcf6-48a9-8c06-c5a95101d44d.jpg",
-            "color_text": "#e4452a"
-          }
-        },
         "view_tyWmJp": {
           "type": "view",
           "settings": {
@@ -541,6 +527,20 @@
             "popup_title": "",
             "popup_text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966,</p>"
           }
+        },
+        "hotspot_6GEiqc": {
+          "type": "hotspot",
+          "settings": {
+            "view_key": "interior",
+            "horizontal": 41,
+            "vertical": 24,
+            "horizontal_mobile": 41,
+            "vertical_mobile": 24,
+            "text": "<p>Interior top left lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
+            "popup_image": "shopify://shop_images/11_b4041bc5-dcf6-48a9-8c06-c5a95101d44d.jpg",
+            "popup_image_mobile": "shopify://shop_images/11_b4041bc5-dcf6-48a9-8c06-c5a95101d44d.jpg",
+            "color_text": "#e4452a"
+          }
         }
       },
       "block_order": [
@@ -548,10 +548,10 @@
         "hotspot_wpKB8f",
         "hotspot_NAATLx",
         "hotspot_aFdwQe",
-        "hotspot_6GEiqc",
         "view_tyWmJp",
         "view_dTi4EH",
-        "view_jiizUD"
+        "view_jiizUD",
+        "hotspot_6GEiqc"
       ],
       "name": "Fine details (H1)",
       "settings": {
