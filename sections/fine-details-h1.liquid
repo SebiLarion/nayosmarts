@@ -244,12 +244,29 @@
     text-align: center;
     white-space: nowrap;
     cursor: pointer;
+    transition: background-color 0.125s ease-in-out, border-color 0.2s ease;
   }
 
   @media screen and (min-width: 768px) {
     #shopify-section-{{ section.id }} .fine-details-h1__tab {
       min-height: 3.5rem;
     }
+  }
+
+  @media (hover: hover) {
+    #shopify-section-{{ section.id }} .fine-details-h1__tab:hover {
+      background-color: #cec9c0;
+      border-color: rgb(23 23 23 / 0.35);
+    }
+
+    #shopify-section-{{ section.id }} .fine-details-h1__tab[aria-selected="true"]:hover {
+      border-color: #171717;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .fine-details-h1__tab:focus-visible {
+    outline: 2px solid #171717;
+    outline-offset: 2px;
   }
 
   #shopify-section-{{ section.id }} .fine-details-h1__tab[aria-selected="true"] {
