@@ -274,7 +274,7 @@
         "scrolling": true,
         "direction": "left",
         "speed": 12,
-        "show_separator": true,
+        "show_separator": false,
         "full_width": false,
         "color_text": "",
         "color_background": "",
