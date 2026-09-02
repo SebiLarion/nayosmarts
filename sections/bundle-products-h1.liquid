@@ -118,6 +118,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
     width: 100%;
     min-height: 2.75rem;
     padding: 0.6rem 1rem;
@@ -523,17 +525,20 @@
                       type="submit"
                       name="add"
                       class="bundle-card-h1__add"
+                      is="hover-button"
                       data-bundle-add
                       data-add-label="{{ 'products.product.add_to_cart' | t | escape }}"
                       data-sold-out-label="{{ 'products.product.sold_out' | t | escape }}"
                       {% unless current_variant.available %}disabled{% endunless %}
                     >
-                      <span data-bundle-add-label>
-                        {%- if current_variant.available -%}
-                          {{- 'products.product.add_to_cart' | t -}}
-                        {%- else -%}
-                          {{- 'products.product.sold_out' | t -}}
-                        {%- endif -%}
+                      <span class="btn-text">
+                        <span data-bundle-add-label>
+                          {%- if current_variant.available -%}
+                            {{- 'products.product.add_to_cart' | t -}}
+                          {%- else -%}
+                            {{- 'products.product.sold_out' | t -}}
+                          {%- endif -%}
+                        </span>
                       </span>
                     </button>
                   {%- endform -%}
