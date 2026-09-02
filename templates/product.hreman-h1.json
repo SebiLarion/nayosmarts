@@ -153,14 +153,6 @@
     "bundle_products_h1": {
       "type": "bundle-products-h1",
       "blocks": {
-        "bundle_prod_1": {
-          "type": "product",
-          "settings": {
-            "product": "herman-hl1-sling-bag",
-            "products": [],
-            "savings_text": "$35 USD cheaper"
-          }
-        },
         "bundle_prod_2": {
           "type": "product",
           "settings": {
@@ -194,13 +186,21 @@
             ],
             "savings_text": "$35 USD cheaper"
           }
+        },
+        "bundle_prod_1": {
+          "type": "product",
+          "settings": {
+            "product": "herman-hl1-sling-bag",
+            "products": [],
+            "savings_text": "$35 USD cheaper"
+          }
         }
       },
       "block_order": [
-        "bundle_prod_1",
         "bundle_prod_2",
         "bundle_prod_3",
-        "bundle_prod_4"
+        "bundle_prod_4",
+        "bundle_prod_1"
       ],
       "settings": {
         "heading": "Get the Backpack + Sling Bag bundle for an extra 15% off!",
