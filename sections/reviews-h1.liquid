@@ -541,11 +541,12 @@
     var root = document.getElementById('shopify-section-{{ section.id }}');
     if (!root) return;
 
-    var MIN_REVIEWS = 4;
-    var MAX_LOAD_MORE_CLICKS = 3;
+    var BATCH_SIZE = 6;
+    var MAX_LOAD_MORE_CLICKS = 8;
     var loadMoreClicks = 0;
     var loadingMore = false;
     var autoLoadDone = false;
+    var expandTarget = 0;
 
     var reviewCount = function () {
       return root.querySelectorAll('.jdgm-rev').length;
@@ -577,9 +578,23 @@
       btn.click();
     };
 
+    var waitForIncrease = function (before, callback) {
+      var elapsed = 0;
+      var timer = setInterval(function () {
+        elapsed += 100;
+        if (reviewCount() > before) {
+          clearInterval(timer);
+          callback(true);
+        } else if (elapsed >= 3000) {
+          clearInterval(timer);
+          callback(false);
+        }
+      }, 100);
+    };
+
     var prefetchReviews = function () {
       if (autoLoadDone || loadingMore) return;
-      if (reviewCount() >= MIN_REVIEWS) {
+      if (reviewCount() >= BATCH_SIZE) {
         autoLoadDone = true;
         return;
       }
@@ -600,20 +615,57 @@
       var before = reviewCount();
       triggerLoadMore(btn);
 
-      var elapsed = 0;
-      var timer = setInterval(function () {
-        elapsed += 100;
-        if (reviewCount() > before) {
-          loadingMore = false;
-          clearInterval(timer);
+      waitForIncrease(before, function (grew) {
+        loadingMore = false;
+        if (grew) {
           prefetchReviews();
-        } else if (elapsed >= 3000) {
-          loadingMore = false;
-          clearInterval(timer);
-          if (loadMoreClicks >= MAX_LOAD_MORE_CLICKS) autoLoadDone = true;
+          return;
         }
-      }, 100);
+        if (loadMoreClicks >= MAX_LOAD_MORE_CLICKS) autoLoadDone = true;
+      });
     };
+
+    var expandToTarget = function () {
+      if (!expandTarget || loadingMore) return;
+      if (reviewCount() >= expandTarget) {
+        expandTarget = 0;
+        return;
+      }
+
+      var btn = loadMoreButton();
+      if (!btn) {
+        expandTarget = 0;
+        return;
+      }
+
+      loadingMore = true;
+      var before = reviewCount();
+      triggerLoadMore(btn);
+      waitForIncrease(before, function (grew) {
+        loadingMore = false;
+        if (grew) {
+          setTimeout(expandToTarget, 350);
+          return;
+        }
+        expandTarget = 0;
+      });
+    };
+
+    root.addEventListener(
+      'click',
+      function (event) {
+        var btn = event.target.closest && event.target.closest('.jdgm-paginate__load-more');
+        if (!btn || !event.isTrusted || !autoLoadDone || expandTarget) return;
+
+        var before = reviewCount();
+        expandTarget = before + BATCH_SIZE;
+        waitForIncrease(before, function (grew) {
+          if (grew) setTimeout(expandToTarget, 350);
+          else expandTarget = 0;
+        });
+      },
+      true
+    );
 
     revealWriteReview();
     prefetchReviews();
@@ -632,7 +684,7 @@
       polls += 1;
       revealWriteReview();
       prefetchReviews();
-      if (autoLoadDone || polls >= 40) clearInterval(poll);
+      if (autoLoadDone || polls >= 60) clearInterval(poll);
     }, 250);
   })();
 </script>
