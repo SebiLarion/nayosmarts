@@ -439,31 +439,17 @@
     "fine_details_h1_QyWBmX": {
       "type": "fine-details-h1",
       "blocks": {
-        "hotspot_He83fD": {
+        "hotspot_aFdwQe": {
           "type": "hotspot",
           "settings": {
             "view_key": "front",
-            "horizontal": 74,
-            "vertical": 47,
-            "horizontal_mobile": 74,
-            "vertical_mobile": 47,
-            "text": "<p>Bottom right lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
-            "popup_image": "shopify://shop_images/DSC03238.jpg",
-            "popup_image_mobile": "shopify://shop_images/DSC03238.jpg",
-            "color_text": "#e4452a"
-          }
-        },
-        "hotspot_wpKB8f": {
-          "type": "hotspot",
-          "settings": {
-            "view_key": "front",
-            "horizontal": 77,
-            "vertical": 14,
-            "horizontal_mobile": 77,
-            "vertical_mobile": 14,
-            "text": "<p>Top right lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
-            "popup_image": "shopify://shop_images/DSC03456.jpg",
-            "popup_image_mobile": "shopify://shop_images/DSC03456.jpg",
+            "horizontal": 41,
+            "vertical": 24,
+            "horizontal_mobile": 41,
+            "vertical_mobile": 24,
+            "text": "<p>Top left Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
+            "popup_image": "shopify://shop_images/DSC04118.jpg",
+            "popup_image_mobile": "shopify://shop_images/DSC04118.jpg",
             "color_text": "#e4452a"
           }
         },
@@ -481,17 +467,31 @@
             "color_text": "#e4452a"
           }
         },
-        "hotspot_aFdwQe": {
+        "hotspot_wpKB8f": {
           "type": "hotspot",
           "settings": {
             "view_key": "front",
-            "horizontal": 41,
-            "vertical": 24,
-            "horizontal_mobile": 41,
-            "vertical_mobile": 24,
-            "text": "<p>Top left Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
-            "popup_image": "shopify://shop_images/DSC04118.jpg",
-            "popup_image_mobile": "shopify://shop_images/DSC04118.jpg",
+            "horizontal": 77,
+            "vertical": 14,
+            "horizontal_mobile": 77,
+            "vertical_mobile": 14,
+            "text": "<p>Top right lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
+            "popup_image": "shopify://shop_images/DSC03456.jpg",
+            "popup_image_mobile": "shopify://shop_images/DSC03456.jpg",
+            "color_text": "#e4452a"
+          }
+        },
+        "hotspot_He83fD": {
+          "type": "hotspot",
+          "settings": {
+            "view_key": "front",
+            "horizontal": 74,
+            "vertical": 47,
+            "horizontal_mobile": 74,
+            "vertical_mobile": 47,
+            "text": "<p>Bottom right lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>",
+            "popup_image": "shopify://shop_images/DSC03238.jpg",
+            "popup_image_mobile": "shopify://shop_images/DSC03238.jpg",
             "color_text": "#e4452a"
           }
         },
@@ -544,10 +544,10 @@
         }
       },
       "block_order": [
-        "hotspot_He83fD",
-        "hotspot_wpKB8f",
-        "hotspot_NAATLx",
         "hotspot_aFdwQe",
+        "hotspot_NAATLx",
+        "hotspot_wpKB8f",
+        "hotspot_He83fD",
         "view_tyWmJp",
         "view_dTi4EH",
         "view_jiizUD",
