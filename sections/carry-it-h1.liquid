@@ -573,12 +573,12 @@
               {%- if product != blank -%}
                 <div class="carry-it-h1-modal__footer">
                   <div class="carry-it-h1-modal__product">
-                    {%- if product_media != blank -%}
-                      <div class="carry-it-h1-modal__thumb">
+                    <div class="carry-it-h1-modal__thumb" data-carry-it-h1-thumb>
+                      {%- if product_media != blank -%}
                         {{- product_media | image_url: width: 240 | image_tag: loading: 'lazy', widths: '96, 192, 240', sizes: '96px', alt: product.title -}}
-                      </div>
-                    {%- endif -%}
-                    <p class="carry-it-h1-modal__product-title">{{ product.title | escape }}</p>
+                      {%- endif -%}
+                    </div>
+                    <p class="carry-it-h1-modal__product-title" data-carry-it-h1-title>{{ product.title | escape }}</p>
                   </div>
 
                   {%- form 'product', product, is: 'product-form', id: form_id, data-type: 'add-to-cart-form', class: 'carry-it-h1-modal__form' -%}
