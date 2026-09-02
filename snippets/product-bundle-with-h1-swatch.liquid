@@ -7,7 +7,12 @@
   @param {string} metafield_key - Color metafield key
   @param {boolean} use_variant_images - Use featured image as the swatch
   @param {boolean} selected - Whether this swatch is the current product
+  @param {string} [swatch_class] - Button class. Defaults to bundle-with-h1__swatch
 {%- enddoc -%}
+
+{%- liquid
+  assign swatch_class = swatch_class | default: 'bundle-with-h1__swatch'
+-%}
 
 {%- liquid
   assign item_variant = item_product.selected_or_first_available_variant
@@ -63,7 +68,7 @@
 <li>
   <button
     type="button"
-    class="bundle-with-h1__swatch{% if swatch_image != blank %} with-image{% endif %}{% unless item_variant.available %} is-unavailable{% endunless %}"
+    class="{{ swatch_class }}{% if swatch_image != blank %} with-image{% endif %}{% unless item_variant.available %} is-unavailable{% endunless %}"
     data-bundle-swatch
     data-variant-id="{{ item_variant.id }}"
     data-title="{{ item_product.title | escape }}"
