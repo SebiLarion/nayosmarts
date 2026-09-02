@@ -187,7 +187,10 @@
           "type": "product",
           "settings": {
             "product": "urban-ul2-sling-bag-black",
-            "products": [],
+            "products": [
+              "urban-ul2-sling-bag-black",
+              "urban-ul2-sling-bag"
+            ],
             "savings_text": "$35 USD cheaper"
           }
         }
