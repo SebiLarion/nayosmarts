@@ -72,7 +72,7 @@
             "enable_color_swatches": true,
             "color_swatch_type": "color",
             "size_chart": "",
-            "size_description_metafield": "custom.size_description"
+            "size_description_metafield": "custom.variant_description"
           }
         },
         "delivery_date_eta_eta_custom_position_with_section_VNNN8n": {
