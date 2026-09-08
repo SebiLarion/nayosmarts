@@ -431,16 +431,21 @@
         </div>
       {%- endif -%}
 
-      <input
-        class="sr-only"
-        type="checkbox"
-        name="bundles"
-        form="{{ product_form_id }}"
-        value="{{ current_variant.id }}"
-        data-freebie-bundle
-        checked
-        {% unless current_variant.available %}disabled{% endunless %}
-      >
+      {%- comment -%}
+        The form attribute stays on the wrapper, never on the input. A form-associated
+        input named "bundles" shadows the theme's ProductForm.bundles getter.
+      {%- endcomment -%}
+      <div class="freebie-h1__bundle" form="{{ product_form_id }}">
+        <input
+          class="sr-only"
+          type="checkbox"
+          name="bundles"
+          value="{{ current_variant.id }}"
+          data-freebie-bundle
+          checked
+          {% unless current_variant.available %}disabled{% endunless %}
+        >
+      </div>
     </div>
 
     <div class="freebie-h1__media">
