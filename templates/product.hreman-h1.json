@@ -400,7 +400,10 @@
           "settings": {
             "heading": "Urban Commute",
             "video": "shopify://files/videos/H1 nayo smart video.mp4",
-            "video_url": ""
+            "video_url": "",
+            "subtitles": "https://cdn.shopify.com/s/files/1/0095/3519/3135/files/1_PURPLEMATTRESS-KENNEDY-V2.vtt?v=1788845044",
+            "subtitles_label": "English",
+            "subtitles_language": "en"
           }
         },
         "carry_weekend": {
@@ -408,7 +411,10 @@
           "settings": {
             "heading": "Weekend Trip",
             "video": "shopify://files/videos/H1 nayo smart video.mp4",
-            "video_url": ""
+            "video_url": "",
+            "subtitles": "",
+            "subtitles_label": "English",
+            "subtitles_language": "en"
           }
         },
         "carry_hiking": {
@@ -416,7 +422,10 @@
           "settings": {
             "heading": "Hiking Adventure",
             "video": "shopify://files/videos/H1 nayo smart video.mp4",
-            "video_url": ""
+            "video_url": "",
+            "subtitles": "",
+            "subtitles_label": "English",
+            "subtitles_language": "en"
           }
         }
       },
