@@ -85,6 +85,8 @@
 
   assign current_variant = blank
   assign current_color = ''
+  assign strike_cents = 0
+  assign strike_price = ''
   if freebie_product != blank
     assign current_variant = freebie_product.selected_or_first_available_variant
     if has_color_products
@@ -92,9 +94,17 @@
     elsif color_option != blank
       assign current_color = current_variant.options[color_option_index]
     endif
-  endif
 
-  assign main_available = product.selected_or_first_available_variant.available
+    assign strike_cents = current_variant.compare_at_price
+    if strike_cents == blank or strike_cents == 0
+      assign strike_cents = current_variant.price
+    endif
+    if settings.currency_code_enabled
+      assign strike_price = strike_cents | money_with_currency | strip_html
+    else
+      assign strike_price = strike_cents | money | strip_html
+    endif
+  endif
 -%}
 
 {%- if freebie_product == blank -%}
@@ -182,12 +192,22 @@
     }
 
     #shopify-section-{{ section_id }} .freebie-h1__price {
-      margin: 0;
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 1.5rem 0 0;
       font-size: 1.5rem;
       line-height: 1;
       font-weight: 600;
       letter-spacing: 0;
       color: #171717;
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__price-compare {
+      font-weight: 500;
+      color: rgb(23 23 23 / 0.45);
+      text-decoration: line-through;
     }
 
     #shopify-section-{{ section_id }} .freebie-h1__colors {
@@ -245,43 +265,6 @@
       opacity: 0.4;
     }
 
-    #shopify-section-{{ section_id }} .freebie-h1__form {
-      display: block;
-      width: 100%;
-      margin: 0;
-    }
-
-    #shopify-section-{{ section_id }} .freebie-h1__add {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-      box-sizing: border-box;
-      width: 100%;
-      min-height: 2.1875rem;
-      padding: 0.5rem 1rem;
-      background: #171717;
-      color: #f6f6f6;
-      border: 0;
-      border-bottom: 2px solid #e4452a;
-      border-right: 2px solid #e4452a;
-      border-radius: 0;
-      font-size: 1rem;
-      font-weight: 600;
-      line-height: 1;
-      cursor: pointer;
-    }
-
-    #shopify-section-{{ section_id }} .freebie-h1__add:hover {
-      background: #333;
-    }
-
-    #shopify-section-{{ section_id }} .freebie-h1__add:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
     #shopify-section-{{ section_id }} .freebie-h1__media {
       display: block;
       flex: 0 0 11.25rem;
@@ -314,7 +297,14 @@
       <div class="freebie-h1__copy">
         <p class="freebie-h1__eyebrow">{{ heading | escape }}</p>
         <h3 class="freebie-h1__title" data-freebie-title>{{ freebie_product.title | escape }}</h3>
-        <p class="freebie-h1__price">{{ price_label | escape }}</p>
+        <p class="freebie-h1__price">
+          {%- if strike_cents > 0 -%}
+            <s class="freebie-h1__price-compare" data-freebie-compare>{{ strike_price | escape }}</s>
+          {%- else -%}
+            <s class="freebie-h1__price-compare" data-freebie-compare hidden></s>
+          {%- endif -%}
+          <span data-freebie-price-label>{{ price_label | escape }}</span>
+        </p>
       </div>
 
       {%- if has_color_products or color_option != blank -%}
@@ -399,6 +389,16 @@
                     endif
 
                     assign item_media = matched_variant.featured_media | default: freebie_product.featured_media
+
+                    assign item_strike_cents = matched_variant.compare_at_price
+                    if item_strike_cents == blank or item_strike_cents == 0
+                      assign item_strike_cents = matched_variant.price
+                    endif
+                    if settings.currency_code_enabled
+                      assign item_strike_price = item_strike_cents | money_with_currency | strip_html
+                    else
+                      assign item_strike_price = item_strike_cents | money | strip_html
+                    endif
                   endif
                 -%}
                 {%- if matched_variant != blank -%}
@@ -410,6 +410,8 @@
                       data-variant-id="{{ matched_variant.id }}"
                       data-title="{{ freebie_product.title | escape }}"
                       data-color="{{ value_name | escape }}"
+                      data-strike-price="{{ item_strike_price | escape }}"
+                      data-strike-cents="{{ item_strike_cents }}"
                       data-available="{% if matched_variant.available %}true{% else %}false{% endif %}"
                       {% if item_media %}
                         data-image="{{ item_media | image_url: width: 600 }}"
@@ -429,40 +431,16 @@
         </div>
       {%- endif -%}
 
-      <div class="freebie-h1__form">
-        <input
-          class="sr-only"
-          type="checkbox"
-          name="bundles"
-          form="{{ product_form_id }}"
-          value="{{ current_variant.id }}"
-          data-freebie-bundle
-          checked
-          {% unless current_variant.available %}disabled{% endunless %}
-        >
-        <button
-          type="submit"
-          name="add"
-          form="{{ product_form_id }}"
-          class="freebie-h1__add"
-          is="hover-button"
-          data-freebie-add
-          data-add-label="{{ 'products.product.add_to_cart' | t | escape }}"
-          data-sold-out-label="{{ 'products.product.sold_out' | t | escape }}"
-          {% unless main_available %}data-main-unavailable{% endunless %}
-          {% unless current_variant.available and main_available %}disabled{% endunless %}
-        >
-          <span class="btn-text">
-            <span data-freebie-add-label>
-              {%- if current_variant.available and main_available -%}
-                {{- 'products.product.add_to_cart' | t -}}
-              {%- else -%}
-                {{- 'products.product.sold_out' | t -}}
-              {%- endif -%}
-            </span>
-          </span>
-        </button>
-      </div>
+      <input
+        class="sr-only"
+        type="checkbox"
+        name="bundles"
+        form="{{ product_form_id }}"
+        value="{{ current_variant.id }}"
+        data-freebie-bundle
+        checked
+        {% unless current_variant.available %}disabled{% endunless %}
+      >
     </div>
 
     <div class="freebie-h1__media">

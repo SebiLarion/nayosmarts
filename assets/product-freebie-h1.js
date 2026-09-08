@@ -6,8 +6,8 @@ if (!customElements.get('product-freebie-h1')) {
         this.titleEl = this.querySelector('[data-freebie-title]');
         this.colorEl = this.querySelector('[data-freebie-color]');
         this.imageEl = this.querySelector('[data-freebie-image]');
+        this.compareEl = this.querySelector('[data-freebie-compare]');
         this.bundleInput = this.querySelector('[data-freebie-bundle]');
-        this.button = this.querySelector('[data-freebie-add]');
         this.swatches = this.querySelectorAll('[data-bundle-swatch]');
 
         this.onSwatchClick = this.onSwatchClick.bind(this);
@@ -55,19 +55,20 @@ if (!customElements.get('product-freebie-h1')) {
           }
         }
 
-        if (this.bundleInput && swatch.dataset.variantId) {
-          this.bundleInput.value = swatch.dataset.variantId;
+        if (this.compareEl) {
+          const strikePrice = swatch.dataset.strikePrice || swatch.dataset.price || '';
+          const strikeCents = Number(swatch.dataset.strikeCents || 0);
+          if (strikePrice && strikeCents > 0) {
+            this.compareEl.hidden = false;
+            this.compareEl.textContent = strikePrice;
+          } else {
+            this.compareEl.hidden = true;
+            this.compareEl.textContent = '';
+          }
         }
 
-        if (this.button) {
-          const unavailable = swatch.dataset.available === 'false';
-          this.button.disabled = unavailable || this.button.hasAttribute('data-main-unavailable');
-          const label = this.button.querySelector('[data-freebie-add-label]');
-          if (label) {
-            label.textContent = unavailable
-              ? this.button.dataset.soldOutLabel
-              : this.button.dataset.addLabel;
-          }
+        if (this.bundleInput && swatch.dataset.variantId) {
+          this.bundleInput.value = swatch.dataset.variantId;
         }
 
         if (this.bundleInput) {

@@ -29,6 +29,16 @@
     assign item_price = item_variant.price | money | strip_html
   endif
 
+  assign item_strike_cents = item_variant.compare_at_price
+  if item_strike_cents == blank or item_strike_cents == 0
+    assign item_strike_cents = item_variant.price
+  endif
+  if settings.currency_code_enabled
+    assign item_strike_price = item_strike_cents | money_with_currency | strip_html
+  else
+    assign item_strike_price = item_strike_cents | money | strip_html
+  endif
+
   assign swatch_image = blank
   assign swatch_fallback = item_color | split: ' ' | last | handle
   assign swatch_fallback_override = false
@@ -120,6 +130,8 @@
     data-title="{{ item_product.title | escape }}"
     data-color="{{ item_color | escape }}"
     data-price="{{ item_price | escape }}"
+    data-strike-price="{{ item_strike_price | escape }}"
+    data-strike-cents="{{ item_strike_cents }}"
     data-available="{% if item_variant.available %}true{% else %}false{% endif %}"
     {% if item_media %}
       data-image="{{ item_media | image_url: width: 600 }}"
