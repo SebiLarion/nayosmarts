@@ -312,6 +312,13 @@
     display: none;
   }
 
+  .carry-it-h1-modal__player video::cue {
+    color: #f6f6f6;
+    background: rgb(23 23 23 / 0.72);
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
   .carry-it-h1-modal__media.is-playing .carry-it-h1-modal__poster,
   .carry-it-h1-modal__media.is-playing .carry-it-h1-modal__play {
     display: none;
@@ -484,12 +491,20 @@
                   endif
 
                   assign caption = block.settings.heading | default: heading
+                  assign subtitle_src = block.settings.subtitles
+                  assign subtitle_label = block.settings.subtitles_label | default: 'English'
+                  assign subtitle_lang = block.settings.subtitles_language | default: 'en'
                 -%}
                 <div
                   class="carry-it-h1__item"
                   data-carry-it-h1-card
                   data-heading="{{ caption | escape }}"
                   data-cover="{{ cover_url | escape }}"
+                  {%- if subtitle_src != blank -%}
+                    data-subtitles-src="{{ subtitle_src | escape }}"
+                    data-subtitles-label="{{ subtitle_label | escape }}"
+                    data-subtitles-lang="{{ subtitle_lang | escape }}"
+                  {%- endif -%}
                   {%- if block.settings.video == blank and block.settings.video_url != blank -%}
                     data-video-host="{{ block.settings.video_url.type }}"
                     data-video-id="{{ block.settings.video_url.id }}"
@@ -519,7 +534,20 @@
                   </button>
                   {%- if block.settings.video != blank -%}
                     <template data-carry-it-h1-video>
-                      {{ block.settings.video | video_tag: playsinline: true, controls: true, preload: 'metadata', image_size: '800x' }}
+                      {%- capture video_html -%}
+                        {{ block.settings.video | video_tag: playsinline: true, controls: true, preload: 'metadata', image_size: '800x' }}
+                      {%- endcapture -%}
+                      {%- if subtitle_src != blank -%}
+                        {%- liquid
+                          assign subtitle_label_e = subtitle_label | escape
+                          assign subtitle_lang_e = subtitle_lang | escape
+                          assign subtitle_src_e = subtitle_src | escape
+                          assign track_html = '<track kind="subtitles" label="' | append: subtitle_label_e | append: '" srclang="' | append: subtitle_lang_e | append: '" src="' | append: subtitle_src_e | append: '" default>'
+                        -%}
+                        {{ video_html | replace: '<video ', '<video crossorigin="anonymous" ' | replace: '</video>', track_html | append: '</video>' }}
+                      {%- else -%}
+                        {{ video_html }}
+                      {%- endif -%}
                     </template>
                   {%- endif -%}
                 </div>
@@ -718,6 +746,29 @@
           "accept": ["youtube", "vimeo"],
           "label": "t:sections.video.settings.video_url.label",
           "info": "t:sections.video.settings.video_url.info"
+        },
+        {
+          "type": "header",
+          "content": "Subtitles"
+        },
+        {
+          "type": "url",
+          "id": "subtitles",
+          "label": "Subtitles file (VTT)",
+          "info": "Upload a .vtt file in Content > Files, then paste its URL here. Applies to Shopify-hosted videos only, not YouTube or Vimeo."
+        },
+        {
+          "type": "text",
+          "id": "subtitles_label",
+          "label": "Subtitles label",
+          "default": "English"
+        },
+        {
+          "type": "text",
+          "id": "subtitles_language",
+          "label": "Language code",
+          "default": "en",
+          "info": "ISO language code, e.g. en, fr, de"
         }
       ]
     }
