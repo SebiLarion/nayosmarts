@@ -91,26 +91,21 @@
             "show_back_in_stock_phone": true
           }
         },
-        "bundle_with": {
-          "type": "bundle_with",
-          "disabled": true,
-          "settings": {
-            "heading": "Bundle with",
-            "product": "nayo-smart-herman-h3-sling-bag",
-            "products": [
-              "nayo-smart-herman-h3-sling-bag",
-              "herman-h3-sling-bag-green"
-            ],
-            "option_name": "Color",
-            "option_value_metafield": "custom.color",
-            "color_swatch_type": "color"
-          }
-        },
         "freebie": {
           "type": "freebie",
           "settings": {
             "heading": "Included free",
             "price_label": "Free",
+            "product_default": "waterproof-toiletry-bag-with-hanging-hook-copy",
+            "products_default": [],
+            "product_us": "waterproof-toiletry-bag-with-hanging-hook",
+            "products_us": [],
+            "market_2_countries": "",
+            "market_2_product": "",
+            "market_2_products": [],
+            "market_3_countries": "",
+            "market_3_product": "",
+            "market_3_products": [],
             "option_name": "Color",
             "option_value_metafield": "custom.color",
             "color_swatch_type": "color"
