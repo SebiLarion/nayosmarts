@@ -177,6 +177,7 @@ if (!customElements.get('carry-it-h1')) {
           if (video) {
             video.setAttribute('playsinline', '');
             video.controls = true;
+            this.applySubtitles(video, this.activeCard);
             video.play().catch(() => {});
           }
         } else if (id && (host === 'youtube' || host === 'vimeo')) {
@@ -194,6 +195,32 @@ if (!customElements.get('carry-it-h1')) {
         }
 
         this.media?.classList.add('is-playing');
+      }
+
+      applySubtitles(video, card) {
+        const src = card?.dataset.subtitlesSrc;
+        if (!video || !src) return;
+
+        video.setAttribute('crossorigin', 'anonymous');
+
+        if (!video.querySelector('track')) {
+          const track = document.createElement('track');
+          track.kind = 'subtitles';
+          track.label = card.dataset.subtitlesLabel || 'English';
+          track.srclang = card.dataset.subtitlesLang || 'en';
+          track.src = src;
+          track.default = true;
+          video.appendChild(track);
+        }
+
+        const showTracks = () => {
+          Array.from(video.textTracks || []).forEach((textTrack) => {
+            textTrack.mode = 'showing';
+          });
+        };
+
+        video.addEventListener('loadedmetadata', showTracks, { once: true });
+        showTracks();
       }
 
       onModalHide() {
