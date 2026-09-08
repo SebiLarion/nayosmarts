@@ -75,6 +75,14 @@
     background-color: #fff;
   }
 
+  /* Beats the inline styles the theme's Motion animation writes on the card. */
+  #shopify-section-{{ section.id }} .product-sticky-form-h1.is-scroll-hidden .product-sticky-form-h1__card {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transform: translateY(15px) !important;
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+  }
+
   #shopify-section-{{ section.id }} .product-sticky-form-h1__variant {
     grid-template-columns: minmax(0, 1fr);
   }
