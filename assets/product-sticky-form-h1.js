@@ -42,4 +42,57 @@
       if (next && select.value !== next) select.value = next;
     });
   });
+
+  /**
+   * Hide the bar on a fast flick upwards, bring it back as soon as the reader
+   * scrolls down again. The theme only hides it above the fold or at the footer.
+   */
+  var HIDE_CLASS = 'is-scroll-hidden';
+  var FLICK_DISTANCE = 200; // px travelled up
+  var FLICK_WINDOW = 300; // within this many ms
+
+  var lastY = window.scrollY;
+  var lastTime = 0;
+  var flickStart = 0;
+  var flickDistance = 0;
+  var queued = false;
+
+  function measure() {
+    queued = false;
+
+    var bar = document.querySelector('.product-sticky-form-h1');
+    if (!bar) return;
+
+    var y = window.scrollY;
+    var now = performance.now();
+    var delta = y - lastY;
+    lastY = y;
+
+    if (delta >= 0) {
+      flickDistance = 0;
+      if (delta > 0) bar.classList.remove(HIDE_CLASS);
+      lastTime = now;
+      return;
+    }
+
+    // A pause between upward moves starts a new flick.
+    if (now - lastTime > FLICK_WINDOW || now - flickStart > FLICK_WINDOW) {
+      flickStart = now;
+      flickDistance = 0;
+    }
+    lastTime = now;
+
+    flickDistance += -delta;
+    if (flickDistance >= FLICK_DISTANCE) bar.classList.add(HIDE_CLASS);
+  }
+
+  window.addEventListener(
+    'scroll',
+    function () {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(measure);
+    },
+    { passive: true }
+  );
 })();
