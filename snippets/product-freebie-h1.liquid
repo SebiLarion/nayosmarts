@@ -70,6 +70,16 @@
     assign has_color_products = true
   endif
 
+  assign list_contains_product = false
+  if has_color_products
+    for color_product in color_products
+      if color_product == freebie_product
+        assign list_contains_product = true
+        break
+      endif
+    endfor
+  endif
+
   assign color_option = blank
   assign color_option_index = 0
   if freebie_product != blank and has_color_products == false
@@ -265,21 +275,77 @@
       opacity: 0.4;
     }
 
-    #shopify-section-{{ section_id }} .freebie-h1__media {
-      display: block;
+    {%- comment -%}
+      The gallery keeps the old media footprint: the image flexes and the thumbs
+      sit under it, so adding thumbnails does not make the card taller.
+    {%- endcomment -%}
+    #shopify-section-{{ section_id }} .freebie-h1__gallery {
+      display: flex;
+      flex-direction: column;
       flex: 0 0 11.25rem;
       width: 11.25rem;
       height: 13.625rem;
-      overflow: hidden;
-      background: #f6f6f6;
     }
 
     @media screen and (min-width: 768px) {
-      #shopify-section-{{ section_id }} .freebie-h1__media {
+      #shopify-section-{{ section_id }} .freebie-h1__gallery {
         flex-basis: 15.625rem;
         width: 15.625rem;
         height: 17.625rem;
       }
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__media {
+      display: block;
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+      overflow: hidden;
+      background: #f6f6f6;
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__thumbs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.375rem;
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__thumb-group {
+      display: contents;
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__thumb-group[hidden] {
+      display: none;
+    }
+
+    {%- comment -%}
+      The spacing lives on the buttons, so a product with one image leaves the
+      thumb row at zero height instead of adding a stray gap.
+    {%- endcomment -%}
+    #shopify-section-{{ section_id }} .freebie-h1__thumb {
+      display: block;
+      box-sizing: border-box;
+      width: 2.5rem;
+      height: 2.5rem;
+      margin-block-start: 0.5rem;
+      padding: 0.125rem;
+      border: 0;
+      border-radius: 0.25rem;
+      background: #fff;
+      box-shadow: inset 0 0 0 1px rgb(23 23 23 / 0.28);
+      cursor: pointer;
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__thumb[aria-current='true'] {
+      box-shadow: inset 0 0 0 1.5px #171717;
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__thumb img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
 
     #shopify-section-{{ section_id }} .freebie-h1__media img {
@@ -298,12 +364,12 @@
         <p class="freebie-h1__eyebrow">{{ heading | escape }}</p>
         <h3 class="freebie-h1__title" data-freebie-title>{{ freebie_product.title | escape }}</h3>
         <p class="freebie-h1__price">
+          <span data-freebie-price-label>{{ price_label | escape }}</span>
           {%- if strike_cents > 0 -%}
             <s class="freebie-h1__price-compare" data-freebie-compare>{{ strike_price | escape }}</s>
           {%- else -%}
             <s class="freebie-h1__price-compare" data-freebie-compare hidden></s>
           {%- endif -%}
-          <span data-freebie-price-label>{{ price_label | escape }}</span>
         </p>
       </div>
 
@@ -315,15 +381,6 @@
           </p>
           <ul class="freebie-h1__swatches" role="list" aria-label="{{ option_name | escape }}">
             {%- if has_color_products -%}
-              {%- liquid
-                assign list_contains_product = false
-                for color_product in color_products
-                  if color_product == freebie_product
-                    assign list_contains_product = true
-                    break
-                  endif
-                endfor
-              -%}
               {%- unless list_contains_product -%}
                 {%- render 'product-bundle-with-h1-swatch',
                   item_product: freebie_product,
@@ -448,19 +505,40 @@
       </div>
     </div>
 
-    <div class="freebie-h1__media">
-      {%- if featured_media -%}
-        <img
-          data-freebie-image
-          src="{{ featured_media | image_url: width: 600 }}"
-          srcset="{{ featured_media | image_url: width: 280 }} 280w, {{ featured_media | image_url: width: 400 }} 400w, {{ featured_media | image_url: width: 600 }} 600w"
-          sizes="(max-width: 767px) 40vw, 220px"
-          alt="{{ freebie_product.title | escape }}"
-          width="{{ featured_media.width }}"
-          height="{{ featured_media.height }}"
-          loading="lazy"
-        >
-      {%- endif -%}
+    <div class="freebie-h1__gallery">
+      <div class="freebie-h1__media">
+        {%- if featured_media -%}
+          <img
+            data-freebie-image
+            src="{{ featured_media | image_url: width: 600 }}"
+            srcset="{{ featured_media | image_url: width: 280 }} 280w, {{ featured_media | image_url: width: 400 }} 400w, {{ featured_media | image_url: width: 600 }} 600w"
+            sizes="(max-width: 767px) 40vw, 220px"
+            alt="{{ freebie_product.title | escape }}"
+            width="{{ featured_media.width }}"
+            height="{{ featured_media.height }}"
+            loading="lazy"
+          >
+        {%- endif -%}
+      </div>
+
+      <div class="freebie-h1__thumbs">
+        {%- if has_color_products -%}
+          {%- unless list_contains_product -%}
+            {%- render 'product-freebie-h1-thumbs', thumb_product: freebie_product, selected: true -%}
+          {%- endunless -%}
+          {%- for color_product in color_products -%}
+            {%- liquid
+              assign is_selected = false
+              if color_product == freebie_product
+                assign is_selected = true
+              endif
+            -%}
+            {%- render 'product-freebie-h1-thumbs', thumb_product: color_product, selected: is_selected -%}
+          {%- endfor -%}
+        {%- else -%}
+          {%- render 'product-freebie-h1-thumbs', thumb_product: freebie_product, selected: true -%}
+        {%- endif -%}
+      </div>
     </div>
   </product-freebie-h1>
 {%- endif -%}

@@ -1,0 +1,60 @@
+{%- doc -%}
+  Thumbnail row for one freebie product inside the H1 freebie card.
+
+  Each colour of the freebie is a separate product with its own images, so one
+  group is rendered per product and the card swaps groups when a swatch changes.
+  Products with a single image render an empty group, which keeps the swap
+  working without showing a pointless one-item row.
+
+  @param {object} thumb_product - Product the thumbnails belong to
+  @param {boolean} selected - Whether this group is the visible one
+
+  @example
+  {% render 'product-freebie-h1-thumbs', thumb_product: freebie_product, selected: true %}
+{%- enddoc -%}
+
+{%- liquid
+  assign thumb_media = thumb_product.media | where: 'media_type', 'image'
+  assign thumb_variant = thumb_product.selected_or_first_available_variant
+  assign active_media = thumb_variant.featured_media | default: thumb_product.featured_media
+-%}
+
+<div
+  class="freebie-h1__thumb-group"
+  data-freebie-thumb-group
+  data-variant-id="{{ thumb_variant.id }}"
+  {% unless selected %}hidden{% endunless %}
+>
+  {%- if thumb_media.size > 1 -%}
+    {%- for media in thumb_media -%}
+      {%- liquid
+        assign src_600 = media | image_url: width: 600
+        assign src_400 = media | image_url: width: 400
+        assign src_280 = media | image_url: width: 280
+        assign src_set = src_280 | append: ' 280w, ' | append: src_400 | append: ' 400w, ' | append: src_600 | append: ' 600w'
+
+        assign is_current = false
+        if active_media != blank and media.id == active_media.id
+          assign is_current = true
+        endif
+      -%}
+      <button
+        type="button"
+        class="freebie-h1__thumb"
+        data-freebie-thumb
+        data-image="{{ src_600 }}"
+        data-image-srcset="{{ src_set }}"
+        aria-current="{% if is_current %}true{% else %}false{% endif %}"
+        aria-label="{{ thumb_product.title | escape }} — image {{ forloop.index }}"
+      >
+        <img
+          src="{{ media | image_url: width: 120 }}"
+          alt=""
+          width="120"
+          height="120"
+          loading="lazy"
+        >
+      </button>
+    {%- endfor -%}
+  {%- endif -%}
+</div>
