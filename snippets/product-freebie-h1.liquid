@@ -1,0 +1,483 @@
+{%- doc -%}
+  Herman H1 freebie card. Looks like Bundle with, but the gift is free with the
+  main product. Choose a default product plus optional per-market products.
+
+  @param {object} block - freebie block settings
+  @param {object} section - Parent product section
+  @param {string} section_id - Section id
+  @param {object} product - Main product on the page
+  @param {string} product_form_id - Main add-to-cart form id
+
+  @example
+  {% render 'product-freebie-h1', block: block, section: section, section_id: section.id, product: product, product_form_id: product_form_id %}
+{%- enddoc -%}
+
+{%- liquid
+  assign country_code = localization.country.iso_code | upcase
+  assign heading = block.settings.heading | default: 'Included free'
+  assign price_label = block.settings.price_label | default: 'Free'
+  assign option_name = block.settings.option_name | default: 'Color'
+  assign option_name_down = option_name | downcase
+  assign use_variant_images = false
+  if block.settings.color_swatch_type == 'variant'
+    assign use_variant_images = true
+  endif
+
+  assign metafield_namespace = ''
+  assign metafield_key = ''
+  if block.settings.option_value_metafield != blank
+    assign metafield_parts = block.settings.option_value_metafield | split: '.'
+    assign metafield_namespace = metafield_parts | first
+    assign metafield_key = metafield_parts | last
+  endif
+
+  assign freebie_product = block.settings.product_default
+  assign color_products = block.settings.products_default
+
+  if country_code == 'US' and block.settings.product_us != blank
+    assign freebie_product = block.settings.product_us
+    if block.settings.products_us != blank and block.settings.products_us.size > 0
+      assign color_products = block.settings.products_us
+    endif
+  endif
+
+  assign market_2_codes = block.settings.market_2_countries | upcase | replace: ' ', '' | split: ','
+  if block.settings.market_2_product != blank
+    for code in market_2_codes
+      if code == country_code
+        assign freebie_product = block.settings.market_2_product
+        if block.settings.market_2_products != blank and block.settings.market_2_products.size > 0
+          assign color_products = block.settings.market_2_products
+        endif
+      endif
+    endfor
+  endif
+
+  assign market_3_codes = block.settings.market_3_countries | upcase | replace: ' ', '' | split: ','
+  if block.settings.market_3_product != blank
+    for code in market_3_codes
+      if code == country_code
+        assign freebie_product = block.settings.market_3_product
+        if block.settings.market_3_products != blank and block.settings.market_3_products.size > 0
+          assign color_products = block.settings.market_3_products
+        endif
+      endif
+    endfor
+  endif
+
+  assign has_color_products = false
+  if color_products != blank and color_products.size > 0
+    assign has_color_products = true
+  endif
+
+  assign color_option = blank
+  assign color_option_index = 0
+  if freebie_product != blank and has_color_products == false
+    for option in freebie_product.options_with_values
+      assign option_down = option.name | downcase
+      if option_down == option_name_down or option_down == 'color' or option_down == 'colour'
+        assign color_option = option
+        assign color_option_index = forloop.index0
+        break
+      endif
+    endfor
+  endif
+
+  assign current_variant = blank
+  assign current_color = ''
+  if freebie_product != blank
+    assign current_variant = freebie_product.selected_or_first_available_variant
+    if has_color_products
+      assign current_color = freebie_product.metafields[metafield_namespace][metafield_key].value | default: ''
+    elsif color_option != blank
+      assign current_color = current_variant.options[color_option_index]
+    endif
+  endif
+
+  assign main_available = product.selected_or_first_available_variant.available
+-%}
+
+{%- if freebie_product == blank -%}
+  <style>
+    #shopify-section-{{ section_id }} .freebie-h1--placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 12rem;
+      padding: 1.5rem;
+      background: #fff;
+      border: 1px solid rgb(var(--color-border));
+      font-size: var(--text-sm);
+      color: rgb(23 23 23 / 0.55);
+      text-align: center;
+    }
+  </style>
+  <div class="freebie-h1 freebie-h1--placeholder" {{ block.shopify_attributes }}>
+    Pick a freebie product for this market in the theme editor.
+  </div>
+{%- else -%}
+  <script src="{{ 'product-freebie-h1.js' | asset_url }}" defer="defer"></script>
+
+  <style>
+    #shopify-section-{{ section_id }} .freebie-h1 {
+      display: flex;
+      align-items: stretch;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem;
+      background: #f6f6f6;
+      border: 1px solid rgb(23 23 23 / 0.16);
+      color: #171717;
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1--placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      font-size: 1rem;
+      color: rgb(23 23 23 / 0.55);
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__content {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1rem;
+      min-width: 0;
+      width: 8.375rem;
+      padding: 0;
+    }
+
+    @media screen and (min-width: 768px) {
+      #shopify-section-{{ section_id }} .freebie-h1__content {
+        width: 11.25rem;
+        min-height: 17.625rem;
+        gap: 0;
+      }
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__copy {
+      display: grid;
+      gap: 0;
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__eyebrow {
+      margin: 0;
+      font-size: 0.75rem;
+      line-height: 1.5;
+      font-weight: 500;
+      color: #171717;
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__title {
+      margin: 0;
+      font-family: var(--font-body-family);
+      font-style: normal;
+      font-size: 1rem;
+      line-height: 1;
+      font-weight: 600;
+      letter-spacing: 0;
+      color: #171717;
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__price {
+      margin: 0;
+      font-size: 1.5rem;
+      line-height: 1;
+      font-weight: 600;
+      letter-spacing: 0;
+      color: #171717;
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__colors {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__color-label {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.5;
+      font-weight: 400;
+      color: #171717;
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__color-label strong {
+      font-weight: 600;
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__swatches {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__swatch {
+      display: block;
+      box-sizing: border-box;
+      width: 2.3125rem;
+      height: 2.3125rem;
+      padding: 0.1875rem;
+      border: 0;
+      border-radius: 0.25rem;
+      background-color: var(--swatch-background, rgb(23 23 23 / 0.1));
+      background-image: var(--swatch-background-image, none);
+      background-size: cover;
+      background-position: center;
+      background-origin: content-box;
+      background-clip: content-box;
+      box-shadow: inset 0 0 0 1px rgb(23 23 23 / 0.28);
+      cursor: pointer;
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__swatch[aria-current='true'] {
+      box-shadow: inset 0 0 0 1.5px #171717;
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__swatch.is-unavailable {
+      opacity: 0.4;
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__form {
+      display: block;
+      width: 100%;
+      margin: 0;
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__add {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      box-sizing: border-box;
+      width: 100%;
+      min-height: 2.1875rem;
+      padding: 0.5rem 1rem;
+      background: #171717;
+      color: #f6f6f6;
+      border: 0;
+      border-bottom: 2px solid #e4452a;
+      border-right: 2px solid #e4452a;
+      border-radius: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__add:hover {
+      background: #333;
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__add:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__media {
+      display: block;
+      flex: 0 0 11.25rem;
+      width: 11.25rem;
+      height: 13.625rem;
+      overflow: hidden;
+      background: #f6f6f6;
+    }
+
+    @media screen and (min-width: 768px) {
+      #shopify-section-{{ section_id }} .freebie-h1__media {
+        flex-basis: 15.625rem;
+        width: 15.625rem;
+        height: 17.625rem;
+      }
+    }
+
+    #shopify-section-{{ section_id }} .freebie-h1__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+    }
+  </style>
+
+  {%- assign featured_media = current_variant.featured_media | default: freebie_product.featured_media -%}
+
+  <product-freebie-h1 class="freebie-h1" {{ block.shopify_attributes }}>
+    <div class="freebie-h1__content">
+      <div class="freebie-h1__copy">
+        <p class="freebie-h1__eyebrow">{{ heading | escape }}</p>
+        <h3 class="freebie-h1__title" data-freebie-title>{{ freebie_product.title | escape }}</h3>
+        <p class="freebie-h1__price">{{ price_label | escape }}</p>
+      </div>
+
+      {%- if has_color_products or color_option != blank -%}
+        <div class="freebie-h1__colors">
+          <p class="freebie-h1__color-label">
+            <strong>{{ option_name | escape }}:</strong>
+            <span data-freebie-color>{{ current_color | escape }}</span>
+          </p>
+          <ul class="freebie-h1__swatches" role="list" aria-label="{{ option_name | escape }}">
+            {%- if has_color_products -%}
+              {%- liquid
+                assign list_contains_product = false
+                for color_product in color_products
+                  if color_product == freebie_product
+                    assign list_contains_product = true
+                    break
+                  endif
+                endfor
+              -%}
+              {%- unless list_contains_product -%}
+                {%- render 'product-bundle-with-h1-swatch',
+                  item_product: freebie_product,
+                  option_name: option_name,
+                  metafield_namespace: metafield_namespace,
+                  metafield_key: metafield_key,
+                  use_variant_images: use_variant_images,
+                  selected: true,
+                  swatch_class: 'freebie-h1__swatch'
+                -%}
+              {%- endunless -%}
+              {%- for color_product in color_products -%}
+                {%- liquid
+                  assign is_selected = false
+                  if color_product == freebie_product
+                    assign is_selected = true
+                  endif
+                -%}
+                {%- render 'product-bundle-with-h1-swatch',
+                  item_product: color_product,
+                  option_name: option_name,
+                  metafield_namespace: metafield_namespace,
+                  metafield_key: metafield_key,
+                  use_variant_images: use_variant_images,
+                  selected: is_selected,
+                  swatch_class: 'freebie-h1__swatch'
+                -%}
+              {%- endfor -%}
+            {%- else -%}
+              {%- for value in color_option.values -%}
+                {%- liquid
+                  assign value_name = value.name | default: value
+                  assign matched_variant = blank
+                  for variant in freebie_product.variants
+                    if variant.options[color_option_index] == value_name
+                      assign matched_variant = variant
+                      break
+                    endif
+                  endfor
+
+                  assign is_selected = false
+                  if matched_variant != blank and current_color == value_name
+                    assign is_selected = true
+                  endif
+
+                  assign swatch_image = blank
+                  assign swatch_fallback = value_name | split: ' ' | last | handle
+                  assign swatch_fallback_override = false
+
+                  if matched_variant != blank
+                    if value.swatch != blank
+                      if value.swatch.image
+                        assign swatch_image = value.swatch.image | image_url: width: 128
+                      elsif value.swatch.color
+                        assign swatch_fallback = value.swatch.color
+                        assign swatch_fallback_override = true
+                      endif
+                    endif
+
+                    if use_variant_images and matched_variant.featured_media
+                      assign swatch_image = matched_variant.featured_media | image_url: width: 128
+                      assign swatch_fallback_override = false
+                    endif
+
+                    assign item_media = matched_variant.featured_media | default: freebie_product.featured_media
+                  endif
+                -%}
+                {%- if matched_variant != blank -%}
+                  <li>
+                    <button
+                      type="button"
+                      class="freebie-h1__swatch{% if swatch_image != blank %} with-image{% endif %}{% unless matched_variant.available %} is-unavailable{% endunless %}"
+                      data-bundle-swatch
+                      data-variant-id="{{ matched_variant.id }}"
+                      data-title="{{ freebie_product.title | escape }}"
+                      data-color="{{ value_name | escape }}"
+                      data-available="{% if matched_variant.available %}true{% else %}false{% endif %}"
+                      {% if item_media %}
+                        data-image="{{ item_media | image_url: width: 600 }}"
+                        data-image-srcset="{{ item_media | image_url: width: 280 }} 280w, {{ item_media | image_url: width: 400 }} 400w, {{ item_media | image_url: width: 600 }} 600w"
+                      {% endif %}
+                      aria-current="{% if is_selected %}true{% else %}false{% endif %}"
+                      aria-label="{{ option_name | escape }}: {{ value_name | escape }}"
+                      style="--swatch-background: {{ swatch_fallback }};{% if swatch_fallback_override == false and swatch_image != blank %}--swatch-background-image: url({{ swatch_image }});{% endif %}"
+                    >
+                      <span class="sr-only">{{ value_name | escape }}</span>
+                    </button>
+                  </li>
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endif -%}
+          </ul>
+        </div>
+      {%- endif -%}
+
+      <div class="freebie-h1__form">
+        <input
+          class="sr-only"
+          type="checkbox"
+          name="bundles"
+          form="{{ product_form_id }}"
+          value="{{ current_variant.id }}"
+          data-freebie-bundle
+          checked
+          {% unless current_variant.available %}disabled{% endunless %}
+        >
+        <button
+          type="submit"
+          name="add"
+          form="{{ product_form_id }}"
+          class="freebie-h1__add"
+          is="hover-button"
+          data-freebie-add
+          data-add-label="{{ 'products.product.add_to_cart' | t | escape }}"
+          data-sold-out-label="{{ 'products.product.sold_out' | t | escape }}"
+          {% unless main_available %}data-main-unavailable{% endunless %}
+          {% unless current_variant.available and main_available %}disabled{% endunless %}
+        >
+          <span class="btn-text">
+            <span data-freebie-add-label>
+              {%- if current_variant.available and main_available -%}
+                {{- 'products.product.add_to_cart' | t -}}
+              {%- else -%}
+                {{- 'products.product.sold_out' | t -}}
+              {%- endif -%}
+            </span>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <div class="freebie-h1__media">
+      {%- if featured_media -%}
+        <img
+          data-freebie-image
+          src="{{ featured_media | image_url: width: 600 }}"
+          srcset="{{ featured_media | image_url: width: 280 }} 280w, {{ featured_media | image_url: width: 400 }} 400w, {{ featured_media | image_url: width: 600 }} 600w"
+          sizes="(max-width: 767px) 40vw, 220px"
+          alt="{{ freebie_product.title | escape }}"
+          width="{{ featured_media.width }}"
+          height="{{ featured_media.height }}"
+          loading="lazy"
+        >
+      {%- endif -%}
+    </div>
+  </product-freebie-h1>
+{%- endif -%}

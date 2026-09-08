@@ -93,6 +93,7 @@
         },
         "bundle_with": {
           "type": "bundle_with",
+          "disabled": true,
           "settings": {
             "heading": "Bundle with",
             "product": "nayo-smart-herman-h3-sling-bag",
@@ -100,6 +101,16 @@
               "nayo-smart-herman-h3-sling-bag",
               "herman-h3-sling-bag-green"
             ],
+            "option_name": "Color",
+            "option_value_metafield": "custom.color",
+            "color_swatch_type": "color"
+          }
+        },
+        "freebie": {
+          "type": "freebie",
+          "settings": {
+            "heading": "Included free",
+            "price_label": "Free",
             "option_name": "Color",
             "option_value_metafield": "custom.color",
             "color_swatch_type": "color"
@@ -126,7 +137,7 @@
         "variant_picker",
         "delivery_date_eta_eta_custom_position_with_section_VNNN8n",
         "buy_buttons",
-        "bundle_with",
+        "freebie",
         "icon_badges_h1"
       ],
       "settings": {
