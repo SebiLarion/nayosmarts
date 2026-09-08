@@ -222,27 +222,39 @@
       opacity: 0.5;
     }
 
+    .size-card-h1__copy {
+      display: grid;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
     .size-card-h1__name {
       display: block;
-      margin: 0.75rem 0 0;
-      font-size: var(--text-base);
-      font-weight: 700;
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
       line-height: 1.3;
       text-transform: uppercase;
       letter-spacing: 0.02em;
+      color: #171717;
     }
 
     .size-card-h1__description {
       display: block;
-      margin: 0.35rem 0 0;
-      font-size: var(--text-sm);
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 500;
       line-height: 1.5;
-      color: rgb(23 23 23 / 0.72);
+      color: #1a1a1a;
+    }
+
+    .size-card-h1__description p {
+      margin: 0;
     }
   </style>
 
   {%- liquid
-    assign metafield_parts = block.settings.size_description_metafield | default: 'custom.size_description' | split: '.'
+    assign metafield_parts = block.settings.size_description_metafield | default: 'custom.variant_description' | split: '.'
     assign description_namespace = metafield_parts | first
     assign description_key = metafield_parts | last
   -%}
@@ -326,18 +338,44 @@
             <div class="size-drawer-h1__body drawer__content">
               {%- for value in option.values -%}
                 {%- liquid
+                  assign value_label = value.name | default: value
                   assign matched_variant = blank
+                  assign fallback_variant = blank
+
                   for variant in product.variants
-                    if variant.options[option_index_0] == value.name
+                    assign option_value = variant.options[option_index_0]
+                    if option_value != value_label and option_value != value
+                      continue
+                    endif
+
+                    if fallback_variant == blank
+                      assign fallback_variant = variant
+                    endif
+
+                    assign matches_selected = true
+                    for other_option in product.options_with_values
+                      if forloop.index0 == option_index_0
+                        continue
+                      endif
+                      unless variant.options[forloop.index0] == other_option.selected_value
+                        assign matches_selected = false
+                      endunless
+                    endfor
+
+                    if matches_selected
                       assign matched_variant = variant
                       break
                     endif
                   endfor
 
+                  if matched_variant == blank
+                    assign matched_variant = fallback_variant
+                  endif
+
                   assign card_media = matched_variant.featured_media | default: product.featured_media
-                  assign card_description = blank
-                  if matched_variant != blank
-                    assign card_description = matched_variant.metafields[description_namespace][description_key].value
+                  assign desc_mf = blank
+                  if matched_variant != blank and description_namespace != blank and description_key != blank
+                    assign desc_mf = matched_variant.metafields[description_namespace][description_key]
                   endif
                 -%}
                 <label
@@ -350,10 +388,18 @@
                     {%- endif -%}
                     <span class="size-card-h1__radio" aria-hidden="true"></span>
                   </span>
-                  <span class="size-card-h1__name">{{ value.name | escape }}</span>
-                  {%- if card_description != blank -%}
-                    <span class="size-card-h1__description">{{ card_description }}</span>
-                  {%- endif -%}
+                  <span class="size-card-h1__copy">
+                    <span class="size-card-h1__name">{{ value_label | escape }}</span>
+                    {%- if desc_mf != blank -%}
+                      <span class="size-card-h1__description">
+                        {%- if desc_mf.type == 'rich_text_field' -%}
+                          {{- desc_mf | metafield_tag -}}
+                        {%- else -%}
+                          {{- desc_mf.value | escape | newline_to_br -}}
+                        {%- endif -%}
+                      </span>
+                    {%- endif -%}
+                  </span>
                 </label>
               {%- endfor -%}
             </div>
