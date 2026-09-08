@@ -251,11 +251,28 @@
     }
   }
 
+  /**
+   * A swatch click updates the product already on screen, so the theme's entry
+   * animations have nothing to reveal — they just replay the fade-up on the info
+   * column and the per-word clip on the title every time. Switching the incoming
+   * markup to data-animate="none" lets the gallery, title and prices change in
+   * place. Hosts that carry no data-animate default to fade-up, so they have to
+   * be named rather than matched on the attribute alone.
+   */
+  var ANIMATION_HOSTS = 'product-info, animate-element, split-words, [is="animate-picture"], [data-animate]';
+
+  function disableEntryAnimations(root) {
+    root.querySelectorAll(ANIMATION_HOSTS).forEach(function (element) {
+      element.setAttribute('data-animate', 'none');
+    });
+  }
+
   function swap(section, html, options) {
     var parsed = new DOMParser().parseFromString(html, 'text/html');
     var incoming = parsed.querySelector('.shopify-section');
     if (!incoming) throw new Error('No section found in response');
 
+    disableEntryAnimations(incoming);
     setInnerHTML(section, incoming.innerHTML);
     syncOpenFitsModal(section);
     restoreStickyAfterSwap(section, options && options.parkedSticky);
