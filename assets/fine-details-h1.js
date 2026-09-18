@@ -1,13 +1,12 @@
 function collectFineDetailsHotspots(root, views) {
   const all = Array.from(root.querySelectorAll('[data-fine-details-hotspot]'));
-  const viewOrder = ['front', 'interior', 'back'];
-  const extraKeys = views
+  const viewOrder = views
     .map((view) => view.dataset.viewKey)
-    .filter((key) => key && !viewOrder.includes(key));
+    .filter(Boolean);
   const ordered = [];
   const used = new Set();
 
-  viewOrder.concat(extraKeys).forEach((key) => {
+  viewOrder.forEach((key) => {
     all
       .filter((hotspot) => hotspot.dataset.viewKey === key)
       .sort((a, b) => Number(a.dataset.hotspotIndex) - Number(b.dataset.hotspotIndex))

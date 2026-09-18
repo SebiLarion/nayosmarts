@@ -1,0 +1,1372 @@
+{%- comment -%}
+{
+  "pack_name": "Gallery block",
+  "pack_author": "Design Packs",
+  "license": "© Design Packs. All rights reserved. This code is protected by copyright law and may not be reproduced, distributed, or used without explicit permission from the author. Shopify complies with the Digital Millennium Copyright Act (DMCA) and responds to claims of copyright infringement using DMCA procedures, which could result in the termination of your Shopify account.",
+}
+{%- endcomment -%}
+
+{% comment %} Security Code - hides section when app uninstalled {% endcomment %}
+{%- unless content_for_header contains 'design_packs_file.js' -%}
+  {%- if request.design_mode -%}
+    <div class="dsgn-pck__no-app-warning">
+      <div class="dsgn-pck__no-app-warning-background">
+      </div>
+      <div class="dsgn-pck__no-app-warning-text dsgn-pck__rte">
+        <p><strong>WARNING!</strong> This premium section will not display properly without an active subscription for <a href="https://apps.shopify.com/design-packs" target="_blank" rel="noopener nofollow">Design Packs</a>. If you need any support please email <a href="mailto:info@design-packs.com" target="_blank" rel="noopener">info@design-packs.com</a> with your questions.</p>
+      </div>
+    </div>
+  {%- endif -%}
+  {%- break -%}
+{%- endunless -%}
+
+{%- comment -%} Assign: Preview section js fix {%- endcomment -%}
+{%- assign block_id = section.id | append: block.id | replace: '+', '' | replace: '=', '' -%}
+{%- assign enable_metafield_detect = section.settings.enable_metafield_detect | default: false -%}
+
+
+{% comment %} Images: responsive image widths {% endcomment %}
+{%- assign widths = '180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 1950, 2100, 2260, 2450, 2700, 3000, 3350, 3750, 4100' -%}
+
+{% comment %} Layout: align items and hide other elements if needed {% endcomment %}
+{%- assign slide_overlap = 100.0 | divided_by: block.settings.item_width -%}
+{%- assign mobile_slide_overlap = 100.0 | divided_by: block.settings.mobile_grid_item_width -%}
+{%- assign gallery_text_alpha = block.settings.text_color | color_extract: 'alpha' | default: 0 -%}
+
+{%- capture css_styles -%}
+<style data-dp-css="blocks/_dpb_-_gallery.liquid">
+
+  [id*=preview-block] {
+    container-type: normal !important;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} {
+    display: flex;
+    padding-top: {{ block.settings.padding_top }}px;
+    padding-bottom: {{ block.settings.padding_bottom }}px;
+    width: {{ block.settings.base_width }}%;
+    max-width: {{ block.settings.max_width | remove: 'px' }}px;
+    {%- if block.settings.horizontal_alignment == 'left' -%}
+      align-self: flex-start;
+      margin-left: 0;
+      margin-right: auto;
+      --block-horizontal-alignment: flex-start;
+    {%- elsif block.settings.horizontal_alignment == 'right' -%}
+      align-self: flex-end;
+      margin-left: auto;
+      margin-right: 0;
+      --block-horizontal-alignment: flex-end;
+    {%- elsif block.settings.horizontal_alignment == 'center' -%}
+      align-self: center;
+      margin-left: auto;
+      margin-right: auto;
+      --block-horizontal-alignment: center;
+    {%- else -%}
+      margin-left: var(--block-margin-left, 0);
+      margin-right: var(--block-margin-right, 0);
+    {%- endif -%}
+    --section-horizontal-alignment: {%- if section.settings.text_alignment == 'center' -%}center{%- elsif section.settings.text_alignment == 'right' -%}flex-end{%- endif -%};
+    align-self: var(--block-horizontal-alignment, var(--section-horizontal-alignment));
+    container-type: inline-size;
+    container-name: dp-gallery-container;
+    {%- if gallery_text_alpha != 0 -%}
+      --block-heading-color: {{ block.settings.text_color }};
+      --block-text-color: {{ block.settings.text_color }};
+      color: {{ block.settings.text_color }};
+    {%- endif -%}
+  }
+
+  {% comment %} Gallery grid {% endcomment %}
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__stretch-height .dsgn-pck__flex-item {
+    height: 100%;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-track > .dsgn-pck__block > a {
+    text-decoration: none;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__image__wrapper > svg {
+    width: 100%;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-track > .dsgn-pck__block {
+    position: relative;
+    display: flex;
+    height: 100%;
+    margin-top: 0;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-track > .dsgn-pck__block + .dsgn-pck__block {
+    margin-top: 0;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider {
+    width: 100%;
+  }
+
+  {% if block.settings.format == 'scroller' %}
+    {% comment %} Slider {% endcomment %}
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider {
+      --slider-gap: {{ block.settings.gap }}px;
+      --slide-width: {{ 100.00 | divided_by: block.settings.item_width }};
+      position: relative;
+      overflow: hidden;
+      margin: 0 auto;
+      width: 100%;
+      --scroll-bar: {{ block.settings.slider_bar_color | default: '#000000' }};
+      --scroll-bar-background: {{ block.settings.slider_bar_background_color | default: '#D8D8D8' }};
+      --scroll-bar-thickness: {{ block.settings.slider_bar_thickness | default: 3 }}px;
+      --scroll-bar-padding: {% if block.settings.show_bar %}20px{% else %}0px{% endif %};
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-track {
+      display: flex;
+      overflow-x: auto;
+      -ms-scroll-snap-type: x mandatory;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      list-style-type: none;
+      padding: 0;
+      justify-content: space-between;
+      {%- if slide_overlap >= block.blocks.size -%}
+        justify-content: center;
+      {%- endif -%}
+      gap: var(--slider-gap);
+      {% if block.settings.show_bar %}
+        padding-bottom: var(--scroll-bar-padding);
+      {% endif %}
+      scrollbar-width: auto;
+      scrollbar-color: initial;
+      scroll-behavior: auto;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-track > .dsgn-pck__block {
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      flex: 0 1 calc((100% / var(--slide-width)) - (((var(--slide-width) - 1) / var(--slide-width)) * var(--slider-gap)));
+      min-width: calc((100% / var(--slide-width)) - (((var(--slide-width) - 1) / var(--slide-width)) * var(--slider-gap)));
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__nav-button--prev,
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__nav-button--next {
+      /* Button resets */
+      border: none;
+      font: inherit;
+      margin: 0;
+
+      /* Original styles */
+      position: static;
+      display: inline-block;
+      top: 0;
+      padding: 4px;
+      left: 0;
+      background-color: {{ block.settings.slider_arrow_background | default: 'transparent' }};
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z' fill='{{ block.settings.slider_arrow_color | replace: "#", "%23" }}'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-size: 40px;
+      width: 40px;
+      height: 40px;
+      background-position: center;
+      border-radius: {{ block.settings.slider_arrow_radius | default: 50 }}px;
+      opacity: 1;
+      cursor: pointer;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__nav-button--next {
+      right: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z' fill='{{ block.settings.slider_arrow_color | replace: "#", "%23" }}'/%3E%3C/svg%3E");
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__nav-button--next.dsgn-pck__disabled,
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__nav-button--prev.dsgn-pck__disabled {
+      opacity: 0.4;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__prev-next__wrapper {
+      width: 100%;
+      box-sizing: border-box;
+      {%- if block.settings.offset_arrows and block.settings.arrow_display == 'left' or block.settings.offset_arrows and block.settings.arrow_display == 'right' -%}
+        padding-left: 20px;
+        padding-right: 20px;
+      {%- endif -%}
+      display: flex;
+      gap: var(--arrow-gap, 5px);
+      {%- if block.settings.arrow_display == 'left' or block.settings.arrow_display == 'right' -%}
+        margin-bottom: 10px;
+      {%- elsif block.settings.arrow_display == 'bottom_left' or block.settings.arrow_display == 'bottom_right' or block.settings.arrow_display == 'bottom_center' -%}
+        margin-top: 10px;
+      {%- endif -%}
+      {%- if slide_overlap >= block.blocks.size -%}
+        display: none;
+      {%- else -%}
+        display: flex;
+      {%- endif -%}
+      {%- case block.settings.arrow_display -%}
+        {%- when 'none' -%}
+          display: none;
+        {%- when 'left' -%}
+          justify-content: flex-start;
+        {%- when 'right' -%}
+          justify-content: flex-end;
+        {%- when 'bottom_left' -%}
+          justify-content: flex-start;
+        {%- when 'bottom_right' -%}
+          justify-content: flex-end;
+        {%- when 'bottom_center' -%}
+          justify-content: center;
+          gap: 20px;
+        {%- when 'center' -%}
+          position: absolute;
+          top: calc(50% - var(--scroll-bar-padding) - var(--scroll-bar-thickness));
+          left: 0;
+          right: 0;
+          transform: translateY(-50%);
+          justify-content: space-between;
+          margin-bottom: 0;
+          pointer-events: none;
+          z-index: 2;
+      {%- endcase -%}
+    }
+
+    {%- if block.settings.arrow_display == 'center' -%}
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__nav-button--prev,
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__nav-button--next {
+      pointer-events: auto;
+    }
+    {%- endif -%}
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__prev-next__wrapper--mobile {
+      display: none;
+    }
+
+    {% comment %} Reset for values in Horizon {% endcomment %}
+
+    /* Reset scrollbars back to native look */
+    .dsgn-pck__block-id-{{ block.id }} ::-webkit-scrollbar {
+      width: auto; /* instead of fixed 20px */
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} ::-webkit-scrollbar-track {
+      background: initial; /* restore browser default */
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} ::-webkit-scrollbar-thumb {
+      background: initial;
+      border: none;
+      border-radius: 0;
+      background-clip: border-box; /* default */
+      transition: none;
+    }
+
+    {% comment %} Scroll bar {% endcomment %}
+
+    .dsgn-pck__block-id-{{ block.id }} ::-webkit-scrollbar {
+      -webkit-appearance: none;
+      background-color: rgba(0,0,0,0);
+      width: 7px;
+      height: var(--scroll-bar-thickness);
+      {%- if block.settings.show_bar == false -%}
+        display: none;
+      {%- endif -%}
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} ::-webkit-scrollbar-track,
+    ::-webkit-scrollbar-corner { /* Background */
+      background: var(--scroll-bar-background);
+      background-color: var(--scroll-bar-background);
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} ::-webkit-scrollbar-thumb {
+      border-radius: 0px;
+      background-color: var(--scroll-bar);
+      -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+      cursor: pointer;
+    }
+  {% elsif block.settings.format == 'grid' %}
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__format-grid {
+      display: flex;
+      flex-wrap: wrap;
+      --flex-gap: {{ block.settings.gap }}px;
+      gap: var(--flex-gap);
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__format-grid > .dsgn-pck__block {
+      --flex-items: {{ block.settings.per_row }};
+      flex: 0 1 calc((100% / var(--flex-items)) - (((var(--flex-items) - 1) / var(--flex-items)) * var(--flex-gap)));
+      width: calc((100% / var(--flex-items)) - (((var(--flex-items) - 1) / var(--flex-items)) * var(--flex-gap)));
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__prev-next__wrapper {
+      display: none;
+    }
+  {% endif %}
+
+  /* Custom CSS */
+  {%- if block.settings.enable_custom_css == true and block.settings.custom_css != blank -%}
+    {%- assign custom_css_rules = block.settings.custom_css | strip | split: '}' -%}
+    {%- for rule in custom_css_rules -%}
+      {%- assign clean_rule = rule | strip -%}
+      {%- if clean_rule contains '{' and clean_rule != blank -%}
+        {%- assign rule_parts = clean_rule | split: '{' -%}
+        {%- if rule_parts.size >= 2 -%}
+          {%- assign selector_part = rule_parts[0] | strip -%}
+          {%- assign css_part = rule_parts[1] | strip -%}
+          {%- if css_part != blank -%}
+            {%- if selector_part == blank -%}
+              #DP--{{ block.id }} { {{ css_part }} }
+            {%- else -%}
+              #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+
+  /* Small context - small container and mobile */
+  {%- capture small_context -%}
+
+    {% if block.settings.mobile_format == 'scroller' %}
+      {% comment %} Slider {% endcomment %}
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider {
+        --slider-gap: {{ block.settings.mobile_gap }}px;
+        --slide-width: {{ 100.00 | divided_by: block.settings.mobile_grid_item_width }};
+        position: relative;
+        overflow: hidden;
+        margin: 0 auto;
+        width: 100%;
+        --scroll-bar: {{ block.settings.slider_bar_color }};
+        --scroll-bar-background: {{ block.settings.slider_bar_background_color }};
+        --scroll-bar-thickness: {{ block.settings.slider_bar_thickness | default: 3 }}px;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-track {
+        display: flex;
+        overflow-x: auto;
+        -ms-scroll-snap-type: x mandatory;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        list-style-type: none;
+        padding: 0;
+        justify-content: space-between;
+        flex-wrap: nowrap;
+        {%- if mobile_slide_overlap >= block.blocks.size -%}
+          justify-content: center;
+        {%- endif -%}
+        gap: var(--slider-gap);
+        {% if block.settings.mobile_show_bar %}
+          padding-bottom: 20px;
+        {% endif %}
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-track > .dsgn-pck__block {
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+        flex: 0 1 calc((100% / var(--slide-width)) - (((var(--slide-width) - 1) / var(--slide-width)) * var(--slider-gap)));
+        min-width: calc((100% / var(--slide-width)) - (((var(--slide-width) - 1) / var(--slide-width)) * var(--slider-gap)));
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__nav-button--prev,
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__nav-button--next {
+        /* Button resets */
+        border: none;
+        font: inherit;
+        margin: 0;
+
+        /* Original styles */
+        position: static;
+        display: inline-block;
+        top: 0;
+        padding: 4px;
+        left: 0;
+        background-color: {{ block.settings.slider_arrow_background | default: 'transparent' }};
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z' fill='{{ block.settings.slider_arrow_color | replace: "#", "%23" }}'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-size: 40px;
+        width: 40px;
+        height: 40px;
+        background-position: center;
+        border-radius: {{ block.settings.slider_arrow_radius | default: 50 }}px;
+        opacity: 1;
+        cursor: pointer;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__nav-button--next {
+        right: 0;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z' fill='{{ block.settings.slider_arrow_color | replace: "#", "%23" }}'/%3E%3C/svg%3E");
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__nav-button--next.dsgn-pck__disabled,
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__nav-button--prev.dsgn-pck__disabled {
+        opacity: 0.4;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__prev-next__wrapper {
+        width: 100%;
+        box-sizing: border-box;
+        {%- if block.settings.mobile_offset_arrows and block.settings.mobile_arrow_display == 'left' or block.settings.mobile_offset_arrows and block.settings.mobile_arrow_display == 'right' -%}
+          padding-left: 15px;
+          padding-right: 15px;
+        {%- endif -%}
+        display: flex;
+        margin: 0;
+        {%- if block.settings.mobile_arrow_display == 'left' or block.settings.mobile_arrow_display == 'right' -%}
+          margin-bottom: 10px;
+        {%- elsif block.settings.mobile_arrow_display == 'bottom_left' or block.settings.mobile_arrow_display == 'bottom_right' or block.settings.mobile_arrow_display == 'bottom_center' -%}
+          margin-top: 10px;
+        {%- endif -%}
+        {%- if slide_overlap >= block.blocks.size -%}
+          display: none;
+        {%- else -%}
+          display: flex;
+        {%- endif -%}
+        {%- if block.settings.mobile_arrow_display != 'center' and block.settings.arrow_display == 'center' -%}
+          position: static;
+          transform: unset;
+          top: unset;
+        {%- endif -%}
+        {%- case block.settings.mobile_arrow_display -%}
+          {%- when 'none' -%}
+            display: none;
+          {%- when 'left' -%}
+            justify-content: flex-start;
+          {%- when 'right' -%}
+            justify-content: flex-end;
+          {%- when 'bottom_left' -%}
+            justify-content: flex-start;
+          {%- when 'bottom_right' -%}
+            justify-content: flex-end;
+          {%- when 'bottom_center' -%}
+            justify-content: center;
+            gap: 20px;
+          {%- when 'center' -%}
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            transform: translateY(-50%);
+            justify-content: space-between;
+            margin-bottom: 0;
+            z-index: 2;
+            pointer-events: none;
+        {%- endcase -%}
+      }
+
+      {%- if block.settings.mobile_arrow_display == 'center' -%}
+        .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__prev-next__wrapper .dsgn-pck__nav-button {
+          pointer-events: all;
+        }
+      {%- endif -%}
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__prev-next__wrapper--desktop {
+        display: none;
+      }
+
+      /* Reset scrollbars back to native look */
+      .dsgn-pck__block-id-{{ block.id }} ::-webkit-scrollbar {
+        width: auto; /* instead of fixed 20px */
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} ::-webkit-scrollbar-track {
+        background: initial; /* restore browser default */
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} ::-webkit-scrollbar-thumb {
+        background: initial;
+        border: none;
+        border-radius: 0;
+        background-clip: border-box; /* default */
+        transition: none;
+      }
+
+      {% comment %} Scroll bar {% endcomment %}
+
+      .dsgn-pck__block-id-{{ block.id }} ::-webkit-scrollbar {
+        -webkit-appearance: none;
+        background-color: rgba(0,0,0,0);
+        width: 7px;
+        height: var(--scroll-bar-thickness);
+        {%- if block.settings.mobile_show_bar == false -%}
+          display: none;
+        {%- else -%}
+          display: block;
+        {%- endif -%}
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} ::-webkit-scrollbar-track,
+      ::-webkit-scrollbar-corner { /* Background */
+        background: var(--scroll-bar-background);
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} ::-webkit-scrollbar-thumb {
+        border-radius: 0px;
+        background-color: var(--scroll-bar);
+        -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+      }
+    {% elsif block.settings.mobile_format == 'grid' %}
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__mobile-format-grid {
+        display: flex;
+        flex-wrap: wrap;
+        --flex-gap: {{ block.settings.mobile_gap }}px;
+        gap: var(--flex-gap);
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__mobile-format-grid > .dsgn-pck__block {
+        --flex-items: {{ block.settings.mobile_per_row }};
+        flex: 0 1 calc((100% / var(--flex-items)) - (((var(--flex-items) - 1) / var(--flex-items)) * var(--flex-gap)));
+        width: calc((100% / var(--flex-items)) - (((var(--flex-items) - 1) / var(--flex-items)) * var(--flex-gap)));
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} ::-webkit-scrollbar {
+        display: none;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__prev-next__wrapper {
+        display: none;
+      }
+    {% endif %}
+
+  /* Mobile & narrow custom CSS */
+  {%- if block.settings.enable_custom_css == true and block.settings.mobile_css != blank -%}
+    {%- assign mobile_css_rules = block.settings.mobile_css | strip | split: '}' -%}
+    {%- for rule in mobile_css_rules -%}
+      {%- assign clean_rule = rule | strip -%}
+      {%- if clean_rule contains '{' and clean_rule != blank -%}
+        {%- assign rule_parts = clean_rule | split: '{' -%}
+        {%- if rule_parts.size >= 2 -%}
+          {%- assign selector_part = rule_parts[0] | strip -%}
+          {%- assign css_part = rule_parts[1] | strip -%}
+          {%- if css_part != blank -%}
+            {%- if selector_part == blank -%}
+              #DP--{{ block.id }} { {{ css_part }} }
+            {%- else -%}
+              #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+  {%- endcapture -%}
+
+  @supports (container-type: inline-size) {
+    @container dp-gallery-container (max-width: 300px) {
+      {{ small_context }}
+    }
+  }
+
+  @media (max-width: 767px) {
+    {{ small_context }}
+  }
+
+  /* Hide or show on mobile and desktop */
+  {%- if block.settings.hidden_on == 'mobile' -%}
+    @media (max-width: 767px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+
+  {%- if block.settings.hidden_on == 'desktop' -%}
+    @media (min-width: 768px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+</style>
+{%- endcapture -%}
+
+{%- capture js_scripts -%}
+  <script type="application/json" data-dsgn-pck="{{ block_id }}">
+    {
+      "id": {{ block_id | json }},
+      "cart_add_url": {{ routes.cart_add_url | json }},
+      "add_to_cart_option": {{ block.settings.add_to_cart_option | json }},
+      "custom_theme_trigger": {{ block.settings.custom_theme_trigger | json }},
+      "slide_by_group": {{ block.settings.slide_by_group | json }}
+    }
+  </script>
+  <script type="module" defer>
+    class GalleryBlock extends HTMLElement {
+      constructor() {
+        super();
+        this.blockWrapper = this.closest('.dsgn-pck__block');
+        this.slider = this.querySelector('.dsgn-pck__slider-block');
+        this.prevButtons = Array.from(this.querySelectorAll('.dsgn-pck__nav-button--prev'));
+        this.nextButtons = Array.from(this.querySelectorAll('.dsgn-pck__nav-button--next'));
+        this.track = this.querySelector("[data-slider-track]");
+        // Find the settings script within the block wrapper
+        const script = this.blockWrapper ? this.blockWrapper.querySelector('script[data-dsgn-pck]') : null;
+        this.settings = script ? JSON.parse(script.textContent) : {};
+      }
+
+      connectedCallback() {
+        this.enablePrevNextButtons();
+        // Event delegation for add-to-cart buttons
+        this.blockWrapper.addEventListener('click', this.handleAddToCartClick.bind(this));
+      }
+
+      disconnectedCallback() {
+        // Clean up event listeners if needed
+        this.blockWrapper.removeEventListener('click', this.handleAddToCartClick.bind(this));
+        // Clean up resize observer
+        if (this.resizeObserver) {
+          this.resizeObserver.disconnect();
+          this.resizeObserver = null;
+        }
+      }
+
+      handleAddToCartClick(e) {
+        const button = e.target.closest('[data-dsgn-pck-add-to-cart]');
+        if (!button) return;
+        const addToCartOption = button.dataset.dsgnPckAddToCart;
+        if (addToCartOption === 'refresh' || addToCartOption === 'custom_theme_trigger') {
+          e.preventDefault();
+          const form = button.closest('form');
+          if (!form) return;
+          const variantId = form.querySelector('[name="id"]').value;
+          const quantity = form.querySelector('[name="quantity"]').value;
+          this.addItemToCart(variantId, quantity, addToCartOption);
+        }
+      }
+
+      addItemToCart(variantId, quantity, addToCartOption) {
+        fetch(this.settings.cart_add_url, {
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify({
+            quantity: quantity,
+            id: variantId,
+          })
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then((resp) => {
+          if (addToCartOption === 'custom_theme_trigger') {
+            const customCode = this.settings.custom_theme_trigger;
+            if (customCode) {
+              try {
+                // Execute custom code with response
+                const executeCustomCode = new Function('response', customCode);
+                executeCustomCode(resp);
+              } catch (error) {
+                console.error('Error executing custom theme trigger:', error);
+                location.reload();
+              }
+            } else {
+              location.reload();
+            }
+          } else {
+            location.reload();
+          }
+        })
+        .catch((error) => {
+          console.error('Error adding item to cart:', error);
+          location.reload();
+        });
+      }
+
+      enablePrevNextButtons() {
+        if (!this.track || this.prevButtons.length === 0 || this.nextButtons.length === 0) return;
+
+        const slideByGroup = this.settings.slide_by_group === true;
+        const setButtonState = (button, isDisabled) => {
+          if (!button) return;
+          button.classList.toggle("dsgn-pck__disabled", isDisabled);
+          button.disabled = isDisabled;
+        };
+
+        // Helper to update button states
+        const updateButtonStates = () => {
+          const trackScrollWidth = this.track.scrollWidth;
+          const trackOuterWidth = this.track.clientWidth;
+
+          this.prevButtons.forEach((button) => setButtonState(button, false));
+          this.nextButtons.forEach((button) => setButtonState(button, false));
+
+          if (this.track.scrollLeft <= 0) {
+            this.prevButtons.forEach((button) => setButtonState(button, true));
+          }
+
+          let scrollLeft = this.track.scrollLeft + 1;
+          if (scrollLeft > trackScrollWidth - trackOuterWidth) {
+            this.nextButtons.forEach((button) => setButtonState(button, true));
+          }
+        };
+
+        // Calculate scroll amount based on setting
+        const getScrollAmount = () => {
+          if (slideByGroup) {
+            // Scroll by the visible track width (all visible items at once)
+            return this.track.clientWidth;
+          }
+
+          const firstItem = this.track.querySelector('.dsgn-pck__block');
+          if (!firstItem) return this.track.clientWidth;
+
+          const trackStyles = getComputedStyle(this.track);
+          const rawGap = trackStyles.columnGap || trackStyles.gap || '0';
+          const gap = Number.parseFloat(rawGap) || 0;
+
+          // Scroll by one slide width + gap
+          return firstItem.offsetWidth + gap;
+        };
+
+        // Initial state - use requestAnimationFrame to ensure layout is complete
+        requestAnimationFrame(() => {
+          updateButtonStates();
+        });
+
+        // Watch for container resize to recalculate button states
+        if (!this.resizeObserver) {
+          this.resizeObserver = new ResizeObserver(() => {
+            updateButtonStates();
+          });
+          this.resizeObserver.observe(this.track);
+        }
+
+        // Remove previous listeners if any
+        this.track.onscroll = null;
+        this.prevButtons.forEach((button) => {
+          button.onclick = null;
+        });
+        this.nextButtons.forEach((button) => {
+          button.onclick = null;
+        });
+
+        // Add listeners
+        this.track.addEventListener("scroll", updateButtonStates);
+        this.prevButtons.forEach((button) => {
+          button.addEventListener('click', () => {
+            this.track.scrollTo({
+              left: this.track.scrollLeft - getScrollAmount(),
+              behavior: "smooth"
+            });
+          });
+        });
+        this.nextButtons.forEach((button) => {
+          button.addEventListener('click', () => {
+            this.track.scrollTo({
+              left: this.track.scrollLeft + getScrollAmount(),
+              behavior: "smooth"
+            });
+          });
+        });
+      }
+    }
+
+    if (!customElements.get('dp-gallery-block')) {
+      customElements.define('dp-gallery-block', GalleryBlock);
+    }
+  </script>
+{%- endcapture -%}
+
+<div id="DP--{{ block.id }}" class="DP--{{ block.id }} dsgn-pck__block dsgn-pck__block-id-{{ block.id }} dsgn-pck__block--{{ block.type }} dsgn-pck__block--{{ block.index }} dsgn-pck__justify-{%- if block.settings.horizontal_alignment != 'default' -%}{{ block.settings.horizontal_alignment }}{%- else -%}{{ section.settings.text_alignment }}{%- endif -%}" {{ block.shopify_attributes }}>
+  {{ css_styles }}
+    {%- capture prev_next_buttons -%}
+      <div class="dsgn-pck__prev-next__wrapper dsgn-pck__prev-next__wrapper--desktop">
+        <button type="button" class="dsgn-pck__nav-button dsgn-pck__nav-button--prev dsgn-pck__disabled" aria-label="Previous items" disabled>
+        </button>
+        <button type="button" class="dsgn-pck__nav-button dsgn-pck__nav-button--next" aria-label="Next items">
+        </button>
+      </div>
+    {%- endcapture -%}
+    {%- capture mobile_prev_next_buttons -%}
+      <div class="dsgn-pck__prev-next__wrapper dsgn-pck__prev-next__wrapper--mobile">
+        <button type="button" class="dsgn-pck__nav-button dsgn-pck__nav-button--prev dsgn-pck__disabled" aria-label="Previous items" disabled>
+        </button>
+        <button type="button" class="dsgn-pck__nav-button dsgn-pck__nav-button--next" aria-label="Next items">
+        </button>
+      </div>
+    {%- endcapture -%}
+    <dp-gallery-block class="dsgn-pck__slider" data-slider>
+      {%- if block.settings.arrow_display == 'right' or block.settings.arrow_display == 'left' -%}
+        {{ prev_next_buttons }}
+      {%- endif -%}
+      {%- if block.settings.mobile_arrow_display == 'right' or block.settings.mobile_arrow_display == 'left' -%}
+        {{ mobile_prev_next_buttons }}
+      {%- endif -%}
+      <div class="dsgn-pck__slider-track dsgn-pck__format-{{ block.settings.format }} dsgn-pck__mobile-format-{{ block.settings.mobile_format }}" data-slider-track>
+        {%- if block.settings.arrow_display == 'center' -%}
+          {{ prev_next_buttons }}
+        {%- endif -%}
+        {%- if block.settings.mobile_arrow_display == 'center' -%}
+          {{ mobile_prev_next_buttons }}
+        {%- endif -%}
+        {% content_for 'blocks' %}
+      </div>
+      {%- if block.settings.arrow_display == 'bottom_left' or block.settings.arrow_display == 'bottom_right' or block.settings.arrow_display == 'bottom_center' -%}
+        {{ prev_next_buttons }}
+      {%- endif -%}
+      {%- if block.settings.mobile_arrow_display == 'bottom_left' or block.settings.mobile_arrow_display == 'bottom_right' or block.settings.mobile_arrow_display == 'bottom_center' -%}
+        {{ mobile_prev_next_buttons }}
+      {%- endif -%}
+    </dp-gallery-block>
+  {{ js_scripts }}
+</div>
+
+{% schema %}
+  {
+    "name": "Gallery",
+    "tag": null,
+    "settings": [
+      {
+        "type": "header",
+        "content": "Format"
+      },
+      {
+        "type": "select",
+        "id": "format",
+        "label": "Format",
+        "default": "scroller",
+        "options": [
+          {
+            "value": "grid",
+            "label": "Grid"
+          },
+          {
+            "value": "scroller",
+            "label": "Scroller"
+          }
+        ]
+      },
+      {
+        "visible_if": "{{ block.settings.format == 'grid' }}",
+        "type": "range",
+        "id": "per_row",
+        "label": "Items per row",
+        "default": 4,
+        "min": 1,
+        "max": 6
+      },
+      {
+        "visible_if": "{{ block.settings.format == 'scroller' }}",
+        "type": "range",
+        "id": "item_width",
+        "label": "Item width",
+        "default": 38,
+        "min": 10,
+        "max": 100,
+        "unit": "%"
+      },
+      {
+        "type": "range",
+        "id": "gap",
+        "min": 0,
+        "max": 40,
+        "label": "Spacing gap",
+        "unit": "px",
+        "default": 20
+      },
+      {
+        "visible_if": "{{ block.settings.format == 'scroller' or block.settings.mobile_format == 'scroller' }}",
+        "type": "checkbox",
+        "id": "show_bar",
+        "label": "Show slider bar",
+        "default": true
+      },
+      {
+        "visible_if": "{{ block.settings.format == 'scroller' or block.settings.mobile_format == 'scroller' }}",
+        "type": "select",
+        "id": "arrow_display",
+        "label": "Slider arrows",
+        "default": "right",
+        "options": [
+          {
+            "value": "left",
+            "label": "Top left"
+          },
+          {
+            "value": "right",
+            "label": "Top right"
+          },
+          {
+            "value": "bottom_left",
+            "label": "Bottom left"
+          },
+          {
+            "value": "bottom_center",
+            "label": "Bottom center"
+          },
+          {
+            "value": "bottom_right",
+            "label": "Bottom right"
+          },
+          {
+            "value": "center",
+            "label": "Middle overlaid"
+          },
+          {
+            "value": "none",
+            "label": "None"
+          }
+        ]
+      },
+      {
+        "visible_if": "{{ block.settings.format == 'scroller' and block.settings.arrow_display == 'left' or block.settings.format == 'scroller' and block.settings.arrow_display == 'right' }}",
+        "type": "checkbox",
+        "id": "offset_arrows",
+        "label": "Offset arrows",
+        "default": false,
+        "info": "Pushes arrows inward from the slider edges."
+      },
+      {
+        "visible_if": "{{ block.settings.arrow_display != 'none' and block.settings.format == 'scroller' or block.settings.arrow_display != 'none' and block.settings.mobile_format == 'scroller' }}",
+        "type": "checkbox",
+        "id": "slide_by_group",
+        "label": "Slide by visible group",
+        "default": false,
+        "info": "When enabled, clicking arrows scrolls through all visible items at once."
+      },
+      {
+        "type": "header",
+        "content": "📱 Mobile & narrow display",
+        "info": "Settings for small screens or in tight spaces"
+      },
+      {
+        "type": "select",
+        "id": "mobile_format",
+        "label": "Mobile format",
+        "default": "scroller",
+        "options": [
+          {
+            "value": "grid",
+            "label": "Grid"
+          },
+          {
+            "value": "scroller",
+            "label": "Scroller"
+          }
+        ]
+      },
+      {
+        "visible_if": "{{ block.settings.mobile_format == 'grid' }}",
+        "type": "range",
+        "id": "mobile_per_row",
+        "label": "Items per row",
+        "default": 2,
+        "min": 1,
+        "max": 4
+      },
+      {
+        "visible_if": "{{ block.settings.mobile_format == 'scroller' }}",
+        "type": "range",
+        "id": "mobile_grid_item_width",
+        "label": "Mobile slide width",
+        "default": 70,
+        "min": 10,
+        "max": 100,
+        "unit": "%"
+      },
+      {
+        "type": "range",
+        "id": "mobile_gap",
+        "label": "Mobile gap",
+        "default": 10,
+        "min": 0,
+        "max": 40,
+        "unit": "px"
+      },
+      {
+        "visible_if": "{{ block.settings.mobile_format == 'scroller' }}",
+        "type": "checkbox",
+        "id": "mobile_show_bar",
+        "label": "Show mobile slider bar",
+        "default": true
+      },
+      {
+        "visible_if": "{{ block.settings.mobile_format == 'scroller' }}",
+        "type": "select",
+        "id": "mobile_arrow_display",
+        "label": "Mobile slider arrows",
+        "default": "right",
+        "options": [
+          {
+            "value": "left",
+            "label": "Top left"
+          },
+          {
+            "value": "right",
+            "label": "Top right"
+          },
+          {
+            "value": "bottom_left",
+            "label": "Bottom left"
+          },
+          {
+            "value": "bottom_center",
+            "label": "Bottom center"
+          },
+          {
+            "value": "bottom_right",
+            "label": "Bottom right"
+          },
+          {
+            "value": "center",
+            "label": "Middle overlaid"
+          },
+          {
+            "value": "none",
+            "label": "None"
+          }
+        ]
+      },
+      {
+        "visible_if": "{{ block.settings.mobile_format == 'scroller' and block.settings.mobile_arrow_display == 'left' or block.settings.mobile_format == 'scroller' and block.settings.mobile_arrow_display == 'right' }}",
+        "type": "checkbox",
+        "id": "mobile_offset_arrows",
+        "label": "Offset mobile arrows",
+        "default": false,
+        "info": "Pushes arrows inward from the slider edges."
+      },
+      {
+        "visible_if": "{{ block.settings.format == 'scroller' or block.settings.mobile_format == 'scroller' }}",
+        "type": "header",
+        "content": "Scroller design"
+      },
+      {
+        "visible_if": "{{ block.settings.show_bar and block.settings.format == 'scroller' or block.settings.mobile_show_bar and block.settings.mobile_format == 'scroller' }}",
+        "type": "color",
+        "id": "slider_bar_color",
+        "label": "Slider bar",
+        "default": "#000000"
+      },
+      {
+        "visible_if": "{{ block.settings.show_bar and block.settings.format == 'scroller' or block.settings.mobile_show_bar and block.settings.mobile_format == 'scroller' }}",
+        "type": "color",
+        "id": "slider_bar_background_color",
+        "label": "Slider bar background",
+        "default": "#D8D8D8"
+      },
+      {
+        "visible_if": "{{ block.settings.show_bar and block.settings.format == 'scroller' or block.settings.mobile_show_bar and block.settings.mobile_format == 'scroller' }}",
+        "type": "range",
+        "id": "slider_bar_thickness",
+        "label": "Slider bar thickness",
+        "default": 3,
+        "min": 1,
+        "max": 15,
+        "unit": "px"
+      },
+      {
+        "visible_if": "{{ block.settings.arrow_display != 'none' and block.settings.format == 'scroller' or block.settings.arrow_display != 'none' and block.settings.mobile_format == 'scroller' }}",
+        "type": "color",
+        "id": "slider_arrow_color",
+        "label": "Arrow icon",
+        "default": "#000000",
+        "alpha": true
+      },
+      {
+        "visible_if": "{{ block.settings.arrow_display != 'none' and block.settings.format == 'scroller' or block.settings.arrow_display != 'none' and block.settings.mobile_format == 'scroller' }}",
+        "type": "color",
+        "id": "slider_arrow_background",
+        "label": "Arrow background",
+        "default": "rgba(0,0,0,0)",
+        "alpha": true
+      },
+      {
+        "visible_if": "{{ block.settings.arrow_display != 'none' and block.settings.format == 'scroller' or block.settings.arrow_display != 'none' and block.settings.mobile_format == 'scroller' }}",
+        "type": "range",
+        "id": "slider_arrow_radius",
+        "label": "Arrow border radius",
+        "default": 50,
+        "min": 0,
+        "max": 50,
+        "unit": "px"
+      },
+      {
+        "type": "header",
+        "content": "🎨 Design"
+      },
+      {
+        "type": "color",
+        "id": "text_color",
+        "label": "Text"
+      },
+      {
+        "type": "select",
+        "id": "slide_shadow",
+        "label": "Drop shadow",
+        "options": [
+          { "value": "none", "label": "None" },
+          { "value": "small", "label": "Small" },
+          { "value": "medium", "label": "Medium" },
+          { "value": "large", "label": "Large" }
+        ],
+        "default": "none"
+      },
+      {
+        "type": "range",
+        "id": "border_radius",
+        "label": "Rounded corners",
+        "min": 0,
+        "max": 32,
+        "default": 8,
+        "unit": "px"
+      },
+      {
+        "type": "color",
+        "id": "border_color",
+        "label": "Slide border color",
+        "default": "#e5e5e5"
+      },
+      {
+        "type": "range",
+        "id": "border_width",
+        "label": "Slide border width",
+        "min": 0,
+        "max": 8,
+        "default": 1,
+        "unit": "px"
+      },
+      {
+        "type": "color",
+        "id": "slide_background_color",
+        "label": "Slide background",
+        "alpha": true
+      },
+      {
+        "type": "header",
+        "content": "🖼 Layout"
+      },
+      {
+        "type": "range",
+        "id": "base_width",
+        "label": "Size",
+        "min": 10,
+        "max": 100,
+        "default": 100,
+        "unit": "%",
+        "info": "Size is based on the width of the container. [Learn more]( https://design-packs.gitbook.io/docs/fundamentals/block-settings/size-controls-for-image-and-video-blocks)"
+      },
+      {
+        "type": "text",
+        "id": "max_width",
+        "label": "Maximum width",
+        "placeholder": "eg. 1200px",
+        "info": "Sets width constraint for content."
+      },
+      {
+        "visible_if": "{{ block.settings.base_width < 100 or block.settings.max_width != blank }}",
+        "type": "select",
+        "id": "horizontal_alignment",
+        "label": "Horizontal alignment",
+        "default": "default",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          },
+          {
+            "value": "default",
+            "label": "Default"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "hidden_on",
+        "label": "Hidden on",
+      "default": "none",
+        "options": [
+          {
+            "value": "none",
+            "label": "None"
+          },
+          {
+            "value": "desktop",
+            "label": "Desktop"
+          },
+          {
+            "value": "mobile",
+            "label": "Mobile"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_custom_css",
+        "label": "Enable custom CSS",
+        "default": false
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_css == true }}",
+        "type": "liquid",
+        "id": "custom_css",
+        "label": "Custom CSS"
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_css == true }}",
+        "type": "liquid",
+        "id": "mobile_css",
+        "label": "Mobile & narrow custom CSS",
+        "info": "Applied on small screens or in tight spaces."
+      },
+      {
+        "type": "paragraph",
+        "content": "Open [Design Packs](/admin/apps/design-packs-1/dashboard) to add/update new sections and blocks."
+      }
+    ],
+    "blocks": [
+      {
+        "type": "_dpb_-_group"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Gallery",
+        "category": "* Design Packs: Layout",
+        "settings": {
+          "per_row": 2,
+          "show_bar": false,
+          "slide_by_group": true,
+          "mobile_grid_item_width": 42,
+          "slider_arrow_background": "#0000000f",
+          "text_color": "#000000",
+          "border_color": "#000000"
+        },
+        "blocks": [
+          {
+            "type": "_dpb_-_group",
+            "settings": {
+              "gap": 10,
+              "padding_type": "auto",
+              "padding": "5px",
+              "padding_top": 0,
+              "padding_bottom": 0,
+              "padding_left": 0,
+              "padding_right": 0,
+              "text_color": "#000000",
+              "background_solid": "rgba(0,0,0,0)"
+            },
+            "blocks": [
+              {
+                "type": "dpb_-_inset_image",
+                "settings": {
+                  "base_width": 100
+                }
+              },
+              {
+                "type": "dpb_-_text",
+                "settings": {
+                  "enable_custom_text_size": true,
+                  "block_text_size": "14px",
+                  "horizontal_alignment": "center"
+                }
+              }
+            ]
+          },
+          {
+            "type": "_dpb_-_group",
+            "settings": {
+              "gap": 10,
+              "padding_type": "auto",
+              "padding": "5px",
+              "padding_top": 0,
+              "padding_bottom": 0,
+              "padding_left": 0,
+              "padding_right": 0,
+              "text_color": "#000000",
+              "background_solid": "rgba(0,0,0,0)"
+            },
+            "blocks": [
+              {
+                "type": "dpb_-_inset_image",
+                "settings": {
+                  "base_width": 100
+                }
+              },
+              {
+                "type": "dpb_-_text",
+                "settings": {
+                  "enable_custom_text_size": true,
+                  "block_text_size": "14px",
+                  "horizontal_alignment": "center"
+                }
+              }
+            ]
+          },
+          {
+            "type": "_dpb_-_group",
+            "settings": {
+              "gap": 10,
+              "padding_type": "auto",
+              "padding": "5px",
+              "padding_top": 0,
+              "padding_bottom": 0,
+              "padding_left": 0,
+              "padding_right": 0,
+              "text_color": "#000000",
+              "background_solid": "rgba(0,0,0,0)"
+            },
+            "blocks": [
+              {
+                "type": "dpb_-_inset_image",
+                "settings": {
+                  "base_width": 100
+                }
+              },
+              {
+                "type": "dpb_-_text",
+                "settings": {
+                  "enable_custom_text_size": true,
+                  "block_text_size": "14px",
+                  "horizontal_alignment": "center"
+                }
+              }
+            ]
+          },
+          {
+            "type": "_dpb_-_group",
+            "settings": {
+              "gap": 10,
+              "padding_type": "auto",
+              "padding": "5px",
+              "padding_top": 0,
+              "padding_bottom": 0,
+              "padding_left": 0,
+              "padding_right": 0,
+              "text_color": "#000000",
+              "background_solid": "rgba(0,0,0,0)"
+            },
+            "blocks": [
+              {
+                "type": "dpb_-_inset_image",
+                "settings": {
+                  "base_width": 100
+                }
+              },
+              {
+                "type": "dpb_-_text",
+                "settings": {
+                  "enable_custom_text_size": true,
+                  "block_text_size": "14px",
+                  "horizontal_alignment": "center"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

@@ -68,11 +68,14 @@
     {%- endif -%}
 
     {%- render 'js-variables' -%}
+        <link rel="preload" href="{{ 'design-pack-styles.css' | asset_url }}" as="style">
+      {{ 'design-pack-styles.css' | asset_url | stylesheet_tag }} 
 
-    {%- if template.suffix == 'hreman-h1' -%}
+
+    {%- if template.suffix == 'herman-h1' or template.suffix == 'herman-h1-test-b' -%}
       <style>
-        .template-hreman-h1,
-        .template-hreman-h1 * {
+        .template-herman-h1,
+        .template-herman-h1 * {
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
         }
@@ -80,7 +83,7 @@
     {%- endif -%}
   </head>
 
-  <body class="template-{{ template | replace: '.', ' ' | truncatewords: 1, '' | handle }}{% if template.suffix == 'hreman-h1' %} template-hreman-h1{% endif %}{% if request.path == '/challenge' %} template-challange{% endif %}" data-rounded-button="{{ settings.rounded_button }}" data-rounded-input="{{ settings.rounded_input }}" data-rounded-block="{{ settings.rounded_block }}" data-rounded-card="{{ settings.rounded_card }}" data-button-hover="{{ settings.buttons_hover }}"{% if settings.enable_page_transition %} data-page-transition{% endif %}{% if settings.enable_lazy_image %} data-lazy-image{% endif %}{% unless settings.show_modal_close_button %} data-modal-swipe-only{% endunless %} data-title-animation data-page-rendering>
+  <body class="template-{{ template | replace: '.', ' ' | truncatewords: 1, '' | handle }}{% if template.suffix == 'herman-h1' or template.suffix == 'herman-h1-test-b' %} template-herman-h1{% endif %}{% if request.path == '/challenge' %} template-challange{% endif %}" data-rounded-button="{{ settings.rounded_button }}" data-rounded-input="{{ settings.rounded_input }}" data-rounded-block="{{ settings.rounded_block }}" data-rounded-card="{{ settings.rounded_card }}" data-button-hover="{{ settings.buttons_hover }}"{% if settings.enable_page_transition %} data-page-transition{% endif %}{% if settings.enable_lazy_image %} data-lazy-image{% endif %}{% unless settings.show_modal_close_button %} data-modal-swipe-only{% endunless %} data-title-animation data-page-rendering>
     <a class="sr-only skip-link" href="#MainContent">{{ 'general.accessibility.skip_to_content' | t }}</a>
 
     {%- liquid
@@ -112,7 +115,7 @@
     {%- if request.design_mode == false and settings.preload_links -%}
       <script src="{{ 'instant-page.js' | asset_url }}" type="module" fetchpriority="low" defer="defer"></script>
     {%- endif -%}
-  {% include 'xchangeable-data' %}
+  {% render 'xchangeable-data' %}
 
   <script>
 (function () {

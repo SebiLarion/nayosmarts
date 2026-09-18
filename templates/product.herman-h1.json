@@ -1,0 +1,1368 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "breadcrumbs": {
+      "type": "breadcrumbs-h1",
+      "settings": {
+        "show_home": true,
+        "show_collections_link": false,
+        "show_collection": true,
+        "collection": "all-backpacks-collection",
+        "show_product_title": true,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "padding_top": 16,
+        "padding_bottom": 32,
+        "divider": false,
+        "full_width": true,
+        "rounded": false
+      }
+    },
+    "main-product": {
+      "type": "main-product-h1",
+      "blocks": {
+        "reviews_badge": {
+          "type": "reviews_badge",
+          "settings": {}
+        },
+        "title": {
+          "type": "title",
+          "settings": {
+            "title_size": "product-title-lg",
+            "title_size_mobile": "product-title-md",
+            "title_tag": "h1",
+            "show_price": true,
+            "show_rating": false,
+            "short_description": "Keeps work tech protected and everyday essentials organized, with extra room for overnight plans.",
+            "show_fits_button": true,
+            "fits_button_label": "See what it fits",
+            "fits_option_1_label": "Half-Roll (20L)",
+            "fits_option_2_label": "Fully packed (25L)",
+            "fits_image_1": "shopify://shop_images/herman-pro-2025-unboxing-cropped.webp",
+            "fits_image_2": "shopify://shop_images/herman-pro-2530-unboxing-cropped.webp"
+          }
+        },
+        "product_variations_yiaQCW": {
+          "type": "product_variations",
+          "settings": {
+            "option_name": "Color",
+            "option_value_metafield": "custom.color",
+            "products": [
+              "nayo-smart-herman-pro-backpack",
+              "herman-pro-half-roll-top-backpack-black"
+            ],
+            "enable_color_swatches": true,
+            "color_swatch_type": "color",
+            "size_chart": ""
+          }
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {
+            "enable_dynamic_variants": true,
+            "show_variant_labels": true,
+            "picker_type": "button",
+            "enable_color_swatches": true,
+            "color_swatch_type": "color",
+            "size_chart": "",
+            "size_description_metafield": "custom.variant_description"
+          }
+        },
+        "delivery_date_eta_eta_custom_position_with_section_VNNN8n": {
+          "type": "delivery_estimate",
+          "settings": {}
+        },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_quantity_selector": false,
+            "show_price": false,
+            "show_dynamic_checkout": false,
+            "show_gift_card_recipient": false,
+            "enable_back_in_stock": true,
+            "show_back_in_stock_name": true,
+            "show_back_in_stock_phone": true
+          }
+        },
+        "freebie": {
+          "type": "freebie",
+          "settings": {
+            "heading": "Included free",
+            "price_label": "Free",
+            "product_default": "waterproof-toiletry-bag-with-hanging-hook-copy",
+            "products_default": [],
+            "product_us": "waterproof-toiletry-bag-with-hanging-hook",
+            "products_us": [],
+            "market_2_countries": "",
+            "market_2_product": "",
+            "market_2_products": [],
+            "market_3_countries": "",
+            "market_3_product": "",
+            "market_3_products": [],
+            "option_name": "Color",
+            "option_value_metafield": "custom.color",
+            "color_swatch_type": "color"
+          }
+        },
+        "icon_badges_h1": {
+          "type": "icon_badges",
+          "settings": {
+            "icon_1": "truck",
+            "label_1": "Free Shipping",
+            "icon_2": "return",
+            "label_2": "30-Day trial",
+            "icon_3": "shield",
+            "label_3": "2-year warranty",
+            "icon_4": "",
+            "label_4": ""
+          }
+        },
+        "gallery_black_01": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/herman-gallery-black-01.png",
+            "alt": "Herman Pro in Midnight Black: Front view",
+            "match_color": "Black",
+            "match_size": ""
+          }
+        },
+        "gallery_black_03": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/3_Inside_compartments_-_B.png",
+            "alt": "Herman Pro in Midnight Black: Laptop and tablet compartments",
+            "match_color": "Black",
+            "match_size": ""
+          }
+        },
+        "custom_gallery_image_FRnaij": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/Black.png",
+            "alt": "Herman Pro in Midnight Black: Size",
+            "match_color": "Black",
+            "match_size": ""
+          }
+        },
+        "gallery_black_04": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/herman-gallery-black-04.png",
+            "alt": "Herman Pro in Midnight Black: Backpack worn by a model",
+            "match_color": "Black",
+            "match_size": ""
+          }
+        },
+        "gallery_black_05": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/herman-gallery-black-05.png",
+            "alt": "Herman Pro in Midnight Black: Main compartment packed with essentials",
+            "match_color": "Black",
+            "match_size": ""
+          }
+        },
+        "gallery_black_06": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/herman-gallery-black-06.png",
+            "alt": "Herman Pro in Midnight Black: Half-roll top open and closed",
+            "match_color": "Black",
+            "match_size": ""
+          }
+        },
+        "gallery_black_07_large": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/7_Size_Comparison_pro.png",
+            "alt": "Herman Pro in Midnight Black: Backpack size shown on two models",
+            "match_color": "Black",
+            "match_size": "20L-25L（16.3″ laptop）"
+          }
+        },
+        "gallery_black_07_small": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/7_Size_Comparison_max.png",
+            "alt": "Herman Pro in Midnight Black: Backpack size shown on two models",
+            "match_color": "Black",
+            "match_size": "25L-30L（18″ laptop）"
+          }
+        },
+        "gallery_black_08": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/8._Laptop_protection-B_64504db6-a3fd-4dc5-a11c-58406939686d.png",
+            "alt": "Herman Pro in Midnight Black: Laptop compartment bottom padding",
+            "match_color": "Black",
+            "match_size": ""
+          }
+        },
+        "gallery_black_09": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/9._Waterproof-B.png",
+            "alt": "Herman Pro in Midnight Black: Water-resistant fabric detail",
+            "match_color": "Black",
+            "match_size": ""
+          }
+        },
+        "gallery_black_10": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/10._Trolley_luggage_belt-B.png",
+            "alt": "Herman Pro in Midnight Black: Luggage pass-through on a suitcase",
+            "match_color": "Black",
+            "match_size": ""
+          }
+        },
+        "gallery_black_11": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/herman-gallery-black-11.png",
+            "alt": "Herman Pro in Midnight Black: Magnetic buckle detail",
+            "match_color": "Black",
+            "match_size": ""
+          }
+        },
+        "gallery_black_12": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/12._Secret_pocket_for_theft-free-B.png",
+            "alt": "Herman Pro in Midnight Black: Rear security pocket",
+            "match_color": "Black",
+            "match_size": ""
+          }
+        },
+        "gallery_black_13": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/13._BottleUmbrella_holder-B.png",
+            "alt": "Herman Pro in Midnight Black: Side pocket holding a bottle",
+            "match_color": "Black",
+            "match_size": ""
+          }
+        },
+        "gallery_black_14": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/herman-gallery-black-14.png",
+            "alt": "Herman Pro in Midnight Black: Padded back panel",
+            "match_color": "Black",
+            "match_size": ""
+          }
+        },
+        "gallery_black_15": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/15._Credit_card_travel_card_holder-B.png",
+            "alt": "Herman Pro in Midnight Black: Front pocket with travel essentials",
+            "match_color": "Black",
+            "match_size": ""
+          }
+        },
+        "gallery_black_16": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/16._Comfy_straps-B.png",
+            "alt": "Herman Pro in Midnight Black: Padded shoulder straps",
+            "match_color": "Black",
+            "match_size": ""
+          }
+        },
+        "gallery_green_01": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/herman-gallery-green-01.png",
+            "alt": "Herman Pro in Ash Green: Front view",
+            "match_color": "Green",
+            "match_size": ""
+          }
+        },
+        "gallery_green_03": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/3_Inside_compartments_-_B_e43a92e3-654a-4779-bf34-1b80dc22848e.png",
+            "alt": "Herman Pro in Ash Green: Laptop and tablet compartments",
+            "match_color": "Green",
+            "match_size": ""
+          }
+        },
+        "custom_gallery_image_xpF74i": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/Green.png",
+            "alt": "Herman Pro in Ash Green: Size",
+            "match_color": "Green",
+            "match_size": ""
+          }
+        },
+        "gallery_green_04": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/herman-gallery-green-04.png",
+            "alt": "Herman Pro in Ash Green: Backpack worn by a model",
+            "match_color": "Green",
+            "match_size": ""
+          }
+        },
+        "gallery_green_05": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/herman-gallery-green-05.png",
+            "alt": "Herman Pro in Ash Green: Main compartment packed with essentials",
+            "match_color": "Green",
+            "match_size": ""
+          }
+        },
+        "gallery_green_06": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/herman-gallery-green-06.png",
+            "alt": "Herman Pro in Ash Green: Half-roll top open and closed",
+            "match_color": "Green",
+            "match_size": ""
+          }
+        },
+        "gallery_green_07_large": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/7_Size_Comparison_max_-_G.png",
+            "alt": "Herman Pro in Ash Green: Backpack size shown on two models",
+            "match_color": "Green",
+            "match_size": "25L-30L（18″ laptop）"
+          }
+        },
+        "gallery_green_07_small": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/7_Size_Comparison_pro_-_G.png",
+            "alt": "Herman Pro in Ash Green: Backpack size shown on two models",
+            "match_color": "Green",
+            "match_size": "20L-25L（16.3″ laptop）"
+          }
+        },
+        "gallery_green_08": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/8._Laptop_protection-G.png",
+            "alt": "Herman Pro in Ash Green: Laptop compartment bottom padding",
+            "match_color": "Green",
+            "match_size": ""
+          }
+        },
+        "gallery_green_09": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/9._Waterproof-G.png",
+            "alt": "Herman Pro in Ash Green: Water-resistant fabric detail",
+            "match_color": "Green",
+            "match_size": ""
+          }
+        },
+        "gallery_green_10": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/10._Trolley_luggage_belt-G.png",
+            "alt": "Herman Pro in Ash Green: Luggage pass-through on a suitcase",
+            "match_color": "Green",
+            "match_size": ""
+          }
+        },
+        "gallery_green_11": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/herman-gallery-green-11.png",
+            "alt": "Herman Pro in Ash Green: Magnetic buckle detail",
+            "match_color": "Green",
+            "match_size": ""
+          }
+        },
+        "gallery_green_12": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/12._Secret_pocket_for_theft-free-G.png",
+            "alt": "Herman Pro in Ash Green: Rear security pocket",
+            "match_color": "Green",
+            "match_size": ""
+          }
+        },
+        "gallery_green_13": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/13._BottleUmbrella_holder-G.png",
+            "alt": "Herman Pro in Ash Green: Side pocket holding a bottle",
+            "match_color": "Green",
+            "match_size": ""
+          }
+        },
+        "gallery_green_14": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/herman-gallery-green-14.png",
+            "alt": "Herman Pro in Ash Green: Padded back panel",
+            "match_color": "Green",
+            "match_size": ""
+          }
+        },
+        "gallery_green_15": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/15._Credit_card_travel_card_holder-B_20cb5464-621f-4a5c-a5a6-839847dd9c9b.png",
+            "alt": "Herman Pro in Ash Green: Front pocket with travel essentials",
+            "match_color": "Green",
+            "match_size": ""
+          }
+        },
+        "gallery_green_16": {
+          "type": "custom_gallery_image",
+          "settings": {
+            "image": "shopify://shop_images/16._Comfy_straps-G.png",
+            "alt": "Herman Pro in Ash Green: Padded shoulder straps",
+            "match_color": "Green",
+            "match_size": ""
+          }
+        }
+      },
+      "block_order": [
+        "reviews_badge",
+        "title",
+        "product_variations_yiaQCW",
+        "variant_picker",
+        "delivery_date_eta_eta_custom_position_with_section_VNNN8n",
+        "buy_buttons",
+        "freebie",
+        "icon_badges_h1",
+        "gallery_black_01",
+        "gallery_black_03",
+        "custom_gallery_image_FRnaij",
+        "gallery_black_04",
+        "gallery_black_05",
+        "gallery_black_06",
+        "gallery_black_07_large",
+        "gallery_black_07_small",
+        "gallery_black_08",
+        "gallery_black_09",
+        "gallery_black_10",
+        "gallery_black_11",
+        "gallery_black_12",
+        "gallery_black_13",
+        "gallery_black_14",
+        "gallery_black_15",
+        "gallery_black_16",
+        "gallery_green_01",
+        "gallery_green_03",
+        "custom_gallery_image_xpF74i",
+        "gallery_green_04",
+        "gallery_green_05",
+        "gallery_green_06",
+        "gallery_green_07_large",
+        "gallery_green_07_small",
+        "gallery_green_08",
+        "gallery_green_09",
+        "gallery_green_10",
+        "gallery_green_11",
+        "gallery_green_12",
+        "gallery_green_13",
+        "gallery_green_14",
+        "gallery_green_15",
+        "gallery_green_16"
+      ],
+      "custom_css": [
+        "koala-gifts-reward-showcase {display: none !important;}"
+      ],
+      "settings": {
+        "enable_sticky_info": false,
+        "gallery_source": "custom",
+        "media_size": 60,
+        "gallery_layout": "columns",
+        "collapsed_media_count": 4,
+        "thumbnail_position": "beside",
+        "image_ratio": "adapt_first",
+        "image_zoom": "lightbox",
+        "hide_variants": false,
+        "enable_video_autoplay": true,
+        "enable_video_looping": true,
+        "mobile_layout": "full_width",
+        "image_ratio_mobile": "adapt_first",
+        "mobile_thumbnail": true,
+        "padding_top": 0,
+        "padding_bottom": 72,
+        "divider": false,
+        "full_width": true,
+        "rounded": false
+      }
+    },
+    "bundle_products_h1": {
+      "type": "bundle-products-h1",
+      "blocks": {
+        "bundle_prod_2": {
+          "type": "product",
+          "settings": {
+            "product": "urban-ul1-sling-bag",
+            "products": [
+              "urban-ul1-sling-bag",
+              "urban-ul1-sling-bag-white"
+            ]
+          }
+        },
+        "bundle_prod_3": {
+          "type": "product",
+          "settings": {
+            "product": "nayo-smart-herman-h3-sling-bag",
+            "products": [
+              "nayo-smart-herman-h3-sling-bag",
+              "herman-h3-sling-bag-green",
+              "herman-h3-sling-bag-ash"
+            ]
+          }
+        },
+        "bundle_prod_4": {
+          "type": "product",
+          "settings": {
+            "product": "urban-ul2-sling-bag-black",
+            "products": [
+              "urban-ul2-sling-bag-black",
+              "urban-ul2-sling-bag"
+            ]
+          }
+        },
+        "bundle_prod_1": {
+          "type": "product",
+          "settings": {
+            "product": "herman-hl1-sling-bag",
+            "products": []
+          }
+        }
+      },
+      "block_order": [
+        "bundle_prod_2",
+        "bundle_prod_3",
+        "bundle_prod_4",
+        "bundle_prod_1"
+      ],
+      "settings": {
+        "heading": "Get the Backpack + Sling Bag bundle for an extra 15% off!",
+        "heading_size": "title-sm",
+        "heading_alignment": "text-left md:items-end md:flex-row",
+        "heading_tag": "h2",
+        "columns": "3",
+        "columns_mobile": "1",
+        "carousel_on_desktop": true,
+        "swipe_on_mobile": true,
+        "option_name": "Color",
+        "option_value_metafield": "custom.color",
+        "color_swatch_type": "color",
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "padding_top": 36,
+        "padding_bottom": 36,
+        "divider": false,
+        "full_width": false,
+        "rounded": false
+      }
+    },
+    "feature_strip_h1": {
+      "type": "feature-strip-h1",
+      "blocks": {
+        "feature_item_1": {
+          "type": "item",
+          "settings": {
+            "icon": "lake",
+            "text": "Durable, weather-resistant materials"
+          }
+        },
+        "feature_item_2": {
+          "type": "item",
+          "settings": {
+            "icon": "laptop",
+            "text": "Dedicated laptop compartment"
+          }
+        },
+        "feature_item_3": {
+          "type": "item",
+          "settings": {
+            "icon": "expand",
+            "text": "Expandable roll-top design"
+          }
+        },
+        "feature_item_4": {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "text": "NA-TEX water resistant material"
+          }
+        },
+        "feature_item_5": {
+          "type": "item",
+          "settings": {
+            "icon": "circle-lock",
+            "text": "Stealth Pockets"
+          }
+        }
+      },
+      "block_order": [
+        "feature_item_1",
+        "feature_item_2",
+        "feature_item_3",
+        "feature_item_4",
+        "feature_item_5"
+      ],
+      "settings": {
+        "scrolling": true,
+        "direction": "left",
+        "speed": 12,
+        "show_separator": false,
+        "full_width": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "divider": false
+      }
+    },
+    "faq_specs_h1": {
+      "type": "faq-h1",
+      "blocks": {
+        "item_HDUehm": {
+          "type": "item",
+          "settings": {
+            "title": "Overview",
+            "content": "<p>Take work tech and overnight essentials from the airport to your next meeting. Available in Midnight Black and Ash Green, Herman Pro pairs a polished profile with two expandable sizes: 20–25L for commuting and lighter overnight trips, or 25–30L for business trips and heavier packing. A protected tech compartment fits laptops up to 16.3″ in the smaller size or 18″ in the larger, with separate storage for a tablet up to 12.9″.</p><p>Reach your laptop without fully opening the roll top, keep your passport close in the rear security pocket, and slide the bag onto your rolling suitcase for the walk to your gate. Weather-resistant NA-TEX™ fabric, soft device lining, and an EVA bottom bumper help protect your work gear, while padded shoulder straps and an airflow back panel support comfortable carrying between connections.</p>",
+            "use_variant_metafields": false,
+            "open": false
+          }
+        },
+        "faq_item_size": {
+          "type": "item",
+          "settings": {
+            "title": "Size and Features",
+            "content": "<p><strong>Capacity</strong>20L min, 25L max<br/><strong>Dimensions</strong>See diagram<br/><strong>Weight</strong>1.19kg (2.62lb)</p>",
+            "use_variant_metafields": true,
+            "open": false
+          }
+        },
+        "faq_item_fitment": {
+          "type": "item",
+          "settings": {
+            "title": "Laptop and Tablet Compatibility",
+            "content": "<p>Keep your work devices together in Herman Pro’s dedicated tech compartment. Herman Pro features separate compartments for your laptop and tablet, with soft lining and an EVA bottom bumper for added protection in transit.</p>",
+            "use_variant_metafields": false,
+            "open": false
+          }
+        },
+        "faq_fitment_laptop": {
+          "type": "icon_row",
+          "settings": {
+            "icon": "laptop",
+            "text": "Fits laptops up to 16.3\" displays",
+            "variant_fitment": "laptop_fitment"
+          }
+        },
+        "faq_fitment_tablet": {
+          "type": "icon_row",
+          "settings": {
+            "icon": "tablet",
+            "text": "Fits tablets up to 12.9 inch displays",
+            "variant_fitment": "tablet_fitment"
+          }
+        },
+        "faq_item_luggage": {
+          "type": "item",
+          "settings": {
+            "title": "Cabin Luggage Compliance",
+            "content": "",
+            "use_variant_metafields": false,
+            "open": false
+          }
+        },
+        "faq_region_europe": {
+          "type": "region",
+          "settings": {
+            "label": "Europe",
+            "logos": "airline-lufthansa-h1.png|28, airline-airfrance-h1.png|19, airline-klm-h1.png|54, airline-british-airways-h1.png|36, airline-ryanair-h1.png|24, airline-easyjet-h1.png|28"
+          }
+        },
+        "faq_region_na": {
+          "type": "region",
+          "settings": {
+            "label": "North America",
+            "logos": "airline-american-airlines-h1.png|54, airline-delta-h1.png|32, airline-united-airlines-h1.png|36, airline-southwest-h1.png|36, airline-air-canada-h1.png|48"
+          }
+        },
+        "faq_region_asia": {
+          "type": "region",
+          "settings": {
+            "label": "Asia",
+            "logos": "airline-singapore-airlines-h1.png|54, airline-cathay-pacific-h1.png|38, airline-ana-h1.png|32, airline-japan-airlines-h1.png|48, airline-korean-air-h1.png|28, airline-air-china-h1.png|36, airline-china-eastern-h1.png|36, airline-china-southern-h1.png|36"
+          }
+        },
+        "faq_region_mena": {
+          "type": "region",
+          "settings": {
+            "label": "MENA",
+            "logos": "airline-emirates-h1.png|46, airline-qatar-airways-h1.png|41, airline-etihad-h1.png|41, airline-saudia-h1.png|41, airline-egyptair-h1.png|27"
+          }
+        },
+        "faq_disclaimer": {
+          "type": "disclaimer",
+          "settings": {
+            "label": "Disclaimer:",
+            "text": "Weight compliance may vary based on how much you're carrying, check with your airline to learn the latest weight allowance."
+          }
+        },
+        "faq_item_warranty": {
+          "type": "item",
+          "settings": {
+            "title": "Warranty / Shipping / Returns",
+            "content": "<p><strong>Warranty</strong>2-year warranty.</p><p><strong>Shipping</strong>Free worldwide shipping.</p><p><strong>Returns</strong>30-day returns.</p>",
+            "use_variant_metafields": false,
+            "open": false
+          }
+        }
+      },
+      "block_order": [
+        "item_HDUehm",
+        "faq_item_size",
+        "faq_item_fitment",
+        "faq_fitment_laptop",
+        "faq_fitment_tablet",
+        "faq_item_luggage",
+        "faq_region_europe",
+        "faq_region_na",
+        "faq_region_asia",
+        "faq_region_mena",
+        "faq_disclaimer",
+        "faq_item_warranty"
+      ],
+      "settings": {
+        "full_width": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "padding_top": 24,
+        "padding_bottom": 60,
+        "divider": false
+      }
+    },
+    "carry_it_h1": {
+      "type": "carry-it-h1",
+      "blocks": {
+        "carry_urban": {
+          "type": "video",
+          "settings": {
+            "heading": "Urban Commute",
+            "product": "herman-pro-half-roll-top-backpack-black",
+            "variant_id": "",
+            "image": "shopify://shop_images/ugc-thumb-1.png",
+            "video": "shopify://files/videos/ugc-alex-1.mp4",
+            "video_url": "",
+            "subtitles": "",
+            "subtitles_label": "English",
+            "subtitles_language": "en"
+          }
+        },
+        "carry_weekend": {
+          "type": "video",
+          "settings": {
+            "heading": "Herman Pro Review",
+            "product": "herman-pro-half-roll-top-backpack-black",
+            "variant_id": "",
+            "image": "shopify://shop_images/ugc-alex-2-thumb.png",
+            "video": "shopify://files/videos/H1 nayo smart video.mp4",
+            "video_url": "",
+            "subtitles": "https://cdn.shopify.com/s/files/1/0095/3519/3135/files/H1_nayo_smart_video-1.vtt?v=1789128175",
+            "subtitles_label": "English",
+            "subtitles_language": "en"
+          }
+        },
+        "carry_hiking": {
+          "type": "video",
+          "settings": {
+            "heading": "Hiking Adventure",
+            "product": "herman-pro-half-roll-top-backpack-black",
+            "variant_id": "",
+            "image": "shopify://shop_images/ugc-alex-3-thumb.png",
+            "video": "shopify://files/videos/ugc-alex-3.mp4",
+            "video_url": "",
+            "subtitles": "",
+            "subtitles_label": "English",
+            "subtitles_language": "en"
+          }
+        }
+      },
+      "block_order": [
+        "carry_urban",
+        "carry_weekend",
+        "carry_hiking"
+      ],
+      "settings": {
+        "heading": "From Commute to Check-In",
+        "full_width": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "padding_top": 48,
+        "padding_bottom": 48,
+        "divider": false
+      }
+    },
+    "fine_details_h1_QyWBmX": {
+      "type": "fine-details-h1",
+      "blocks": {
+        "hotspot_EH6KP9": {
+          "type": "hotspot",
+          "settings": {
+            "view_key": "back",
+            "horizontal": 63,
+            "vertical": 36,
+            "horizontal_mobile": 50,
+            "vertical_mobile": 50,
+            "text": "<h3><strong>Never walk back to the reception again</strong></h3><p>A dedicated, under-the-radar card pocket sits right on top of your chest. Your room keys and access cards go in. </p>",
+            "popup_image": "shopify://shop_images/beltpocket-ezgif.com-video-to-webp-converter.webp",
+            "color_text": "#e4452a"
+          }
+        },
+        "hotspot_6cXchr": {
+          "type": "hotspot",
+          "settings": {
+            "view_key": "back",
+            "horizontal": 40,
+            "vertical": 37,
+            "horizontal_mobile": 40,
+            "vertical_mobile": 37,
+            "text": "<h3><strong>Cushioned for the Journey</strong></h3><p>Supportive back cushioning and S-shaped, EVA-padded shoulder straps help make a full bag more comfortable to carry.</p><p>Adjustable straps with locking loops help prevent loosening as you move.</p>",
+            "popup_image": "shopify://shop_images/backpadding-ezgif.com-video-to-webp-converter.webp",
+            "color_text": "#e4452a"
+          }
+        },
+        "hotspot_34AjHj": {
+          "type": "hotspot",
+          "settings": {
+            "view_key": "back",
+            "horizontal": 50,
+            "vertical": 68,
+            "horizontal_mobile": 50,
+            "vertical_mobile": 68,
+            "text": "<h3><strong>Room to Breathe</strong></h3><p>The four-zone back panel creates airflow channels to help reduce heat buildup while you carry.</p><p>Supportive back cushioning and S-shaped, EVA-padded shoulder straps help make a full bag more comfortable to carry.</p>",
+            "color_text": "#e4452a"
+          }
+        },
+        "hotspot_tzA6G3": {
+          "type": "hotspot",
+          "settings": {
+            "view_key": "interior",
+            "horizontal": 59,
+            "vertical": 33,
+            "horizontal_mobile": 59,
+            "vertical_mobile": 33,
+            "text": "<h3><strong>Open Wide. Find It Faster.</strong></h3><p>The L-shaped zipper opens the main compartment wide, making packing and finding your belongings easier.</p>",
+            "popup_image": "shopify://shop_images/unzip-ezgif.com-video-to-webp-converter.webp",
+            "color_text": "#e4452a"
+          }
+        },
+        "hotspot_YFfRwg": {
+          "type": "hotspot",
+          "settings": {
+            "view_key": "back",
+            "horizontal": 28,
+            "vertical": 40,
+            "horizontal_mobile": 28,
+            "vertical_mobile": 40,
+            "text": "<h3><strong>Keep Valuables Close</strong></h3><p>A rear security pocket keeps your phone or passport tucked close to your body.</p>",
+            "popup_image": "shopify://shop_images/sidepocket-ezgif.com-video-to-webp-converter.webp",
+            "color_text": "#e4452a"
+          }
+        },
+        "hotspot_YQtAQc": {
+          "type": "hotspot",
+          "settings": {
+            "view_key": "back",
+            "horizontal": 50,
+            "vertical": 45,
+            "horizontal_mobile": 56,
+            "vertical_mobile": 45,
+            "text": "<h3><strong>Give Your Shoulders a Break</strong></h3><p>Slide the rear luggage strap over your suitcase handle to take the weight off your back.</p>",
+            "color_text": "#e4452a"
+          }
+        },
+        "hotspot_GGirnb": {
+          "type": "hotspot",
+          "settings": {
+            "view_key": "laptop_pocket",
+            "horizontal": 65,
+            "vertical": 72,
+            "horizontal_mobile": 65,
+            "vertical_mobile": 72,
+            "text": "<h3><strong>Get going in 10 seconds</strong></h3><p>Access your laptop without fully opening the roll top, keeping the rest of your belongings packed and out of your way</p>",
+            "popup_image": "shopify://shop_images/laptopin-ezgif.com-video-to-webp-converter.webp",
+            "color_text": "#e4452a"
+          }
+        },
+        "hotspot_3DJpDP": {
+          "type": "hotspot",
+          "settings": {
+            "view_key": "laptop_pocket",
+            "horizontal": 73,
+            "vertical": 59,
+            "horizontal_mobile": 73,
+            "vertical_mobile": 59,
+            "text": "<h3><strong>A little bump here and there is no problem</strong></h3><p>A cushioned compartment with EVA bottom bumpers and soft lining helps protect your laptop when you set your bag down.</p>",
+            "popup_image": "shopify://shop_images/8._Laptop_protection-B.png",
+            "color_text": "#e4452a"
+          }
+        },
+        "hotspot_Ag6NzA": {
+          "type": "hotspot",
+          "settings": {
+            "view_key": "laptop_pocket",
+            "horizontal": 35,
+            "vertical": 59,
+            "horizontal_mobile": 35,
+            "vertical_mobile": 59,
+            "text": "<h3><strong>Keep the Small Things Sorted</strong></h3><p>Two elastic accessory pockets give your mouse and cables dedicated places, making them easier to find.</p>",
+            "popup_image": "shopify://shop_images/small-pocket-ezgif.com-resize.webp",
+            "color_text": "#e4452a"
+          }
+        },
+        "hotspot_RgfGHx": {
+          "type": "hotspot",
+          "settings": {
+            "view_key": "laptop_pocket",
+            "horizontal": 46,
+            "vertical": 63,
+            "horizontal_mobile": 46,
+            "vertical_mobile": 63,
+            "text": "<h3><strong>A Place for Your Tablet</strong></h3><p>Separate storage keeps a tablet up to 12.9″ neatly tucked beside your laptop.</p>",
+            "popup_image": "shopify://shop_images/tablet-in2-ezgif.com-video-to-webp-converter.webp",
+            "color_text": "#e4452a"
+          }
+        },
+        "hotspot_bMiyBL": {
+          "type": "hotspot",
+          "settings": {
+            "view_key": "front",
+            "horizontal": 50,
+            "vertical": 39,
+            "horizontal_mobile": 50,
+            "vertical_mobile": 39,
+            "text": "<h3><strong>A Discreet Spot for Small Essentials</strong></h3><p>The hidden front zippered pocket keeps small personal items tucked out of sight.</p>",
+            "popup_image": "shopify://shop_images/snapping-front-ezgif.com-optiwebp.webp",
+            "color_text": "#e4452a"
+          }
+        },
+        "hotspot_aFdwQe": {
+          "type": "hotspot",
+          "settings": {
+            "view_key": "front",
+            "horizontal": 41,
+            "vertical": 24,
+            "horizontal_mobile": 41,
+            "vertical_mobile": 24,
+            "text": "<h3><strong>Snaps Shut. Opens in a Moment.</strong></h3><p>The FIDLOCK® magnetic buckle snaps closed automatically and releases quickly for easy access to your essentials.</p>",
+            "popup_image": "shopify://shop_images/snapping-locks.webp",
+            "color_text": "#e4452a"
+          }
+        },
+        "hotspot_NAATLx": {
+          "type": "hotspot",
+          "settings": {
+            "view_key": "front",
+            "horizontal": 35,
+            "vertical": 86,
+            "horizontal_mobile": 35,
+            "vertical_mobile": 90,
+            "text": "<h3><strong>Durability in the Details</strong></h3><p>The base features 1.4mm vegan Nappa-style microfiber leather to help withstand daily wear while keeping a polished look.</p>",
+            "popup_image": "shopify://shop_images/DSC03973_1.jpg",
+            "color_text": "#e4452a"
+          }
+        },
+        "hotspot_wpKB8f": {
+          "type": "hotspot",
+          "settings": {
+            "view_key": "front",
+            "horizontal": 60,
+            "vertical": 14,
+            "horizontal_mobile": 77,
+            "vertical_mobile": 14,
+            "text": "<h3><strong>Extra Room When Plans Change</strong></h3><p>The half-roll top adds up to 5L of capacity when you need more space for clothing or other extras.</p>",
+            "popup_image": "shopify://shop_images/6._Top_roll_open_close-B.png",
+            "color_text": "#e4452a"
+          }
+        },
+        "view_tyWmJp": {
+          "type": "view",
+          "settings": {
+            "view_key": "front",
+            "label": "Front",
+            "image": "shopify://shop_images/61e1c820f78e1e1efbf48def925a881b294e3b46.png",
+            "image_mobile": "shopify://shop_images/61e1c820f78e1e1efbf48def925a881b294e3b46.png"
+          }
+        },
+        "view_dTi4EH": {
+          "type": "view",
+          "settings": {
+            "view_key": "interior",
+            "label": "Interior",
+            "image": "shopify://shop_images/DSC03181-2xt.png",
+            "image_mobile": "shopify://shop_images/DSC03181-2xt.png"
+          }
+        },
+        "view_DLLDxd": {
+          "type": "view",
+          "settings": {
+            "view_key": "laptop_pocket",
+            "label": "Laptop Pocket",
+            "image": "shopify://shop_images/DSC03212-2xt.png",
+            "image_mobile": "shopify://shop_images/DSC03212-2xt.png"
+          }
+        },
+        "view_jiizUD": {
+          "type": "view",
+          "settings": {
+            "view_key": "back",
+            "label": "Back",
+            "image": "shopify://shop_images/DSC03267t.png",
+            "image_mobile": "shopify://shop_images/DSC03267t.png"
+          }
+        },
+        "hotspot_6GEiqc": {
+          "type": "hotspot",
+          "settings": {
+            "view_key": "interior",
+            "horizontal": 41,
+            "vertical": 39,
+            "horizontal_mobile": 41,
+            "vertical_mobile": 39,
+            "text": "<h3><strong>Two Compartments. Or One Bigger Space.</strong></h3><p>Unzip the divider between the laptop pocket and main compartment to make room for bulkier items, then zip it back up when you want to keep your tech and other belongings separate.</p>",
+            "popup_image": "shopify://shop_images/inside-zipper-unzip-ezgif.com-optiwebp.webp",
+            "color_text": "#e4452a"
+          }
+        }
+      },
+      "block_order": [
+        "hotspot_EH6KP9",
+        "hotspot_6cXchr",
+        "hotspot_34AjHj",
+        "hotspot_tzA6G3",
+        "hotspot_YFfRwg",
+        "hotspot_YQtAQc",
+        "hotspot_GGirnb",
+        "hotspot_3DJpDP",
+        "hotspot_Ag6NzA",
+        "hotspot_RgfGHx",
+        "hotspot_bMiyBL",
+        "hotspot_aFdwQe",
+        "hotspot_NAATLx",
+        "hotspot_wpKB8f",
+        "view_tyWmJp",
+        "view_dTi4EH",
+        "view_DLLDxd",
+        "view_jiizUD",
+        "hotspot_6GEiqc"
+      ],
+      "name": "Fine details (H1)",
+      "settings": {
+        "heading": "Fine details for every trip",
+        "full_width": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "padding_top": 48,
+        "padding_bottom": 48,
+        "divider": false
+      }
+    },
+    "bundle_promo_h1": {
+      "type": "bundle-promo-h1",
+      "blocks": {
+        "row_ergonomic": {
+          "type": "row",
+          "settings": {
+            "layout": "image_first",
+            "image": "shopify://shop_images/hanging-on-luggage.png",
+            "heading": "Give Your Shoulders a Break",
+            "text": "Slide Herman Pro onto your suitcase handle with the rear luggage strap for easier carrying on longer journeys."
+          }
+        },
+        "row_modular": {
+          "type": "row",
+          "settings": {
+            "layout": "text_first",
+            "video": "shopify://files/videos/h1-unpacking.mp4",
+            "heading": "Room for More Than Work",
+            "text": "Keep smaller essentials sorted in dedicated pockets, with room in the main compartment for a change of clothes."
+          }
+        },
+        "row_hydration": {
+          "type": "row",
+          "settings": {
+            "layout": "image_first",
+            "image": "shopify://shop_images/110_97a999ba-efa7-4c00-9c63-adf66f47a804.png",
+            "heading": "Keep Wet Items Separate",
+            "text": "A water-resistant side pocket keeps your umbrella or bottle separate from the rest of your gear."
+          }
+        },
+        "row_toiletry": {
+          "type": "market_gift",
+          "settings": {
+            "layout": "text_first",
+            "heading": "Included in your purchase:",
+            "text": "Keep your essentials organized and dry with this bonus gift.",
+            "product_default": "waterproof-toiletry-bag-with-hanging-hook-copy",
+            "product_us": "waterproof-toiletry-bag-with-hanging-hook",
+            "market_2_countries": "",
+            "market_2_product": "",
+            "market_3_countries": "",
+            "market_3_product": ""
+          }
+        }
+      },
+      "block_order": [
+        "row_ergonomic",
+        "row_modular",
+        "row_hydration",
+        "row_toiletry"
+      ],
+      "name": "Bundle promo (H1)",
+      "settings": {
+        "heading": "Born to Travel",
+        "caption": "New and improved Weather-resistant NA-TEX™ fabric resists tears and abrasion, helping protect your work gear from rain and everyday wear as you move from airport to meeting.",
+        "video": "shopify://files/videos/H1-office-4x3-web (1).mp4",
+        "full_width": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "padding_top": 48,
+        "padding_bottom": 48,
+        "divider": false
+      }
+    },
+    "help-drawer": {
+      "type": "help-drawer",
+      "blocks": {
+        "content-1": {
+          "type": "content",
+          "settings": {
+            "icon": "rocket",
+            "heading": "Shipping Information",
+            "text": "<p>Click to check our <a href=\"/pages/shipping-policy\" title=\"Shipping Policy\">shipping policy</a>.</p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle",
+            "color_text": "#b45309",
+            "color_background": "#fffbeb",
+            "gradient_background": "",
+            "color_highlight": "#ffddbf",
+            "gradient_highlight": ""
+          }
+        },
+        "content-3": {
+          "type": "content",
+          "settings": {
+            "icon": "chat_bubble",
+            "heading": "FAQ’s",
+            "text": "<p>Click to check <a href=\"/pages/faq\" title=\"FAQs\">FAQ's.</a></p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle",
+            "color_text": "#be123c",
+            "color_background": "#fff1f2",
+            "gradient_background": "",
+            "color_highlight": "#ffddbf",
+            "gradient_highlight": ""
+          }
+        },
+        "content-4": {
+          "type": "content",
+          "settings": {
+            "icon": "phone",
+            "heading": "Contact Us",
+            "text": "<p>Email: <a href=\"/pages/contact-us\" title=\"Contact us\">support@nayosmart.com</a></p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle",
+            "color_text": "#4d7c0f",
+            "color_background": "#f7fee7",
+            "gradient_background": "",
+            "color_highlight": "#ffddbf",
+            "gradient_highlight": ""
+          }
+        }
+      },
+      "block_order": [
+        "content-1",
+        "content-3",
+        "content-4"
+      ],
+      "disabled": true,
+      "settings": {
+        "heading": "Need help?",
+        "description": "<p>If you have any questions, you are always welcome to contact us. We'll get back to you as soon as possible, within 24 hours on weekdays.</p>"
+      }
+    },
+    "1745459688e1b8f795": {
+      "type": "reviews-h1",
+      "blocks": {
+        "judge_me_reviews_review_widget_kgrfet": {
+          "type": "shopify://apps/judge-me-reviews/blocks/review_widget/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {
+            "review_data": "real_data",
+            "max_width": 1200,
+            "show_shop_reviews": false,
+            "empty_state": "empty_widget"
+          }
+        }
+      },
+      "block_order": [
+        "judge_me_reviews_review_widget_kgrfet"
+      ],
+      "settings": {
+        "heading": "Ratings",
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "padding_top": 48,
+        "padding_bottom": 48,
+        "divider": false,
+        "full_width": false,
+        "rounded": false
+      }
+    },
+    "compare_h1": {
+      "type": "compare-h1",
+      "blocks": {
+        "compare_prod_1": {
+          "type": "product",
+          "settings": {
+            "product": "nayo-smart-herman-h2-half-roll-top-backpack",
+            "heading": "",
+            "price": "",
+            "image_inside": "{{ block.settings.product.metafields.custom.inside_image.value }}",
+            "capacity": "23–25L",
+            "dimensions": "45 × 30 × 17cm (17.7″ × 11.8″ × 6.7″)",
+            "weight": "1.28kg (2.82lb)",
+            "water_resistance": "Water-resistant",
+            "laptop_fit": "Up to 16″",
+            "best_for": "Work trips & weekends"
+          }
+        },
+        "compare_prod_2": {
+          "type": "product",
+          "settings": {
+            "product": "herman-h6-half-roll-top-backpack",
+            "heading": "",
+            "price": "",
+            "image_inside": "{{ block.settings.product.metafields.custom.inside_image.value }}",
+            "capacity": "16L",
+            "dimensions": "42 × 30 × 11cm (16.5″ × 11.8″ × 4.3″)",
+            "weight": "1.20kg (2.65lb)",
+            "water_resistance": "Water-resistant",
+            "laptop_fit": "Up to 16″",
+            "best_for": "Compact daily carry"
+          }
+        },
+        "compare_prod_3": {
+          "type": "product",
+          "settings": {
+            "product": "herman-h8-multifunctional-backpack",
+            "heading": "",
+            "price": "",
+            "image_inside": "{{ block.settings.product.metafields.custom.inside_image.value }}",
+            "capacity": "18L",
+            "dimensions": "43 × 30 × 14cm (16.9″ × 11.8″ × 5.5″)",
+            "weight": "1.28kg (2.82lb)",
+            "water_resistance": "Water-resistant",
+            "laptop_fit": "Up to 16″",
+            "best_for": "Versatile work & travel"
+          }
+        }
+      },
+      "block_order": [
+        "compare_prod_1",
+        "compare_prod_2",
+        "compare_prod_3"
+      ],
+      "settings": {
+        "heading": "You May Also Like",
+        "show_inside_label": "Show Inside",
+        "show_outside_label": "Show Outside",
+        "go_to_product_label": "Go to product",
+        "icon_1": "truck",
+        "label_1": "Free Shipping",
+        "icon_2": "return",
+        "label_2": "30-Day trial",
+        "icon_3": "shield",
+        "label_3": "2-year warranty",
+        "full_width": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "padding_top": 48,
+        "padding_bottom": 72,
+        "divider": false,
+        "rounded": false
+      }
+    },
+    "product-recommendations": {
+      "type": "product-recommendations",
+      "disabled": true,
+      "settings": {
+        "product_limit": 6,
+        "columns": 5,
+        "carousel_on_desktop": true,
+        "columns_mobile": "1",
+        "swipe_on_mobile": true,
+        "heading": "You may also like",
+        "heading_size": "title-sm",
+        "heading_alignment": "text-left md:items-end md:flex-row",
+        "heading_tag": "h2",
+        "subheading": "",
+        "description": "",
+        "highlighted_text": "none",
+        "highlighted_scribble": "circle",
+        "highlighted_reveal": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "padding_top": 72,
+        "padding_bottom": 0,
+        "divider": false,
+        "full_width": false,
+        "rounded": true
+      }
+    }
+  },
+  "order": [
+    "breadcrumbs",
+    "main-product",
+    "bundle_products_h1",
+    "feature_strip_h1",
+    "faq_specs_h1",
+    "carry_it_h1",
+    "fine_details_h1_QyWBmX",
+    "bundle_promo_h1",
+    "help-drawer",
+    "1745459688e1b8f795",
+    "compare_h1",
+    "product-recommendations"
+  ]
+}

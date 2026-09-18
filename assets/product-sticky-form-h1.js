@@ -44,6 +44,56 @@
   });
 
   /**
+   * Keep the Shopify Inbox chat activator clear of this bar.
+   *
+   * The Inbox app embed anchors the activator with --shopify-chat-activator-offset
+   * (120px on :root) and the widget reads that variable from inside its shadow
+   * root, so page CSS cannot style .activator-nudge itself. The bar is taller than
+   * 120px, so while the card is on screen the activator is raised to sit just
+   * above it; once the card is hidden the app's own value comes back.
+   */
+  var INBOX_GAP = 20;
+  var inboxApplied = '';
+  var inboxObserved = null;
+  var inboxObserver =
+    window.MutationObserver &&
+    new MutationObserver(function () {
+      syncInboxOffset();
+    });
+
+  // The theme reveals the card through Motion inline styles and the flick handler
+  // toggles a class, so watch both instead of trusting scroll events alone.
+  function watchBar(bar, card) {
+    if (!inboxObserver || inboxObserved === bar) return;
+    inboxObserved = bar;
+    inboxObserver.disconnect();
+    inboxObserver.observe(bar, { attributes: true, attributeFilter: ['class'] });
+    if (card) inboxObserver.observe(card, { attributes: true, attributeFilter: ['class', 'style'] });
+  }
+
+  function syncInboxOffset() {
+    var bar = document.querySelector('.product-sticky-form-h1');
+    var card = bar && bar.querySelector('.product-sticky-form-h1__card');
+    if (!card) return;
+
+    watchBar(bar, card);
+
+    var next = '';
+    if (getComputedStyle(card).visibility === 'visible') {
+      var barBottom = parseFloat(getComputedStyle(bar).bottom) || 0;
+      next = Math.ceil(card.getBoundingClientRect().height + barBottom + INBOX_GAP) + 'px';
+    }
+    if (next === inboxApplied) return;
+
+    inboxApplied = next;
+    if (next) {
+      document.documentElement.style.setProperty('--shopify-chat-activator-offset', next);
+    } else {
+      document.documentElement.style.removeProperty('--shopify-chat-activator-offset');
+    }
+  }
+
+  /**
    * Hide the bar on a fast flick upwards, bring it back as soon as the reader
    * scrolls down again. The theme only hides it above the fold or at the footer.
    */
@@ -62,6 +112,8 @@
 
     var bar = document.querySelector('.product-sticky-form-h1');
     if (!bar) return;
+
+    syncInboxOffset();
 
     var y = window.scrollY;
     var now = performance.now();
@@ -95,4 +147,8 @@
     },
     { passive: true }
   );
+
+  window.addEventListener('resize', syncInboxOffset, { passive: true });
+  document.addEventListener('variant:change', syncInboxOffset);
+  syncInboxOffset();
 })();

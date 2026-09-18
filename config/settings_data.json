@@ -191,11 +191,6 @@
           "position": "right"
         }
       },
-      "7902831097370503076": {
-        "type": "shopify://apps/delivery-date-eta/blocks/estimated-delivery-days/d8155dd1-6598-4174-aaeb-cbcf85a857bc",
-        "disabled": false,
-        "settings": {}
-      },
       "14327677521557774844": {
         "type": "shopify://apps/simprosys-google-shopping-feed/blocks/core_settings_block/1f0b859e-9fa6-4007-97e8-4513aff5ff3b",
         "disabled": false,
@@ -220,18 +215,6 @@
         "type": "shopify://apps/microsoft-clarity/blocks/clarity_js/31c3d126-8116-4b4a-8ba1-baeda7c4aeea",
         "disabled": false,
         "settings": {}
-      },
-      "15683396631634586217": {
-        "type": "shopify://apps/inbox/blocks/chat/841fc607-4181-4ad1-842d-e24d7f8bad6b",
-        "disabled": false,
-        "settings": {
-          "greeting_message": "",
-          "button_color": "#000000",
-          "button_icon": "chat_bubble",
-          "button_text": "chat_with_us",
-          "button_horizontal_position": "bottom_right",
-          "button_vertical_position": "highest"
-        }
       },
       "8023178096671368477": {
         "type": "shopify://apps/smart-discounts/blocks/embed/019d1c1c-2c4b-704e-be88-ea7fd20c9afb",
@@ -288,17 +271,49 @@
       },
       "9388344762370057067": {
         "type": "shopify://apps/essential-cart-drawer/blocks/app-embed/824bb1f9-5f36-4608-a60c-1f2b6a6f8834",
+        "disabled": true,
+        "settings": {}
+      },
+      "13416097264177121472": {
+        "type": "shopify://apps/design-packs/blocks/design_packs/1efa8e58-6fa1-4c9a-9c0a-e71446c20785",
         "disabled": false,
         "settings": {}
       },
-      "9468172321995857178": {
-        "type": "shopify://apps/qikify-upsell/blocks/app-embed/2e94b962-8172-4839-8ad9-7837eb8b017a",
+      "7902831097370503076": {
+        "type": "shopify://apps/delivery-date-eta/blocks/estimated-delivery-days/d8155dd1-6598-4174-aaeb-cbcf85a857bc",
         "disabled": false,
         "settings": {}
       },
       "6770548097779500122": {
         "type": "shopify://apps/koala-upsells-gifts/blocks/gifts-embed/baf92dc5-8ffa-40c0-967e-57b74cddc9e3",
-        "disabled": true,
+        "disabled": false,
+        "settings": {}
+      },
+      "15683396631634586217": {
+        "type": "shopify://apps/inbox/blocks/chat/841fc607-4181-4ad1-842d-e24d7f8bad6b",
+        "disabled": false,
+        "settings": {
+          "greeting_message": "",
+          "show_featured_products": true,
+          "featured_products": [],
+          "background_color": "#ffffff",
+          "font_color": "#000000",
+          "agent_invert_activator_colors": false,
+          "button_color": "#000000",
+          "button_icon": "chat_bubble",
+          "button_text": "ask_anything",
+          "button_horizontal_position": "bottom_right",
+          "button_vertical_position": "highest",
+          "agent_inherit_fonts": true,
+          "agent_font": "system_ui_n4",
+          "agent_font_size": 14,
+          "agent_activator_font_size": 13,
+          "agent_border_radius": 16
+        }
+      },
+      "9468172321995857178": {
+        "type": "shopify://apps/qikify-upsell/blocks/app-embed/2e94b962-8172-4839-8ad9-7837eb8b017a",
+        "disabled": false,
         "settings": {}
       }
     }

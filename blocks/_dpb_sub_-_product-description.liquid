@@ -1,0 +1,771 @@
+{%- comment -%}
+{
+  "pack_name": "Product description block",
+  "pack_author": "Design Packs",
+  "license": "© Design Packs. All rights reserved. This code is protected by copyright law and may not be reproduced, distributed, or used without explicit permission from the author. Shopify complies with the Digital Millennium Copyright Act (DMCA) and responds to claims of copyright infringement using DMCA procedures, which could result in the termination of your Shopify account.",
+}
+{%- endcomment -%}
+
+{% comment %} Security Code - hides section when app uninstalled {% endcomment %}
+{%- unless content_for_header contains 'design_packs_file.js' -%}
+  {%- if request.design_mode -%}
+    <div class="dsgn-pck__no-app-warning">
+      <div class="dsgn-pck__no-app-warning-background">
+      </div>
+      <div class="dsgn-pck__no-app-warning-text dsgn-pck__rte">
+        <p><strong>WARNING!</strong> This premium section will not display properly without an active subscription for <a href="https://apps.shopify.com/design-packs" target="_blank" rel="noopener nofollow">Design Packs</a>. If you need any support please email <a href="mailto:info@design-packs.com" target="_blank" rel="noopener">info@design-packs.com</a> with your questions.</p>
+      </div>
+    </div>
+  {%- endif -%}
+  {%- break -%}
+{%- endunless -%}
+
+{%- assign section_id = section.id | replace: '+', '' | replace: '=', '' -%}
+
+{%- assign product = closest.product | default: section.settings.product | default: product | default: collections["all"].products.first -%}
+
+{%- comment -%} Color: check if color is set to transparent {%- endcomment -%}
+{%- assign text_alpha = block.settings.text_color | color_extract: 'alpha' | default: 0 -%}
+
+{%- assign block_horizontal_setting = block.settings.horizontal_alignment | default: section.settings.text_alignment -%}
+
+{%- comment -%}
+  Design System override flag — true when the block should emit its own typography
+  (design system off, OR user chose "Tweak" override, OR role = 'custom' meaning None).
+  When false, the block emits no typography so the styleguide text role rule wins.
+  See CLAUDE.md "Block Override Architecture".
+{%- endcomment -%}
+{%- assign block_override_active = false -%}
+{%- if section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' -%}
+  {%- assign block_override_active = true -%}
+{%- endif -%}
+
+{%- if product.description == blank -%}
+  {%- break -%}
+{%- endif -%}
+{%- capture css_styles -%}
+  <style data-dp-css="blocks/_dpb_sub_-_product-description.liquid">
+
+    [id*=preview-block] .dsgn-pck__inner-block-container {
+      container-type: normal !important;
+    }
+
+    {%- if block_override_active and block.settings.enable_custom_font != blank -%}
+      {{ block.settings.custom_font | font_face: font_display: 'swap' }}
+      {{ block.settings.custom_font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+      {{ block.settings.custom_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+      {{ block.settings.custom_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+      .dsgn-pck__block-id-{{ block.id }} {
+        --custom-font: {{ block.settings.custom_font.family }}, {{ block.settings.custom_font.fallback_families }};
+        --custom-font-weight: {{ block.settings.custom_font.weight }};
+        --custom-font-style: {{ block.settings.custom_font.style }};
+      }
+    {% endif %}
+
+    {%- if block_override_active and block.settings.highlight_enable_custom_font != blank -%}
+      {{ block.settings.highlight_custom_font | font_face: font_display: 'swap' }}
+      {{ block.settings.highlight_custom_font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+      {{ block.settings.highlight_custom_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+      {{ block.settings.highlight_custom_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+      .dsgn-pck__block-id-{{ block.id }} {
+        --highlight-custom-font: {{ block.settings.highlight_custom_font.family }}, {{ block.settings.highlight_custom_font.fallback_families }};
+        --highlight-custom-font-weight: {{ block.settings.highlight_custom_font.weight }};
+        --highlight-custom-font-style: {{ block.settings.highlight_custom_font.style }};
+      }
+    {% endif %}
+
+    .dsgn-pck__block-id-{{ block.id }} {
+      width: {{ block.settings.base_width }}%;
+      max-width: {{ block.settings.max_width | remove: 'px' }}px;
+      display: flex;
+      {%- if section.settings.text_alignment == 'center' and block_horizontal_setting == 'default' -%}
+        margin: 0 auto;
+      {%- elsif section.settings.text_alignment == 'right' and block_horizontal_setting == 'default'  -%}
+        margin: 0 0 0 auto;
+      {%- endif -%}
+      {%- if block.settings.horizontal_alignment == 'left' -%}
+        align-self: flex-start;
+        margin-left: 0;
+        margin-right: auto;
+        --block-horizontal-alignment: flex-start;
+      {%- elsif block.settings.horizontal_alignment == 'right' -%}
+        align-self: flex-end;
+        margin-left: auto;
+        margin-right: 0;
+        --block-horizontal-alignment: flex-end;
+      {%- elsif block.settings.horizontal_alignment == 'center' -%}
+        align-self: center;
+        margin-left: auto;
+        margin-right: auto;
+        --block-horizontal-alignment: center;
+      {%- else -%}
+        margin-left: var(--block-margin-left, 0);
+        margin-right: var(--block-margin-right, 0);
+      {%- endif -%}
+      --section-horizontal-alignment: {%- if section.settings.text_alignment == 'center' -%}center{%- elsif section.settings.text_alignment == 'right' -%}flex-end{%- endif -%};
+      align-self: var(--block-horizontal-alignment, var(--section-horizontal-alignment));
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} > .dsgn-pck__inner-block-container {
+      container-type: inline-size;
+      container-name: dp-text-container;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__text.dsgn-pck__rte * {
+      list-style: unset;
+      {%- if block_override_active -%}
+        {%- comment -%}
+          Block override path: emit --block-text-* vars + property declarations.
+          When override is off, this whole block is skipped so the styleguide's
+          text role rule wins uncontested (no font-size / color clash from this block).
+        {%- endcomment -%}
+        {%- if block.settings.enable_custom_font != blank -%}
+          --block-text-font-family: var(--custom-font);
+          --block-text-font-weight: var(--custom-font-weight);
+          --block-text-font-style: var(--custom-font-style);
+        {%- endif -%}
+        {%- if text_alpha != 0 -%}
+          --block-text-color: {{ block.settings.text_color }};
+        {%- endif -%}
+        {%- if block.settings.block_text_size != blank and block.settings.enable_custom_text_size == true -%}
+          --block-text-size: calc({{ block.settings.block_text_size }} * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+        {%- endif -%}
+
+        color: var(--block-text-color, inherit);
+        font-size: calc(var(--block-text-size, var(--dp-g-body-size, var(--dp-body-size, 18px))) * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+        {%- if block.settings.enable_custom_font != blank or section.settings.override_theme_font != blank -%}
+          font-family: var(--block-text-font-family, var(--main-font));
+          font-weight: var(--block-text-font-weight, var(--main-font-weight));
+          font-style: var(--block-text-font-style, var(--main-font-style));
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- comment -%} Alignment is per-block, always emitted regardless of override state. {%- endcomment -%}
+      {%- if block.settings.block_alignment != 'default' -%}
+        text-align: {{ block.settings.block_alignment }};
+      {%- else -%}
+        text-align: var(--block-text-alignment, var(--section-text-alignment));
+      {%- endif -%}
+    }
+
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__text.dsgn-pck__rte h1,
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__text.dsgn-pck__rte h2,
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__text.dsgn-pck__rte h3,
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__text.dsgn-pck__rte h4,
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__text.dsgn-pck__rte h5,
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__text.dsgn-pck__rte h6 {
+      margin-bottom: revert;
+    }
+
+    {%- if block_override_active and block.settings.block_text_size != blank and block.settings.enable_custom_text_size == true -%}
+      #DP--{{ block.id }} h1.dsgn-pck__h1 {
+        font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.02 }});
+      }
+
+      #DP--{{ block.id }} h2.dsgn-pck__h2 {
+        font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.018 }});
+      }
+
+      #DP--{{ block.id }} h3.dsgn-pck__h3 {
+        font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.016 }});
+      }
+
+      #DP--{{ block.id }} h4.dsgn-pck__h4 {
+        font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.014 }});
+      }
+
+      #DP--{{ block.id }} h5.dsgn-pck__h5 {
+        font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.012 }});
+      }
+
+      #DP--{{ block.id }} h6.dsgn-pck__h6 {
+        font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+      }
+    {%- endif -%}
+
+    {%- if block_override_active and block.settings.enable_highlighted_text -%}
+      {%- assign highlight_background_text_color_alpha = block.settings.highlight_background_color | color_extract: 'alpha' | default: 0 -%}
+      {%- assign highlight_text_color_alpha = block.settings.highlight_text_color | color_extract: 'alpha' | default: 0 -%}
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__fancy {
+        position: relative;
+        {%- if block.settings.highlight_enable_custom_font -%}
+        font-family: var(--highlight-custom-font) !important;
+        font-weight: var(--highlight-custom-font-weight) !important;
+        font-style: var(--highlight-custom-font-style) !important;
+        {%- elsif section.settings.override_theme_font != blank -%}
+        font-family: var(--main-font);
+        font-weight: var(--main-font-weight);
+        font-style: var(--main-font-style);
+        {%- endif -%}
+        background-color: {%- if highlight_background_text_color_alpha != 0 -%}
+          {{ block.settings.highlight_background_color }}
+        {%- endif -%};
+        color: {%- if highlight_text_color_alpha != 0 -%}
+          {{ block.settings.highlight_text_color }} !important;
+        {%- endif -%};
+        padding: 0 0.2em;
+        display: inline-block;
+      }
+
+      {%- if block.settings.custom_highlight_css != blank -%}
+        {%- assign custom_block_declarations = block.settings.custom_highlight_css | split: '}' -%}
+        {%- for declaration in custom_block_declarations -%}
+          {%- if declaration contains '{' -%}
+            .dsgn-pck__block-id-{{ block.id }} {{ declaration }} }
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+
+    {%- endif -%}
+
+    {%- if block.settings.truncate_text != -1 -%}
+      /* Read more functionality */
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__read-more-toggle {
+        display: none;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__read-more-text {
+        cursor: pointer;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        {%- if text_alpha != 0 -%}
+          color: {{ block.settings.text_color | default: 'inherit' }};
+        {%- else -%}
+          color: inherit;
+        {%- endif -%}
+        margin-top: 5px;
+        display: block;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__read-more-container-inner {
+        overflow: hidden;
+        {%- if block.settings.truncate_text == 0 -%}
+          height: 0;
+        {%- else -%}
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: {{ block.settings.truncate_text }};
+        {%- endif -%}
+      }
+
+      /* Safari-specific max-height fallback (set via JS) */
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__read-more-container-inner.is-safari {
+        display: block !important;
+        -webkit-line-clamp: unset !important;
+        -webkit-box-orient: unset !important;
+        max-height: var(--safari-max-height, none);
+      }
+
+      @media (max-width: 767px) {
+        .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__read-more-container.dsgn-pck__read-more-container--outlier .dsgn-pck__read-more-toggle:not(:checked) ~ .dsgn-pck__read-more-container-inner.is-safari {
+          -webkit-mask-image: linear-gradient(180deg, black 60%, transparent 100%);
+          mask-image: linear-gradient(180deg, black 60%, transparent 100%);
+        }
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__read-more-toggle:checked ~ .dsgn-pck__read-more-container-inner {
+        overflow: visible;
+        {%- if block.settings.truncate_text == 0 -%}
+          height: auto;
+        {%- else -%}
+          -webkit-line-clamp: unset;
+        {%- endif -%}
+        max-height: none !important;
+        -webkit-mask-image: none;
+        mask-image: none;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__read-more-text span {
+        {%- if text_alpha != 0 -%}
+          color: {{ block.settings.text_color | default: 'inherit' }};
+        {%- else -%}
+          color: inherit;
+        {%- endif -%}
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__read-more-text::after {
+        content: '{{ block.settings.read_more_text }}';
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__read-more-toggle:checked ~ .dsgn-pck__read-more-text::after {
+        content: '{{ block.settings.read_less_text }}';
+      }
+    {%- endif -%}
+
+    /* Custom CSS */
+    {%- if block.settings.enable_custom_css == true and block.settings.custom_css != blank -%}
+      {%- assign custom_css_rules = block.settings.custom_css | strip | split: '}' -%}
+      {%- for rule in custom_css_rules -%}
+        {%- assign clean_rule = rule | strip -%}
+        {%- if clean_rule contains '{' and clean_rule != blank -%}
+          {%- assign rule_parts = clean_rule | split: '{' -%}
+          {%- if rule_parts.size >= 2 -%}
+            {%- assign selector_part = rule_parts[0] | strip -%}
+            {%- assign css_part = rule_parts[1] | strip -%}
+            {%- if css_part != blank -%}
+              {%- if selector_part == blank -%}
+                #DP--{{ block.id }} { {{ css_part }} }
+              {%- else -%}
+                #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+
+    /* Small context - small container and mobile */
+    {%- capture small_context -%}
+
+      {%- if block_override_active and block.settings.mobile_block_text_size != blank and block.settings.enable_custom_text_size == true -%}
+        #DP--{{ block.id }} .dsgn-pck__text.dsgn-pck__rte * {
+          font-size: calc({{ block.settings.mobile_block_text_size }} * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+        }
+
+        #DP--{{ block.id }} h1.dsgn-pck__h1 {
+          font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.mobile_block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.02 }});
+        }
+
+        #DP--{{ block.id }} h2.dsgn-pck__h2 {
+          font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.mobile_block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.018 }});
+        }
+
+        #DP--{{ block.id }} h3.dsgn-pck__h3 {
+          font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.mobile_block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.016 }});
+        }
+
+        #DP--{{ block.id }} h4.dsgn-pck__h4 {
+          font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.mobile_block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.014 }});
+        }
+
+        #DP--{{ block.id }} h5.dsgn-pck__h5 {
+          font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.mobile_block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.012 }});
+        }
+
+        #DP--{{ block.id }} h6.dsgn-pck__h6 {
+          font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.mobile_block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+        }
+      {%- endif -%}
+
+      {%- if block.settings.enable_custom_css == true and block.settings.mobile_css != blank -%}
+        {%- assign mobile_css_rules = block.settings.mobile_css | strip | split: '}' -%}
+        {%- for rule in mobile_css_rules -%}
+          {%- assign clean_rule = rule | strip -%}
+          {%- if clean_rule contains '{' and clean_rule != blank -%}
+            {%- assign rule_parts = clean_rule | split: '{' -%}
+            {%- if rule_parts.size >= 2 -%}
+              {%- assign selector_part = rule_parts[0] | strip -%}
+              {%- assign css_part = rule_parts[1] | strip -%}
+              {%- if css_part != blank -%}
+                {%- if selector_part == blank -%}
+                  #DP--{{ block.id }} { {{ css_part }} }
+                {%- else -%}
+                  #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+                {%- endif -%}
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    {%- endcapture -%}
+
+    @supports (container-type: inline-size) {
+      @container dp-text-container (max-width: 300px) {
+        {{ small_context }}
+      }
+    }
+
+    @media (max-width: 767px) {
+      {{ small_context }}
+    }
+
+    {%- if block.settings.hidden_on == 'mobile' -%}
+      @media (max-width: 767px) {
+        .dsgn-pck__block-id-{{ block.id }} {
+          display: none;
+        }
+      }
+    {%- endif -%}
+
+    {%- if block.settings.hidden_on == 'desktop' -%}
+      @media (min-width: 768px) {
+        .dsgn-pck__block-id-{{ block.id }} {
+          display: none;
+        }
+      }
+    {%- endif -%}
+  </style>
+{%- endcapture -%}
+
+{%- capture js_scripts -%}
+  <script type="module" defer>
+    class DesignPackText extends HTMLElement {
+      constructor() {
+        super();
+        this.section = this.closest('.dsgn-pck__section');
+
+        this.intersectionObserver = null;
+        this.onIntersect = this.onIntersect.bind(this);
+      }
+
+      getLineHeight(element) {
+        const lineHeight = window.getComputedStyle(element).lineHeight;
+        if (lineHeight === 'normal') {
+          const fontSize = parseFloat(window.getComputedStyle(element).fontSize);
+          return fontSize * 1.25;
+        }
+        return parseFloat(lineHeight);
+      }
+
+      connectedCallback() {
+
+        this.parentBlock = this.closest('.dsgn-pck__product-description-block');
+        if (this.parentBlock) {
+          this.intersectionObserver = new window.IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+              this.onIntersect(entry);
+            });
+          }, { threshold: [0, 0.1, 0.5, 1] });
+          this.intersectionObserver.observe(this.parentBlock);
+        }
+
+        const readMore = this.querySelector('.dsgn-pck__read-more-container');
+        if (readMore) {
+          const truncateLines = parseInt(readMore.dataset.truncate);
+          const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+
+          if (truncateLines > 0 && isSafari) {
+            const innerContainer = readMore.querySelector('.dsgn-pck__read-more-container-inner');
+            if (innerContainer) {
+              innerContainer.classList.add('is-safari');
+
+              const lineHeight = this.getLineHeight(innerContainer);
+              const safariExtraHeight = lineHeight * 0.35;
+              const maxHeight = (lineHeight * truncateLines) + safariExtraHeight;
+
+              innerContainer.style.setProperty('--safari-max-height', `${maxHeight}px`);
+
+              // Force a reflow to ensure styles are applied
+              innerContainer.offsetHeight;
+
+            }
+          }
+
+          this.setReadMore(readMore);
+        }
+      }
+
+      setReadMore(readMoreContainer){
+        function isScrollable(elementSelector, readMoreContainer) {
+          const element = readMoreContainer.querySelector(elementSelector);
+
+          if (element) {
+            const scrollHeight = element.scrollHeight;
+            const clientHeight = element.clientHeight;
+
+            return scrollHeight > clientHeight;
+          }
+
+          // Return false if the element is not found
+          return false;
+        }
+
+        const isContainerScrollable = isScrollable('.dsgn-pck__read-more-container-inner', readMoreContainer);
+        const readMoreToggle = readMoreContainer.querySelector('.dsgn-pck__read-more-text');
+        const innerContainer = readMoreContainer.querySelector('.dsgn-pck__read-more-container-inner');
+        const isOutlierDevice = innerContainer ? innerContainer.classList.contains('is-safari') : false;
+
+        if (readMoreToggle != null && typeof readMoreToggle != 'undefined'){
+          if (isContainerScrollable) {
+            readMoreToggle.style.display = 'inline-block';
+            if (isOutlierDevice) {
+              readMoreContainer.classList.add('dsgn-pck__read-more-container--outlier');
+            } else {
+              readMoreContainer.classList.remove('dsgn-pck__read-more-container--outlier');
+            }
+          } else {
+            readMoreToggle.style.display = 'none';
+            readMoreContainer.classList.remove('dsgn-pck__read-more-container--outlier');
+          }
+        }
+      }
+
+      disconnectedCallback() {
+        this.removeEventListeners();
+
+        /* Clean up Intersection Observer */
+        if (this.intersectionObserver && this.parentBlock) {
+          this.intersectionObserver.unobserve(this.parentBlock);
+          this.intersectionObserver.disconnect();
+        }
+      }
+
+      onIntersect(entry) {
+        if (entry.isIntersecting) {
+          /* Block is in view */
+          //console.log('Block is in view');
+          if (!this.hasInitialized) {
+            //this.animateText();
+            this.hasInitialized = true;
+          }
+        } else {
+          /* Block is out of view */
+        }
+      }
+
+      removeEventListeners() {
+
+      }
+
+    }
+
+    if (!customElements.get('dp-text')) {
+      customElements.define('dp-text', DesignPackText);
+    }
+  </script>
+{%- endcapture -%}
+
+<div id="DP--{{ block.id }}" class="DP--{{ block.id }} dsgn-pck__block dsgn-pck__block-id-{{ block.id }} dsgn-pck__product-description-block dsgn-pck__block--{{ block.type }} dsgn-pck__block--{{ block.index }} dsgn-pck__justify-{%- if block.settings.block_alignment != 'default' -%}{{ block.settings.block_alignment }}{%- else -%}{{ section.settings.text_alignment }}{%- endif -%}" {{ block.shopify_attributes }}>
+  {{ css_styles }}
+  <dp-text class="dsgn-pck__inner-block-container">
+    {%- if block.settings.truncate_text != -1 -%}
+      <div class="dsgn-pck__read-more-container" data-truncate="{{ block.settings.truncate_text }}">
+        <input type="checkbox" id="dsgn-pck__read-more-toggle-{{ block.id }}" class="dsgn-pck__read-more-toggle" aria-hidden>
+        <div class="dsgn-pck__read-more-container-inner">
+    {%- endif -%}
+
+    <div class="dsgn-pck__text dsgn-pck__rte{% if section.settings.design_system == 'global_style' and block.settings.custom_style_name != 'custom' and block.settings.custom_style_name != blank %} dsgn-pck__text-{{ block.settings.custom_style_name }}{% endif %}">
+      {{ product.description }}
+    </div>
+
+    {%- if block.settings.truncate_text != -1 -%}
+        </div>
+        <label class="dsgn-pck__read-more-text" for="dsgn-pck__read-more-toggle-{{ block.id }}" aria-hidden><span></span></label>
+      </div>
+    {%- endif -%}
+  </dp-text>
+  {{ js_scripts }}
+</div>
+
+{% schema %}
+  {
+    "name": "Product description 🎒",
+    "tag": null,
+    "settings": [
+      {
+        "visible_if": "{{ section.settings.design_system == 'global_style' }}",
+        "type": "select",
+        "id": "custom_style_name",
+        "label": "🌈 Text style",
+        "info": "Apply style from your Design System.",
+        "options": [
+          { "value": "body", "label": "Body text" },
+          { "value": "small", "label": "Small text" },
+          { "value": "lead", "label": "Lead" },
+          { "value": "pagination", "label": "Pagination" },
+          { "value": "breadcrumbs", "label": "Breadcrumbs" },
+          { "value": "custom-1", "label": "Custom 1" },
+          { "value": "custom-2", "label": "Custom 2" },
+          { "value": "custom-3", "label": "Custom 3" },
+          { "value": "custom", "label": "None" }
+        ],
+        "default": "body"
+      },
+      {
+        "visible_if": "{{ section.settings.design_system == 'global_style' and block.settings.custom_style_name != 'custom' }}",
+        "type": "checkbox",
+        "id": "override",
+        "label": "Tweak text style",
+        "default": false,
+        "info": "Give a custom look to this product description."
+      },
+      {
+        "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "color",
+        "id": "text_color",
+        "label": "Color"
+      },
+      {
+        "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "checkbox",
+        "id": "enable_custom_text_size",
+        "label": "Enable custom text size",
+        "default": false
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_text_size and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "text",
+        "id": "block_text_size",
+        "label": "Text size",
+        "default": "30px",
+        "info": "Leave empty to default to base size of 18px."
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_text_size and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "text",
+        "id": "mobile_block_text_size",
+        "label": "📱 Mobile & narrow display text size (optional)",
+      },
+      {
+        "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "checkbox",
+        "id": "enable_custom_font",
+        "label": "Enable custom font",
+        "default": false
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_font and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "font_picker",
+        "id": "custom_font",
+        "label": "Custom font",
+        "default": "abel_n4"
+      },
+      {
+        "type": "select",
+        "id": "block_alignment",
+        "label": "Text alignment",
+        "default": "default",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          },
+          {
+            "value": "default",
+            "label": "Default"
+          }
+        ]
+      },
+      {
+        "type": "range",
+        "id": "truncate_text",
+        "label": "Truncate text",
+        "info": "Truncate by lines. Set to -1 to disable.",
+        "min": -1,
+        "max": 20,
+        "default": -1
+      },
+      {
+        "visible_if": "{{ block.settings.truncate_text != -1 }}",
+        "type": "text",
+        "id": "read_more_text",
+        "label": "Read more text",
+        "default": "Read more"
+      },
+      {
+        "visible_if": "{{ block.settings.truncate_text != -1 }}",
+        "type": "text",
+        "id": "read_less_text",
+        "label": "Read less text",
+        "default": "Read less"
+      },
+      {
+        "type": "header",
+        "content": "🖼 Layout"
+      },
+      {
+        "type": "range",
+        "id": "base_width",
+        "label": "Size",
+        "min": 50,
+        "max": 100,
+        "default": 100,
+        "unit": "%",
+        "info": "Size is based on the width of the container. [Learn more]( https://design-packs.gitbook.io/docs/fundamentals/block-settings/size-controls-for-image-and-video-blocks)"
+      },
+      {
+        "type": "text",
+        "id": "max_width",
+        "label": "Maximum width",
+        "placeholder": "eg. 1200px",
+        "info": "Sets width constraint for content."
+      },
+      {
+        "visible_if": "{{ block.settings.base_width < 100 or block.settings.max_width != blank }}",
+        "type": "select",
+        "id": "horizontal_alignment",
+        "label": "Horizontal alignment",
+        "default": "default",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          },
+          {
+            "value": "default",
+            "label": "Default"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "hidden_on",
+        "label": "Hidden on",
+      "default": "none",
+        "options": [
+          {
+            "value": "none",
+            "label": "None"
+          },
+          {
+            "value": "desktop",
+            "label": "Desktop"
+          },
+          {
+            "value": "mobile",
+            "label": "Mobile"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_custom_css",
+        "label": "Enable custom CSS",
+        "default": false
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_css == true }}",
+        "type": "liquid",
+        "id": "custom_css",
+        "label": "Custom CSS"
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_css == true }}",
+        "type": "liquid",
+        "id": "mobile_css",
+        "label": "Mobile & narrow custom CSS",
+        "info": "Applied on small screens or in tight spaces."
+      },
+      {
+        "type": "paragraph",
+        "content": "Open [Design Packs](/admin/apps/design-packs-1/dashboard) to add/update new sections and blocks."
+      }
+    ],
+    "presets": [
+      {
+        "name": "Product description 🎒",
+        "category": "* Design Packs: Product"
+      }
+    ],
+  }
+{% endschema %}

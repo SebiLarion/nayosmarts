@@ -1,0 +1,271 @@
+{%- assign section_id = section.id | replace: '+', '' | replace: '=', '' -%}
+{%- assign block_index = section.blocks | find_index: 'id', block.id | plus: 1 -%}
+{%- assign product = closest.product | default: section.settings.product | default: product | default: collections["all"].products.first -%}
+{%- assign block_horizontal_setting = block.settings.horizontal_alignment | default: 'default' -%}
+
+{%- capture css_styles -%}
+  <style>
+    .dsgn-pck__block-id-{{ block.id }} {
+      display: flex;
+      flex-direction: column;
+      width: {{ block.settings.base_width | default: 100 }}%;
+      max-width: {{ block.settings.max_width | remove: 'px' }}px;
+      background-color: {{ block.settings.background_solid }};
+      background-image: {{ block.settings.background_color }};
+      border-radius: {{ block.settings.border_radius }}px;
+      border: {{ block.settings.border_style }} {{ block.settings.border_width }}px {{ block.settings.border_color }};
+      {% if block.settings.padding_type == 'range' %}
+        padding: {{ block.settings.padding_top }}px {{ block.settings.padding_right }}px {{ block.settings.padding_bottom }}px {{ block.settings.padding_left }}px;
+      {% elsif block.settings.padding_type == 'custom' %}
+        padding: {{ block.settings.padding }};
+      {% else %}
+        padding: 0;
+      {% endif %}
+      {%- if section.settings.text_alignment == 'center' and block_horizontal_setting == 'default' -%}
+        margin: 0 auto;
+      {%- elsif section.settings.text_alignment == 'right' and block_horizontal_setting == 'default'  -%}
+        margin: 0 0 0 auto;
+      {%- endif -%}
+      {%- if block.settings.horizontal_alignment == 'left' -%}
+        align-self: flex-start;
+        margin-left: 0;
+        margin-right: auto;
+      {%- elsif block.settings.horizontal_alignment == 'right' -%}
+        align-self: flex-end;
+        margin-left: auto;
+        margin-right: 0;
+      {%- elsif block.settings.horizontal_alignment == 'center' -%}
+        align-self: center;
+        margin-left: auto;
+        margin-right: auto;
+      {%- endif -%}
+    }
+
+    .DP--{{ section_id }} .dsgn-pck__block + .dsgn-pck__block {
+      margin-top: 15px;
+      z-index: auto;
+    }
+
+    .DP--{{ section_id }} .dsgn-pck__product-gallery > .dsgn-pck__block:first-child {
+      margin-top: 0;
+    }
+
+  </style>
+{%- endcapture -%}
+
+<div id="DP--{{ block.id }}" class="DP--{{ block.id }} dsgn-pck__block-id-{{ block.id }} dsgn-pck__featured-product__media dsgn-pck__product-gallery dsgn-pck__block--{{ block_index }}">
+  {{ css_styles }}
+  {% content_for 'blocks' %}
+</div>
+
+{% schema %}
+{
+  "name": "Product gallery",
+  "tag": null,
+  "settings": [
+    {
+      "type": "select",
+      "id": "padding_type",
+      "label": "Padding",
+      "options": [
+        {
+          "value": "auto",
+          "label": "None"
+        },
+        {
+          "value": "range",
+          "label": "Range"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "auto"
+    },
+    {
+      "visible_if": "{{ block.settings.padding_type == 'custom' }}",
+      "type": "text",
+      "id": "padding",
+      "label": "Custom padding",
+      "default": "10px 20px 30px 40px",
+      "info": "Enter padding in the format: top right bottom left. Example: 10px 20px 30px 40px [Learn more](https://developer.mozilla.org/en-US/docs/Web/CSS/padding)"
+    },
+    {
+      "visible_if": "{{ block.settings.padding_type == 'range' }}",
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "visible_if": "{{ block.settings.padding_type == 'range' }}",
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "visible_if": "{{ block.settings.padding_type == 'range' }}",
+      "type": "range",
+      "id": "padding_left",
+      "label": "Padding left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "visible_if": "{{ block.settings.padding_type == 'range' }}",
+      "type": "range",
+      "id": "padding_right",
+      "label": "Padding right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "🎨 Design"
+    },
+    {
+      "type": "color",
+      "id": "background_solid",
+      "label": "Background",
+      "alpha": true
+    },
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "label": "Background gradient",
+      "info": "Background gradient replaces background where possible."
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Rounded corners",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "border_style",
+      "label": "Border style",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "dotted",
+          "label": "Dotted"
+        },
+        {
+          "value": "double",
+          "label": "Double"
+        },
+        {
+          "value": "groove",
+          "label": "Groove"
+        },
+        {
+          "value": "ridge",
+          "label": "Ridge"
+        },
+        {
+          "value": "inset",
+          "label": "Inset"
+        },
+        {
+          "value": "outset",
+          "label": "Outset"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",
+      "label": "Border width",
+      "default": 1,
+      "visible_if": "{{ block.settings.border_style != 'none' }}"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.border_style != 'none' }}"
+    },
+  ],
+  "blocks": [
+    {
+      "type": "@app"
+    },
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "_dpb_sub_-_product-media-gallery"
+    },
+    {
+      "type": "_dpb_sub_-_product-details-title"
+    },
+    {
+      "type": "_dpb_sub_-_product-description"
+    },
+    {
+      "type": "_dpb_sub_-_product-details-price"
+    },
+    {
+      "type": "_dpb_sub_-_product-details-group"
+    },
+    {
+      "type": "_dpb_-_columns"
+    },
+    {
+      "type": "_dpb_-_group"
+    },
+    {
+      "type": "_dpb_-_breadcrumbs"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Media",
+      "blocks": [
+        {
+          "type": "_dpb_sub_-_product-media-gallery"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

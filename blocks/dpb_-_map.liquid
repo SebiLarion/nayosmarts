@@ -1,0 +1,539 @@
+{%- comment -%}
+{
+  "pack_name": "Map block",
+  "pack_author": "Design Packs",
+  "license": "© Design Packs. All rights reserved. This code is protected by copyright law and may not be reproduced, distributed, or used without explicit permission from the author. Shopify complies with the Digital Millennium Copyright Act (DMCA) and responds to claims of copyright infringement using DMCA procedures, which could result in the termination of your Shopify account.",
+}
+{%- endcomment -%}
+
+{% comment %} Security Code - hides section when app uninstalled {% endcomment %}
+{%- unless content_for_header contains 'design_packs_file.js' -%}
+  {%- if request.design_mode -%}
+    <div class="dsgn-pck__no-app-warning">
+      <div class="dsgn-pck__no-app-warning-background">
+      </div>
+      <div class="dsgn-pck__no-app-warning-text dsgn-pck__rte">
+        <p><strong>WARNING!</strong> This premium section will not display properly without an active subscription for <a href="https://apps.shopify.com/design-packs" target="_blank" rel="noopener nofollow">Design Packs</a>. If you need any support please email <a href="mailto:info@design-packs.com" target="_blank" rel="noopener">info@design-packs.com</a> with your questions.</p>
+      </div>
+    </div>
+  {%- endif -%}
+  {%- break -%}
+{%- endunless -%}
+
+{%- comment -%} Assign: Preview section js fix {%- endcomment -%}
+{%- assign block_id = block.id | replace: '+', '' | replace: '=', '' -%}
+
+{%- comment -%} Map: aspect ratio width/height from the selected ratio {%- endcomment -%}
+{%- assign ratio_width = block.settings.image_crop | split: ':' | first | times: 1000 -%}
+{%- assign ratio_height = block.settings.image_crop | split: ':' | last | times: 1000 -%}
+
+{%- comment -%} Layout: has user entered a measurement value into max-width? {%- endcomment -%}
+{%- if block.settings.max_width contains 'px' or block.settings.max_width contains '%' -%}
+  {%- assign max_width = block.settings.max_width -%}
+{%- else -%}
+  {%- assign max_width = block.settings.max_width | append: 'px' -%}
+{%- endif -%}
+
+{%- comment -%} Location: the embed / geocode query is the address string. {%- endcomment -%}
+{%- assign map_query = block.settings.address -%}
+
+{%- comment -%} Color: check if border colour is set to transparent {%- endcomment -%}
+{%- assign border_color_alpha = block.settings.border_color | color_extract: 'alpha' -%}
+
+{%- capture css_styles -%}
+<style data-dp-css="blocks/dpb_-_map.liquid">
+
+  [id*=preview-block] .dsgn-pck__map {
+    container-type: normal !important;
+  }
+
+  .dsgn-pck__block-id-{{ block_id }} {
+    width: {{ block.settings.base_width }}%;
+    max-width: {{ max_width }};
+    display: flex;
+    {%- if block.settings.horizontal_alignment == 'left' -%}
+      align-self: flex-start;
+      margin-left: 0;
+      margin-right: auto;
+    {%- elsif block.settings.horizontal_alignment == 'right' -%}
+      align-self: flex-end;
+      margin-left: auto;
+      margin-right: 0;
+    {%- elsif block.settings.horizontal_alignment == 'center' -%}
+      align-self: center;
+      margin-left: auto;
+      margin-right: auto;
+    {%- endif -%}
+  }
+
+  .dsgn-pck__block-id-{{ block_id }} .dsgn-pck__map {
+    position: relative;
+    width: 100%;
+    aspect-ratio: {{ ratio_width }} / {{ ratio_height }};
+    {%- if block.settings.border_width > 0 and border_color_alpha != 0 -%}
+      border: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
+    {%- endif -%}
+    border-radius: {{ block.settings.border_radius }}px;
+    {% case block.settings.button_shadow %}
+      {% when 'subtle' %}box-shadow: 0 1px 4px 0 {{ block.settings.button_shadow_color }}33;
+      {% when 'medium' %}box-shadow: 0 2px 8px 0 {{ block.settings.button_shadow_color }}55;
+      {% when 'strong' %}box-shadow: 0 4px 16px 0 {{ block.settings.button_shadow_color }}88;
+      {% when 'custom' %}box-shadow: {{ block.settings.button_shadow_custom }};
+      {% else %}box-shadow: none;
+    {% endcase %}
+    overflow: hidden;
+    background: #e9e9e9;
+  }
+
+  .dsgn-pck__block-id-{{ block_id }} .dsgn-pck__map iframe,
+  .dsgn-pck__block-id-{{ block_id }} .dsgn-pck__map .dsgn-pck__map-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  {%- if block.settings.map_provider == 'openstreetmap' and block.settings.color_filter != 'none' -%}
+    .dsgn-pck__block-id-{{ block_id }} .dsgn-pck__map iframe {
+      {%- case block.settings.color_filter -%}
+        {%- when 'grayscale' -%}filter: grayscale(1);
+        {%- when 'sepia' -%}filter: sepia(0.5);
+        {%- when 'invert' -%}filter: invert(0.92) hue-rotate(180deg);
+      {%- endcase -%}
+    }
+  {%- endif -%}
+
+  .dsgn-pck__block-id-{{ block_id }} .dsgn-pck__map-message {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1em;
+    font-size: 0.9em;
+    color: #555;
+  }
+
+  /* Custom CSS */
+  {%- if block.settings.enable_custom_css == true and block.settings.custom_css != blank -%}
+    {%- assign custom_css_rules = block.settings.custom_css | strip | split: '}' -%}
+    {%- for rule in custom_css_rules -%}
+      {%- assign clean_rule = rule | strip -%}
+      {%- if clean_rule contains '{' and clean_rule != blank -%}
+        {%- assign rule_parts = clean_rule | split: '{' -%}
+        {%- if rule_parts.size >= 2 -%}
+          {%- assign selector_part = rule_parts[0] | strip -%}
+          {%- assign css_part = rule_parts[1] | strip -%}
+          {%- if css_part != blank -%}
+            {%- if selector_part == blank -%}
+              #DP--{{ block_id }} { {{ css_part }} }
+            {%- else -%}
+              #DP--{{ block_id }} {{ selector_part }} { {{ css_part }} }
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+
+  {%- if block.settings.hidden_on == 'mobile' -%}
+    @media (max-width: 767px) {
+      .dsgn-pck__block-id-{{ block_id }} { display: none; }
+    }
+  {%- endif -%}
+  {%- if block.settings.hidden_on == 'desktop' -%}
+    @media (min-width: 768px) {
+      .dsgn-pck__block-id-{{ block_id }} { display: none; }
+    }
+  {%- endif -%}
+</style>
+{%- endcapture -%}
+
+<div id="DP--{{ block_id }}" class="DP--{{ block_id }} dsgn-pck__block dsgn-pck__block-id-{{ block_id }} dsgn-pck__block--{{ block.type }} dsgn-pck__block--{{ block.index }}" {{ block.shopify_attributes }}>
+  {{ css_styles }}
+
+  {%- if block.settings.address == blank -%}
+    {%- comment -%} No location set — show a prompt in the editor only {%- endcomment -%}
+    <div class="dsgn-pck__map">
+      {%- if request.design_mode -%}
+        <div class="dsgn-pck__map-message">Add an address in the block settings to display the map.</div>
+      {%- endif -%}
+    </div>
+
+  {%- elsif block.settings.map_provider == 'google_embed' -%}
+    {%- comment -%} Google Maps — keyless embed by query (address or "lat,lng"). Shows a marker automatically. {%- endcomment -%}
+    <div class="dsgn-pck__map">
+      <iframe
+        src="https://maps.google.com/maps?q={{ map_query | url_encode }}&z={{ block.settings.map_zoom }}&output=embed"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="{{ block.settings.address | default: 'Map' | escape }}"
+        allowfullscreen></iframe>
+    </div>
+
+  {%- else -%}
+    {%- comment -%}
+      OpenStreetMap (iframe embed) and Google Maps JS API are both built by JS so the
+      address can be geocoded when no lat/lng is supplied. Config is passed via data-*.
+    {%- endcomment -%}
+    <div
+      class="dsgn-pck__map"
+      data-dp-map
+      data-provider="{{ block.settings.map_provider }}"
+      data-address="{{ block.settings.address | escape }}"
+      data-zoom="{{ block.settings.map_zoom }}"
+      {%- if block.settings.map_provider == 'google_maps' %}
+      data-api-key="{{ block.settings.google_maps_api_key | escape }}"
+      data-map-style="{{ block.settings.google_map_style }}"
+      {%- endif %}
+    >
+      {%- if block.settings.map_provider == 'google_maps' -%}
+        <div class="dsgn-pck__map-canvas" id="dp-map-canvas-{{ block_id }}"></div>
+        {%- if block.settings.google_maps_api_key == blank and request.design_mode -%}
+          <div class="dsgn-pck__map-message"><strong>Google Maps API key missing.</strong>&nbsp;Add your key in the block settings to display the map.</div>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+
+    <script>
+      (function () {
+        var el = document.currentScript.previousElementSibling;
+        if (!el || !el.hasAttribute('data-dp-map') || el.dataset.dpMapInit === '1') return;
+        el.dataset.dpMapInit = '1';
+
+        var provider = el.dataset.provider;
+        var address  = el.dataset.address || '';
+        var zoom     = parseInt(el.dataset.zoom, 10) || 14;
+
+        function showMessage(text) {
+          var existing = el.querySelector('.dsgn-pck__map-message');
+          if (existing) { existing.innerHTML = text; return; }
+          var m = document.createElement('div');
+          m.className = 'dsgn-pck__map-message';
+          m.innerHTML = text;
+          el.appendChild(m);
+        }
+
+        // Resolve the address to coordinates via OpenStreetMap Nominatim.
+        function geocode(query) {
+          var url = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(query);
+          return fetch(url, { headers: { 'Accept': 'application/json' } })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+              if (data && data.length) {
+                return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+              }
+              throw new Error('Address not found');
+            });
+        }
+
+        // ---- OpenStreetMap: build an embed iframe from a center + zoom ----
+        function renderOSM(center) {
+          var clampLat = Math.max(-85, Math.min(85, center.lat));
+          var dLng = 360 / Math.pow(2, zoom);
+          var dLat = dLng * 0.6;
+          var minLng = Math.max(-180, center.lng - dLng / 2);
+          var maxLng = Math.min(180, center.lng + dLng / 2);
+          var minLat = Math.max(-85, clampLat - dLat / 2);
+          var maxLat = Math.min(85, clampLat + dLat / 2);
+          var src = 'https://www.openstreetmap.org/export/embed.html?bbox=' +
+            [minLng, minLat, maxLng, maxLat].join(',') +
+            '&layer=mapnik&marker=' + clampLat + ',' + center.lng;
+          var iframe = document.createElement('iframe');
+          iframe.src = src;
+          iframe.loading = 'lazy';
+          iframe.title = address || 'Map';
+          el.appendChild(iframe);
+        }
+
+        // ---- Google Maps JS API: single centered marker ----
+        var GOOGLE_MAP_STYLES = {
+          default: [],
+          grayscale: [{ stylers: [{ saturation: -100 }] }],
+          silver: [{ elementType: 'geometry', stylers: [{ color: '#f5f5f5' }] }, { elementType: 'labels.icon', stylers: [{ visibility: 'off' }] }, { elementType: 'labels.text.fill', stylers: [{ color: '#616161' }] }, { elementType: 'labels.text.stroke', stylers: [{ color: '#f5f5f5' }] }, { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#eeeeee' }] }, { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#ffffff' }] }, { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#c9c9c9' }] }],
+          retro: [{ elementType: 'geometry', stylers: [{ color: '#ebe3cd' }] }, { elementType: 'labels.text.fill', stylers: [{ color: '#523735' }] }, { featureType: 'water', elementType: 'geometry.fill', stylers: [{ color: '#b9d3c2' }] }, { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#f8c967' }] }],
+          dark: [{ elementType: 'geometry', stylers: [{ color: '#212121' }] }, { elementType: 'labels.text.fill', stylers: [{ color: '#757575' }] }, { elementType: 'labels.text.stroke', stylers: [{ color: '#212121' }] }, { featureType: 'road', elementType: 'geometry.fill', stylers: [{ color: '#2c2c2c' }] }, { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#000000' }] }]
+        };
+
+        function loadGoogleMapsOnce(apiKey) {
+          if (window.google && window.google.maps && window.google.maps.Map) return Promise.resolve();
+          if (window.__dsgnPckGmapsLoader) return window.__dsgnPckGmapsLoader;
+          window.__dsgnPckGmapsLoader = new Promise(function (resolve, reject) {
+            function waitForClasses() {
+              var start = Date.now();
+              var check = setInterval(function () {
+                if (window.google && window.google.maps && window.google.maps.Map) { clearInterval(check); resolve(); }
+                else if (Date.now() - start > 10000) { clearInterval(check); reject(new Error('Google Maps not available within 10s')); }
+              }, 50);
+            }
+            var existing = document.querySelector('script[src*="maps.googleapis.com/maps/api/js"]');
+            if (existing) { waitForClasses(); return; }
+            var script = document.createElement('script');
+            script.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(apiKey) + '&v=quarterly';
+            script.async = true;
+            script.defer = true;
+            script.onload = waitForClasses;
+            script.onerror = function () { reject(new Error('Google Maps script failed to load')); };
+            document.head.appendChild(script);
+          });
+          return window.__dsgnPckGmapsLoader;
+        }
+
+        function renderGoogle(center) {
+          var canvas = el.querySelector('.dsgn-pck__map-canvas');
+          var styleKey = el.dataset.mapStyle || 'default';
+          var map = new google.maps.Map(canvas, {
+            center: center,
+            zoom: zoom,
+            styles: GOOGLE_MAP_STYLES[styleKey] || [],
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: false
+          });
+          new google.maps.Marker({ position: center, map: map, title: address });
+        }
+
+        if (provider === 'openstreetmap') {
+          geocode(address)
+            .then(renderOSM)
+            .catch(function () { showMessage('Could not locate this address on the map.'); });
+
+        } else if (provider === 'google_maps') {
+          var apiKey = el.dataset.apiKey || '';
+          if (!apiKey) { return; }
+          loadGoogleMapsOnce(apiKey)
+            .then(function () {
+              return new Promise(function (resolve, reject) {
+                new google.maps.Geocoder().geocode({ address: address }, function (results, status) {
+                  if (status === 'OK' && results[0]) {
+                    var loc = results[0].geometry.location;
+                    resolve({ lat: loc.lat(), lng: loc.lng() });
+                  } else { reject(new Error('Geocode failed: ' + status)); }
+                });
+              });
+            })
+            .then(renderGoogle)
+            .catch(function () { showMessage('Could not load the map. Check the API key and address.'); });
+        }
+      })();
+    </script>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Map 🎒",
+  "tag": null,
+  "settings": [
+    {
+      "type": "select",
+      "id": "map_provider",
+      "label": "Map provider",
+      "default": "openstreetmap",
+      "options": [
+        { "value": "openstreetmap", "label": "OpenStreetMap (free)" },
+        { "value": "google_embed", "label": "Google Maps — embed (free, no key)" },
+        { "value": "google_maps", "label": "Google Maps — API key (styled)" }
+      ],
+      "info": "OpenStreetMap and the Google embed are free. The Google Maps API key option supports custom map styles and requires a key with the Maps JavaScript API enabled. [Read tutorial](https://design-packs.gitbook.io/docs/fundamentals/section-tutorials/setting-up-a-google-maps-api-key)"
+    },
+    {
+      "visible_if": "{{ block.settings.map_provider == 'google_maps' }}",
+      "type": "text",
+      "id": "google_maps_api_key",
+      "label": "Google Maps API key"
+    },
+    {
+      "visible_if": "{{ block.settings.map_provider == 'google_maps' }}",
+      "type": "select",
+      "id": "google_map_style",
+      "label": "Google Maps style",
+      "default": "default",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "grayscale", "label": "Grayscale" },
+        { "value": "silver", "label": "Silver" },
+        { "value": "retro", "label": "Retro" },
+        { "value": "dark", "label": "Dark" }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.map_provider == 'openstreetmap' }}",
+      "type": "select",
+      "id": "color_filter",
+      "label": "Color filter",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "grayscale", "label": "Grayscale" },
+        { "value": "sepia", "label": "Sepia" },
+        { "value": "invert", "label": "Invert" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "📍 Location"
+    },
+    {
+      "type": "text",
+      "id": "address",
+      "label": "Address",
+      "default": "350 5th Ave, New York, NY 10118",
+      "info": "The address or place to show. Used for the marker and to centre the map."
+    },
+    {
+      "type": "range",
+      "id": "map_zoom",
+      "label": "Map zoom",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "image_crop",
+      "label": "Map aspect ratio",
+      "default": "4:3",
+      "options": [
+        { "value": "4:3", "label": "Landscape (4:3)" },
+        { "value": "2:3", "label": "Portrait (2:3)" },
+        { "value": "1:1", "label": "Square (1:1)" },
+        { "value": "16:9", "label": "Cinema (16:9)" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "🎨 Design"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Rounded corners",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 50,
+      "step": 0.5,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "visible_if": "{{ block.settings.border_width != 0 }}",
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#000000"
+    },
+    {
+      "type": "select",
+      "id": "button_shadow",
+      "label": "Drop shadow",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "strong", "label": "Strong" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "visible_if": "{{ block.settings.button_shadow != 'none' and block.settings.button_shadow != 'custom' }}",
+      "type": "color",
+      "id": "button_shadow_color",
+      "label": "Shadow color",
+      "default": "#000000"
+    },
+    {
+      "visible_if": "{{ block.settings.button_shadow == 'custom' }}",
+      "type": "text",
+      "id": "button_shadow_custom",
+      "label": "Custom shadow value",
+      "default": "0 1px 4px rgba(0,0,0,0.08)",
+      "info": "Example: 0 1px 4px rgba(0,0,0,0.08)"
+    },
+    {
+      "type": "header",
+      "content": "🖼 Layout"
+    },
+    {
+      "type": "range",
+      "id": "base_width",
+      "label": "Size",
+      "min": 30,
+      "max": 100,
+      "default": 100,
+      "unit": "%",
+      "info": "Size is based on the width of the container."
+    },
+    {
+      "type": "text",
+      "id": "max_width",
+      "label": "Maximum width",
+      "placeholder": "eg. 600px",
+      "info": "Sets a width constraint for the map."
+    },
+    {
+      "visible_if": "{{ block.settings.base_width < 100 or block.settings.max_width != blank }}",
+      "type": "select",
+      "id": "horizontal_alignment",
+      "label": "Map alignment",
+      "default": "default",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" },
+        { "value": "default", "label": "Default" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "hidden_on",
+      "label": "Hidden on",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "desktop", "label": "Desktop" },
+        { "value": "mobile", "label": "Mobile" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "🚨 Advanced"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_css",
+      "label": "Enable custom CSS",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    },
+    {
+      "type": "paragraph",
+      "content": "Open [Design Packs](/admin/apps/design-packs-1/dashboard) to add/update new sections and blocks."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Map 🎒",
+      "category": "* Design Packs: Contact"
+    }
+  ]
+}
+{% endschema %}

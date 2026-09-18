@@ -1,0 +1,206 @@
+{% include 'design_pack_snippet_variant-picker' %}
+
+{% comment %}
+  This block is used to render the product variant picker.
+  It is used in the product details section.
+  It REQUIRES the following files to be present in the theme:
+  - snippets/design_pack_snippet_variant-picker.liquid
+  - snippets/design_pack_snippet_price.liquid
+{% endcomment %}
+
+{% schema %}
+{
+  "name": "Variant picker",
+  "tag": null,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "hide_unavailable_variants",
+      "label": "Hide unavailable and out of stock variants",
+      "default": false,
+      "info": "If a variant is unavailable or out of stock, it will be hidden from the variant picker."
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_single_variant",
+      "label": "Hide variant picker when only one variant",
+      "default": true,
+      "info": "If the product has only one variant, the variant picker will be hidden."
+    },
+    {
+      "type": "header",
+      "content": "Variant style"
+    },
+    {
+      "type": "select",
+      "id": "variant_style",
+      "label": "Variant style",
+      "options": [
+        {
+          "value": "buttons",
+          "label": "Buttons"
+        },
+        {
+          "value": "dropdowns",
+          "label": "Dropdowns"
+        }
+      ],
+      "default": "buttons"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_swatches",
+      "label": "Enable native Shopify swatches",
+      "default": true
+    },
+    {
+      "visible_if": "{{ block.settings.show_swatches == false }}",
+      "type": "checkbox",
+      "id": "show_variant_images",
+      "label": "Show variant images as swatches",
+      "default": false,
+      "info": "Applies to Color options only. Shows featured variant images as swatches."
+    },
+    {
+      "visible_if": "{{ block.settings.show_swatches == false }}",
+      "type": "checkbox",
+      "id": "show_legacy_swatches",
+      "label": "Show custom swatches (legacy)",
+      "default": false,
+      "info": "Applies to Color options only. Upload swatch images to [Files](https://shopify.com/admin/settings/files) and use the filename as the option value. eg. 'beige.png' for 'Beige'."
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "hover_background_color",
+      "label": "Hover background",
+      "default": "#f0f0f0"
+    },
+    {
+      "type": "color",
+      "id": "selected_border_color",
+      "label": "Selected border",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Option labels"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_option_labels",
+      "label": "Show option labels",
+      "default": true
+    },
+    {
+      "visible_if": "{{ block.settings.show_option_labels == true }}",
+      "type": "color",
+      "id": "label_text_color",
+      "label": "Label text",
+      "default": "#000000"
+    },
+    {
+      "visible_if": "{{ block.settings.show_option_labels == true }}",
+      "type": "select",
+      "id": "label_font_weight",
+      "label": "Label font weight",
+      "options": [
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "bold",
+          "label": "Bold"
+        },
+        {
+          "value": "600",
+          "label": "Semi-bold"
+        }
+      ],
+      "default": "600"
+    },
+    {
+      "visible_if": "{{ block.settings.show_option_labels == true }}",
+      "type": "range",
+      "id": "label_margin_bottom",
+      "label": "Label margin bottom",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Border radius"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "Button border radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "dropdown_border_radius",
+      "label": "Dropdown border radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_css",
+      "label": "Enable custom CSS",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "mobile_css",
+      "label": "Mobile & narrow custom CSS",
+      "info": "Applied on small screens or in tight spaces."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Variant picker 🎒",
+      "category": "* Design Packs: Product"
+    }
+  ]
+}
+{% endschema %}

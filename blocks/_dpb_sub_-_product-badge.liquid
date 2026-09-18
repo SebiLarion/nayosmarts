@@ -1,0 +1,572 @@
+{% liquid
+  assign product = closest.product | default: section.settings.product | default: product | default: collections["all"].products.first
+  if request.visual_preview_mode and product == blank
+    assign product = collections.all.products.first
+  endif
+
+  assign variant = product.selected_or_first_available_variant
+%}
+
+{% comment %} Images: responsive image widths {% endcomment %}
+{%- assign widths = '180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 1950, 2100, 2260, 2450, 2700, 3000, 3350, 3750, 4100' -%}
+
+
+{%- comment -%} Color: check if color is set to transparent {%- endcomment -%}
+{%- assign text_alpha = block.settings.text_color | color_extract: 'alpha' | default: 0 -%}
+{%- assign background_alpha = block.settings.background_solid | color_extract: 'alpha' | default: 0 -%}
+{%- assign border_color_alpha = block.settings.border_color | color_extract: 'alpha' | default: 0 -%}
+
+{%- comment -%}
+  Design System override flag — true when the block should emit its own text color/font
+  (design system off, OR user chose "Tweak" override, OR role = 'custom' meaning None).
+  The badge consumes the text role for color + font only; its own small font-size, background
+  and border stay block-owned. See CLAUDE.md "Block Override Architecture".
+{%- endcomment -%}
+{%- assign block_override_active = false -%}
+{%- if section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' -%}
+  {%- assign block_override_active = true -%}
+{%- endif -%}
+
+{%- capture css_styles -%}
+  <style data-dp-css="blocks/_dpb_sub_-_product-badge.liquid">
+    {%- if block_override_active and block.settings.enable_custom_font != blank -%}
+      {{ block.settings.custom_font | font_face: font_display: 'swap' }}
+      {{ block.settings.custom_font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+      {{ block.settings.custom_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+      {{ block.settings.custom_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+      .dsgn-pck__block-id-{{ block.id }} {
+        --custom-font: {{ block.settings.custom_font.family }}, {{ block.settings.custom_font.fallback_families }};
+        --custom-font-weight: {{ block.settings.custom_font.weight }};
+        --custom-font-style: {{ block.settings.custom_font.style }};
+      }
+    {% endif %}
+
+    .dsgn-pck__block-id-{{ block.id }} {
+      border-radius: {{ block.settings.border_radius }}px;
+      {%- comment -%} Background & border are always badge-owned (chip styling, not part of any text role). {%- endcomment -%}
+      {%- if background_alpha != 0 -%}
+        background-color: {{ block.settings.background_solid }};
+      {%- elsif block.settings.background_color != blank -%}
+        background: {{ block.settings.background_color }};
+      {%- endif -%}
+      {%- if block.settings.border_width > 0 and border_color_alpha != 0 -%}
+        border: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
+      {%- endif -%}
+      {%- comment -%} Badge keeps its own small fixed size; pin --block-text-size so a text role's size resolves back to it. {%- endcomment -%}
+      --block-text-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ block.settings.text_size | default: 100 | times: 0.008 }});
+      font-size: var(--block-text-size);
+      width: fit-content;
+      {%- if block_override_active -%}
+        {%- if block.settings.enable_custom_font != blank -%}
+          --block-text-font-family: var(--custom-font);
+          --block-text-font-weight: var(--custom-font-weight);
+          --block-text-font-style: var(--custom-font-style);
+        {%- endif -%}
+        {%- if text_alpha != 0 -%}
+          --block-text-color: {{ block.settings.text_color }};
+        {%- endif -%}
+        color: var(--block-text-color, inherit);
+        {%- if block.settings.enable_custom_font != blank or section.settings.override_theme_font != blank -%}
+          font-family: var(--block-text-font-family, var(--main-font));
+          font-weight: var(--block-text-font-weight, var(--main-font-weight));
+          font-style: var(--block-text-font-style, var(--main-font-style));
+        {%- endif -%}
+      {%- endif -%}
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} p {
+      {%- if block_override_active and text_alpha != 0 -%}
+        color: {{ block.settings.text_color }};
+      {%- endif -%}
+      margin: 0;
+      line-height: 1;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }}.dsgn-pck__block + .dsgn-pck__block {
+      margin-top: 0;
+      z-index: 2;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }}:not(.dsgn-pck__badge--visible) {
+      display: none;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} {
+      position: absolute;
+      z-index: 2;
+      {%- case block.settings.badge_position -%}
+      {%- when 'top_left' -%}
+        top: 1rem;
+        left: 1rem;
+      {%- when 'top_right' -%}
+        top: 1rem;
+        right: 1rem;
+      {%- when 'bottom_left' -%}
+        bottom: 1rem;
+        left: 1rem;
+      {%- when 'bottom_right' -%}
+        bottom: 1rem;
+        right: 1rem;
+      {%- endcase -%}
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__badge-link {
+      color: inherit;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__badge-link .dsgn-pck__image__wrapper {
+      flex-shrink: 0;
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__badge-link .dsgn-pck__image__wrapper svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__badge-link img {
+      width: 1.5rem;
+      height: 1.5rem;
+      object-fit: contain;
+      {%- if block.settings.icon_position == 'right' -%}
+        order: 2;
+      {%- endif -%}
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__badge-link .dsgn-pck__text {
+      {%- if block.settings.icon_position == 'right' -%}
+        order: 1;
+      {%- endif -%}
+    }
+
+    /* Custom CSS */
+    {%- if block.settings.enable_custom_css == true and block.settings.custom_css != blank -%}
+      {%- assign custom_css_rules = block.settings.custom_css | strip | split: '}' -%}
+      {%- for rule in custom_css_rules -%}
+        {%- assign clean_rule = rule | strip -%}
+        {%- if clean_rule contains '{' and clean_rule != blank -%}
+          {%- assign rule_parts = clean_rule | split: '{' -%}
+          {%- if rule_parts.size >= 2 -%}
+            {%- assign selector_part = rule_parts[0] | strip -%}
+            {%- assign css_part = rule_parts[1] | strip -%}
+            {%- if css_part != blank -%}
+              {%- if selector_part == blank -%}
+                .dsgn-pck__block-id-{{ block.id }} { {{ css_part }} }
+              {%- else -%}
+                .dsgn-pck__block-id-{{ block.id }} {{ selector_part }} { {{ css_part }} }
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+
+    /* Mobile styles */
+    @media (max-width: 767px) {
+      {%- if block.settings.enable_custom_css == true and block.settings.mobile_css != blank -%}
+        {%- assign mobile_css_rules = block.settings.mobile_css | strip | split: '}' -%}
+        {%- for rule in mobile_css_rules -%}
+          {%- assign clean_rule = rule | strip -%}
+          {%- if clean_rule contains '{' and clean_rule != blank -%}
+            {%- assign rule_parts = clean_rule | split: '{' -%}
+            {%- if rule_parts.size >= 2 -%}
+              {%- assign selector_part = rule_parts[0] | strip -%}
+              {%- assign css_part = rule_parts[1] | strip -%}
+              {%- if css_part != blank -%}
+                {%- if selector_part == blank -%}
+                  .dsgn-pck__block-id-{{ block.id }} { {{ css_part }} }
+                {%- else -%}
+                  .dsgn-pck__block-id-{{ block.id }} {{ selector_part }} { {{ css_part }} }
+                {%- endif -%}
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    }
+
+    {%- if block.settings.hidden_on == 'mobile' -%}
+      @media (max-width: 767px) {
+        .dsgn-pck__block-id-{{ block.id }} {
+          display: none;
+        }
+      }
+    {%- endif -%}
+
+    {%- if block.settings.hidden_on == 'desktop' -%}
+      @media (min-width: 768px) {
+        .dsgn-pck__block-id-{{ block.id }} {
+          display: none;
+        }
+      }
+    {%- endif -%}
+  </style>
+{%- endcapture -%}
+
+{% capture js_scripts %}
+  <script type="module" defer>
+    class dpProductBadge extends HTMLElement {
+        constructor() {
+          super();
+          this.handleVariantChange = this.handleVariantChange.bind(this);
+        }
+
+        connectedCallback() {
+          this.badgeDisplay = this.dataset.badgeDisplay;
+          this.badgeMetafield = this.dataset.badgeMetafield;
+          this.productId = this.dataset.productId;
+          this.scope = this.closest('.dsgn-pck__product-details') || this.closest('.dsgn-pck__product-group') || this.closest('.dsgn-pck__section') || document;
+          // Listen for variant changes scoped to this section
+          this.scope.addEventListener('variant:change', this.handleVariantChange);
+        }
+
+        disconnectedCallback() {
+          if (this.scope) {
+            this.scope.removeEventListener('variant:change', this.handleVariantChange);
+          }
+        }
+
+        handleVariantChange(event) {
+          if (!event || !event.detail) return;
+          // Only respond if the event is for this badge's product
+          if (this.productId && event.detail.productId && String(event.detail.productId) !== String(this.productId)) return;
+          this.updateBadgeVisibility(event.detail.variant);
+        }
+
+        updateBadgeVisibility(variant) {
+          if (!variant) return;
+
+          let shouldShow = false;
+
+          switch (this.badgeDisplay) {
+            case 'all':
+              shouldShow = true;
+              break;
+            case 'sale_badge':
+              shouldShow = variant.compare_at_price > variant.price;
+              break;
+            case 'sold_out_badge':
+              shouldShow = !variant.available;
+              break;
+            case 'metafield_badge':
+              // For metafield badges, we can't easily check metafields in JavaScript
+              // so we'll keep the current state
+              shouldShow = this.classList.contains('dsgn-pck__badge--visible');
+              break;
+          }
+
+          // Update visibility
+          if (shouldShow) {
+            this.classList.add('dsgn-pck__badge--visible');
+          } else {
+            this.classList.remove('dsgn-pck__badge--visible');
+          }
+        }
+      }
+
+    if (!customElements.get('dp-product-badge')) {
+      customElements.define('dp-product-badge', dpProductBadge);
+    }
+  </script>
+{% endcapture %}
+
+{% liquid
+  comment
+    Badge visibility logic based on badge_display setting
+    For sold out badges, check the actual selected variant (not first available)
+    For other badges, use selected or first available variant
+  endcomment
+
+  assign show_badge = false
+
+  case block.settings.badge_display
+    when 'all'
+      assign show_badge = true
+    when 'sale_badge'
+      if variant.compare_at_price != blank and variant.compare_at_price > variant.price
+        assign show_badge = true
+      endif
+    when 'sold_out_badge'
+      if variant.available == true
+        assign show_badge = false
+      else
+        assign show_badge = true
+      endif
+
+    when 'metafield_badge'
+      if block.settings.badge_metafield_namespace != blank
+        assign metafield_parts = block.settings.badge_metafield_namespace | split: '.'
+        if metafield_parts.size == 2
+          assign metafield_namespace = metafield_parts[0]
+          assign metafield_key = metafield_parts[1]
+          assign metafield_value = product.metafields[metafield_namespace][metafield_key]
+          if metafield_value != blank
+            assign show_badge = true
+          endif
+        endif
+      endif
+  endcase
+%}
+
+{%- if block.settings.text != blank or block.settings.icon != blank -%}
+  <dp-product-badge id="DP--{{ block.id }}" class="DP--{{ block.id }} dsgn-pck__block-id-{{ block.id }} dsgn-pck__badge dsgn-pck__block {% if section.settings.design_system == 'global_style' and block.settings.custom_style_name != 'custom' and block.settings.custom_style_name != blank %}dsgn-pck__text-{{ block.settings.custom_style_name }}{% endif %} {% if show_badge %}dsgn-pck__badge--visible{% endif %}" data-badge-display="{{ block.settings.badge_display }}" data-badge-metafield="{{ block.settings.badge_metafield_namespace }}" data-product-id="{{ product.id }}">
+    {{ css_styles }}
+    <a class="dsgn-pck__badge-link" {%- if block.settings.link != blank -%}href="{{ block.settings.link }}"{%- endif -%}>
+      {%- if block.settings.icon != blank -%}
+        {{ block.settings.icon | image_url: width: block.settings.icon.width | image_tag:  widths: widths }}
+      {%- endif -%}
+      {%- if block.settings.text != blank -%}
+        <div class="dsgn-pck__text dsgn-pck__text--badge">
+          {{ block.settings.text }}
+        </div>
+      {%- endif -%}
+    </a>
+    {{ js_scripts }}
+  </dp-product-badge>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Badge",
+  "tag": null,
+  "settings": [
+    {
+      "type": "select",
+      "id": "badge_position",
+      "label": "Badge position",
+      "default": "top_right",
+      "info":"Only applies when used with product media gallery.",
+      "options": [
+        {
+          "value": "top_left",
+          "label": "Top left"
+        },
+        {
+          "value": "top_right",
+          "label": "Top right"
+        },
+        {
+          "value": "bottom_left",
+          "label": "Bottom left"
+        },
+        {
+          "value": "bottom_right",
+          "label": "Bottom right"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "badge_display",
+      "label": "Badge context",
+      "info": "Controls when the badge will be displayed. eg. sale badge will only be displayed when the product is on sale.",
+      "default": "all",
+      "options": [
+        {
+          "value": "all",
+          "label": "Always"
+        },
+        {
+          "value": "sale_badge",
+          "label": "On sale"
+        },
+        {
+          "value": "sold_out_badge",
+          "label": "Sold out"
+        },
+        {
+          "value": "metafield_badge",
+          "label": "Metafield"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.badge_display == 'metafield_badge' }}",
+      "type": "text",
+      "id": "badge_metafield_namespace",
+      "label": "Metafield namespace and key (eg. namespace.key)"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Best Seller</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "icon",
+      "label": "Icon (optional)"
+    },
+    {
+      "visible_if": "{{ block.settings.icon != blank }}",
+      "type": "select",
+      "id": "icon_position",
+      "label": "Icon position",
+      "default": "left",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "🎨 Design"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system == 'global_style' }}",
+      "type": "select",
+      "id": "custom_style_name",
+      "label": "🌈 Text style",
+      "info": "Apply text color & font from your Design System. The badge keeps its own size, background and border.",
+      "options": [
+        { "value": "body", "label": "Body text" },
+        { "value": "small", "label": "Small text" },
+        { "value": "lead", "label": "Lead" },
+        { "value": "pagination", "label": "Pagination" },
+        { "value": "breadcrumbs", "label": "Breadcrumbs" },
+        { "value": "custom-1", "label": "Custom 1" },
+        { "value": "custom-2", "label": "Custom 2" },
+        { "value": "custom-3", "label": "Custom 3" },
+        { "value": "custom", "label": "None" }
+      ],
+      "default": "body"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system == 'global_style' and block.settings.custom_style_name != 'custom' }}",
+      "type": "checkbox",
+      "id": "override",
+      "label": "Tweak text style",
+      "default": false,
+      "info": "Give a custom text color & font to this badge."
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#FFFFFF",
+      "alpha": true
+    },
+    {
+      "type": "color",
+      "id": "background_solid",
+      "label": "Background color",
+      "default": "#3333338C",
+      "alpha": true
+    },
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "label": "Background gradient",
+      "info": "Background color replaces background where possible."
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "default": 50,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "visible_if": "{{ block.settings.border_width != 0 }}",
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "🎨 Advanced"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+      "type": "checkbox",
+      "id": "enable_custom_font",
+      "label": "Enable custom font",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_font and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+      "type": "font_picker",
+      "id": "custom_font",
+      "label": "Custom font",
+      "default": "abel_n4"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_css",
+      "label": "Enable custom CSS",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "mobile_css",
+      "label": "Mobile & narrow custom CSS",
+      "info": "Applied on small screens or in tight spaces."
+    },
+    {
+      "type": "select",
+      "id": "hidden_on",
+      "label": "Hidden on",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "desktop",
+          "label": "Desktop"
+        },
+        {
+          "value": "mobile",
+          "label": "Mobile"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Badge 🎒",
+      "category": "* Design Packs: Product"
+    }
+  ]
+}
+{% endschema %}

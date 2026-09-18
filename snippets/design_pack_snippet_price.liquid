@@ -1,0 +1,472 @@
+{%- liquid
+  assign product_resource = closest.product | default: section.settings.product | default: product | default: collections["all"].products.first
+  assign selected_variant = product_resource.selected_or_first_available_variant
+-%}
+
+{%- comment -%} Color: check if color is set to transparent {%- endcomment -%}
+{%- assign text_alpha = block.settings.text_color | color_extract: 'alpha' | default: 0 -%}
+
+{%- assign block_horizontal_setting = 'default' -%}
+
+{%- comment -%}
+  Design System override flag — selling price consumes the heading role. True when the
+  block emits its own typography (design system off, OR "Tweak" override, OR role = 'custom'
+  meaning None). This snippet is shared (price block, variant-picker, section hidden content);
+  consumers without a custom_style_name (it's blank there) always resolve to override = true,
+  so their behaviour is unchanged. See CLAUDE.md "Block Override Architecture".
+{%- endcomment -%}
+{%- assign block_override_active = false -%}
+{%- if section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' or block.settings.custom_style_name == blank -%}
+  {%- assign block_override_active = true -%}
+{%- endif -%}
+
+{%- capture css_styles -%}
+  <style data-dp-css="blocks/_dpb_-_product-details-price.liquid">
+
+    [id*=preview-block] .dsgn-pck__inner-block-container {
+      container-type: normal !important;
+    }
+
+    {%- if block.settings.enable_custom_font != blank -%}
+      {{ block.settings.custom_font | font_face: font_display: 'swap' }}
+      {{ block.settings.custom_font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+      {{ block.settings.custom_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+      {{ block.settings.custom_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+      .dsgn-pck__block-id-{{ block.id }} {
+        --custom-font: {{ block.settings.custom_font.family }}, {{ block.settings.custom_font.fallback_families }};
+        --custom-font-weight: {{ block.settings.custom_font.weight }};
+        --custom-font-style: {{ block.settings.custom_font.style }};
+      }
+    {% endif %}
+
+    {%- if block.settings.compare_enable_custom_font != blank -%}
+      {{ block.settings.compare_custom_font | font_face: font_display: 'swap' }}
+      {{ block.settings.compare_custom_font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+      {{ block.settings.compare_custom_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+      {{ block.settings.compare_custom_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+      .dsgn-pck__block-id-{{ block.id }} {
+        --compare-custom-font: {{ block.settings.compare_custom_font.family }}, {{ block.settings.compare_custom_font.fallback_families }};
+        --compare-custom-font-weight: {{ block.settings.compare_custom_font.weight }};
+        --compare-custom-font-style: {{ block.settings.compare_custom_font.style }};
+      }
+    {% endif %}
+
+    .dsgn-pck__block-id-{{ block.id }}.dsgn-pck__block--price {
+      flex: 0 0;
+      max-width: {{ block.settings.max_width | remove: 'px' }}px;
+      display: flex;
+      {%- if block.settings.horizontal_alignment == 'left' -%}
+        align-self: flex-start;
+        margin-left: 0;
+        margin-right: auto;
+        --block-horizontal-alignment: flex-start;
+      {%- elsif block.settings.horizontal_alignment == 'right' -%}
+        align-self: flex-end;
+        margin-left: auto;
+        margin-right: 0;
+        --block-horizontal-alignment: flex-end;
+      {%- elsif block.settings.horizontal_alignment == 'center' -%}
+        align-self: center;
+        margin-left: auto;
+        margin-right: auto;
+        --block-horizontal-alignment: center;
+      {%- endif -%}
+      --section-horizontal-alignment: {%- if section.settings.text_alignment == 'center' -%}center{%- elsif section.settings.text_alignment == 'right' -%}flex-end{%- endif -%};
+      align-self: var(--block-horizontal-alignment, var(--section-horizontal-alignment));
+    }
+
+    {% comment %} .dsgn-pck__block-id-{{ block.id }} > .dsgn-pck__inner-block-container {
+      container-type: inline-size;
+      container-name: dp-text-container;
+      flex: 1 1 auto;
+      min-width: 0;
+    } {% endcomment %}
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__price.dsgn-pck__compare-at-price[data-compare-at-price="0"],
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__price.dsgn-pck__compare-at-price[data-compare-at-price=''],
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__price.dsgn-pck__compare-at-price:empty {
+      display: none;
+    }
+
+    {%- if block.settings.enable_compare_style -%}
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__price.dsgn-pck__compare-at-price,
+    {%- endif -%}
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__price.dsgn-pck__selling-price {
+      text-align: var(--block-text-alignment, var(--section-text-alignment));
+
+      {%- comment -%} Set --block-heading-* vars when override is active. Styleguide heading role rule reads these. {%- endcomment -%}
+      {%- if block_override_active -%}
+        {%- if text_alpha != 0 -%}
+          --block-heading-color: {{ block.settings.text_color }};
+        {%- endif -%}
+        {%- if block.settings.block_text_size != blank and block.settings.enable_custom_text_size == true -%}
+          --block-heading-size: calc({{ block.settings.block_text_size }} * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+        {%- endif -%}
+        {%- if block.settings.enable_custom_text_style -%}
+          {%- if block.settings.text_weight == 'normal' -%}
+            --block-heading-font-weight: normal;
+          {%- elsif block.settings.text_weight == 'bold' -%}
+            --block-heading-font-weight: bold;
+          {%- elsif block.settings.text_style == 'bold' or block.settings.text_style == 'bold_italic' -%}
+            {%- comment -%} Legacy: pre-split text_style values {%- endcomment -%}
+            --block-heading-font-weight: bold;
+          {%- endif -%}
+          {%- if block.settings.text_style == 'italic' or block.settings.text_style == 'bold_italic' -%}
+            --block-heading-font-style: italic;
+          {%- elsif block.settings.text_style == 'normal' -%}
+            --block-heading-font-style: normal;
+          {%- endif -%}
+          {%- if block.settings.text_transform != 'default' -%}
+            --block-heading-text-transform: {{ block.settings.text_transform }};
+          {%- endif -%}
+          {%- if block.settings.letter_spacing != blank -%}
+            --block-heading-letter-spacing: {{ block.settings.letter_spacing }};
+          {%- endif -%}
+          {%- if block.settings.line_height != blank -%}
+            --block-heading-line-height: {{ block.settings.line_height }};
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- comment -%} Property declarations read --block-heading-* with design-system / theme fallbacks. The base font-size fallback uses body size, the price's natural size. {%- endcomment -%}
+      color: var(--block-heading-color, inherit);
+      font-size: var(--block-heading-size, calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | default: 100 | times: 0.01 }}));
+      {%- if section.settings.override_theme_font != blank -%}
+        font-family: var(--block-heading-font-family, var(--heading-font));
+        font-weight: var(--block-heading-font-weight, var(--heading-font-weight));
+        font-style: var(--block-heading-font-style, var(--heading-font-style));
+      {%- endif -%}
+      {%- if block_override_active and block.settings.enable_custom_text_style -%}
+        {%- if block.settings.text_transform != 'default' -%}
+          text-transform: var(--block-heading-text-transform);
+        {%- endif -%}
+        {%- if block.settings.letter_spacing != blank -%}
+          letter-spacing: var(--block-heading-letter-spacing);
+        {%- endif -%}
+        {%- if block.settings.line_height != blank -%}
+          line-height: var(--block-heading-line-height);
+        {%- endif -%}
+      {%- endif -%}
+    }
+
+    {%- if block.settings.enable_compare_style -%}
+      {%- assign compare_text_color_alpha = block.settings.compare_text_color | color_extract: 'alpha' -%}
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__price.dsgn-pck__compare-at-price {
+        position: relative;
+        {%- if block.settings.enable_compare_style and block.settings.compare_enable_custom_font -%}
+        font-family: var(--compare-custom-font) !important;
+        font-weight: var(--compare-custom-font-weight) !important;
+        font-style: var(--compare-custom-font-style) !important;
+        {%- elsif section.settings.override_theme_font != blank -%}
+        font-family: var(--main-font);
+        font-weight: var(--main-font-weight);
+        font-style: var(--main-font-style);
+        {%- endif -%}
+        color: {%- if compare_text_color_alpha != 0 -%}
+          {{ block.settings.compare_text_color }} !important;
+        {%- endif -%};
+        padding: 0 0.2em;
+        display: inline-block;
+        {%- if block.settings.compare_block_text_size != blank and block.settings.enable_compare_custom_text_size == true -%}
+          font-size: calc({{ block.settings.compare_block_text_size }} * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+        {%- elsif block.settings.block_text_size != blank and block.settings.enable_custom_text_size == true -%}
+          font-size: calc({{ block.settings.block_text_size }} * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+        {%- else -%}
+          font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+        {%- endif -%}
+      }
+
+      {%- if block.settings.compare_enable_custom_css -%}
+        {%- assign custom_block_declarations = block.settings.compare_custom_css | split: '}' -%}
+        {%- for declaration in custom_block_declarations -%}
+          {%- if declaration contains '{' -%}
+            .dsgn-pck__block-id-{{ block.id }} {{ declaration }} }
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+
+    {%- endif -%}
+
+    /* Sale Price Styling */
+    {%- assign sale_text_color_alpha = block.settings.sale_text_color | color_extract: 'alpha' -%}
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__price.dsgn-pck__compare-at-price {
+      {%- if sale_text_color_alpha != 0 -%}
+        color: {{ block.settings.sale_text_color }};
+      {%- endif -%}
+      {%- if block.settings.enable_custom_sale_text_size and block.settings.block_sale_text_size != blank -%}
+        font-size: calc({{ block.settings.block_sale_text_size }} * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+      {%- elsif block.settings.block_text_size != blank and block.settings.enable_custom_text_size == true -%}
+        font-size: calc({{ block.settings.block_text_size }} * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+      {%- else -%}
+        font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+      {%- endif -%}
+      {%- if block.settings.enable_custom_font != blank -%}
+        font-family: var(--custom-font);
+        font-weight: var(--custom-font-weight);
+        font-style: var(--custom-font-style);
+        {%- elsif section.settings.override_theme_font != blank -%}
+        font-family: var(--main-font);
+        font-weight: var(--main-font-weight);
+        font-style: var(--main-font-style);
+      {%- endif -%}
+      {%- if block.settings.enable_custom_sale_text_style -%}
+        {%- if block.settings.sale_text_weight == 'normal' -%}
+          font-weight: normal;
+        {%- elsif block.settings.sale_text_weight == 'bold' -%}
+          font-weight: bold;
+        {%- elsif block.settings.sale_text_style == 'bold' or block.settings.sale_text_style == 'bold_italic' -%}
+          {%- comment -%} Legacy: pre-split sale_text_style values {%- endcomment -%}
+          font-weight: bold;
+        {%- endif -%}
+        {%- if block.settings.sale_text_style == 'italic' or block.settings.sale_text_style == 'bold_italic' -%}
+          font-style: italic;
+        {%- elsif block.settings.sale_text_style == 'normal' -%}
+          font-style: normal;
+        {%- endif -%}
+        {%- if block.settings.sale_text_transform != 'default' -%}
+          text-transform: {{ block.settings.sale_text_transform }};
+        {%- endif -%}
+        {%- if block.settings.sale_letter_spacing != blank -%}
+          letter-spacing: {{ block.settings.sale_letter_spacing }};
+        {%- endif -%}
+        {%- if block.settings.sale_line_height != blank -%}
+          line-height: {{ block.settings.sale_line_height }};
+        {%- endif -%}
+      {%- endif -%}
+      text-decoration: line-through;
+      opacity: 0.7;
+    }
+
+    /* Price Container Styling */
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__price-container {
+      display: flex;
+      {%- if block.settings.sale_price_after -%}
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+      {%- else -%}
+        flex-direction: row;
+        justify-content: flex-start;
+      {%- endif -%}
+      align-items: baseline;
+      gap: {{ block.settings.sale_price_spacing }}px;
+    }
+
+    /* Tax Note Styling */
+    {%- if block.settings.show_tax_info -%}
+      {%- assign tax_note_color_alpha = block.settings.tax_note_color | color_extract: 'alpha' -%}
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__tax-note {
+        {%- if tax_note_color_alpha != 0 -%}
+          color: {{ block.settings.tax_note_color }};
+        {%- endif -%}
+        {%- if block.settings.enable_tax_custom_text_size and block.settings.tax_note_text_size != blank -%}
+          font-size: {{ block.settings.tax_note_text_size }};
+        {%- else -%}
+          font-size: 0.875em;
+        {%- endif -%}
+        margin-top: 0.5em;
+        opacity: 0.8;
+      }
+    {%- endif -%}
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__tax-note:empty {
+      display: none;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} form.payment-terms {
+      padding-top: 0.5em;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .installments:not(:has(.shopify-payment-terms)) {
+      display: none;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .payment-options {
+      margin-top: 0.75em;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .payment-options:empty {
+      display: none;
+    }
+
+    /* Custom CSS */
+    {%- if block.settings.enable_custom_css == true and block.settings.custom_css != blank -%}
+      {%- assign custom_css_rules = block.settings.custom_css | strip | split: '}' -%}
+      {%- for rule in custom_css_rules -%}
+        {%- assign clean_rule = rule | strip -%}
+        {%- if clean_rule contains '{' and clean_rule != blank -%}
+          {%- assign rule_parts = clean_rule | split: '{' -%}
+          {%- if rule_parts.size >= 2 -%}
+            {%- assign selector_part = rule_parts[0] | strip -%}
+            {%- assign css_part = rule_parts[1] | strip -%}
+            {%- if css_part != blank -%}
+              {%- if selector_part == blank -%}
+                #DP--{{ block.id }} { {{ css_part }} }
+              {%- else -%}
+                #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+
+    /* Small context - small container and mobile */
+    {%- capture small_context -%}
+
+      {%- if block.settings.mobile_block_text_size != blank and block.settings.enable_custom_text_size == true -%}
+        .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__price.dsgn-pck__selling-price {
+          font-size: calc({{ block.settings.mobile_block_text_size }} * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+        }
+      {%- endif -%}
+
+      {%- if block.settings.enable_custom_text_size == true -%}
+        {%- if block.settings.mobile_block_sale_text_size != blank -%}
+          .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__price.dsgn-pck__compare-at-price {
+            font-size: calc({{ block.settings.mobile_block_sale_text_size }} * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+          }
+        {%- elsif block.settings.mobile_block_text_size != blank -%}
+          .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__price.dsgn-pck__compare-at-price {
+            font-size: calc({{ block.settings.mobile_block_text_size }} * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+          }
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- if block.settings.enable_custom_css == true and block.settings.mobile_css != blank -%}
+        {%- assign mobile_css_rules = block.settings.mobile_css | strip | split: '}' -%}
+        {%- for rule in mobile_css_rules -%}
+          {%- assign clean_rule = rule | strip -%}
+          {%- if clean_rule contains '{' and clean_rule != blank -%}
+            {%- assign rule_parts = clean_rule | split: '{' -%}
+            {%- if rule_parts.size >= 2 -%}
+              {%- assign selector_part = rule_parts[0] | strip -%}
+              {%- assign css_part = rule_parts[1] | strip -%}
+              {%- if css_part != blank -%}
+                {%- if selector_part == blank -%}
+                  #DP--{{ block.id }} { {{ css_part }} }
+                {%- else -%}
+                  #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+                {%- endif -%}
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    {%- endcapture -%}
+
+    @supports (container-type: inline-size) {
+      @container dp-text-container (max-width: 300px) {
+        {{ small_context }}
+      }
+    }
+
+    @media (max-width: 767px) {
+      {{ small_context }}
+    }
+
+    {%- if block.settings.hidden_on == 'mobile' -%}
+      @media (max-width: 767px) {
+        .dsgn-pck__block-id-{{ block.id }} {
+          display: none;
+        }
+      }
+    {%- endif -%}
+
+    {%- if block.settings.hidden_on == 'desktop' -%}
+      @media (min-width: 768px) {
+        .dsgn-pck__block-id-{{ block.id }} {
+          display: none;
+        }
+      }
+    {%- endif -%}
+  </style>
+{%- endcapture -%}
+
+{%- liquid
+  assign selected_variant = product_resource.selected_or_first_available_variant
+  assign price = selected_variant.price
+  assign compare_at_price = selected_variant.compare_at_price
+  assign is_on_sale = false
+  if selected_variant.compare_at_price > selected_variant.price
+    assign is_on_sale = true
+  endif
+
+  if product_resource == blank and request.design_mode
+    assign price = 1999
+  endif
+
+  # Checks if product handle matches the closest product's handle (i.e. product page)
+  # and if the currency code is enabled for product pages
+  if product.handle == closest.product.handle and settings.currency_code_enabled_product_pages
+    assign price = price | money_with_currency
+    assign compare_at_price = compare_at_price | money_with_currency
+
+    # Checks if product handle does not match the closest product's handle (i.e. product card)
+    # and if the currency code is enabled for product cards
+  elsif product.handle != closest.product.handle and settings.currency_code_enabled_product_cards
+    assign price = price | money_with_currency
+    assign compare_at_price = compare_at_price | money_with_currency
+
+  else
+    assign price = price | money
+    assign compare_at_price = compare_at_price | money
+  endif
+-%}
+
+<div id="DP--{{ block.id }}" class="DP--{{ block.id }} dsgn-pck__block dsgn-pck__block-id-{{ block.id }} dsgn-pck__block--{{ block.type }} dsgn-pck__block--{{ block.index }} dsgn-pck__block--price dsgn-pck__justify-{%- if block.settings.block_alignment != 'default' -%}{{ block.settings.block_alignment }}{%- else -%}{{ section.settings.text_alignment }}{%- endif -%}" {{ block.shopify_attributes }}>
+  {{ css_styles }}
+  <div class="dsgn-pck__inner-block-container">
+    <div class="dsgn-pck__text dsgn-pck__rte">
+      {%- liquid
+        if product.handle == closest.product.handle and settings.currency_code_enabled_product_pages
+          assign use_currency_code = true
+        elsif product.handle != closest.product.handle and settings.currency_code_enabled_product_cards
+          assign use_currency_code = true
+        else
+          assign use_currency_code = false
+        endif
+      -%}
+      <dp-product-price
+        data-block-id="{{ block.id }}"
+        data-product-id="{{ product_resource.id }}"
+        data-product-handle="{{ product_resource.handle }}"
+        data-use-currency-code="{{ use_currency_code }}"
+        {{ block.shopify_attributes }}
+      >
+        <div ref="priceContainer" class="dsgn-pck__price-container">
+
+          <span class="dsgn-pck__price dsgn-pck__compare-at-price" data-compare-at-price="{% if is_on_sale %}{{ selected_variant.compare_at_price }}{% else %}0{% endif %}">{% if is_on_sale %}{{ compare_at_price }}{% endif %}</span>
+
+          <span class="dsgn-pck__price dsgn-pck__selling-price{% if section.settings.design_system == 'global_style' and block.settings.custom_style_name != 'custom' and block.settings.custom_style_name != blank %} dsgn-pck__heading-{{ block.settings.custom_style_name }}{% endif %}">{{ price | default: '&nbsp;' }}</span>
+
+        </div>
+
+
+        {% if block.settings.show_tax_info %}
+          <div class="dsgn-pck__tax-note">
+            {%- if cart.duties_included and cart.taxes_included -%}
+              {{ block.settings.duties_and_taxes_text }}
+            {%- elsif cart.taxes_included -%}
+              {{ block.settings.taxes_included_text }}
+            {%- elsif cart.duties_included -%}
+              {{ block.settings.duties_included_text }}
+            {%- else -%}
+              {{ block.settings.taxes_included_text }}
+            {%- endif -%}
+
+            {%- if shop.shipping_policy.body != blank -%}
+              <br>{{ block.settings.shipping_policy_text }}
+            {%- endif -%}
+          </div>
+        {% endif %}
+
+        {% if block.settings.show_payment_options and block.settings.payment_embed_code != blank %}
+          <div class="payment-options">
+            {{ block.settings.payment_embed_code }}
+          </div>
+        {% endif %}
+
+      </dp-product-price>
+    </div>
+  </div>
+</div>

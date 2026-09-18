@@ -30,14 +30,6 @@
     assign size_option_index = 0
   endif
 
-  assign variations_block = section.blocks | where: 'type', 'product_variations' | first
-  assign show_fits_colors = false
-  if variations_block and variations_block.settings.products.size > 0
-    assign show_fits_colors = true
-    assign metafield_parts = variations_block.settings.option_value_metafield | split: '.'
-    assign metafield_namespace = metafield_parts | first
-    assign metafield_key = metafield_parts | last
-  endif
 -%}
 
 <script src="{{ 'product-fits-h1.js' | asset_url }}" defer="defer"></script>
@@ -466,6 +458,7 @@
           <div class="fits-modal-h1__media">
             {%- for value in size_option.values -%}
               {%- liquid
+                assign fits_image_key = 'fits_image_' | append: forloop.index
                 assign matched_variant = blank
                 for variant in product.variants
                   if variant.options[size_option_index] == value.name or variant.options[size_option_index] == value
@@ -473,7 +466,7 @@
                     break
                   endif
                 endfor
-                assign fits_image = matched_variant.featured_media | default: product.featured_media
+                assign fits_image = block.settings[fits_image_key] | default: matched_variant.featured_media | default: product.featured_media
                 assign is_selected_size = false
                 if size_option.selected_value == value or size_option.selected_value == value.name
                   assign is_selected_size = true
@@ -526,64 +519,7 @@
           </div>
         {%- endif -%}
 
-        {%- if show_fits_colors -%}
-          <ul
-            class="fits-modal-h1__swatches"
-            role="list"
-            data-section-id="{{ section_id }}"
-          >
-            {%- for product_variation in variations_block.settings.products -%}
-              {%- assign value = product_variation.metafields[metafield_namespace][metafield_key].value -%}
-              {%- liquid
-                assign variation_page_title = product_variation.metafields.global.title_tag | default: product_variation.title
-                unless variation_page_title contains shop.name
-                  assign variation_page_title = variation_page_title | append: ' – ' | append: shop.name
-                endunless
 
-                assign swatch_image = blank
-                assign swatch_fallback = value | split: ' ' | last | handle
-                if variations_block.settings.color_swatch_type == 'variant' and product_variation.featured_media
-                  assign swatch_image = product_variation.featured_media | image_url: width: 128
-                elsif value.swatch.image
-                  assign swatch_image = value.swatch.image | image_url: width: 128
-                elsif value.swatch.color
-                  assign swatch_fallback = value.swatch.color
-                endif
-
-                if swatch_image == blank and value.swatch == blank and settings.swatch_config != blank
-                  assign value_downcase = value | downcase | strip
-                  assign swatch_config = settings.swatch_config | newline_to_br | split: '<br />'
-                  for swatch in swatch_config
-                    assign swatch_parts = swatch | strip | split: ':'
-                    assign swatch_name = swatch_parts.first | downcase | strip
-                    if swatch_name == value_downcase
-                      assign swatch_value = swatch_parts.last | strip
-                      if swatch_value contains '#'
-                        assign swatch_fallback = swatch_value
-                      endif
-                      break
-                    endif
-                  endfor
-                endif
-              -%}
-              <li>
-                <a
-                  href="{{ product_variation.url }}"
-                  class="fits-modal-h1__swatch{% if swatch_image != blank %} with-image{% endif %}"
-                  title="{{ value | escape }}"
-                  data-color-swap
-                  data-product-url="{{ product_variation.url }}"
-                  data-color="{{ value | escape }}"
-                  data-page-title="{{ variation_page_title | escape }}"
-                  {% if product_variation == product %}aria-current="true"{% endif %}
-                  style="--swatch-background: {{ swatch_fallback }};{% if swatch_image != blank %}--swatch-background-image: url({{ swatch_image }});{% endif %}"
-                >
-                  <span class="sr-only">{{ value | escape }}</span>
-                </a>
-              </li>
-            {%- endfor -%}
-          </ul>
-        {%- endif -%}
       </div>
 
       <div class="fits-modal-h1__footer" data-fits-swap="footer">

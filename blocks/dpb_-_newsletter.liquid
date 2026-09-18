@@ -1,0 +1,594 @@
+{%- comment -%}
+{
+  "pack_name": "Newsletter block",
+  "pack_author": "Design Packs",
+  "license": "© Design Packs. All rights reserved. This code is protected by copyright law and may not be reproduced, distributed, or used without explicit permission from the author. Shopify complies with the Digital Millennium Copyright Act (DMCA) and responds to claims of copyright infringement using DMCA procedures, which could result in the termination of your Shopify account.",
+}
+{%- endcomment -%}
+
+{% comment %} Security Code - hides section when app uninstalled {% endcomment %}
+{%- unless content_for_header contains 'design_packs_file.js' -%}
+  {%- if request.design_mode -%}
+    <div class="dsgn-pck__no-app-warning">
+      <div class="dsgn-pck__no-app-warning-background">
+      </div>
+      <div class="dsgn-pck__no-app-warning-text dsgn-pck__rte">
+        <p><strong>WARNING!</strong> This premium section will not display properly without an active subscription for <a href="https://apps.shopify.com/design-packs" target="_blank" rel="noopener nofollow">Design Packs</a>. If you need any support please email <a href="mailto:info@design-packs.com" target="_blank" rel="noopener">info@design-packs.com</a> with your questions.</p>
+      </div>
+    </div>
+  {%- endif -%}
+  {%- break -%}
+{%- endunless -%}
+
+{%- assign block_horizontal_setting = block.settings.horizontal_alignment | default: 'default' -%}
+
+{%- comment -%}
+  Design System override flag — true when the submit button emits its own visuals
+  (design system off, OR "Tweak" override, OR role = 'none' meaning None).
+  When false, only structural CSS is emitted so the styleguide button role rule owns
+  colour / background / radius / hover. Buttons use the 'none' sentinel.
+{%- endcomment -%}
+{%- assign block_override_active = false -%}
+{%- if section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'none' -%}
+  {%- assign block_override_active = true -%}
+{%- endif -%}
+{%- assign label_alpha = block.settings.button_label_color | color_extract: 'alpha' | default: 0 -%}
+
+{%- capture css_styles -%}
+<style data-dp-css="blocks/_dpb_-_newsletter.liquid">
+  {%- assign button_alpha = block.settings.button_background_color | color_extract: 'alpha' -%}
+
+  [id*=preview-block] .dsgn-pck__form-container {
+    container-type: normal !important;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} {
+    width: {{ block.settings.base_width }}%;
+    max-width: {{ block.settings.max_width | remove: 'px' }}px;
+    display: flex;
+    {%- if block.settings.horizontal_alignment == 'left' -%}
+      align-self: flex-start;
+      margin-left: 0;
+      margin-right: auto;
+      --block-horizontal-alignment: flex-start;
+    {%- elsif block.settings.horizontal_alignment == 'right' -%}
+      align-self: flex-end;
+      margin-left: auto;
+      margin-right: 0;
+      --block-horizontal-alignment: flex-end;
+    {%- elsif block.settings.horizontal_alignment == 'center' -%}
+      align-self: center;
+      margin-left: auto;
+      margin-right: auto;
+      --block-horizontal-alignment: center;
+    {%- else -%}
+      margin-left: var(--block-margin-left, 0);
+      margin-right: var(--block-margin-right, 0);
+    {%- endif -%}
+    --section-horizontal-alignment: {%- if section.settings.text_alignment == 'center' -%}center{%- elsif section.settings.text_alignment == 'right' -%}flex-end{%- endif -%};
+    align-self: var(--block-horizontal-alignment, var(--section-horizontal-alignment));
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__form-container {
+    container-type: inline-size;
+    container-name: dp-newsletter-container;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__form {
+    --form-gap: 5px;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--form-gap) * 2);
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__form-text {
+    color: {{ block.settings.text_color | default: section.settings.text_color }};
+    font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ block.settings.text_size | default: section.settings.text_size | default: 100 | times: 0.01 }});
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__form input {
+    margin: unset;
+    padding: 0.8em;
+    font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ block.settings.text_size | default: section.settings.text_size | default: 100 | times: 0.01 }});
+    background: {{ block.settings.form_background_color }};
+    border-radius: {{ block.settings.form_radius }}px;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__form input[type="text"],
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__form input[type="email"] {
+    padding: 0.8em;
+    border: thin solid {{ block.settings.text_color | default: section.settings.text_color }};
+    color: {{ block.settings.text_color | default: section.settings.text_color }};
+    {%- if section.settings.override_theme_font != blank -%}
+    font-family: var(--main-font);
+    font-weight: var(--main-font-weight);
+    font-style: var(--main-font-style);
+    {%- endif -%}
+  }
+
+  .dsgn-pck__form--{{ block.id }} input {
+    width: 100%;
+  }
+
+  {%- if block.settings.show_first_name and block.settings.show_last_name -%}
+    .dsgn-pck__form--{{ block.id }}-compact .dsgn-pck__newsletter_first-name,
+    .dsgn-pck__form--{{ block.id }}-compact .dsgn-pck__newsletter_last-name {
+      width: calc(50% - var(--form-gap));
+    }
+  {%- endif -%}
+
+  .dsgn-pck__form--{{ block.id }}-compact .dsgn-pck__newsletter_email {
+    width: calc(70% - var(--form-gap));
+  }
+
+  .dsgn-pck__form--{{ block.id }}-compact .dsgn-pck__button {
+    width: calc(30% - var(--form-gap));
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} input::placeholder {
+    opacity: 0.6;
+    color: {{ block.settings.text_color | default: section.settings.text_color | default: '#000000' }};
+    {%- if section.settings.override_theme_font != blank -%}
+    font-family: var(--main-font);
+    font-weight: var(--main-font-weight);
+    font-style: var(--main-font-style);
+    {%- endif -%}
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} input.dsgn-pck__button {
+    justify-content: center;
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+    border: thin solid;
+    font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ block.settings.text_size | default: section.settings.text_size | default: 100 | times: 0.01 }});
+    {%- if section.settings.override_theme_font != blank -%}
+    font-family: var(--main-font);
+    font-weight: var(--main-font-weight);
+    font-style: var(--main-font-style);
+    {%- endif -%}
+    {%- comment -%} Visual props gated: when a role is active (override off) the styleguide button role rule owns colour/background/radius/hover, reading --block-button-* if the user tweaks. {%- endcomment -%}
+    {%- if block_override_active -%}
+      border-radius: {{ block.settings.button_radius }}px;
+      --block-button-border-radius: {{ block.settings.button_radius }}px;
+      {%- if label_alpha != 0 -%}
+        color: {{ block.settings.button_label_color }};
+        --block-button-color: {{ block.settings.button_label_color }};
+      {%- endif -%}
+      border-color: {%- if button_alpha != 0 -%}{{ block.settings.button_background_color }}{%- else -%}{{ block.settings.button_label_color }}{%- endif -%};
+      --block-button-border-color: {%- if button_alpha != 0 -%}{{ block.settings.button_background_color }}{%- else -%}{{ block.settings.button_label_color }}{%- endif -%};
+      {%- if button_alpha != 0 -%}
+        background-color: {{ block.settings.button_background_color }};
+        --block-button-background-color: {{ block.settings.button_background_color }};
+      {%- endif -%}
+    {%- endif -%}
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} input.dsgn-pck__button:hover {
+    opacity: 1;
+    {%- if block_override_active -%}
+      {%- if button_alpha != 0 -%}
+        background-color: {{ block.settings.button_background_color | color_darken: 10 }};
+        --block-button-background-color-hover: {{ block.settings.button_background_color | color_darken: 10 }};
+        border-color: transparent;
+      {%- else -%}
+        background-color: {{ block.settings.button_label_color | color_modify: 'alpha', 0.1 }};
+        --block-button-background-color-hover: {{ block.settings.button_label_color | color_modify: 'alpha', 0.1 }};
+      {%- endif -%}
+    {%- endif -%}
+  }
+
+  /* Custom CSS */
+  {%- if block.settings.enable_custom_css == true and block.settings.custom_css != blank -%}
+    {%- assign custom_css_rules = block.settings.custom_css | strip | split: '}' -%}
+    {%- for rule in custom_css_rules -%}
+      {%- assign clean_rule = rule | strip -%}
+      {%- if clean_rule contains '{' and clean_rule != blank -%}
+        {%- assign rule_parts = clean_rule | split: '{' -%}
+        {%- if rule_parts.size >= 2 -%}
+          {%- assign selector_part = rule_parts[0] | strip -%}
+          {%- assign css_part = rule_parts[1] | strip -%}
+          {%- if css_part != blank -%}
+            {%- if selector_part == blank -%}
+              #DP--{{ block.id }} { {{ css_part }} }
+            {%- else -%}
+              #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+
+  /* Small context - small container and mobile */
+  {%- capture small_context -%}
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__form {
+      flex-direction: column;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__form-element {
+      width: 100%;
+      margin: unset;
+    }
+
+    /* Mobile & narrow custom CSS */
+    {%- if block.settings.enable_custom_css == true and block.settings.mobile_css != blank -%}
+      {%- assign mobile_css_rules = block.settings.mobile_css | strip | split: '}' -%}
+      {%- for rule in mobile_css_rules -%}
+        {%- assign clean_rule = rule | strip -%}
+        {%- if clean_rule contains '{' and clean_rule != blank -%}
+          {%- assign rule_parts = clean_rule | split: '{' -%}
+          {%- if rule_parts.size >= 2 -%}
+            {%- assign selector_part = rule_parts[0] | strip -%}
+            {%- assign css_part = rule_parts[1] | strip -%}
+            {%- if css_part != blank -%}
+              {%- if selector_part == blank -%}
+                #DP--{{ block.id }} { {{ css_part }} }
+              {%- else -%}
+                #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endcapture -%}
+
+  @supports (container-type: inline-size) {
+    @container dp-newsletter-container (max-width: 300px) {
+      {{ small_context }}
+    }
+  }
+
+  @media (max-width: 767px) {
+    {{ small_context }}
+  }
+
+  /* Hide or show on mobile and desktop */
+  {%- if block.settings.hidden_on == 'mobile' -%}
+    @media (max-width: 767px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+
+  {%- if block.settings.hidden_on == 'desktop' -%}
+    @media (min-width: 768px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+</style>
+{%- endcapture -%}
+
+<div id="DP--{{ block.id }}" class="DP--{{ block.id }} dsgn-pck__block dsgn-pck__block-id-{{ block.id }} dsgn-pck__block--{{ block.type }} dsgn-pck__block--{{ block.index }}" {{ block.shopify_attributes }}>
+{{ css_styles }}
+{%- capture form_id -%}dsgn-pck__form-{{ block.id }}{%- endcapture -%}
+{%- form 'customer', id: form_id, class: 'dsgn-pck__form-container' -%}
+
+  {%- comment -%} Error and success messages for submitted form {%- endcomment -%}
+  <div class="dsgn-pck__form-response dsgn-pck__text">
+    {%- if form.posted_successfully? -%}
+      <p class="dsgn-pck__form-reply--success">{{ block.settings.success_message }}</p>
+    {%- elsif form.errors -%}
+      {%- for field in form.errors -%}
+        <p class="dsgn-pck__form-reply--error">{{ field }} - {{ form.errors.messages[field] }}</p>
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Hidden newsletter fields {%- endcomment -%}
+  <input type="hidden" name="contact[tags]" value="{% if block.settings.tags != blank %}{{ block.settings.tags }}{% else %}newsletter{% endif %}"/>
+  <input type="hidden" name="challenge" value="false" />
+
+  <div class="dsgn-pck__form dsgn-pck__form--{{ block.id }} dsgn-pck__form--{{ block.id }}-{{ block.settings.layout }}">
+    {%- if block.settings.show_first_name -%}
+      <label class="dsgn-pck__visually-hidden" for="first-name-{{ block.id }}">{{ block.settings.first_name_label }}</label>
+      <input class="dsgn-pck__newsletter_first-name dsgn-pck__form-element" type="text" name="contact[first_name]" id="first-name-{{ block.id }}" placeholder="{{ block.settings.first_name_label }}" />
+    {%- endif -%}
+    {%- if block.settings.show_last_name -%}
+      <label class="dsgn-pck__visually-hidden" for="last-name-{{ block.id }}">{{ block.settings.last_name_label }}</label>
+      <input class="dsgn-pck__newsletter_last-name dsgn-pck__form-element" type="text" name="contact[last_name]" id="last-name-{{ block.id }}" placeholder="{{ block.settings.last_name_label }}" />
+    {%- endif -%}
+    <label class="dsgn-pck__visually-hidden" for="email-{{ block.id }}">{{ block.settings.email_label }}</label>
+    <input class="dsgn-pck__newsletter_email dsgn-pck__form-element" type="email" name="contact[email]" required id="email-{{ block.id }}" placeholder="{{ block.settings.email_label }}" />
+    <input class="dsgn-pck__button dsgn-pck__form-element {% if section.settings.design_system == 'global_style' and block.settings.custom_style_name != 'none' and block.settings.custom_style_name != blank %}{{ block.settings.custom_style_name }}{% endif %}" type="submit" value="{{ block.settings.submit_label }}" />
+  </div>
+
+{%- endform -%}
+</div>
+
+{% schema %}
+{
+  "name": "Newsletter/signup form 🎒",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Any customers who sign up will have an account created for them in Shopify. [View customers](/admin/customers?query=&accepts_marketing=1)"
+    },
+    {
+      "type": "text",
+      "id": "tags",
+      "label": "Tags",
+      "info": "Add tags to the newsletter/signup form. Separate tags with commas. [Learn more](https://design-packs.gitbook.io/docs/fundamentals/block-settings/newsletter-signup-form-block-tags)"
+    },
+    {
+      "type": "text",
+      "id": "email_label",
+      "label": "Email label",
+      "default": "Email address"
+    },
+    {
+      "type": "text",
+      "id": "submit_label",
+      "label": "Submit label",
+      "default": "Submit"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success message",
+      "default": "Thank you for signing up!"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_first_name",
+      "label": "Show first name",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.show_first_name }}",
+      "type": "text",
+      "id": "first_name_label",
+      "label": "First name label",
+      "default": "First name"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_last_name",
+      "label": "Show last name",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.show_last_name }}",
+      "type": "text",
+      "id": "last_name_label",
+      "label": "Last name label",
+      "default": "Last name"
+    },
+    {
+      "type": "header",
+      "content": "🎨 Design"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system == 'global_style' }}",
+      "type": "select",
+      "id": "custom_style_name",
+      "label": "🌈 Button style",
+      "info": "Apply a button style from your Design System to the submit button.",
+      "default": "none",
+      "options": [
+        { "value": "dsgn-pck__button-primary", "label": "Primary" },
+        { "value": "dsgn-pck__button-secondary", "label": "Secondary" },
+        { "value": "dsgn-pck__button-tertiary", "label": "Tertiary" },
+        { "value": "dsgn-pck__button-link", "label": "Link" },
+        { "value": "dsgn-pck__button-custom-1", "label": "Custom 1" },
+        { "value": "dsgn-pck__button-custom-2", "label": "Custom 2" },
+        { "value": "dsgn-pck__button-custom-3", "label": "Custom 3" },
+        { "value": "dsgn-pck__button-custom-4", "label": "Custom 4" },
+        { "value": "none", "label": "None" }
+      ]
+    },
+    {
+      "visible_if": "{{ section.settings.design_system == 'global_style' and block.settings.custom_style_name != 'none' }}",
+      "type": "checkbox",
+      "id": "override",
+      "label": "Tweak button style",
+      "default": false,
+      "info": "Give a custom look to the submit button."
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Form field text"
+    },
+    {
+      "type": "color",
+      "id": "form_background_color",
+      "label": "Form field background"
+    },
+    {
+      "type": "range",
+      "id": "form_radius",
+      "label": "Form field rounded corners",
+      "min": 0,
+      "max": 50,
+      "default": 4,
+      "unit": "px"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'none' }}",
+      "type": "color",
+      "id": "button_label_color",
+      "label": "Button label",
+      "default": "#FFFFFF"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'none' }}",
+      "type": "color",
+      "id": "button_background_color",
+      "label": "Button background",
+      "default": "#121212"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'none' }}",
+      "type": "range",
+      "id": "button_radius",
+      "label": "Button rounded corners",
+      "min": 0,
+      "max": 50,
+      "default": 4,
+      "unit": "px"
+    },
+    {
+      "visible_if": "{{ false }}",
+      "type": "checkbox",
+      "id": "enable_custom_styles",
+      "label": "Enable custom styles",
+      "default": true
+    },
+    {
+      "visible_if": "{{ false }}",
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "default": "left",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        },
+        {
+          "value": "justify",
+          "label": "Justify"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ false }}",
+      "type": "range",
+      "id": "text_size",
+      "label": "Text size",
+      "min": 80,
+      "max": 150,
+      "step": 5,
+      "default": 100,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "🖼 Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Style",
+      "options": [
+        {
+          "value": "stacked",
+          "label": "Stacked"
+        },
+        {
+          "value": "compact",
+          "label": "Compact"
+        }
+      ],
+      "default": "compact"
+    },
+    {
+      "type": "range",
+      "id": "base_width",
+      "label": "Size",
+      "min": 50,
+      "max": 100,
+      "default": 100,
+      "unit": "%",
+      "info": "Size is based on the width of the container. [Learn more]( https://design-packs.gitbook.io/docs/fundamentals/block-settings/size-controls-for-image-and-video-blocks)"
+    },
+    {
+      "type": "text",
+      "id": "max_width",
+      "label": "Maximum width",
+      "placeholder": "eg. 1200px",
+      "info": "Sets width constraint for content."
+    },
+    {
+      "visible_if": "{{ block.settings.base_width < 100 or block.settings.max_width != blank }}",
+      "type": "select",
+      "id": "horizontal_alignment",
+      "label": "Horizontal alignment",
+      "default": "default",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "hidden_on",
+      "label": "Hidden on",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "desktop",
+          "label": "Desktop"
+        },
+        {
+          "value": "mobile",
+          "label": "Mobile"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_css",
+      "label": "Enable custom CSS",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "mobile_css",
+      "label": "Mobile & narrow custom CSS",
+      "info": "Applied on small screens or in tight spaces."
+    },
+    {
+      "type": "paragraph",
+      "content": "Open [Design Packs](/admin/apps/design-packs-1/dashboard) to add/update new sections and blocks."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter/signup form 🎒",
+      "category": "* Design Packs: Forms"
+    }
+  ]
+}
+{% endschema %}

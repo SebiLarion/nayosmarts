@@ -1,0 +1,387 @@
+{%- include 'design_pack_snippet_price' -%}
+
+{% # theme-check-disable %}
+{% schema %}
+{
+  "name": "Price",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Selling price"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system == 'global_style' }}",
+      "type": "select",
+      "id": "custom_style_name",
+      "label": "🌈 Heading style",
+      "info": "Apply a heading style from your Design System to the selling price.",
+      "options": [
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "display", "label": "Display" },
+        { "value": "eyebrow", "label": "Eyebrow" },
+        { "value": "subheading", "label": "Subheading" },
+        { "value": "custom-1", "label": "Custom 1" },
+        { "value": "custom-2", "label": "Custom 2" },
+        { "value": "custom-3", "label": "Custom 3" },
+        { "value": "custom-4", "label": "Custom 4" },
+        { "value": "custom-5", "label": "Custom 5" },
+        { "value": "custom", "label": "None" }
+      ],
+      "default": "custom"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system == 'global_style' and block.settings.custom_style_name != 'custom' }}",
+      "type": "checkbox",
+      "id": "override",
+      "label": "Tweak heading style",
+      "default": false,
+      "info": "Give a custom look to the selling price."
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+      "type": "color",
+      "id": "text_color",
+      "label": "Color"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+      "type": "checkbox",
+      "id": "enable_custom_text_size",
+      "label": "Enable custom text size",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_text_size and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+      "type": "text",
+      "id": "block_text_size",
+      "label": "Text size",
+      "default": "30px",
+      "info": "Leave empty to default to base size of 18px."
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_text_size and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+      "type": "text",
+      "id": "mobile_block_text_size",
+      "label": "📱 Mobile & narrow display text size (optional)"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+      "type": "checkbox",
+      "id": "enable_custom_text_style",
+      "label": "Enable custom text style",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+      "type": "select",
+      "id": "text_weight",
+      "label": "Text weight",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "bold",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+      "type": "select",
+      "id": "text_style",
+      "label": "Text style",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "italic",
+          "label": "Italic"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+      "type": "select",
+      "id": "text_transform",
+      "label": "Text transform",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "uppercase",
+          "label": "Uppercase"
+        },
+        {
+          "value": "lowercase",
+          "label": "Lowercase"
+        },
+        {
+          "value": "capitalize",
+          "label": "Capitalize"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+      "type": "text",
+      "id": "letter_spacing",
+      "label": "Letter spacing",
+      "placeholder": "0px"
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+      "type": "text",
+      "id": "line_height",
+      "label": "Line height",
+      "placeholder": "1.5"
+    },
+    {
+      "type": "header",
+      "content": "Compare at price"
+    },
+    {
+      "type": "checkbox",
+      "id": "sale_price_after",
+      "label": "Show compare at price after selling price",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "sale_price_spacing",
+      "label": "Spacing between prices",
+      "min": 0,
+      "max": 25,
+      "default": 10,
+      "step": 1,
+      "unit": "px",
+    },
+    {
+      "type": "color",
+      "id": "sale_text_color",
+      "label": "Color"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_sale_text_size",
+      "label": "Enable custom text size",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_sale_text_size }}",
+      "type": "text",
+      "id": "block_sale_text_size",
+      "label": "Text size",
+      "default": "30px",
+      "info": "Leave empty to default to base size of 18px."
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_sale_text_size }}",
+      "type": "text",
+      "id": "mobile_block_sale_text_size",
+      "label": "📱 Mobile & narrow display text size (optional)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_sale_text_style",
+      "label": "Enable custom text style",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_sale_text_style }}",
+      "type": "select",
+      "id": "sale_text_weight",
+      "label": "Text weight",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "bold",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_sale_text_style }}",
+      "type": "select",
+      "id": "sale_text_style",
+      "label": "Text style",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "italic",
+          "label": "Italic"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_sale_text_style }}",
+      "type": "select",
+      "id": "sale_text_transform",
+      "label": "Text transform",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "uppercase",
+          "label": "Uppercase"
+        },
+        {
+          "value": "lowercase",
+          "label": "Lowercase"
+        },
+        {
+          "value": "capitalize",
+          "label": "Capitalize"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_sale_text_style }}",
+      "type": "text",
+      "id": "sale_letter_spacing",
+      "label": "Letter spacing",
+      "placeholder": "0px"
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_sale_text_style }}",
+      "type": "text",
+      "id": "sale_line_height",
+      "label": "Line height",
+      "placeholder": "1.5"
+    },
+    {
+      "type": "header",
+      "content": "Tax information"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tax_info",
+      "label": "Show tax information",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.show_tax_info }}",
+      "type": "color",
+      "id": "tax_note_color",
+      "label": "Tax note color"
+    },
+    {
+      "visible_if": "{{ block.settings.show_tax_info }}",
+      "type": "checkbox",
+      "id": "enable_tax_custom_text_size",
+      "label": "Enable custom tax note text size",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.show_tax_info and block.settings.enable_tax_custom_text_size }}",
+      "type": "text",
+      "id": "tax_note_text_size",
+      "label": "Tax note text size",
+      "default": "14px"
+    },
+    {
+      "visible_if": "{{ block.settings.show_tax_info }}",
+      "type": "text",
+      "id": "duties_and_taxes_text",
+      "label": "Duties and taxes included text",
+      "default": "Duties and taxes included"
+    },
+    {
+      "visible_if": "{{ block.settings.show_tax_info }}",
+      "type": "text",
+      "id": "taxes_included_text",
+      "label": "Taxes included text",
+      "default": "Taxes included"
+    },
+    {
+      "visible_if": "{{ block.settings.show_tax_info }}",
+      "type": "text",
+      "id": "duties_included_text",
+      "label": "Duties included text",
+      "default": "Duties included"
+    },
+    {
+      "visible_if": "{{ block.settings.show_tax_info }}",
+      "type": "text",
+      "id": "shipping_policy_text",
+      "label": "Shipping policy text",
+      "default": "Shipping policy"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_css",
+      "label": "Enable custom CSS",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "mobile_css",
+      "label": "Mobile & narrow custom CSS",
+      "info": "Applied on small screens or in tight spaces."
+    },
+    {
+      "type": "paragraph",
+      "content": "Open [Design Packs](/admin/apps/design-packs-1/dashboard) to add/update new sections and blocks."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Price 🎒",
+      "category": "* Design Packs: Product"
+    }
+  ]
+}
+{% endschema %}
+{% # theme-check-enable %}

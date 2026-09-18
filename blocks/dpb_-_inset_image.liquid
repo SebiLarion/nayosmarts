@@ -1,0 +1,682 @@
+{%- comment -%}
+{
+  "pack_name": "Inset image block",
+  "pack_author": "Design Packs",
+  "license": "© Design Packs. All rights reserved. This code is protected by copyright law and may not be reproduced, distributed, or used without explicit permission from the author. Shopify complies with the Digital Millennium Copyright Act (DMCA) and responds to claims of copyright infringement using DMCA procedures, which could result in the termination of your Shopify account.",
+}
+{%- endcomment -%}
+
+{% comment %} Security Code - hides section when app uninstalled {% endcomment %}
+{%- unless content_for_header contains 'design_packs_file.js' -%}
+  {%- if request.design_mode -%}
+    <div class="dsgn-pck__no-app-warning">
+      <div class="dsgn-pck__no-app-warning-background">
+      </div>
+      <div class="dsgn-pck__no-app-warning-text dsgn-pck__rte">
+        <p><strong>WARNING!</strong> This premium section will not display properly without an active subscription for <a href="https://apps.shopify.com/design-packs" target="_blank" rel="noopener nofollow">Design Packs</a>. If you need any support please email <a href="mailto:info@design-packs.com" target="_blank" rel="noopener">info@design-packs.com</a> with your questions.</p>
+      </div>
+    </div>
+  {%- endif -%}
+  {%- break -%}
+{%- endunless -%}
+
+{%- comment -%} Assign: Preview section js fix {%- endcomment -%}
+{%- assign section_id = section.id | replace: '+', '' | replace: '=', '' -%}
+{%- assign block_index = section.blocks | find_index: 'id', block.id | plus: 1 -%}
+
+{%- comment -%} Color: check if color is set to transparent {%- endcomment -%}
+{%- assign border_color_alpha = block.settings.border_color | color_extract: 'alpha' -%}
+
+{%- comment -%}
+  Design System: when the section opts into global style, the Media styleguide role
+  owns border-radius / border / shadow / overlay via var(--block-media-*). The block
+  emits its own values (raw + --block-media-* vars) only when it owns styles:
+  design system off, or the user checked "Tweak image style".
+{%- endcomment -%}
+{%- assign block_override_active = false -%}
+{%- if section.settings.design_system != 'global_style' or block.settings.override -%}
+  {%- assign block_override_active = true -%}
+{%- endif -%}
+{%- assign overlay_alpha = block.settings.overlay_color | color_extract: 'alpha' | default: 0 -%}
+{%- assign block_inner_radius = block.settings.border_radius -%}
+{%- if block.settings.border_width > 0 -%}
+  {%- assign block_inner_radius = block.settings.border_radius | minus: block.settings.border_width -%}
+  {%- if block_inner_radius < 0 -%}{%- assign block_inner_radius = 0 -%}{%- endif -%}
+{%- endif -%}
+{%- capture block_media_shadow -%}
+  {%- case block.settings.button_shadow -%}
+    {%- when 'subtle' -%}0 1px 4px 0 {{ block.settings.button_shadow_color }}33
+    {%- when 'medium' -%}0 2px 8px 0 {{ block.settings.button_shadow_color }}55
+    {%- when 'strong' -%}0 4px 16px 0 {{ block.settings.button_shadow_color }}88
+    {%- when 'custom' -%}{{ block.settings.button_shadow_custom }}
+    {%- else -%}none
+  {%- endcase -%}
+{%- endcapture -%}
+{%- assign block_media_shadow = block_media_shadow | strip -%}
+
+{%- assign enable_metafield_detect = section.settings.enable_metafield_detect | default: block.settings.enable_metafield_detect | default: false -%}
+
+{%- comment -%} Images: check image crop aspect ratio {%- endcomment -%}
+{%- if block.settings.image_crop == 'none' -%}
+  {%- assign image_crop_width = block.settings.inset_image.width | default: '1000' -%}
+  {%- assign image_crop_height = block.settings.inset_image.height | default: '1000' -%}
+{%- else -%}
+  {%- assign image_crop_width = block.settings.image_crop | split: ':' | first | times: 1000 -%}
+  {%- assign image_crop_height = block.settings.image_crop | split: ':' | last | times: 1000 -%}
+{%- endif -%}
+
+{%- comment -%} Images: check mobile image crop aspect ratio {%- endcomment -%}
+{%- if block.settings.mobile_image_crop == 'none' -%}
+  {%- if block.settings.mobile_inset_image != blank -%}
+    {%- assign mobile_image_crop_width = block.settings.mobile_inset_image.width -%}
+    {%- assign mobile_image_crop_height = block.settings.mobile_inset_image.height -%}
+  {%- else -%}
+    {%- assign mobile_image_crop_width = image_crop_width -%}
+    {%- assign mobile_image_crop_height = image_crop_height -%}
+  {%- endif -%}
+{%- else -%}
+  {%- assign mobile_image_crop_width = block.settings.mobile_image_crop | split: ':' | first | times: 1000 -%}
+  {%- assign mobile_image_crop_height = block.settings.mobile_image_crop | split: ':' | last | times: 1000 -%}
+{%- endif -%}
+
+{%- comment -%} Images: placeholder image {%- endcomment -%}
+{%- capture placeholder_image -%}
+  <svg width="2400" height="2400" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
+    <rect x="0" y="0" width="24" height="24" fill="#f0f0f0"/>
+    <circle cx="7.5" cy="7.5" r="1.5" fill="#ccc"/>
+    <path d="M3 18L8.5 12.5L13 17L17.5 11L21 18H3Z" fill="#ccc"/>
+  </svg>
+{%- endcapture -%}
+
+{% comment %} Images: responsive image widths {% endcomment %}
+{%- assign widths = '180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 1950, 2100, 2260, 2450, 2700, 3000, 3350, 3750, 4100' -%}
+
+{%- if block.settings.inset_image == blank and enable_metafield_detect == true -%}
+  {%- continue -%}
+{%- endif -%}
+
+{%- capture css_styles -%}
+<style data-dp-css="blocks/_dpb_-_inset_image.liquid">
+
+  [id*=preview-block] .dsgn-pck__inset-image {
+    container-type: normal !important;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} {
+    max-width: {{ block.settings.max_width | remove: 'px' }}px;
+    {%- if block.settings.size_type == 'percentage' -%}
+      width: {{ block.settings.base_width }}%;
+    {%- elsif block.settings.size_type == 'fixed' -%}
+      width: {{ block.settings.size_fixed }}px;
+      {%- if block.settings.max_width == blank -%}
+        max-width: 100%;
+      {%- endif -%}
+    {%- endif -%}
+    display: flex;
+    {%- if block.settings.horizontal_alignment == 'left' -%}
+      align-self: flex-start;
+      margin-left: 0;
+      margin-right: auto;
+      --block-horizontal-alignment: flex-start;
+    {%- elsif block.settings.horizontal_alignment == 'right' -%}
+      align-self: flex-end;
+      margin-left: auto;
+      margin-right: 0;
+      --block-horizontal-alignment: flex-end;
+    {%- elsif block.settings.horizontal_alignment == 'center' -%}
+      align-self: center;
+      margin-left: auto;
+      margin-right: auto;
+      --block-horizontal-alignment: center;
+    {%- else -%}
+      {%- comment -%} default: follow parent block (--block-margin-*); fall back to section for top-level images (no flex parent to rely on align-self) {%- endcomment -%}
+      margin-left: var(--block-margin-left, {%- if section.settings.text_alignment == 'center' or section.settings.text_alignment == 'right' -%}auto{%- else -%}0{%- endif -%});
+      margin-right: var(--block-margin-right, {%- if section.settings.text_alignment == 'right' -%}0{%- else -%}auto{%- endif -%});
+    {%- endif -%}
+    --section-horizontal-alignment: {%- if section.settings.text_alignment == 'center' -%}center{%- elsif section.settings.text_alignment == 'right' -%}flex-end{%- endif -%};
+    align-self: var(--block-horizontal-alignment, var(--section-horizontal-alignment));
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__inset-image {
+    container-type: inline-size;
+    container-name: dp-inset-image-container;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__image__wrapper {
+    flex: 1;
+    position: relative;
+    {%- if block_override_active -%}
+      {%- comment -%} Block owns styles: emit raw (for non-DS) + --block-media-* vars (so the role rule, when present, picks up the tweak). {%- endcomment -%}
+      {%- if block.settings.border_width > 0 and border_color_alpha != 0 -%}
+        border: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
+        --block-media-border: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
+      {%- endif -%}
+      border-radius: {{ block.settings.border_radius }}px;
+      --block-media-border-radius: {{ block.settings.border_radius }}px;
+      box-shadow: {{ block_media_shadow }};
+      --block-media-box-shadow: {{ block_media_shadow }};
+      {%- if block.settings.enable_overlay and overlay_alpha != 0 or block.settings.overlay_gradient != blank -%}
+        --block-media-overlay-color: {{ block.settings.overlay_color }};
+        {%- if block.settings.overlay_gradient != blank -%}
+          --block-media-overlay-gradient: {{ block.settings.overlay_gradient }};
+        {%- endif -%}
+        --block-media-overlay-radius: {{ block_inner_radius }}px;
+      {%- endif -%}
+    {%- endif -%}
+    overflow: hidden;
+  }
+
+  {%- if block_override_active and block.settings.enable_overlay and overlay_alpha != 0 or block_override_active and block.settings.overlay_gradient != blank -%}
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__image__wrapper::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-color: var(--block-media-overlay-color, {{ block.settings.overlay_color }});
+      {%- if block.settings.overlay_gradient != blank -%}
+        background: var(--block-media-overlay-gradient, {{ block.settings.overlay_gradient }});
+      {%- endif -%}
+      pointer-events: none;
+      border-radius: var(--block-media-overlay-radius, {{ block_inner_radius }}px);
+      z-index: 1;
+    }
+  {%- endif -%}
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__image__wrapper svg {
+    width: 100%;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__inset-placeholder {
+    position: absolute;
+    inset: 0;
+    background: #f0f0f0;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__inset-placeholder svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__image__wrapper path {
+    fill: {{ section.settings.text_color }};
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__image__wrapper a {
+    display: block;
+  }
+
+  /* Custom CSS */
+  {%- if block.settings.enable_custom_css == true and block.settings.custom_css != blank -%}
+    {%- assign custom_css_rules = block.settings.custom_css | strip | split: '}' -%}
+    {%- for rule in custom_css_rules -%}
+      {%- assign clean_rule = rule | strip -%}
+      {%- if clean_rule contains '{' and clean_rule != blank -%}
+        {%- assign rule_parts = clean_rule | split: '{' -%}
+        {%- if rule_parts.size >= 2 -%}
+          {%- assign selector_part = rule_parts[0] | strip -%}
+          {%- assign css_part = rule_parts[1] | strip -%}
+          {%- if css_part != blank -%}
+            {%- if selector_part == blank -%}
+              #DP--{{ block.id }} { {{ css_part }} }
+            {%- else -%}
+              #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+
+  /* Small context - small container and mobile */
+  {%- capture small_context -%}
+
+    .dsgn-pck__block-id-{{ block.id }} {
+      {%- if block.settings.mobile_size_type == 'percentage' and block.settings.mobile_styles == true -%}
+        width: {{ block.settings.mobile_base_width }}%;
+      {%- elsif block.settings.mobile_size_type == 'fixed' and block.settings.mobile_styles == true -%}
+        width: {{ block.settings.mobile_size_fixed }}px;
+      {%- endif -%}
+      max-width: {{ block.settings.max_width | remove: 'px' }}px;
+    }
+
+  /* Mobile & narrow custom CSS */
+  {%- if block.settings.enable_custom_css == true and block.settings.mobile_css != blank -%}
+    {%- assign mobile_css_rules = block.settings.mobile_css | strip | split: '}' -%}
+    {%- for rule in mobile_css_rules -%}
+      {%- assign clean_rule = rule | strip -%}
+      {%- if clean_rule contains '{' and clean_rule != blank -%}
+        {%- assign rule_parts = clean_rule | split: '{' -%}
+        {%- if rule_parts.size >= 2 -%}
+          {%- assign selector_part = rule_parts[0] | strip -%}
+          {%- assign css_part = rule_parts[1] | strip -%}
+          {%- if css_part != blank -%}
+            {%- if selector_part == blank -%}
+              #DP--{{ block.id }} { {{ css_part }} }
+            {%- else -%}
+              #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+  {%- endcapture -%}
+
+  @supports (container-type: inline-size) {
+    @container dp-inset-image-container (max-width: 300px) {
+      {{ small_context }}
+    }
+  }
+
+  @media (max-width: 767px) {
+    {{ small_context }}
+  }
+
+  /* Hide or show on mobile and desktop */
+  {%- if block.settings.hidden_on == 'mobile' -%}
+    @media (max-width: 767px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+
+  {%- if block.settings.hidden_on == 'desktop' -%}
+    @media (min-width: 768px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+
+</style>
+{%- endcapture -%}
+
+<div id="DP--{{ block.id }}" class="DP--{{ block.id }} dsgn-pck__block dsgn-pck__block-id-{{ block.id }} dsgn-pck__block--{{ block.type }} dsgn-pck__block--{{ block.index }} dsgn-pck__justify-{%- if block.settings.horizontal_alignment != 'default' -%}{{ block.settings.horizontal_alignment }}{%- else -%}{{ section.settings.text_alignment }}{%- endif -%}" {{ block.shopify_attributes }} {% if section.settings.animation != blank %}style="--dsgn-pck-animate: {{ block_index }};"{% endif %}>
+  {{ css_styles }}
+  <div class="dsgn-pck__inset-image">
+    {%- if block.settings.inset_image != blank -%}
+      <div class="dsgn-pck__image__wrapper">
+        {%- if block.settings.link != blank -%}
+          <a href="{{ block.settings.link }}" {% if block.settings.external_link %}target="_blank" rel="noopener"{% endif %}>
+        {%- endif -%}
+        <svg class="dsgn-pck__svg-sizer dsgn-pck__mobile--hidden" viewBox="0 0 {{ image_crop_width }} {{ image_crop_height }}"></svg>
+        <svg
+          class="dsgn-pck__svg-sizer dsgn-pck__mobile--visible dsgn-pck__desktop--hidden"
+          viewBox="0 0 {{ mobile_image_crop_width }} {{ mobile_image_crop_height }}"
+        ></svg>
+        {%- capture sizes -%}
+          (max-width: 480px) {{ block.settings.base_width }}vw,(max-width: 767px) {{ block.settings.base_width }}vw, {{ 1 | times: block.settings.base_width | divided_by: 100.0 | times: 100.0 | round }}vw
+        {%- endcapture -%}
+        <picture>
+          {%- if block.settings.mobile_inset_image != blank -%}
+            <source media="(max-width: 480px)" srcset="{{ block.settings.mobile_inset_image | image_url: width: 960 }}">
+          {%- endif -%}
+          {{ block.settings.inset_image | image_url: width: 3000 | image_tag: widths: widths, sizes: sizes }}
+        </picture>
+        {%- if block.settings.link != blank -%}
+          </a>
+        {%- endif -%}
+      </div>
+    {%- elsif enable_metafield_detect != true -%}
+      {%- if block.settings.link != blank -%}
+        <a href="{{ block.settings.link }}" {% if block.settings.external_link %}target="_blank" rel="noopener"{% endif %}>
+      {%- endif -%}
+      <div class="dsgn-pck__image__wrapper">
+        <svg class="dsgn-pck__svg-sizer dsgn-pck__mobile--hidden" viewBox="0 0 {{ image_crop_width }} {{ image_crop_height }}"></svg>
+        <svg
+          class="dsgn-pck__svg-sizer dsgn-pck__mobile--visible dsgn-pck__desktop--hidden"
+          viewBox="0 0 {{ mobile_image_crop_width }} {{ mobile_image_crop_height }}"
+        ></svg>
+        <div class="dsgn-pck__inset-placeholder">{{ placeholder_image | strip }}</div>
+      </div>
+      {%- if block.settings.link != blank -%}
+        </a>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Image 🎒",
+  "tag": null,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "inset_image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "image_crop",
+      "label": "Image aspect ratio",
+      "default": "none",
+      "options": [
+        {
+          "value": "4:3",
+          "label": "Landscape (4:3)"
+        },
+        {
+          "value": "2:3",
+          "label": "Portrait (2:3)"
+        },
+        {
+          "value": "1:1",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "none",
+          "label": "Original"
+        }
+      ]
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "external_link",
+      "label": "Open link in a new window"
+    },
+    {
+      "type": "header",
+      "content": "📱 Mobile & narrow display"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_inset_image",
+      "label": "Mobile image"
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_styles",
+      "label": "Enable mobile & narrow styles",
+      "info": "Settings for small screens or in tight spaces",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.mobile_styles == true }}",
+      "type": "select",
+      "id": "mobile_image_crop",
+      "label": "Mobile image aspect ratio",
+      "default": "none",
+      "options": [
+        {
+          "value": "4:3",
+          "label": "Landscape (4:3)"
+        },
+        {
+          "value": "2:3",
+          "label": "Portrait (2:3)"
+        },
+        {
+          "value": "1:1",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "none",
+          "label": "Original"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.mobile_styles == true }}",
+      "type": "select",
+      "id": "mobile_size_type",
+      "label": "Mobile image size",
+      "default": "percentage",
+      "options": [
+        {
+          "value": "percentage",
+          "label": "Percentage"
+        },
+        {
+          "value": "fixed",
+          "label": "Fixed"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.mobile_size_type == 'percentage' and block.settings.mobile_styles == true }}",
+      "type": "range",
+      "id": "mobile_base_width",
+      "min": 10,
+      "max": 100,
+      "label": "Mobile size",
+      "default": 80,
+      "unit": "%"
+    },
+    {
+      "visible_if": "{{ block.settings.mobile_size_type == 'fixed' and block.settings.mobile_styles == true }}",
+      "type": "range",
+      "id": "mobile_size_fixed",
+      "min": 20,
+      "max": 200,
+      "step": 2,
+      "label": "Size",
+      "default": 200,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "🎨 Design"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system == 'global_style' }}",
+      "type": "checkbox",
+      "id": "override",
+      "label": "Tweak image style",
+      "info": "Override the Design System media style for this image.",
+      "default": false
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override }}",
+      "type": "range",
+      "id": "border_radius",
+      "label": "Rounded corners",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override }}",
+      "type": "range",
+      "id": "border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 50,
+      "step": 0.5,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "visible_if": "{{ block.settings.border_width != 0 }}",
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#000000"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override }}",
+      "type": "select",
+      "id": "button_shadow",
+      "label": "Drop shadow",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "strong", "label": "Strong" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "none"
+    },
+    {
+      "visible_if": "{{ block.settings.button_shadow != 'none' and block.settings.button_shadow != 'custom' }}",
+      "type": "color",
+      "id": "button_shadow_color",
+      "label": "Shadow color",
+      "default": "#000000"
+    },
+    {
+      "visible_if": "{{ block.settings.button_shadow == 'custom' }}",
+      "type": "text",
+      "id": "button_shadow_custom",
+      "label": "Custom shadow value",
+      "default": "0 1px 4px rgba(0,0,0,0.08)",
+      "info": "Example: 0 1px 4px rgba(0,0,0,0.08)"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override }}",
+      "type": "checkbox",
+      "id": "enable_overlay",
+      "label": "Enable overlay",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.enable_overlay }}",
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay color",
+      "default": "rgba(0,0,0,0.4)",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ block.settings.enable_overlay }}",
+      "type": "color_background",
+      "id": "overlay_gradient",
+      "label": "Overlay gradient",
+      "info": "Overlay gradient replaces solid overlay where possible."
+    },
+    {
+      "type": "header",
+      "content": "🖼 Layout"
+    },
+    {
+      "type": "select",
+      "id": "size_type",
+      "label": "Image size",
+      "default": "percentage",
+      "options": [
+        {
+          "value": "percentage",
+          "label": "Percentage"
+        },
+        {
+          "value": "fixed",
+          "label": "Fixed"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.size_type == 'percentage' }}",
+      "type": "range",
+      "id": "base_width",
+      "min": 10,
+      "max": 100,
+      "label": "Size",
+      "default": 50,
+      "unit": "%",
+      "info": "Size is based on the width of the container. [Learn more]( https://design-packs.gitbook.io/docs/fundamentals/block-settings/size-controls-for-image-and-video-blocks)"
+    },
+    {
+      "visible_if": "{{ block.settings.size_type == 'percentage' }}",
+      "type": "text",
+      "id": "max_width",
+      "label": "Maximum width",
+      "placeholder": "eg. 1200px",
+      "info": "Sets width constraint for content."
+    },
+    {
+      "visible_if": "{{ block.settings.size_type == 'fixed' }}",
+      "type": "range",
+      "id": "size_fixed",
+      "min": 20,
+      "max": 520,
+      "step": 5,
+      "label": "Size",
+      "default": 300,
+      "unit": "px"
+    },
+    {
+      "visible_if": "{{ block.settings.base_width < 100 or block.settings.max_width != blank or block.settings.size_type == 'fixed' }}",
+      "type": "select",
+      "id": "horizontal_alignment",
+      "label": "Image alignment",
+      "default": "default",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "hidden_on",
+      "label": "Hidden on",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "desktop",
+          "label": "Desktop"
+        },
+        {
+          "value": "mobile",
+          "label": "Mobile"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_css",
+      "label": "Enable custom CSS",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "mobile_css",
+      "label": "Mobile & narrow custom CSS",
+      "info": "Applied on small screens or in tight spaces."
+    },
+    {
+      "type": "paragraph",
+      "content": "Open [Design Packs](/admin/apps/design-packs-1/dashboard) to add/update new sections and blocks."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image 🎒",
+      "category": "* Design Packs: Basic"
+    }
+  ]
+}
+{% endschema %}

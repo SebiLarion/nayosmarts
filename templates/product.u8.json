@@ -1,0 +1,1797 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main-product": {
+      "type": "main-product",
+      "blocks": {
+        "badges_xAj3pi": {
+          "type": "badges",
+          "settings": {
+            "show_sold_out": false,
+            "show_save_amount": true,
+            "save_type": "percent"
+          }
+        },
+        "title": {
+          "type": "title",
+          "settings": {
+            "title_size": "product-title-sm",
+            "title_size_mobile": "product-title-sm",
+            "title_tag": "h2",
+            "show_price": true,
+            "show_rating": false
+          }
+        },
+        "judge_me_reviews_preview_badge_UAVMKV": {
+          "type": "shopify://apps/judge-me-reviews/blocks/preview_badge/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {}
+        },
+        "text_dT9iQg": {
+          "type": "text",
+          "settings": {
+            "icon": "wallet",
+            "iwidth": "custom",
+            "icon_width": 24,
+            "text": "<a href=\"/collections/new-release\" title=\"New Release\"><strong>NEW ARRIVALS · 10% OFF FOR A LIMITED TIME | CODE: LAUNCH10</strong></a>",
+            "text_size": "text-sm"
+          }
+        },
+        "text_JfyyXk": {
+          "type": "text",
+          "settings": {
+            "icon": "gift",
+            "iwidth": "custom",
+            "icon_width": 24,
+            "text": "<a href=\"https://nayosmart.com/pages/sale\" target=\"_blank\" title=\"https://nayosmart.com/pages/sale\"><strong>Build Your Perfect Carry | 15% Off Backpack & Sling Bundles</strong></a>",
+            "text_size": "text-sm"
+          }
+        },
+        "text_6CpqT9": {
+          "type": "text",
+          "settings": {
+            "icon": "tags",
+            "iwidth": "custom",
+            "icon_width": 24,
+            "text": "<a href=\"https://nayosmart.com/pages/return-policy\" target=\"_blank\" title=\"https://nayosmart.com/pages/return-policy\"><strong>30 Days Return | 2 Years Warranty | Free Worldwide Shipping ：No Minimum</strong></a>",
+            "text_size": "text-sm"
+          }
+        },
+        "countdown_3cbNTT": {
+          "type": "countdown",
+          "settings": {
+            "heading": "Hurry up!",
+            "subheading": "Flash Sale end in:",
+            "color_text": "#e4462a",
+            "color_background": "#e2ddd4",
+            "gradient_background": ""
+          }
+        },
+        "variant_picker_DxyC7b": {
+          "type": "variant_picker",
+          "settings": {
+            "enable_dynamic_variants": true,
+            "show_variant_labels": true,
+            "picker_type": "button",
+            "enable_color_swatches": true,
+            "color_swatch_type": "variant",
+            "size_chart": ""
+          }
+        },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_quantity_selector": true,
+            "show_price": false,
+            "show_dynamic_checkout": true,
+            "show_gift_card_recipient": false,
+            "enable_back_in_stock": true,
+            "show_back_in_stock_name": true,
+            "show_back_in_stock_phone": true
+          }
+        },
+        "delivery_date_eta_eta_custom_position_with_section_7QxjHR": {
+          "type": "shopify://apps/delivery-date-eta/blocks/ETA_custom_position_with_section/d8155dd1-6598-4174-aaeb-cbcf85a857bc",
+          "settings": {}
+        },
+        "qikify_upsell_product_rcmd_xwPxWK": {
+          "type": "shopify://apps/qikify-upsell/blocks/product_rcmd/2e94b962-8172-4839-8ad9-7837eb8b017a",
+          "settings": {
+            "product": "{{product}}"
+          }
+        },
+        "text_m9nYjV": {
+          "type": "text",
+          "settings": {
+            "icon": "none",
+            "iwidth": "custom",
+            "icon_width": 24,
+            "text": "<strong>Expandable Urban Commuter Backpack</strong></br></br><strong>Made for the days that move beyond the desk.</strong> </br>A lightweight 19–24L work backpack that stays compact for the commute and expands when the rest of your day needs more.</br><strong>19–24L Adaptive Capacity</strong></br>Compact for work. Extra room when plans change.</br><strong>Fast Side Access</strong></br>Grab everyday essentials without unrolling the top.</br><strong>Suspended 16\" Laptop Protection</strong></br>Keeps your tech raised and protected on the move.",
+            "text_size": "text-base"
+          }
+        },
+        "icon_list_XF9net": {
+          "type": "icon_list",
+          "settings": {
+            "heading": "Product Highlights",
+            "enable_carousel": false,
+            "show_below_media": true
+          }
+        },
+        "collapsible_tab_93tAeA": {
+          "type": "collapsible_tab",
+          "settings": {
+            "opened": false,
+            "style": "with-border",
+            "icon": "award",
+            "heading": "Features",
+            "content": "<ul><li><strong>Adaptive 19–24L Capacity</strong><br/>Compact for work, expandable for hiking, rides and weekend plans.</li><li><strong>Fast Side Access</strong><br/>Reach essentials without fully opening the roll-top.</li><li><strong>Ten-Pocket Organization</strong><br/>A fixed place for laptop, bottle, cables, keys and small tech.</li><li><strong>Suspended 16-Inch Laptop Protection</strong><br/>Keeps your laptop raised and protected from daily impact.</li><li><strong>City-to-Weekend Modularity</strong><br/>Reflective webbing and attachment points adapt to changing plans.</li><li><strong>Breathable Carry Comfort</strong><br/>Contoured straps and 3D mesh support longer, more active days.</li><li><strong>Recycled Weather-Ready Fabric</strong><br/>Durable recycled fabric handles daily splashes and city movement.</li></ul>",
+            "page": "",
+            "liquid": "",
+            "text_size": "text-sm"
+          }
+        },
+        "collapsible_tab_j8pCA6": {
+          "type": "collapsible_tab",
+          "settings": {
+            "opened": false,
+            "style": "with-border",
+            "icon": "swatchbook",
+            "heading": "Materials",
+            "content": "<ul><li><strong>Main Fabric</strong>: RPET 840D double-yarn polyester</li><li><strong>Lining</strong>: 230T double-sided twill polyester fiber</li><li><strong>Surface Finish:</strong> C0 fluorine-free water-resistant finish</li><li><strong>Back Panel:</strong> Breathable 3D mesh back panel</li><li><strong>Fasteners</strong>: Custom zinc alloy figure-nine hooks</li><li><strong>Zipper</strong>: SBS Wear-Resistant Zipper</li><li><strong>Webbing</strong>: Imitation nylon twill reflective webbing</li><li><strong>Shoulder Strap Structure:</strong> Contoured shoulder straps with high-rebound foam / sponge padding</li><li><strong>Leather</strong>: 1.4mm thick top-grain leather</li></ul>",
+            "page": "",
+            "liquid": "",
+            "text_size": "text-sm"
+          }
+        },
+        "collapsible_tab_wPPHkq": {
+          "type": "collapsible_tab",
+          "settings": {
+            "opened": false,
+            "style": "with-border",
+            "icon": "ruler",
+            "heading": "Dimensions",
+            "content": "<p><strong>Capacity:</strong> 19–24L expandable capacity<br/><br/><strong>Weight:</strong> Approx. 800 g / 1.76 lb before loading<br/><br/><strong>Dimensions:</strong></p><ul><li><strong>Height:</strong> 17.7\" (45cm)</li><li><strong>Length:</strong> 11.8\" (30cm)</li><li><strong>Width:</strong> 5.5\" (14cm)</li></ul>",
+            "page": "",
+            "liquid": "",
+            "text_size": "text-sm"
+          }
+        },
+        "collapsible_tab_JMJqJc": {
+          "type": "collapsible_tab",
+          "settings": {
+            "opened": false,
+            "style": "with-border",
+            "icon": "devices",
+            "heading": "Will My Device Fit?",
+            "content": "<p>✔️ PC 13\"</p><p>✔️MacBook Air 13.3\"</p><p>✔️ MacBook Pro 13.3\"</p><p>✔️PC 14\"</p><p>✔️PC 15\"</p><p>✔️ PC 15.6\"</p><p>✔️ MacBook Pro 16\"</p><p>✔️ PC 16\"</p><p>❌ PC 17\"</p><p>✔️iPad Pro 12.9\"</p><p>✔️ iPad Pro 11\"</p><p>✔️ iPad Air 10.9\"</p><p>✔️ iPad 10.2\"</p><p>✔️ iPad Mini</p>",
+            "page": "",
+            "liquid": "",
+            "text_size": "text-sm"
+          }
+        },
+        "collapsible_tab_34hga7": {
+          "type": "collapsible_tab",
+          "settings": {
+            "opened": false,
+            "style": "with-border",
+            "icon": "box",
+            "heading": "Shipping And Returns",
+            "content": "<p>We offer <strong>regular </strong>or <strong>express delivery </strong>to most addresses worldwide. For details, please refer to our <a href=\"/pages/shipping-policy\" title=\"Shipping Policy\"><em>shipping policy</em></a>.</p><p><strong>Delivery time</strong> is calculated at checkout based on your location and selected shipping method. Click to view our<a href=\"/pages/delivery-history\" title=\"Delivery History\"><em> store's past delivery records</em></a> for reference.\"</p><p>And we offer <strong>30-day </strong>return and exchange. For details, please refer to our <a href=\"/pages/return-policy\" title=\"Return Policy\"><em>return policy</em></a>.</p>",
+            "page": "",
+            "liquid": "",
+            "text_size": "text-sm"
+          }
+        },
+        "share": {
+          "type": "share",
+          "settings": {
+            "share_label": "Share",
+            "show_help_desk": true,
+            "help_label": "Need help?",
+            "help_type": "drawer",
+            "help_page": "faq",
+            "help_page_external": false
+          }
+        }
+      },
+      "block_order": [
+        "badges_xAj3pi",
+        "title",
+        "judge_me_reviews_preview_badge_UAVMKV",
+        "text_dT9iQg",
+        "text_JfyyXk",
+        "text_6CpqT9",
+        "countdown_3cbNTT",
+        "variant_picker_DxyC7b",
+        "buy_buttons",
+        "delivery_date_eta_eta_custom_position_with_section_7QxjHR",
+        "qikify_upsell_product_rcmd_xwPxWK",
+        "text_m9nYjV",
+        "icon_list_XF9net",
+        "collapsible_tab_93tAeA",
+        "collapsible_tab_j8pCA6",
+        "collapsible_tab_wPPHkq",
+        "collapsible_tab_JMJqJc",
+        "collapsible_tab_34hga7",
+        "share"
+      ],
+      "settings": {
+        "enable_sticky_info": true,
+        "media_size": 50,
+        "gallery_layout": "thumbnail",
+        "thumbnail_position": "beside",
+        "image_ratio": "adapt_first",
+        "image_zoom": "lightbox",
+        "hide_variants": false,
+        "enable_video_autoplay": true,
+        "enable_video_looping": true,
+        "mobile_layout": "full_width",
+        "image_ratio_mobile": "adapt_first",
+        "mobile_thumbnail": true,
+        "padding_top": 0,
+        "padding_bottom": 84,
+        "divider": false,
+        "full_width": true,
+        "rounded": false
+      }
+    },
+    "help-drawer": {
+      "type": "help-drawer",
+      "blocks": {
+        "content-1": {
+          "type": "content",
+          "settings": {
+            "icon": "rocket",
+            "heading": "Shipping Information",
+            "text": "<p>Click to check our <a href=\"/pages/shipping-policy\" title=\"Shipping Policy\">shipping policy</a>.</p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle",
+            "color_text": "#b45309",
+            "color_background": "#fffbeb",
+            "gradient_background": "",
+            "color_highlight": "#ffddbf",
+            "gradient_highlight": ""
+          }
+        },
+        "content-3": {
+          "type": "content",
+          "settings": {
+            "icon": "chat_bubble",
+            "heading": "FAQ’s",
+            "text": "<p>Click to check <a href=\"/pages/faq\" title=\"FAQs\">FAQ's.</a></p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle",
+            "color_text": "#be123c",
+            "color_background": "#fff1f2",
+            "gradient_background": "",
+            "color_highlight": "#ffddbf",
+            "gradient_highlight": ""
+          }
+        },
+        "content-4": {
+          "type": "content",
+          "settings": {
+            "icon": "phone",
+            "heading": "Contact Us",
+            "text": "<p>Email: <a href=\"/pages/contact-us\" title=\"Contact us\">support@nayosmart.com</a></p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle",
+            "color_text": "#4d7c0f",
+            "color_background": "#f7fee7",
+            "gradient_background": "",
+            "color_highlight": "#ffddbf",
+            "gradient_highlight": ""
+          }
+        }
+      },
+      "block_order": [
+        "content-1",
+        "content-3",
+        "content-4"
+      ],
+      "settings": {
+        "heading": "Need help?",
+        "description": "<p>If you have any questions, you are always welcome to contact us. We'll get back to you as soon as possible, within 24 hours on weekdays.</p>"
+      }
+    },
+    "scrolling_text_UhBfFj": {
+      "type": "scrolling-text",
+      "blocks": {
+        "text_aJPRBX": {
+          "type": "text",
+          "settings": {
+            "text": "Backpacks & Slings Style Combos → <strong>15% Off</strong>",
+            "text_size": 24,
+            "text_font": "heading",
+            "highlighted_text": "half_text",
+            "highlighted_scribble": "circle"
+          }
+        }
+      },
+      "block_order": [
+        "text_aJPRBX"
+      ],
+      "name": "t:sections.scrolling-text.name",
+      "settings": {
+        "direction": "left",
+        "speed": 20,
+        "grid_horizontal": 70,
+        "enable_twin": false,
+        "enable_parallax": true,
+        "color_text": "#e4452a",
+        "color_background": "",
+        "gradient_background": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "padding_top": 0,
+        "padding_bottom": 36,
+        "divider": false,
+        "rounded": false
+      }
+    },
+    "video_EcgNMa": {
+      "type": "video",
+      "name": "t:sections.video.name",
+      "settings": {
+        "transparent_header": false,
+        "video": "shopify://files/videos/nayosmart-urban-u8-roll-top-backpack-black-video-lifestyle-outdoor-travel-PC.mp4.webm",
+        "video_url": "",
+        "description": "",
+        "enable_video_autoplay": true,
+        "enable_video_looping": true,
+        "image_height": "800px",
+        "video_mobile": "shopify://files/videos/nayosmart-urban-u8-roll-top-backpack-black-video-lifestyle-outdoor-travel-Mob.mp4.webm",
+        "video_url_mobile": "",
+        "image_height_mobile": "600px",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "divider": false,
+        "full_width": true,
+        "rounded": false
+      }
+    },
+    "rich_text_rjdai8": {
+      "type": "rich-text",
+      "blocks": {
+        "heading_aWEHRV": {
+          "type": "heading",
+          "settings": {
+            "heading": "Built for the Week.  Ready for the Weekend",
+            "heading_size": "title-sm",
+            "heading_tag": "h1",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle",
+            "highlighted_reveal": false
+          }
+        },
+        "text_xkkEFk": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Your plans changed. Your backpack does not have to.Stays compact for focused work, expands when plans change.</p>",
+            "text_font": "body",
+            "text_size": "subtext-md",
+            "text_max_size": 32,
+            "text_line_height": 1.6,
+            "text_letter_spacing": 0,
+            "text_capitalize": false,
+            "secondary_color": false,
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        }
+      },
+      "block_order": [
+        "heading_aWEHRV",
+        "text_xkkEFk"
+      ],
+      "name": "t:sections.rich-text.name",
+      "settings": {
+        "text_alignment": "center",
+        "text_alignment_mobile": "center",
+        "heading": "",
+        "heading_size": "title-md",
+        "heading_alignment": "text-left md:items-end md:flex-row",
+        "heading_width": "small",
+        "heading_tag": "h2",
+        "subheading": "",
+        "description": "",
+        "button_label": "",
+        "button_link": "",
+        "button_external": false,
+        "button_icon": true,
+        "highlighted_text": "none",
+        "highlighted_scribble": "circle",
+        "highlighted_reveal": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "padding_top": 68,
+        "padding_bottom": 0,
+        "divider": false,
+        "narrow": false,
+        "rounded": false
+      }
+    },
+    "design_pack_v3_tabbed_content_DnLAAf": {
+      "type": "design_pack_v3_-_tabbed_content",
+      "blocks": {
+        "dpb_tab_raD6NB": {
+          "type": "_dpb_-_tab",
+          "name": "Tab 1",
+          "disabled": true,
+          "settings": {
+            "heading": "Interior",
+            "icon_location": "top",
+            "icon_size_type": "fixed",
+            "image_size": 40,
+            "image_size_fixed": 40,
+            "tab_subheading": "",
+            "padding_type": "range",
+            "padding": "10px 20px 30px 40px",
+            "padding_top": 0,
+            "padding_bottom": 0,
+            "padding_left": 0,
+            "padding_right": 0,
+            "enable_custom_css": false,
+            "custom_css": "",
+            "mobile_css": ""
+          },
+          "blocks": {
+            "dpb_inset_image_aPADPL": {
+              "type": "dpb_-_inset_image",
+              "name": "Image 🎒",
+              "settings": {
+                "inset_image": "shopify://shop_images/U8-Front-PC-EN.png",
+                "image_crop": "none",
+                "link": "",
+                "external_link": false,
+                "mobile_inset_image": "shopify://shop_images/U8-Front-MO-EN.png",
+                "mobile_styles": false,
+                "mobile_image_crop": "none",
+                "mobile_size_type": "percentage",
+                "mobile_base_width": 80,
+                "mobile_size_fixed": 200,
+                "override": false,
+                "border_radius": 0,
+                "border_width": 0,
+                "border_color": "#000000",
+                "button_shadow": "none",
+                "button_shadow_color": "#000000",
+                "button_shadow_custom": "0 1px 4px rgba(0,0,0,0.08)",
+                "enable_overlay": false,
+                "overlay_color": "#00000066",
+                "overlay_gradient": "",
+                "size_type": "percentage",
+                "base_width": 100,
+                "max_width": "",
+                "size_fixed": 300,
+                "horizontal_alignment": "default",
+                "hidden_on": "none",
+                "enable_custom_css": false,
+                "custom_css": "",
+                "mobile_css": ""
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "dpb_inset_image_aPADPL"
+          ]
+        },
+        "dpb_tab_NEaXGR": {
+          "type": "_dpb_-_tab",
+          "name": "Tab 1",
+          "settings": {
+            "heading": "Front",
+            "icon_location": "top",
+            "icon_size_type": "fixed",
+            "image_size": 40,
+            "image_size_fixed": 40,
+            "tab_subheading": "",
+            "padding_type": "range",
+            "padding": "10px 20px 30px 40px",
+            "padding_top": 0,
+            "padding_bottom": 0,
+            "padding_left": 0,
+            "padding_right": 0,
+            "enable_custom_css": false,
+            "custom_css": "",
+            "mobile_css": ""
+          },
+          "blocks": {
+            "dpb_inset_image_6GF7Qf": {
+              "type": "dpb_-_inset_image",
+              "name": "Image 🎒",
+              "settings": {
+                "inset_image": "shopify://shop_images/U8-Front-PC-EN.png",
+                "image_crop": "none",
+                "link": "",
+                "external_link": false,
+                "mobile_inset_image": "shopify://shop_images/U8-Front-MO-EN.png",
+                "mobile_styles": false,
+                "mobile_image_crop": "none",
+                "mobile_size_type": "percentage",
+                "mobile_base_width": 80,
+                "mobile_size_fixed": 200,
+                "override": false,
+                "border_radius": 0,
+                "border_width": 0,
+                "border_color": "#000000",
+                "button_shadow": "none",
+                "button_shadow_color": "#000000",
+                "button_shadow_custom": "0 1px 4px rgba(0,0,0,0.08)",
+                "enable_overlay": false,
+                "overlay_color": "#00000066",
+                "overlay_gradient": "",
+                "size_type": "percentage",
+                "base_width": 100,
+                "max_width": "",
+                "size_fixed": 300,
+                "horizontal_alignment": "default",
+                "hidden_on": "none",
+                "enable_custom_css": false,
+                "custom_css": "",
+                "mobile_css": ""
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "dpb_inset_image_6GF7Qf"
+          ]
+        },
+        "dpb_tab_kUYd74": {
+          "type": "_dpb_-_tab",
+          "name": "Tab 1",
+          "settings": {
+            "heading": "Back",
+            "icon_location": "top",
+            "icon_size_type": "fixed",
+            "image_size": 40,
+            "image_size_fixed": 40,
+            "tab_subheading": "",
+            "padding_type": "range",
+            "padding": "10px 20px 30px 40px",
+            "padding_top": 0,
+            "padding_bottom": 0,
+            "padding_left": 0,
+            "padding_right": 0,
+            "enable_custom_css": false,
+            "custom_css": "",
+            "mobile_css": ""
+          },
+          "blocks": {
+            "dpb_inset_image_V7xM3f": {
+              "type": "dpb_-_inset_image",
+              "name": "Image 🎒",
+              "settings": {
+                "inset_image": "shopify://shop_images/U8-Back-PC-EN.png",
+                "image_crop": "none",
+                "link": "",
+                "external_link": false,
+                "mobile_inset_image": "shopify://shop_images/U8-Back-MO-EN.png",
+                "mobile_styles": false,
+                "mobile_image_crop": "none",
+                "mobile_size_type": "percentage",
+                "mobile_base_width": 80,
+                "mobile_size_fixed": 200,
+                "override": false,
+                "border_radius": 0,
+                "border_width": 0,
+                "border_color": "#000000",
+                "button_shadow": "none",
+                "button_shadow_color": "#000000",
+                "button_shadow_custom": "0 1px 4px rgba(0,0,0,0.08)",
+                "enable_overlay": false,
+                "overlay_color": "#00000066",
+                "overlay_gradient": "",
+                "size_type": "percentage",
+                "base_width": 100,
+                "max_width": "",
+                "size_fixed": 300,
+                "horizontal_alignment": "default",
+                "hidden_on": "none",
+                "enable_custom_css": false,
+                "custom_css": "",
+                "mobile_css": ""
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "dpb_inset_image_V7xM3f"
+          ]
+        }
+      },
+      "block_order": [
+        "dpb_tab_raD6NB",
+        "dpb_tab_NEaXGR",
+        "dpb_tab_kUYd74"
+      ],
+      "name": "Tabbed content 🎒",
+      "settings": {
+        "text_size": 80,
+        "tab_style": "buttons",
+        "buttons_border_radius": 50,
+        "tab_label_highlight_color": "#ffffff",
+        "tab_highlight_color": "#121212",
+        "tab_label_color": "#121212",
+        "tab_background_color": "#e6e1d8",
+        "border_color": "#1a30e1",
+        "text_color": "#121212",
+        "text_background_color": "#e6e1d8",
+        "background_solid": "#e6e1d8",
+        "background_color": "",
+        "show_background_image": false,
+        "base_width": 90,
+        "max_width": "",
+        "inner_padding": 0,
+        "outer_margin": 0,
+        "custom_css": "",
+        "mobile_custom_css": "",
+        "anchor_id": "",
+        "custom_classes": "",
+        "override_theme_font": false,
+        "heading_font": "serif",
+        "main_font": "system_ui_n4",
+        "custom_style": "global",
+        "style_scheme": ""
+      }
+    },
+    "image_with_text_8mRgzL": {
+      "type": "image-with-text",
+      "blocks": {
+        "heading_44wzG3": {
+          "type": "heading",
+          "settings": {
+            "heading": "19–24L That Adapts to Your Day",
+            "heading_size": "title-sm",
+            "heading_tag": "h2",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle",
+            "highlighted_reveal": false
+          }
+        },
+        "text_Jcqjqc": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Compact for the commute, expandable when plans call for more. Add room for a jacket, gym gear or an overnight change without carrying extra bulk all day.</p>",
+            "text_font": "body",
+            "text_size": "subtext-md",
+            "text_max_size": 32,
+            "text_line_height": 1.6,
+            "text_letter_spacing": 0,
+            "text_capitalize": false,
+            "secondary_color": false,
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        }
+      },
+      "block_order": [
+        "heading_44wzG3",
+        "text_Jcqjqc"
+      ],
+      "name": "t:sections.image-with-text.name",
+      "settings": {
+        "image": "shopify://shop_images/ezgif.com-resize.gif",
+        "image_height": "adapt",
+        "image_width": "medium",
+        "layout": "image_first",
+        "text_alignment": "left",
+        "content_position": "align-self-center",
+        "image_height_mobile": "adapt",
+        "text_alignment_mobile": "left",
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_background_2": "",
+        "gradient_background_2": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "padding_top": 32,
+        "padding_bottom": 0,
+        "divider": false,
+        "full_width": false,
+        "rounded": false,
+        "enable_parallax": false,
+        "parallax_direction": "vertical"
+      }
+    },
+    "image_with_text_zVxrWD": {
+      "type": "image-with-text",
+      "blocks": {
+        "heading_RKnHNr": {
+          "type": "heading",
+          "settings": {
+            "heading": "Keeps Your Laptop Off the Bottom",
+            "heading_size": "title-sm",
+            "heading_tag": "h2",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle",
+            "highlighted_reveal": false
+          }
+        },
+        "text_dWnz3q": {
+          "type": "text",
+          "settings": {
+            "text": "<p>A suspended compartment keeps laptops up to 16\" raised from the base of the bag, while 2 mm EVA padding adds cushioning against everyday knocks and hard set-downs.</p>",
+            "text_font": "body",
+            "text_size": "subtext-md",
+            "text_max_size": 32,
+            "text_line_height": 1.6,
+            "text_letter_spacing": 0,
+            "text_capitalize": false,
+            "secondary_color": false,
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        }
+      },
+      "block_order": [
+        "heading_RKnHNr",
+        "text_dWnz3q"
+      ],
+      "name": "t:sections.image-with-text.name",
+      "settings": {
+        "image": "shopify://shop_images/nayosmart_urban_u8_roll_top_backpack_black_laptop_digital_compartment_outdoor_scene_jpg.jpg",
+        "image_height": "adapt",
+        "image_width": "medium",
+        "layout": "text_first",
+        "text_alignment": "left",
+        "content_position": "align-self-center",
+        "image_height_mobile": "adapt",
+        "text_alignment_mobile": "left",
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_background_2": "",
+        "gradient_background_2": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "divider": false,
+        "full_width": false,
+        "rounded": false,
+        "enable_parallax": false,
+        "parallax_direction": "vertical"
+      }
+    },
+    "image_with_text_hB7Laa": {
+      "type": "image-with-text",
+      "blocks": {
+        "heading_J8tiiB": {
+          "type": "heading",
+          "settings": {
+            "heading": "Quick Access, No Unrolling.",
+            "heading_size": "title-sm",
+            "heading_tag": "h2",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle",
+            "highlighted_reveal": false
+          }
+        },
+        "text_8AjCfg": {
+          "type": "text",
+          "settings": {
+            "text": "<p>A rear zip opening gives you direct access to the main compartment, so you can grab everyday essentials without opening and re-rolling the top. Faster when you’re commuting, traveling or simply on the move.</p>",
+            "text_font": "body",
+            "text_size": "subtext-md",
+            "text_max_size": 32,
+            "text_line_height": 1.6,
+            "text_letter_spacing": 0,
+            "text_capitalize": false,
+            "secondary_color": false,
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        }
+      },
+      "block_order": [
+        "heading_J8tiiB",
+        "text_8AjCfg"
+      ],
+      "name": "t:sections.image-with-text.name",
+      "settings": {
+        "image": "shopify://shop_images/NayoSmartUrbanU8Roll-topBackpack_8_8b4d111e-edd2-41ab-a825-94f746c27f51.jpg",
+        "image_height": "adapt",
+        "image_width": "medium",
+        "layout": "image_first",
+        "text_alignment": "center",
+        "content_position": "align-self-center",
+        "image_mobile": "shopify://shop_images/NayoSmartUrbanU8Roll-topBackpack_8_8b4d111e-edd2-41ab-a825-94f746c27f51.jpg",
+        "image_height_mobile": "adapt",
+        "text_alignment_mobile": "left",
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_background_2": "",
+        "gradient_background_2": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "divider": false,
+        "full_width": false,
+        "rounded": false,
+        "enable_parallax": false,
+        "parallax_direction": "vertical"
+      }
+    },
+    "image_with_text_zhDgAy": {
+      "type": "image-with-text",
+      "blocks": {
+        "heading_eNp7Xb": {
+          "type": "heading",
+          "settings": {
+            "heading": "Weather-Ready for the Daily Commute",
+            "heading_size": "title-sm",
+            "heading_tag": "h2",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle",
+            "highlighted_reveal": false
+          }
+        },
+        "text_wRk77r": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Water-resistant recycled fabric helps protect your everyday gear from light rain, splashes and changing city weather—so a sudden shower doesn’t have to change your plans.</p>",
+            "text_font": "body",
+            "text_size": "subtext-md",
+            "text_max_size": 32,
+            "text_line_height": 1.6,
+            "text_letter_spacing": 0,
+            "text_capitalize": false,
+            "secondary_color": false,
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        }
+      },
+      "block_order": [
+        "heading_eNp7Xb",
+        "text_wRk77r"
+      ],
+      "name": "t:sections.image-with-text.name",
+      "settings": {
+        "image": "shopify://shop_images/NayoSmartUrbanU8Roll-topBackpack_1_cd8efb8f-c5ee-49c7-96bd-e517fda4fdac.jpg",
+        "image_height": "adapt",
+        "image_width": "medium",
+        "layout": "text_first",
+        "text_alignment": "left",
+        "content_position": "align-self-center",
+        "image_mobile": "shopify://shop_images/NayoSmartUrbanU8Roll-topBackpack_1_cd8efb8f-c5ee-49c7-96bd-e517fda4fdac.jpg",
+        "image_height_mobile": "adapt",
+        "text_alignment_mobile": "left",
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_background_2": "",
+        "gradient_background_2": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "divider": false,
+        "full_width": false,
+        "rounded": false,
+        "enable_parallax": false,
+        "parallax_direction": "vertical"
+      }
+    },
+    "image_with_text_FPNx7F": {
+      "type": "image-with-text",
+      "blocks": {
+        "heading_BDVCwd": {
+          "type": "heading",
+          "settings": {
+            "heading": "From Workday to Whatever’s Next",
+            "heading_size": "title-sm",
+            "heading_tag": "h2",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle",
+            "highlighted_reveal": false
+          }
+        },
+        "text_pM7if4": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Work essentials stay organized inside. External attachment points carry the extras when your day calls for more—without changing bags.</p>",
+            "text_font": "body",
+            "text_size": "subtext-md",
+            "text_max_size": 32,
+            "text_line_height": 1.6,
+            "text_letter_spacing": 0,
+            "text_capitalize": false,
+            "secondary_color": false,
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        }
+      },
+      "block_order": [
+        "heading_BDVCwd",
+        "text_pM7if4"
+      ],
+      "name": "t:sections.image-with-text.name",
+      "settings": {
+        "image": "shopify://shop_images/NayoSmartUrbanU8Roll-topBackpackBlack_12.jpg",
+        "image_height": "adapt",
+        "image_width": "medium",
+        "layout": "image_first",
+        "text_alignment": "left",
+        "content_position": "align-self-center",
+        "image_height_mobile": "adapt",
+        "text_alignment_mobile": "left",
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_background_2": "",
+        "gradient_background_2": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "divider": false,
+        "full_width": false,
+        "rounded": false,
+        "enable_parallax": false,
+        "parallax_direction": "vertical"
+      }
+    },
+    "product_comparison_XnUing": {
+      "type": "product-comparison",
+      "blocks": {
+        "product_H6bqgf": {
+          "type": "product",
+          "settings": {
+            "product": "urban-u8-roll-top-backpack",
+            "heading_1": "####FEATURES",
+            "value_1": "",
+            "heading_2": "Designed For",
+            "value_2": "<p>For Changing Plans</p>",
+            "heading_3": "Use Cases",
+            "value_3": "<p>Daily carry, hiking, short trips and light weekend plans</p>",
+            "heading_4": "Who It’s For",
+            "value_4": "<p>People whose plans change throughout the day.</p>",
+            "heading_5": "####DETAILS",
+            "value_5": "",
+            "heading_6": "Capacity",
+            "value_6": "<p>19–24L expandable capacity</p>",
+            "heading_7": "Dimensions",
+            "value_7": "<p>30 × 14 × 45 cm / 11.8 × 5.5 × 17.7 in</p>",
+            "heading_8": "Weight",
+            "value_8": "<p>800 g / 1.76 lb</p>",
+            "heading_9": "Main fabric",
+            "value_9": "<p>RPET 840D double-yarn polyester</p>",
+            "heading_10": "Water resistance",
+            "value_10": "<p>C0 fluorine-free water-resistant finish for daily splashes</p>",
+            "heading_11": "####DESIGN",
+            "value_11": "",
+            "heading_12": "Opening and closing",
+            "value_12": "<p>Roll-top with custom hook closure</p>",
+            "heading_13": "Storage structure",
+            "value_13": "<p>10 pockets for laptop, bottle, umbrella, cables, keys and small tech</p>",
+            "heading_14": "Laptop Size Compatibility",
+            "value_14": "<p>Fits laptops up to 16 inches, depending on exact device dimensions</p>",
+            "heading_15": "Tablet size compatibility",
+            "value_15": "<p>No dedicated tablet compartment</p>",
+            "heading_16": "Equipment Protection",
+            "value_16": "<p>Suspended laptop sleeve ; 2 mm EVA lining helps reduce bumps</p>",
+            "heading_17": "Module",
+            "value_17": "<p>Reflective side MOLLE webbing for small external gear</p>",
+            "heading_18": "Carry system",
+            "value_18": "<p>Contoured straps + breathable 3D mesh back panel for longer active days</p>",
+            "heading_19": "",
+            "value_19": "",
+            "heading_20": "",
+            "value_20": "",
+            "heading_21": "",
+            "value_21": "",
+            "heading_22": "",
+            "value_22": "",
+            "heading_23": "",
+            "value_23": "",
+            "heading_24": "",
+            "value_24": "",
+            "heading_25": "",
+            "value_25": "",
+            "text_size": "text-sm"
+          }
+        },
+        "product_kqphwD": {
+          "type": "product",
+          "settings": {
+            "product": "urban-u9-roll-top-backpack",
+            "heading_1": "####FEATURES",
+            "value_1": "",
+            "heading_2": "Designed For",
+            "value_2": "<p>For City Flow</p>",
+            "heading_3": "Use Cases",
+            "value_3": "<p>Daily commuting, city travel and short work trips</p>",
+            "heading_4": "Who It’s For",
+            "value_4": "<p>People who want a smoother, more efficient city workday.</p>",
+            "heading_5": "####DETAILS",
+            "value_5": "",
+            "heading_6": "Capacity",
+            "value_6": "<p>20 - 24Lworkday capacity</p>",
+            "heading_7": "Dimensions",
+            "value_7": "<p>30 × 14 × 47 cm / 11.8 × 5.5 × 18.5 in</p>",
+            "heading_8": "Weight",
+            "value_8": "<p>900 g / 1.98 lb</p>",
+            "heading_9": "Main fabric",
+            "value_9": "<p>150D Memory Twill Fabric</p>",
+            "heading_10": "Water resistance",
+            "value_10": "",
+            "heading_11": "####DESIGN",
+            "value_11": "",
+            "heading_12": "Opening and closing",
+            "value_12": "<p>FIDLOCK magnetic flap + top waterproof zipper access</p>",
+            "heading_13": "Storage structure",
+            "value_13": "<p>9 functional zones for laptop, tablet, tech, bottle, umbrella and daily essentials</p>",
+            "heading_14": "Laptop Size Compatibility",
+            "value_14": "<p>Fits laptops up to 16 inches, depending on exact device dimensions</p>",
+            "heading_15": "Tablet size compatibility",
+            "value_15": "<p>Separate tablet storage up to 12.9 inches, depending on dimensions</p>",
+            "heading_16": "Equipment Protection",
+            "value_16": "<p>2 mm EVA lining helps reduce bumps</p>",
+            "heading_17": "Module",
+            "value_17": "<p>No strong external modular focus; cleaner commuter look</p>",
+            "heading_18": "Carry system",
+            "value_18": "<p>S-shaped ergonomic straps + 3D breathable back panel for city commuting</p>",
+            "heading_19": "",
+            "value_19": "",
+            "heading_20": "",
+            "value_20": "",
+            "heading_21": "",
+            "value_21": "",
+            "heading_22": "",
+            "value_22": "",
+            "heading_23": "",
+            "value_23": "",
+            "heading_24": "",
+            "value_24": "",
+            "heading_25": "",
+            "value_25": "",
+            "text_size": "text-sm"
+          }
+        }
+      },
+      "block_order": [
+        "product_H6bqgf",
+        "product_kqphwD"
+      ],
+      "disabled": true,
+      "name": "t:sections.product-comparison.name",
+      "settings": {
+        "highlight_differences": true,
+        "sticky_product_info": true,
+        "first_available_variant": true,
+        "show_vendor": true,
+        "show_price": true,
+        "heading": "Product comparison",
+        "heading_size": "title-md",
+        "heading_alignment": "text-center md:items-center",
+        "heading_tag": "h2",
+        "subheading": "",
+        "description": "",
+        "button_label": "",
+        "button_link": "",
+        "button_external": false,
+        "button_icon": true,
+        "highlighted_text": "none",
+        "highlighted_scribble": "circle",
+        "highlighted_reveal": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "padding_top": 60,
+        "padding_bottom": 60,
+        "divider": false,
+        "full_width": true,
+        "rounded": false
+      }
+    },
+    "product_comparison_qEFx7p": {
+      "type": "product-comparison",
+      "blocks": {
+        "product_dt4zWz": {
+          "type": "product",
+          "settings": {
+            "product": "urban-u8-roll-top-backpack",
+            "heading_1": "Best for Flexible Days",
+            "value_1": "<p>Work → Commute → After-Work → Short Trip</p>",
+            "heading_2": "####Best For",
+            "value_2": "<p>Workdays that often turn into after-work plans or short trips</p>",
+            "heading_3": "####Carry Style",
+            "value_3": "<p>Flexible & adaptable</p>",
+            "heading_4": "####Capacity",
+            "value_4": "<p>19–24L expandable</p>",
+            "heading_5": "####Best Use of Expansion",
+            "value_5": "<p>Extra room for a jacket, gym gear or overnight essentials when plans change</p>",
+            "heading_6": "####Organization",
+            "value_6": "<p>10 dedicated storage zones for work, tech and everyday essentials</p>",
+            "heading_7": "####Laptop Setup",
+            "value_7": "<p>Suspended laptop compartment for laptops up to 16\", raised from the bottom for added protection</p>",
+            "heading_8": "####Main Access",
+            "value_8": "<p>Rear quick access lets you reach the main compartment without opening the roll-top</p>",
+            "heading_9": "####Opening Style",
+            "value_9": "<p>Roll-top design with flexible volume</p>",
+            "heading_10": "####Material Feel",
+            "value_10": "<p>Durable recycled RPET fabric with a more structured, weather-ready feel</p>",
+            "heading_11": "####Overall Look",
+            "value_11": "<p>Urban, functional, adaptable</p>",
+            "heading_12": "####Choose This If…",
+            "value_12": "<p><strong>Your day rarely ends exactly where it started.</strong><br/>Ideal for work, commuting, after-work plans and lighter short trips.</p>",
+            "heading_13": "####",
+            "value_13": "<p><a href=\"/products/urban-u8-roll-top-backpack\" title=\"Urban U8 Roll-top Backpack\"><strong>Need more flexibility? → Choose U8</strong></a></p>",
+            "heading_14": "",
+            "value_14": "<p>Fits laptops up to 16 inches, depending on exact device dimensions</p>",
+            "heading_15": "",
+            "value_15": "<p>Separate tablet storage up to 12.9 inches, depending on dimensions</p>",
+            "heading_16": "",
+            "value_16": "<p>2 mm EVA lining helps reduce bumps</p>",
+            "heading_17": "",
+            "value_17": "<p>No strong external modular focus; cleaner commuter look</p>",
+            "heading_18": "",
+            "value_18": "<p>S-shaped ergonomic straps + 3D breathable back panel for city commuting</p>",
+            "heading_19": "",
+            "value_19": "",
+            "heading_20": "",
+            "value_20": "",
+            "heading_21": "",
+            "value_21": "",
+            "heading_22": "",
+            "value_22": "",
+            "heading_23": "",
+            "value_23": "",
+            "heading_24": "",
+            "value_24": "",
+            "heading_25": "",
+            "value_25": "",
+            "text_size": "text-base lg:text-xl"
+          }
+        },
+        "product_LAQhC8": {
+          "type": "product",
+          "settings": {
+            "product": "urban-u9-roll-top-backpack",
+            "heading_1": "Best for Daily Work",
+            "value_1": "<p>Commute → Office → Meetings → Home</p>",
+            "heading_2": "####Best For",
+            "value_2": "<p>Daily commuting, office work and organized everyday carry</p>",
+            "heading_3": "####Carry Style",
+            "value_3": "<p>Streamlined & efficient</p>",
+            "heading_4": "####Capacity",
+            "value_4": "<p>20–24L expandable</p>",
+            "heading_5": "####Best Use of Expansion",
+            "value_5": "<p>Extra space when your normal workday needs a little more</p>",
+            "heading_6": "####Organization",
+            "value_6": "<p>9 dedicated storage zones designed to keep daily work gear easy to find</p>",
+            "heading_7": "####Laptop Setup",
+            "value_7": "<p>Dedicated laptop compartment with direct access for faster workday transitions</p>",
+            "heading_8": "####Main Access",
+            "value_8": "<p>Direct device access keeps your laptop separate from the main load</p>",
+            "heading_9": "####Opening Style",
+            "value_9": "<p>FIDLOCK magnetic closure for fast, intuitive one-handed access</p>",
+            "heading_10": "####Material Feel",
+            "value_10": "<p>Soft 150D memory fabric with vegan leather accents for a lighter, more refined look</p>",
+            "heading_11": "####Overall Look",
+            "value_11": "<p>Clean, refined, work-focused</p>",
+            "heading_12": "####Choose This If…",
+            "value_12": "<p><strong>You want your everyday work carry to feel simpler, lighter and more organized.</strong><br/>Ideal for commuting, office days and professionals who value quick access and organized carry.</p>",
+            "heading_13": "####",
+            "value_13": "<p><a href=\"/products/urban-u9-roll-top-backpack\" title=\"Urban U9 Roll-top Backpack\"><strong>Prefer a cleaner daily routine? → Choose U9</strong></a></p>",
+            "heading_14": "",
+            "value_14": "<p>Fits laptops up to 16 inches, depending on exact device dimensions</p>",
+            "heading_15": "",
+            "value_15": "<p>Separate tablet storage up to 12.9 inches, depending on dimensions</p>",
+            "heading_16": "",
+            "value_16": "<p>2 mm EVA lining helps reduce bumps</p>",
+            "heading_17": "",
+            "value_17": "<p>No strong external modular focus; cleaner commuter look</p>",
+            "heading_18": "",
+            "value_18": "<p>S-shaped ergonomic straps + 3D breathable back panel for city commuting</p>",
+            "heading_19": "",
+            "value_19": "",
+            "heading_20": "",
+            "value_20": "",
+            "heading_21": "",
+            "value_21": "",
+            "heading_22": "",
+            "value_22": "",
+            "heading_23": "",
+            "value_23": "",
+            "heading_24": "",
+            "value_24": "",
+            "heading_25": "",
+            "value_25": "",
+            "text_size": "text-base lg:text-xl"
+          }
+        },
+        "product_j6HJX3": {
+          "type": "product",
+          "disabled": true,
+          "settings": {
+            "product": "urban-u8-roll-top-backpack",
+            "heading_1": "####FEATURES",
+            "value_1": "",
+            "heading_2": "Designed For",
+            "value_2": "<p>For Changing Plans</p>",
+            "heading_3": "Use Cases",
+            "value_3": "<p>Daily carry, hiking, short trips and light weekend plans</p>",
+            "heading_4": "Who It’s For",
+            "value_4": "<p>People whose plans change throughout the day.</p>",
+            "heading_5": "####DETAILS",
+            "value_5": "",
+            "heading_6": "Capacity",
+            "value_6": "<p>19–24L expandable capacity</p>",
+            "heading_7": "Dimensions",
+            "value_7": "<p>30 × 14 × 45 cm / 11.8 × 5.5 × 17.7 in</p>",
+            "heading_8": "Weight",
+            "value_8": "<p>800 g / 1.76 lb</p>",
+            "heading_9": "Main fabric",
+            "value_9": "<p>RPET 840D double-yarn polyester</p>",
+            "heading_10": "Water resistance",
+            "value_10": "<p>C0 fluorine-free water-resistant finish for daily splashes</p>",
+            "heading_11": "####DESIGN",
+            "value_11": "",
+            "heading_12": "Opening and closing",
+            "value_12": "<p>Roll-top with custom hook closure</p>",
+            "heading_13": "Storage structure",
+            "value_13": "<p>10 pockets for laptop, bottle, umbrella, cables, keys and small tech</p>",
+            "heading_14": "Laptop Size Compatibility",
+            "value_14": "<p>Fits laptops up to 16 inches, depending on exact device dimensions</p>",
+            "heading_15": "Tablet size compatibility",
+            "value_15": "<p>No dedicated tablet compartment</p>",
+            "heading_16": "Equipment Protection",
+            "value_16": "<p>Suspended laptop sleeve ; 2 mm EVA lining helps reduce bumps</p>",
+            "heading_17": "Module",
+            "value_17": "<p>Reflective side MOLLE webbing for small external gear</p>",
+            "heading_18": "Carry system",
+            "value_18": "<p>Contoured straps + breathable 3D mesh back panel for longer active days</p>",
+            "heading_19": "",
+            "value_19": "",
+            "heading_20": "",
+            "value_20": "",
+            "heading_21": "",
+            "value_21": "",
+            "heading_22": "",
+            "value_22": "",
+            "heading_23": "",
+            "value_23": "",
+            "heading_24": "",
+            "value_24": "",
+            "heading_25": "",
+            "value_25": "",
+            "text_size": "text-sm"
+          }
+        }
+      },
+      "block_order": [
+        "product_dt4zWz",
+        "product_LAQhC8",
+        "product_j6HJX3"
+      ],
+      "name": "t:sections.product-comparison.name",
+      "settings": {
+        "highlight_differences": false,
+        "sticky_product_info": true,
+        "first_available_variant": true,
+        "show_vendor": true,
+        "show_price": true,
+        "heading": "Which Backpack Fits Your Day?",
+        "heading_size": "title-md",
+        "heading_alignment": "text-center md:items-center",
+        "heading_tag": "h2",
+        "subheading": "",
+        "description": "<p>U8 adapts when your plans change. | U9 simplifies the routine you repeat every day.</p>",
+        "button_label": "",
+        "button_link": "",
+        "button_external": false,
+        "button_icon": true,
+        "highlighted_text": "none",
+        "highlighted_scribble": "circle",
+        "highlighted_reveal": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "padding_top": 80,
+        "padding_bottom": 60,
+        "divider": false,
+        "full_width": true,
+        "rounded": false
+      }
+    },
+    "faq_zG3iEx": {
+      "type": "faq",
+      "blocks": {
+        "question_eqPWnn": {
+          "type": "question",
+          "settings": {
+            "title": "Who is the U8 designed for?",
+            "text": "<p>U8 is designed for people who carry work essentials every day but need a little more flexibility when plans change. It stays compact for commuting and work, then expands when you need extra room for a jacket, gym gear or a short overnight trip.</p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        },
+        "question_VzHDrA": {
+          "type": "question",
+          "settings": {
+            "title": "What can I fit in the U8 at 19L?",
+            "text": "<p>In its compact 19L setup, U8 is sized for everyday work essentials such as a laptop, charger, headphones, notebook, water bottle and other small daily items—without feeling like you’re carrying a travel backpack to work.</p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        },
+        "question_faQPjM": {
+          "type": "question",
+          "settings": {
+            "title": "How does the U8 expand from 19L to 24L?",
+            "text": "<p>Simply extend the roll-top and secure it at the higher position to add up to 5L of extra space. It’s useful when you need room for a light jacket, gym clothes, a packing cube or other extras that weren’t part of your morning commute.</p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        },
+        "question_XgrxRi": {
+          "type": "question",
+          "settings": {
+            "title": "What size laptop fits in the U8?",
+            "text": "<p>The suspended laptop compartment is designed to fit most laptops up to 16\", depending on the device’s exact dimensions and protective case. The raised compartment keeps your laptop off the bottom of the bag, while EVA padding adds cushioning against everyday bumps and hard set-downs.</p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        },
+        "question_CUVMab": {
+          "type": "question",
+          "settings": {
+            "title": "Do I have to open the roll-top every time I need something?",
+            "text": "<p>No. A rear zip opening gives you direct access to the main compartment, so you can grab everyday essentials without opening and re-rolling the top. It makes quick access easier during commutes, travel and busy days on the move.</p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        },
+        "question_ymcQ63": {
+          "type": "question",
+          "settings": {
+            "title": "Is the U8 waterproof?",
+            "text": "<p>U8 is water-resistant, not fully waterproof. Its weather-resistant outer fabric helps protect your everyday gear from light rain, splashes and changing city weather, but the backpack should not be submerged or exposed to prolonged heavy rain.</p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        },
+        "question_EGAYmQ": {
+          "type": "question",
+          "settings": {
+            "title": "Is the U8 comfortable when fully loaded?",
+            "text": "<p>U8 uses contoured padded shoulder straps and a breathable 3D mesh back panel to spread the load and improve airflow during everyday carry. At approximately 800g empty, it also keeps the backpack itself relatively lightweight before you start packing.</p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        },
+        "question_kXKNhk": {
+          "type": "question",
+          "settings": {
+            "title": "Can I use the U8 for short trips or as a carry-on?",
+            "text": "<p>Yes. The expandable 19–24L capacity makes U8 well suited to commuting, day trips and light overnight travel while keeping a relatively compact profile. Airline carry-on rules vary, so always check your airline’s current size limits before traveling.</p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        },
+        "question_gtMFa3": {
+          "type": "question",
+          "settings": {
+            "title": "What if the U8 isn’t right for me?",
+            "text": "<p>You can return or exchange your U8 within 30 days, subject to our return policy. It also comes with a 2-year warranty, so you can try it with greater confidence and see how it fits your everyday routine.</p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        }
+      },
+      "block_order": [
+        "question_eqPWnn",
+        "question_VzHDrA",
+        "question_faQPjM",
+        "question_XgrxRi",
+        "question_CUVMab",
+        "question_ymcQ63",
+        "question_EGAYmQ",
+        "question_kXKNhk",
+        "question_gtMFa3"
+      ],
+      "name": "t:sections.faq.name",
+      "settings": {
+        "style": "with-background",
+        "heading": "FREQUENTLY ASKED QUESTIONS",
+        "heading_size": "title-sm",
+        "heading_alignment": "text-left md:items-end md:flex-row",
+        "heading_tag": "h2",
+        "subheading": "",
+        "description": "",
+        "button_label": "",
+        "button_link": "",
+        "button_external": false,
+        "button_icon": true,
+        "highlighted_text": "none",
+        "highlighted_scribble": "circle",
+        "highlighted_reveal": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "color_overlay": "#ffffff",
+        "overlay_opacity": 4,
+        "padding_top": 20,
+        "padding_bottom": 0,
+        "divider": false,
+        "narrow": false,
+        "rounded": false
+      }
+    },
+    "shop_the_feed_GtrCEQ": {
+      "type": "shop-the-feed",
+      "blocks": {
+        "feed_6afAmf": {
+          "type": "feed",
+          "settings": {
+            "video": "shopify://files/videos/nayosmart-urban-u8-roll-top-backpack-black-video-packing-organization-quick-demo.mp4.webm",
+            "enable_video_autoplay": true,
+            "enable_video_looping": true,
+            "video_on_hover": false,
+            "button_label": "",
+            "button_link": "",
+            "button_external": false,
+            "button_icon": false,
+            "account_name": "",
+            "account_description": "",
+            "account_button": "",
+            "account_link": "",
+            "account_link_external": false,
+            "color_text": "#ffffff",
+            "color_button_text": "#000000",
+            "color_button_background": "#ffffff",
+            "color_button_gradient": "",
+            "hotspot_color_text_1": "#ffffff",
+            "hotspot_vertical_1": 45,
+            "hotspot_horizontal_1": 25,
+            "hotspot_product_1": "",
+            "hotspot_color_text_2": "#ffffff",
+            "hotspot_vertical_2": 30,
+            "hotspot_horizontal_2": 65,
+            "hotspot_product_2": "",
+            "hotspot_color_text_3": "#ffffff",
+            "hotspot_vertical_3": 60,
+            "hotspot_horizontal_3": 75,
+            "hotspot_product_3": "",
+            "hotspot_color_text_4": "#ffffff",
+            "hotspot_vertical_4": 50,
+            "hotspot_horizontal_4": 50,
+            "hotspot_product_4": ""
+          }
+        },
+        "feed_Py8Rg7": {
+          "type": "feed",
+          "settings": {
+            "image": "shopify://shop_images/nayosmart_urban_u8_roll_top_backpack_black_3.png",
+            "enable_video_autoplay": true,
+            "enable_video_looping": true,
+            "video_on_hover": false,
+            "button_label": "",
+            "button_link": "",
+            "button_external": false,
+            "button_icon": false,
+            "account_name": "",
+            "account_description": "",
+            "account_button": "",
+            "account_link": "",
+            "account_link_external": false,
+            "color_text": "#ffffff",
+            "color_button_text": "#000000",
+            "color_button_background": "#ffffff",
+            "color_button_gradient": "",
+            "hotspot_color_text_1": "#ffffff",
+            "hotspot_vertical_1": 45,
+            "hotspot_horizontal_1": 25,
+            "hotspot_product_1": "",
+            "hotspot_color_text_2": "#ffffff",
+            "hotspot_vertical_2": 30,
+            "hotspot_horizontal_2": 65,
+            "hotspot_product_2": "",
+            "hotspot_color_text_3": "#ffffff",
+            "hotspot_vertical_3": 60,
+            "hotspot_horizontal_3": 75,
+            "hotspot_product_3": "",
+            "hotspot_color_text_4": "#ffffff",
+            "hotspot_vertical_4": 50,
+            "hotspot_horizontal_4": 50,
+            "hotspot_product_4": ""
+          }
+        },
+        "feed_C99A3h": {
+          "type": "feed",
+          "settings": {
+            "image": "shopify://shop_images/nayosmart_urban_u8_roll_top_backpack_black_4.png",
+            "enable_video_autoplay": true,
+            "enable_video_looping": true,
+            "video_on_hover": false,
+            "button_label": "",
+            "button_link": "",
+            "button_external": false,
+            "button_icon": false,
+            "account_name": "",
+            "account_description": "",
+            "account_button": "",
+            "account_link": "",
+            "account_link_external": false,
+            "color_text": "#ffffff",
+            "color_button_text": "#000000",
+            "color_button_background": "#ffffff",
+            "color_button_gradient": "",
+            "hotspot_color_text_1": "#ffffff",
+            "hotspot_vertical_1": 45,
+            "hotspot_horizontal_1": 25,
+            "hotspot_product_1": "",
+            "hotspot_color_text_2": "#ffffff",
+            "hotspot_vertical_2": 30,
+            "hotspot_horizontal_2": 65,
+            "hotspot_product_2": "",
+            "hotspot_color_text_3": "#ffffff",
+            "hotspot_vertical_3": 60,
+            "hotspot_horizontal_3": 75,
+            "hotspot_product_3": "",
+            "hotspot_color_text_4": "#ffffff",
+            "hotspot_vertical_4": 50,
+            "hotspot_horizontal_4": 50,
+            "hotspot_product_4": ""
+          }
+        },
+        "feed_z4R6ay": {
+          "type": "feed",
+          "settings": {
+            "image": "shopify://shop_images/nayosmart_urban_u8_roll_top_backpack_black_1.png",
+            "enable_video_autoplay": true,
+            "enable_video_looping": true,
+            "video_on_hover": false,
+            "button_label": "",
+            "button_link": "",
+            "button_external": false,
+            "button_icon": false,
+            "account_name": "",
+            "account_description": "",
+            "account_button": "",
+            "account_link": "",
+            "account_link_external": false,
+            "color_text": "#ffffff",
+            "color_button_text": "#000000",
+            "color_button_background": "#ffffff",
+            "color_button_gradient": "",
+            "hotspot_color_text_1": "#ffffff",
+            "hotspot_vertical_1": 45,
+            "hotspot_horizontal_1": 25,
+            "hotspot_product_1": "",
+            "hotspot_color_text_2": "#ffffff",
+            "hotspot_vertical_2": 30,
+            "hotspot_horizontal_2": 65,
+            "hotspot_product_2": "",
+            "hotspot_color_text_3": "#ffffff",
+            "hotspot_vertical_3": 60,
+            "hotspot_horizontal_3": 75,
+            "hotspot_product_3": "",
+            "hotspot_color_text_4": "#ffffff",
+            "hotspot_vertical_4": 50,
+            "hotspot_horizontal_4": 50,
+            "hotspot_product_4": ""
+          }
+        },
+        "feed_pjJFkN": {
+          "type": "feed",
+          "settings": {
+            "image": "shopify://shop_images/nayosmart_urban_u8_roll_top_backpack_black_1.jpg",
+            "enable_video_autoplay": true,
+            "enable_video_looping": true,
+            "video_on_hover": false,
+            "button_label": "",
+            "button_link": "",
+            "button_external": false,
+            "button_icon": false,
+            "account_name": "",
+            "account_description": "",
+            "account_button": "",
+            "account_link": "",
+            "account_link_external": false,
+            "color_text": "#ffffff",
+            "color_button_text": "#000000",
+            "color_button_background": "#ffffff",
+            "color_button_gradient": "",
+            "hotspot_color_text_1": "#ffffff",
+            "hotspot_vertical_1": 45,
+            "hotspot_horizontal_1": 25,
+            "hotspot_product_1": "",
+            "hotspot_color_text_2": "#ffffff",
+            "hotspot_vertical_2": 30,
+            "hotspot_horizontal_2": 65,
+            "hotspot_product_2": "",
+            "hotspot_color_text_3": "#ffffff",
+            "hotspot_vertical_3": 60,
+            "hotspot_horizontal_3": 75,
+            "hotspot_product_3": "",
+            "hotspot_color_text_4": "#ffffff",
+            "hotspot_vertical_4": 50,
+            "hotspot_horizontal_4": 50,
+            "hotspot_product_4": ""
+          }
+        }
+      },
+      "block_order": [
+        "feed_6afAmf",
+        "feed_Py8Rg7",
+        "feed_C99A3h",
+        "feed_z4R6ay",
+        "feed_pjJFkN"
+      ],
+      "name": "t:sections.shop-the-feed.name",
+      "settings": {
+        "columns": 5,
+        "carousel_on_desktop": true,
+        "image_ratio": "adapt",
+        "columns_mobile": "1",
+        "swipe_on_mobile": true,
+        "account_name": "",
+        "show_vendor": false,
+        "show_price": true,
+        "heading": "Experience It Live",
+        "heading_size": "title-md",
+        "heading_alignment": "text-left md:items-end md:flex-row",
+        "heading_tag": "h2",
+        "subheading": "",
+        "description": "",
+        "button_label": "",
+        "button_link": "https://www.instagram.com/nayosmartofficial",
+        "button_external": false,
+        "button_icon": false,
+        "highlighted_text": "none",
+        "highlighted_scribble": "circle",
+        "highlighted_reveal": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "padding_top": 20,
+        "padding_bottom": 32,
+        "divider": false,
+        "full_width": false,
+        "rounded": false
+      }
+    },
+    "1745459688e1b8f795": {
+      "type": "apps",
+      "blocks": {
+        "judge_me_reviews_review_widget_kgrfet": {
+          "type": "shopify://apps/judge-me-reviews/blocks/review_widget/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {
+            "review_data": "sample_data",
+            "max_width": 1200,
+            "show_shop_reviews": false,
+            "empty_state": "empty_widget"
+          }
+        }
+      },
+      "block_order": [
+        "judge_me_reviews_review_widget_kgrfet"
+      ],
+      "settings": {
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "padding_top": 0,
+        "padding_bottom": 72,
+        "divider": false,
+        "full_width": false,
+        "rounded": true
+      }
+    },
+    "product-recommendations": {
+      "type": "product-recommendations",
+      "settings": {
+        "product_limit": 6,
+        "columns": 5,
+        "carousel_on_desktop": true,
+        "columns_mobile": "1",
+        "swipe_on_mobile": true,
+        "heading": "You may also like",
+        "heading_size": "title-sm",
+        "heading_alignment": "text-left md:items-end md:flex-row",
+        "heading_tag": "h2",
+        "subheading": "",
+        "description": "",
+        "highlighted_text": "none",
+        "highlighted_scribble": "circle",
+        "highlighted_reveal": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "padding_top": 36,
+        "padding_bottom": 0,
+        "divider": false,
+        "full_width": false,
+        "rounded": true
+      }
+    }
+  },
+  "order": [
+    "main-product",
+    "help-drawer",
+    "scrolling_text_UhBfFj",
+    "video_EcgNMa",
+    "rich_text_rjdai8",
+    "design_pack_v3_tabbed_content_DnLAAf",
+    "image_with_text_8mRgzL",
+    "image_with_text_zVxrWD",
+    "image_with_text_hB7Laa",
+    "image_with_text_zhDgAy",
+    "image_with_text_FPNx7F",
+    "product_comparison_XnUing",
+    "product_comparison_qEFx7p",
+    "faq_zG3iEx",
+    "shop_the_feed_GtrCEQ",
+    "1745459688e1b8f795",
+    "product-recommendations"
+  ]
+}

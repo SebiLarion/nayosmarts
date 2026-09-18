@@ -1,0 +1,444 @@
+{%- comment -%}
+{
+  "pack_name": "Feature range block",
+  "pack_author": "Design Packs",
+  "license": "© Design Packs. All rights reserved. This code is protected by copyright law and may not be reproduced, distributed, or used without explicit permission from the author. Shopify complies with the Digital Millennium Copyright Act (DMCA) and responds to claims of copyright infringement using DMCA procedures, which could result in the termination of your Shopify account.",
+}
+{%- endcomment -%}
+
+{% comment %} Security Code - hides section when app uninstalled {% endcomment %}
+{%- unless content_for_header contains 'design_packs_file.js' -%}
+  {%- if request.design_mode -%}
+    <div class="dsgn-pck__no-app-warning">
+      <div class="dsgn-pck__no-app-warning-background">
+      </div>
+      <div class="dsgn-pck__no-app-warning-text dsgn-pck__rte">
+        <p><strong>WARNING!</strong> This premium section will not display properly without an active subscription for <a href="https://apps.shopify.com/design-packs" target="_blank" rel="noopener nofollow">Design Packs</a>. If you need any support please email <a href="mailto:info@design-packs.com" target="_blank" rel="noopener">info@design-packs.com</a> with your questions.</p>
+      </div>
+    </div>
+  {%- endif -%}
+  {%- break -%}
+{%- endunless -%}
+
+{%- assign section_id = section.id | replace: '+', '' | replace: '=', '' -%}
+{%- assign block_index = section.blocks | find_index: 'id', block.id | plus: 1 -%}
+
+{%- assign block_horizontal_setting = block.settings.horizontal_alignment | default: 'default' -%}
+
+{%- capture css_styles -%}
+<style data-dp-css="blocks/_dpb_-_feature_range.liquid">
+
+  [id*=preview-block] .dsgn-pck__feature-range-container {
+    container-type: normal !important;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} {
+    --dot-color: {{ block.settings.dot_color }};
+    --line-color: {{ block.settings.line_color }};
+    --dot-size: {{ block.settings.dot_size }}px;
+    --line-size: {{ block.settings.line_size }}px;
+    width: {{ block.settings.base_width }}%;
+    max-width: {{ block.settings.max_width | remove: 'px' }}px;
+    display: flex;
+    {%- if block.settings.horizontal_alignment == 'left' -%}
+      align-self: flex-start;
+      margin-left: 0;
+      margin-right: auto;
+      --block-horizontal-alignment: flex-start;
+    {%- elsif block.settings.horizontal_alignment == 'right' -%}
+      align-self: flex-end;
+      margin-left: auto;
+      margin-right: 0;
+      --block-horizontal-alignment: flex-end;
+    {%- elsif block.settings.horizontal_alignment == 'center' -%}
+      align-self: center;
+      margin-left: auto;
+      margin-right: auto;
+      --block-horizontal-alignment: center;
+    {%- else -%}
+      margin-left: var(--block-margin-left, 0);
+      margin-right: var(--block-margin-right, 0);
+    {%- endif -%}
+    --section-horizontal-alignment: {%- if section.settings.text_alignment == 'center' -%}center{%- elsif section.settings.text_alignment == 'right' -%}flex-end{%- endif -%};
+    align-self: var(--block-horizontal-alignment, var(--section-horizontal-alignment));
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__feature-range-container {
+    container-type: inline-size;
+    container-name: dp-feature-range-container;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__feature-range-title + .dsgn-pck__feature-range {
+    margin-top: 15px;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__feature-range {
+    display: grid;
+    grid-template-columns: minmax(auto, 1fr) 4fr minmax(auto, 1fr);
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__feature-range-title {
+    color: {{ block.settings.title_color }};
+    text-align: {{ block.settings.text_alignment }};
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__feature-range-low {
+    text-align: {{ block.settings.text_alignment }};
+    color: {{ block.settings.low_range_label_color }};
+
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__feature-range-high {
+    text-align: {{ block.settings.text_alignment }};
+    color: {{ block.settings.high_range_label_color }};
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} input[type=range] {
+    width: 100%;
+    appearance: none;
+    background: var(--line-color);
+    height: var(--line-size);
+    min-height: unset;
+    border: none;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} input[type=range]::-webkit-slider-thumb   {
+    -webkit-appearance: none;
+    height: var(--dot-size);
+    width: var(--dot-size);
+    border-radius: var(--dot-size);
+    background: var(--dot-color);
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} input[type=range]::-moz-range-thumb {
+    -webkit-appearance: none;
+    height: var(--dot-size);
+    width: var(--dot-size);
+    border-radius: var(--dot-size);
+    background: var(--dot-color);
+  }
+
+  [autocomplete="off"] + div[data-lastpass-icon-root] {
+      display: none;
+  }
+
+  /* Custom CSS */
+  {%- if block.settings.enable_custom_css == true and block.settings.custom_css != blank -%}
+    {%- assign custom_css_rules = block.settings.custom_css | strip | split: '}' -%}
+    {%- for rule in custom_css_rules -%}
+      {%- assign clean_rule = rule | strip -%}
+      {%- if clean_rule contains '{' and clean_rule != blank -%}
+        {%- assign rule_parts = clean_rule | split: '{' -%}
+        {%- if rule_parts.size >= 2 -%}
+          {%- assign selector_part = rule_parts[0] | strip -%}
+          {%- assign css_part = rule_parts[1] | strip -%}
+          {%- if css_part != blank -%}
+            {%- if selector_part == blank -%}
+              #DP--{{ block.id }} { {{ css_part }} }
+            {%- else -%}
+              #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+
+  /* Small context - small container and mobile */
+  {%- capture small_context -%}
+  /* Mobile & narrow custom CSS */
+  {%- if block.settings.enable_custom_css == true and block.settings.mobile_css != blank -%}
+    {%- assign mobile_css_rules = block.settings.mobile_css | strip | split: '}' -%}
+    {%- for rule in mobile_css_rules -%}
+      {%- assign clean_rule = rule | strip -%}
+      {%- if clean_rule contains '{' and clean_rule != blank -%}
+        {%- assign rule_parts = clean_rule | split: '{' -%}
+        {%- if rule_parts.size >= 2 -%}
+          {%- assign selector_part = rule_parts[0] | strip -%}
+          {%- assign css_part = rule_parts[1] | strip -%}
+          {%- if css_part != blank -%}
+            {%- if selector_part == blank -%}
+              #DP--{{ block.id }} { {{ css_part }} }
+            {%- else -%}
+              #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+  {%- endcapture -%}
+
+  @supports (container-type: inline-size) {
+    @container dp-feature-range-container (max-width: 300px) {
+      {{ small_context }}
+    }
+  }
+
+  @media (max-width: 767px) {
+    {{ small_context }}
+  }
+
+  /* Hide or show on mobile and desktop */
+  {%- if block.settings.hidden_on == 'mobile' -%}
+    @media (max-width: 767px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+
+  {%- if block.settings.hidden_on == 'desktop' -%}
+    @media (min-width: 768px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+
+</style>
+{%- endcapture -%}
+
+<div id="DP--{{ block.id }}" class="DP--{{ block.id }} dsgn-pck__block dsgn-pck__block-id-{{ block.id }} dsgn-pck__block--{{ block.type }} dsgn-pck__block--{{ block.index }}" {{ block.shopify_attributes }} {% if section.settings.animation != blank %}style="--dsgn-pck-animate: {{ block_index }};"{% endif %}>
+  {{ css_styles }}
+  <div class="dsgn-pck__feature-range-container dsgn-pck__justify-{{ section.settings.text_alignment }}">
+    <div class="dsgn-pck__feature-range-title">
+      <h3 class="dsgn-pck__small-heading">{{ block.settings.title }}</h3>
+    </div>
+    <div class="dsgn-pck__feature-range">
+      <div class="dsgn-pck__feature-range-low dsgn-pck__text dsgn-pck__rte">
+        <p>{{ block.settings.low_range_label }}</p>
+      </div>
+      {%- if block.settings.level_value_type == 'range' -%}
+        <input type="range" aria-hidden="true" disabled="" id="{{ block.settings.title | default: 'Range' }}" readonly="true" min="0" max="10"  value="{{ block.settings.level }}" autocomplete="off">
+      {%- elsif block.settings.level_value_type == 'number' -%}
+        <input type="range" aria-hidden="true" disabled="" id="{{ block.settings.title | default: 'Range' }}" readonly="true" min="0" max="10"  value="{{ block.settings.level_number }}" autocomplete="off">
+      {%- endif -%}
+      <div class="dsgn-pck__feature-range-high dsgn-pck__text dsgn-pck__rte">
+        <p>{{ block.settings.high_range_label }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+  {
+      "name": "Feature range 🎒",
+      "tag": null,
+      "presets": [
+        {
+          "name": "Feature range 🎒",
+          "category": "* Design Packs: Conversion"
+        }
+      ],
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Heading"
+        },
+        {
+          "type": "text",
+          "id": "low_range_label",
+          "label": "Low range label",
+          "default": "Mild"
+        },
+        {
+          "type": "text",
+          "id": "high_range_label",
+          "label": "High range label",
+          "default": "Spicy"
+        },
+        {
+          "type": "select",
+          "id": "level_value_type",
+          "label": "Value type",
+          "default": "range",
+          "options": [
+            {
+              "value": "range",
+              "label": "Range"
+            },
+            {
+              "value": "number",
+              "label": "Number"
+            }
+          ]
+        },
+        {
+          "visible_if": "{{ block.settings.level_value_type == 'range' }}",
+          "type": "range",
+          "id": "level",
+          "label": "Level",
+          "default": 5,
+          "min": 0,
+          "max": 10,
+          "step": 0.1
+        },
+        {
+          "visible_if": "{{ block.settings.level_value_type == 'number' }}",
+          "type": "text",
+          "id": "level_number",
+          "label": "Level",
+          "default": "5",
+          "info": "Enter a number between 0 and 10. Decimal numbers are allowed."
+        },
+        {
+          "type": "header",
+          "content": "Text appearance"
+        },
+        {
+          "type": "text_alignment",
+          "id": "text_alignment",
+          "label": "Text alignment",
+          "default": "center",
+
+        },
+        {
+          "type": "header",
+          "content": "🎨 Design"
+        },
+        {
+          "type": "color",
+          "id": "title_color",
+          "label": "Heading",
+          "default": "#121212"
+        },
+        {
+          "type": "color",
+          "id": "low_range_label_color",
+          "label": "Low range label",
+          "default": "#121212"
+        },
+        {
+          "type": "color",
+          "id": "high_range_label_color",
+          "label": "High range label",
+          "default": "#121212"
+        },
+        {
+          "type": "color",
+          "id": "line_color",
+          "label": "Line",
+          "default": "#121212"
+        },
+        {
+          "type": "range",
+          "id": "line_size",
+          "label": "Line size",
+          "default": 1,
+          "min": 1,
+          "max": 8
+        },
+        {
+          "type": "color",
+          "id": "dot_color",
+          "label": "Dot",
+          "default": "#121212"
+        },
+        {
+          "type": "range",
+          "id": "dot_size",
+          "label": "Dot size",
+          "default": 18,
+          "min": 10,
+          "max": 40
+        },
+        {
+          "type": "header",
+          "content": "🖼 Layout"
+        },
+        {
+          "type": "range",
+          "id": "base_width",
+          "label": "Size",
+          "min": 50,
+          "max": 100,
+          "default": 100,
+          "unit": "%",
+          "info": "Size is based on the width of the container. [Learn more]( https://design-packs.gitbook.io/docs/fundamentals/block-settings/size-controls-for-image-and-video-blocks)"
+        },
+        {
+          "type": "text",
+          "id": "max_width",
+          "label": "Maximum width",
+          "placeholder": "eg. 1200px",
+          "info": "Sets width constraint for content."
+        },
+        {
+          "visible_if": "{{ block.settings.base_width < 100 or block.settings.max_width != blank }}",
+          "type": "select",
+          "id": "horizontal_alignment",
+          "label": "Horizontal alignment",
+          "default": "default",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "right",
+              "label": "Right"
+            },
+            {
+              "value": "default",
+              "label": "Default"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "hidden_on",
+          "label": "Hidden on",
+      "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "desktop",
+              "label": "Desktop"
+            },
+            {
+              "value": "mobile",
+              "label": "Mobile"
+            }
+          ]
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_custom_css",
+          "label": "Enable custom CSS",
+          "default": false
+        },
+        {
+          "visible_if": "{{ block.settings.enable_custom_css == true }}",
+          "type": "liquid",
+          "id": "custom_css",
+          "label": "Custom CSS"
+        },
+        {
+          "visible_if": "{{ block.settings.enable_custom_css == true }}",
+          "type": "liquid",
+          "id": "mobile_css",
+          "label": "Mobile & narrow custom CSS",
+          "info": "Applied on small screens or in tight spaces."
+        },
+        {
+          "type": "paragraph",
+          "content": "Open [Design Packs](/admin/apps/design-packs-1/dashboard) to add/update new sections and blocks."
+        }
+      ]
+    }
+{% endschema %}

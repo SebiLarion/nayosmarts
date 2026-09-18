@@ -211,8 +211,14 @@
     right: 1rem;
     bottom: 1.3125rem;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 0.8125rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  #shopify-section-{{ section.id }} .fine-details-h1__tabs::-webkit-scrollbar {
+    display: none;
   }
 
   @media screen and (min-width: 768px) {
@@ -222,6 +228,7 @@
       bottom: 1.5rem;
       width: max-content;
       justify-content: center;
+      overflow-x: visible;
       transform: translateX(-50%);
     }
   }
@@ -229,6 +236,7 @@
   #shopify-section-{{ section.id }} .fine-details-h1__tab {
     box-sizing: border-box;
     display: inline-flex;
+    flex: 0 0 auto;
     align-items: center;
     justify-content: center;
     min-width: 6.3125rem;
@@ -517,18 +525,14 @@
               assign view_image = view.settings.image
               assign view_image_mobile = view.settings.image_mobile | default: view_image
               assign popup_image = view.settings.popup_image | default: view_image
-              assign popup_image_mobile = view.settings.popup_image_mobile | default: popup_image
               assign view_label = view.settings.label | default: 'Front'
-              assign popup_title = view.settings.popup_title | default: view_label
               assign fallback_asset = blank
               if view.settings.view_key == 'front'
                 assign fallback_asset = 'fine-details-h1-front.png'
               endif
 
               assign image_url = blank
-              assign image_mobile_url = blank
               assign popup_image_url = blank
-              assign popup_image_mobile_url = blank
 
               if view_image != blank
                 assign image_url = view_image | image_url: width: 1600
@@ -536,22 +540,10 @@
                 assign image_url = fallback_asset | asset_url
               endif
 
-              if view_image_mobile != blank
-                assign image_mobile_url = view_image_mobile | image_url: width: 800
-              else
-                assign image_mobile_url = image_url
-              endif
-
               if popup_image != blank
                 assign popup_image_url = popup_image | image_url: width: 900
               else
                 assign popup_image_url = image_url
-              endif
-
-              if popup_image_mobile != blank
-                assign popup_image_mobile_url = popup_image_mobile | image_url: width: 600
-              else
-                assign popup_image_mobile_url = popup_image_url
               endif
             -%}
             <div
@@ -586,13 +578,12 @@
                     assign hotspot_title = view_label
                     assign hotspot_index = 0
                     assign hotspot_found = false
-                    assign view_order = 'front,interior,back' | split: ','
-                    for view_key in view_order
+                    for ordered_view in views
                       if hotspot_found
                         break
                       endif
                       for hs in section.blocks
-                        if hs.type == 'hotspot' and hs.settings.view_key == view_key
+                        if hs.type == 'hotspot' and hs.settings.view_key == ordered_view.settings.view_key
                           if hs.id == block.id
                             assign hotspot_found = true
                             break
@@ -792,6 +783,10 @@
             {
               "value": "back",
               "label": "Back"
+            },
+            {
+              "value": "laptop_pocket",
+              "label": "Laptop pocket"
             }
           ],
           "default": "front"
@@ -834,6 +829,10 @@
             {
               "value": "back",
               "label": "Back"
+            },
+            {
+              "value": "laptop_pocket",
+              "label": "Laptop pocket"
             }
           ],
           "default": "front"

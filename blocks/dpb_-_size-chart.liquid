@@ -1,0 +1,527 @@
+{%- comment -%}
+{
+  "pack_name": "Size chart block",
+  "pack_author": "Design Packs",
+  "license": "© Design Packs. All rights reserved. This code is protected by copyright law and may not be reproduced, distributed, or used without explicit permission from the author. Shopify complies with the Digital Millennium Copyright Act (DMCA) and responds to claims of copyright infringement using DMCA procedures, which could result in the termination of your Shopify account.",
+}
+{%- endcomment -%}
+
+{% comment %} Security Code - hides section when app uninstalled {% endcomment %}
+{%- unless content_for_header contains 'design_packs_file.js' -%}
+  {%- if request.design_mode -%}
+    <div class="dsgn-pck__no-app-warning">
+      <div class="dsgn-pck__no-app-warning-background">
+      </div>
+      <div class="dsgn-pck__no-app-warning-text dsgn-pck__rte">
+        <p><strong>WARNING!</strong> This premium section will not display properly without an active subscription for <a href="https://apps.shopify.com/design-packs" target="_blank" rel="noopener nofollow">Design Packs</a>. If you need any support please email <a href="mailto:info@design-packs.com" target="_blank" rel="noopener">info@design-packs.com</a> with your questions.</p>
+      </div>
+    </div>
+  {%- endif -%}
+  {%- break -%}
+{%- endunless -%}
+
+{%- comment -%} Assign: Preview section js fix {%- endcomment -%}
+{%- assign section_id = section.id | replace: '+', '' | replace: '=', '' -%}
+{%- assign block_index = section.blocks | find_index: 'id', block.id | plus: 1 -%}
+
+{%- assign enable_metafield_detect = section.settings.enable_metafield_detect | default: false -%}
+
+{%- comment -%} Color: check if color is set to transparent {%- endcomment -%}
+{%- assign block_divider_alpha = block.settings.divider_color | color_extract: 'alpha' -%}
+
+{%- capture css_styles -%}
+<style data-dp-css="blocks/_dpb_-_size-chart.liquid">
+
+  [id*=preview-block] {
+    container-type: normal !important;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} {
+    display: flex;
+    padding-top: {{ block.settings.padding_top }}px;
+    padding-bottom: {{ block.settings.padding_bottom }}px;
+    width: {{ block.settings.base_width }}%;
+    max-width: {{ block.settings.max_width | remove: 'px' }}px;
+    {%- if block.settings.horizontal_alignment == 'left' -%}
+      align-self: flex-start;
+      margin-left: 0;
+      margin-right: auto;
+      --block-horizontal-alignment: flex-start;
+    {%- elsif block.settings.horizontal_alignment == 'right' -%}
+      align-self: flex-end;
+      margin-left: auto;
+      margin-right: 0;
+      --block-horizontal-alignment: flex-end;
+    {%- elsif block.settings.horizontal_alignment == 'center' -%}
+      align-self: center;
+      margin-left: auto;
+      margin-right: auto;
+      --block-horizontal-alignment: center;
+    {%- else -%}
+      margin-left: var(--block-margin-left, 0);
+      margin-right: var(--block-margin-right, 0);
+    {%- endif -%}
+    --section-horizontal-alignment: {%- if section.settings.text_alignment == 'center' -%}center{%- elsif section.settings.text_alignment == 'right' -%}flex-end{%- endif -%};
+    align-self: var(--block-horizontal-alignment, var(--section-horizontal-alignment));
+    container-type: inline-size;
+    container-name: dp-divider-container;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} table {
+    border: 1px solid {{ block.settings.border_color }};
+    border-collapse: collapse;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    table-layout: fixed;
+    font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+    box-shadow: none;
+    {%- if section.settings.override_theme_font != blank -%}
+      font-family: var(--main-font);
+      font-weight: var(--main-font-weight);
+      font-style: var(--main-font-style);
+    {%- endif -%}
+    border-radius: {{ block.settings.border_radius }}px;
+    overflow: hidden;
+    {%- if block.settings.border_radius > 0 -%}
+      outline: 1px solid {{ block.settings.border_color }};
+    {%- endif -%}
+    text-align: {%- if block.settings.text_alignment != 'default' -%}{{ block.settings.text_alignment }}{%- else -%}{{ section.settings.text_alignment }}{%- endif -%};
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} table tr {
+    border: 1px solid {{ block.settings.border_color }};
+    padding: .35em;
+    background: {{ block.settings.table_background_color }};
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} table th,
+  .dsgn-pck__block-id-{{ block.id }} table td {
+    padding: .625em;
+    text-align: {{ block.settings.text_alignment }};
+    border: 1px solid {{ block.settings.border_color }};
+    color: {{ block.settings.text_color }};
+    font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} table th:nth-child(n+{{ block.settings.column_count | plus: 1 }}),
+  .dsgn-pck__block-id-{{ block.id }} table td:nth-child(n+{{ block.settings.column_count | plus: 1 }}) {
+    display: none;
+  }
+
+  /* Custom CSS */
+  {%- if block.settings.enable_custom_css == true and block.settings.custom_css != blank -%}
+    {%- assign custom_css_rules = block.settings.custom_css | strip | split: '}' -%}
+    {%- for rule in custom_css_rules -%}
+      {%- assign clean_rule = rule | strip -%}
+      {%- if clean_rule contains '{' and clean_rule != blank -%}
+        {%- assign rule_parts = clean_rule | split: '{' -%}
+        {%- if rule_parts.size >= 2 -%}
+          {%- assign selector_part = rule_parts[0] | strip -%}
+          {%- assign css_part = rule_parts[1] | strip -%}
+          {%- if css_part != blank -%}
+            {%- if selector_part == blank -%}
+              #DP--{{ block.id }} { {{ css_part }} }
+            {%- else -%}
+              #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+
+  /* Small context - small container and mobile */
+  {%- capture small_context -%}
+    {%- if block.settings.stack_on_mobile == true -%}
+      .dsgn-pck__block-id-{{ block.id }} table {
+        border: 0;
+        outline: 0;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} table thead {
+        border: none;
+        clip: rect(0 0 0 0);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} table tr {
+        border: 0;
+        border-bottom: 1px solid {{ block.settings.border_color }};
+        display: block;
+        margin-bottom: .625em;
+        padding: 0;
+        border-radius: {{ block.settings.border_radius }}px;
+        overflow: hidden;
+        {%- if block.settings.border_radius > 0 -%}
+          outline: 1px solid {{ block.settings.border_color }};
+        {%- endif -%}
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} table td {
+        border: 1px solid {{ block.settings.border_color }};
+        border-top: 0;
+        display: block;
+        text-align: right;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} table td::before {
+        content: attr(data-label);
+        float: left;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} table td:first-child {
+        border-top: 1px solid {{ block.settings.border_color }};
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} table td:last-child {
+        border-bottom: 0;
+      }
+    {%- endif -%}
+
+  /* Mobile & narrow custom CSS */
+  {%- if block.settings.enable_custom_css == true and block.settings.mobile_css != blank -%}
+    {%- assign mobile_css_rules = block.settings.mobile_css | strip | split: '}' -%}
+    {%- for rule in mobile_css_rules -%}
+      {%- assign clean_rule = rule | strip -%}
+      {%- if clean_rule contains '{' and clean_rule != blank -%}
+        {%- assign rule_parts = clean_rule | split: '{' -%}
+        {%- if rule_parts.size >= 2 -%}
+          {%- assign selector_part = rule_parts[0] | strip -%}
+          {%- assign css_part = rule_parts[1] | strip -%}
+          {%- if css_part != blank -%}
+            {%- if selector_part == blank -%}
+              #DP--{{ block.id }} { {{ css_part }} }
+            {%- else -%}
+              #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+  {%- endcapture -%}
+
+  @supports (container-type: inline-size) {
+    @container dp-divider-container (max-width: 300px) {
+      {{ small_context }}
+    }
+  }
+
+  @media (max-width: 767px) {
+    {{ small_context }}
+  }
+
+  /* Hide or show on mobile and desktop */
+  {%- if block.settings.hidden_on == 'mobile' -%}
+    @media (max-width: 767px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+
+  {%- if block.settings.hidden_on == 'desktop' -%}
+    @media (min-width: 768px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+</style>
+{%- endcapture -%}
+
+{%- capture js_scripts -%}
+  <script type="module" defer>
+    class SizeChartBlock extends HTMLElement {
+      constructor() {
+        super();
+        this.section = this.closest('#DP--{{ section_id }}');
+        this.table = this.querySelector('table');
+      }
+
+      connectedCallback() {
+        // Find the header row (first tr in thead)
+        const headerRow = this.table.querySelector('thead tr');
+        if (!headerRow) return;
+        const headers = Array.from(headerRow.querySelectorAll('th'));
+
+        // For each table row that is not in thead (i.e., data rows)
+        this.table.querySelectorAll('tbody tr, tr:not(thead tr)').forEach(row => {
+          // Skip header row if accidentally included
+          if (row.closest('thead')) return;
+          const cells = row.querySelectorAll('td');
+          cells.forEach((td, i) => {
+            if (headers[i]) {
+              td.setAttribute('data-label', headers[i].textContent.trim());
+            }
+          });
+        });
+      }
+
+    }
+
+    if (!customElements.get('dp-size-chart-block')) {
+      customElements.define('dp-size-chart-block', SizeChartBlock);
+    }
+  </script>
+{%- endcapture -%}
+
+<div id="DP--{{ block.id }}" class="DP--{{ block.id }} dsgn-pck__block dsgn-pck__block-id-{{ block.id }} dsgn-pck__block--{{ block.type }} dsgn-pck__block--{{ block.index }} dsgn-pck__justify-{%- if block.settings.horizontal_alignment != 'default' -%}{{ block.settings.horizontal_alignment }}{%- else -%}{{ section.settings.text_alignment }}{%- endif -%}" {{ block.shopify_attributes }} {% if section.settings.animation != blank %}style="--dsgn-pck-animate: {{ block_index }};"{% endif %}>
+  {{ css_styles }}
+  <dp-size-chart-block class="dsgn-pck__table-display">
+    <table>
+      {% content_for 'blocks' %}
+    </table>
+  </dp-size-chart-block>
+  {{ js_scripts }}
+</div>
+
+{% schema %}
+  {
+    "name": "Size chart 🎒",
+    "tag": null,
+    "settings": [
+      {
+        "type": "range",
+        "id": "column_count",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "label": "Column count",
+        "default": 4,
+        "info": "Sets the number of columns in the table."
+      },
+      {
+        "type": "header",
+        "content": "✏️ Text appearance",
+      },
+      {
+        "type": "select",
+        "id": "text_alignment",
+        "label": "Text alignment",
+        "default": "left",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          },
+          {
+            "value": "default",
+            "label": "Default"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "🎨 Design"
+      },
+      {
+        "type": "color",
+        "id": "text_color",
+        "label": "Text",
+        "alpha": true
+      },
+      {
+        "type": "color",
+        "id": "border_color",
+        "label": "Borders",
+        "alpha": true
+      },
+      {
+        "type": "range",
+        "id": "border_radius",
+        "label": "Rounded corners",
+        "min": 0,
+        "max": 40,
+        "default": 0,
+        "unit": "px"
+      },
+      {
+        "type": "color",
+        "id": "table_background_color",
+        "label": "Background",
+        "alpha": true
+      },
+      {
+        "type": "checkbox",
+        "id": "stack_on_mobile",
+        "label": "Stack on small screens",
+        "default": true,
+        "info": "If checked, the table will stack on small screens. A header row must be present."
+      },
+      {
+        "type": "header",
+        "content": "🖼 Layout"
+      },
+      {
+        "type": "range",
+        "id": "base_width",
+        "label": "Size",
+        "min": 10,
+        "max": 100,
+        "default": 100,
+        "unit": "%",
+        "info": "Size is based on the width of the container. [Learn more]( https://design-packs.gitbook.io/docs/fundamentals/block-settings/size-controls-for-image-and-video-blocks)"
+      },
+      {
+        "type": "text",
+        "id": "max_width",
+        "label": "Maximum width",
+        "placeholder": "eg. 1200px",
+        "info": "Sets width constraint for content."
+      },
+      {
+        "visible_if": "{{ block.settings.base_width < 100 or block.settings.max_width != blank }}",
+        "type": "select",
+        "id": "horizontal_alignment",
+        "label": "Horizontal alignment",
+        "default": "default",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          },
+          {
+            "value": "default",
+            "label": "Default"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "hidden_on",
+        "label": "Hidden on",
+      "default": "none",
+        "options": [
+          {
+            "value": "none",
+            "label": "None"
+          },
+          {
+            "value": "desktop",
+            "label": "Desktop"
+          },
+          {
+            "value": "mobile",
+            "label": "Mobile"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_custom_css",
+        "label": "Enable custom CSS",
+        "default": false
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_css == true }}",
+        "type": "liquid",
+        "id": "custom_css",
+        "label": "Custom CSS"
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_css == true }}",
+        "type": "liquid",
+        "id": "mobile_css",
+        "label": "Mobile & narrow custom CSS",
+        "info": "Applied on small screens or in tight spaces."
+      },
+      {
+        "type": "paragraph",
+        "content": "Open [Design Packs](/admin/apps/design-packs-1/dashboard) to add/update new sections and blocks."
+      }
+    ],
+    "blocks": [
+      {
+        "type": "_dpb_sub_-_size-chart-row"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Size chart 🎒",
+        "category": "* Design Packs: Table",
+        "settings": {
+          "text_color": "#121212",
+          "border_color": "#121212",
+          "border_radius": 8,
+          "table_background_color": "#ffffff"
+        },
+        "blocks": [
+          {
+            "type": "_dpb_sub_-_size-chart-row",
+            "name": "Header",
+            "settings": {
+              "header_row": true,
+              "text_color": "#121212",
+              "background_color": "#e3e3e3",
+              "header_column_1": "Size",
+              "header_column_2": "Bust",
+              "header_column_3": "Waist",
+              "header_column_4": "Hip",
+              "column_1": "<p>Size</p>",
+              "column_2": "<p>Bust</p>",
+              "column_3": "<p>Waist</p>",
+              "column_4": "<p>Hip</p>"
+            }
+          },
+          {
+            "type": "_dpb_sub_-_size-chart-row",
+            "name": "Small",
+            "settings": {
+              "highlight_text_color": "#ffffff",
+              "highlight_background_color": "#979797",
+              "column_1": "<p>Small</p>",
+              "column_2": "<p>37-39</p>",
+              "column_3": "<p>27-29</p>",
+              "column_4": "<p>37-39</p>"
+            }
+          },
+          {
+            "type": "_dpb_sub_-_size-chart-row",
+            "name": "Medium",
+            "settings": {
+              "column_1": "<p>Medium</p>",
+              "column_2": "<p>39-41</p>",
+              "column_3": "<p>30-32</p>",
+              "column_4": "<p>40-42</p>"
+            }
+          },
+          {
+            "type": "_dpb_sub_-_size-chart-row",
+            "name": "Large",
+            "settings": {
+              "column_1": "<p>Large</p>",
+              "column_2": "<p>42-44</p>",
+              "column_3": "<p>33-35</p>",
+              "column_4": "<p>43-45</p>"
+            }
+          }
+        ]
+      }
+    ],
+  }
+{% endschema %}

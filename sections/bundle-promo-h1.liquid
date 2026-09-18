@@ -77,6 +77,15 @@
     object-fit: cover;
   }
 
+  #shopify-section-{{ section.id }} .bundle-promo-h1__hero-video,
+  #shopify-section-{{ section.id }} .bundle-promo-h1__row-video {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
   #shopify-section-{{ section.id }} .bundle-promo-h1__caption {
     margin: 0;
     max-width: 39.75rem;
@@ -185,10 +194,12 @@
 {%- liquid
   assign heading = section.settings.heading | default: 'Get the Backpack + Sling Bag bundle for an extra 15% off!'
   assign caption = section.settings.caption
+  assign hero_video = section.settings.video
   assign hero_image = section.settings.image
   assign hero_image_mobile = section.settings.image_mobile | default: hero_image
   assign hero_fallback = 'bundle-promo-h1-hero.jpg'
-  assign rows = section.blocks | where: 'type', 'row'
+  assign rows = section.blocks
+  assign country_code = localization.country.iso_code | upcase
 -%}
 
 <div class="section section--padding{% if section.settings.divider %} section--divider{% endif %}">
@@ -200,7 +211,22 @@
 
       <div class="bundle-promo-h1__hero">
         <div class="bundle-promo-h1__hero-media">
-          {%- if hero_image != blank -%}
+          {%- if hero_video != blank -%}
+            {%- render 'video',
+              video: hero_video,
+              muted: true,
+              autoplay: true,
+              loop: true,
+              controls: false,
+              show_play_button: true,
+              cover_image: hero_image,
+              description: heading,
+              sizes: '(min-width: 768px) min(1296px, 100vw), 100vw',
+              loading: 'lazy',
+              fetchpriority: 'low',
+              class: 'bundle-promo-h1__hero-video'
+            -%}
+          {%- elsif hero_image != blank -%}
             <picture>
               {%- if section.settings.image_mobile != blank -%}
                 <source
@@ -223,13 +249,60 @@
         <div class="bundle-promo-h1__rows">
           {%- for block in rows -%}
             {%- liquid
+              assign row_video = block.settings.video
               assign row_image = block.settings.image
               assign row_image_mobile = block.settings.image_mobile | default: row_image
               assign row_heading = block.settings.heading
               assign row_text = block.settings.text
+              assign market_gift_product = blank
+              assign market_gift_description_source = 'theme_editor'
+              assign market_gift_image_source = 'product_gallery'
               assign reverse = false
               if block.settings.layout == 'text_first'
                 assign reverse = true
+              endif
+
+              if block.type == 'market_gift'
+                assign market_gift_product = block.settings.product_default
+                if country_code == 'US' and block.settings.product_us != blank
+                  assign market_gift_product = block.settings.product_us
+                endif
+
+                assign market_2_codes = block.settings.market_2_countries | upcase | replace: ' ', '' | split: ','
+                if block.settings.market_2_product != blank
+                  for code in market_2_codes
+                    if code == country_code
+                      assign market_gift_product = block.settings.market_2_product
+                    endif
+                  endfor
+                endif
+
+                assign market_3_codes = block.settings.market_3_countries | upcase | replace: ' ', '' | split: ','
+                if block.settings.market_3_product != blank
+                  for code in market_3_codes
+                    if code == country_code
+                      assign market_gift_product = block.settings.market_3_product
+                    endif
+                  endfor
+                endif
+
+                if market_gift_product != blank
+                  assign market_gift_variant = market_gift_product.selected_or_first_available_variant
+                  assign row_image = market_gift_variant.featured_media | default: market_gift_product.featured_media
+                  assign market_gift_description = market_gift_product.metafields.custom.free_gift_description.value
+                  assign market_gift_promo_image = market_gift_product.metafields.custom.freebie_promo_image.value
+                  if market_gift_description != blank
+                    assign row_text = market_gift_description
+                    assign market_gift_description_source = 'metafield'
+                  endif
+                  if market_gift_promo_image != blank
+                    assign row_image = market_gift_promo_image
+                    assign market_gift_image_source = 'metafield'
+                  endif
+                  assign row_image_mobile = row_image
+                  assign row_video = blank
+                  assign row_heading = block.settings.heading | append: ' ' | append: market_gift_product.title
+                endif
               endif
 
               assign row_fallback = 'bundle-promo-h1-row-1.jpg'
@@ -243,10 +316,31 @@
             -%}
             <div
               class="bundle-promo-h1__row{% if reverse %} is-reverse{% endif %}"
+              {% if block.type == 'market_gift' %}
+                data-market-country="{{ country_code | escape }}"
+                data-market-gift="{{ market_gift_product.handle | escape }}"
+                data-market-gift-description-source="{{ market_gift_description_source }}"
+                data-market-gift-image-source="{{ market_gift_image_source }}"
+              {% endif %}
               {{ block.shopify_attributes }}
             >
               <div class="bundle-promo-h1__row-media">
-                {%- if row_image != blank -%}
+                {%- if row_video != blank -%}
+                  {%- render 'video',
+                    video: row_video,
+                    muted: true,
+                    autoplay: true,
+                    loop: true,
+                    controls: false,
+                    show_play_button: false,
+                    cover_image: row_image,
+                    description: row_heading,
+                    sizes: '(min-width: 768px) min(636px, 50vw), 100vw',
+                    loading: 'lazy',
+                    fetchpriority: 'low',
+                    class: 'bundle-promo-h1__row-video'
+                  -%}
+                {%- elsif row_image != blank -%}
                   <picture>
                     {%- if block.settings.image_mobile != blank -%}
                       <source
@@ -265,7 +359,7 @@
                   <h3 class="bundle-promo-h1__row-title">{{ row_heading | escape }}</h3>
                 {%- endif -%}
                 {%- if row_text != blank -%}
-                  <p class="bundle-promo-h1__row-text">{{ row_text | escape }}</p>
+                  <p class="bundle-promo-h1__row-text">{{ row_text | escape | newline_to_br }}</p>
                 {%- endif -%}
               </div>
             </div>
@@ -292,6 +386,12 @@
       "id": "caption",
       "label": "Caption",
       "default": "Crafted with military-grade materials, this backpack is built to withstand the harshest conditions, ensuring your gear stays safe and dry."
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Video",
+      "info": "Displays instead of the image when selected."
     },
     {
       "type": "image_picker",
@@ -382,6 +482,12 @@
           "default": "image_first"
         },
         {
+          "type": "video",
+          "id": "video",
+          "label": "Video",
+          "info": "Displays instead of the image when selected."
+        },
+        {
           "type": "image_picker",
           "id": "image",
           "label": "Image"
@@ -400,6 +506,91 @@
           "type": "textarea",
           "id": "text",
           "label": "t:sections.global.settings.text.label"
+        }
+      ]
+    },
+    {
+      "type": "market_gift",
+      "name": "Market gift",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Shows the gift assigned to the customer's active country, using the same market pattern as the free gift near the product form."
+        },
+        {
+          "type": "select",
+          "id": "layout",
+          "label": "Desktop layout",
+          "options": [
+            {
+              "value": "image_first",
+              "label": "Image left"
+            },
+            {
+              "value": "text_first",
+              "label": "Image right"
+            }
+          ],
+          "default": "text_first"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading prefix",
+          "default": "Included in your purchase:"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:sections.global.settings.text.label",
+          "default": "Keep your essentials organized and dry with this bonus gift."
+        },
+        {
+          "type": "header",
+          "content": "All other markets"
+        },
+        {
+          "type": "product",
+          "id": "product_default",
+          "label": "Gift product"
+        },
+        {
+          "type": "header",
+          "content": "United States"
+        },
+        {
+          "type": "product",
+          "id": "product_us",
+          "label": "Gift product for United States"
+        },
+        {
+          "type": "header",
+          "content": "Extra markets"
+        },
+        {
+          "type": "paragraph",
+          "content": "Optional. Use comma-separated ISO country codes such as CA, GB, AU. Extra markets override the default and United States products."
+        },
+        {
+          "type": "text",
+          "id": "market_2_countries",
+          "label": "Countries 2"
+        },
+        {
+          "type": "product",
+          "id": "market_2_product",
+          "label": "Gift product 2"
+        },
+        {
+          "type": "text",
+          "id": "market_3_countries",
+          "label": "Countries 3"
+        },
+        {
+          "type": "product",
+          "id": "market_3_product",
+          "label": "Gift product 3"
         }
       ]
     }

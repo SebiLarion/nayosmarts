@@ -47,8 +47,8 @@
 <script src="{{ 'product-sticky-form-h1.js' | asset_url }}" defer="defer"></script>
 
 <style>
-  .template-hreman-h1 #sticky-cart-portal,
-  .template-hreman-h1 [data-essential-cart-element='essential-sticky-cart-container'] {
+  .template-herman-h1 #sticky-cart-portal,
+  .template-herman-h1 [data-essential-cart-element='essential-sticky-cart-container'] {
     display: none !important;
   }
 
@@ -374,6 +374,33 @@
     :is(#shopify-section-{{ section.id }}, body) .product-sticky-form-h1__media {
       display: block;
     }
+  }
+
+  {%- comment -%}
+    Shopify Inbox parks its chat activator with --shopify-chat-activator-offset
+    (the Inbox app embed sets 120px on :root) and reads that variable from inside
+    its shadow root, so page CSS can never reach the .activator-nudge rule
+    directly. assets/product-sticky-form-h1.js raises the variable while this bar
+    is on screen; registering the property here is what lets the move animate
+    instead of snapping.
+  {%- endcomment -%}
+  @property --shopify-chat-activator-offset {
+    syntax: '<length>';
+    inherits: true;
+    initial-value: 120px;
+  }
+
+  {%- comment -%}
+    Resting spot for this page while the bar is off screen: the 120px app default
+    reads too high. 20px matches the widget's own corner inset plus the phone's
+    home-indicator inset.
+  {%- endcomment -%}
+  html:root {
+    --shopify-chat-activator-offset: calc(20px + env(safe-area-inset-bottom, 0px));
+  }
+
+  html {
+    transition: --shopify-chat-activator-offset 0.35s ease;
   }
 </style>
 

@@ -5,6 +5,8 @@ if (!customElements.get('bundle-card-h1')) {
       connectedCallback() {
         this.idInput = this.querySelector('input[name="id"]');
         this.priceEl = this.querySelector('[data-bundle-price]');
+        this.originalPriceEl = this.querySelector('[data-bundle-original-price]');
+        this.savingsEl = this.querySelector('[data-bundle-savings]');
         this.titleEl = this.querySelector('[data-bundle-title]');
         this.colorEl = this.querySelector('[data-bundle-color]');
         this.imageEl = this.querySelector('[data-bundle-image]');
@@ -65,9 +67,7 @@ if (!customElements.get('bundle-card-h1')) {
         if (!option) return;
 
         if (this.idInput) this.idInput.value = option.value;
-        if (this.priceEl && option.dataset.price) {
-          this.priceEl.textContent = option.dataset.price.replace(/<[^>]*>/g, '').trim();
-        }
+        this.updatePrices(option.dataset.price, option.dataset.discountedPrice, option.dataset.savingsText);
         this.updateButton(option.dataset.available !== 'false');
       }
 
@@ -108,7 +108,7 @@ if (!customElements.get('bundle-card-h1')) {
 
       applyVariant(variant, swatch) {
         if (this.idInput) this.idInput.value = String(variant.id);
-        if (this.priceEl && variant.price) this.priceEl.textContent = variant.price;
+        this.updatePrices(variant.price, variant.discountedPrice, variant.savingsText);
         if (this.titleEl && swatch?.dataset.title) this.titleEl.textContent = swatch.dataset.title;
         this.updateImage(variant.image, variant.imageSrcset, swatch?.dataset.title);
         this.updateButton(variant.available !== false);
@@ -116,9 +116,7 @@ if (!customElements.get('bundle-card-h1')) {
 
       applyFromSwatch(swatch) {
         if (this.titleEl && swatch.dataset.title) this.titleEl.textContent = swatch.dataset.title;
-        if (this.priceEl && swatch.dataset.price) {
-          this.priceEl.textContent = swatch.dataset.price.replace(/<[^>]*>/g, '').trim();
-        }
+        this.updatePrices(swatch.dataset.price, swatch.dataset.discountedPrice, swatch.dataset.savingsText);
         this.updateImage(swatch.dataset.image, swatch.dataset.imageSrcset, swatch.dataset.title);
         if (this.idInput && swatch.dataset.variantId) this.idInput.value = swatch.dataset.variantId;
         this.updateButton(swatch.dataset.available !== 'false');
@@ -134,6 +132,18 @@ if (!customElements.get('bundle-card-h1')) {
         this.imageEl.src = src;
         if (srcset) this.imageEl.srcset = srcset;
         if (alt) this.imageEl.alt = alt;
+      }
+
+      updatePrices(originalPrice, discountedPrice, savingsText) {
+        if (this.originalPriceEl && originalPrice) {
+          this.originalPriceEl.textContent = originalPrice.replace(/<[^>]*>/g, '').trim();
+        }
+        if (this.priceEl && discountedPrice) {
+          this.priceEl.textContent = discountedPrice.replace(/<[^>]*>/g, '').trim();
+        }
+        if (this.savingsEl && savingsText) {
+          this.savingsEl.textContent = savingsText.replace(/<[^>]*>/g, '').trim();
+        }
       }
 
       updateButton(available) {

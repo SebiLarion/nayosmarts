@@ -105,7 +105,7 @@
   #shopify-section-{{ section.id }} .delivery_date_shortcode .deliverydate {
     display: block;
     width: 100%;
-    background: #fff !important;
+    background: rgb(var(--color-background)) !important;
     border: 0 !important;
     border-radius: 0 !important;
     padding: 1.5rem !important;
@@ -113,6 +113,16 @@
     font-size: var(--text-sm) !important;
     line-height: 1.7;
     color: #171717 !important;
+  }
+
+  /* Keep the app's timeline and icon backplates on the same H1 page color. */
+  #shopify-section-{{ section.id }} .deliverydate .template_order {
+    --temp_order_bg_color: rgb(var(--color-background)) !important;
+    background-color: rgb(var(--color-background)) !important;
+  }
+
+  #shopify-section-{{ section.id }} .deliverydate .three_step_card_img img {
+    background: rgb(var(--color-background)) !important;
   }
 
   #shopify-section-{{ section.id }} .deliverydate .delivery_msg {
@@ -143,7 +153,7 @@
 
   /* Zipcode checker form (shows when no zip is detected yet) */
   #shopify-section-{{ section.id }} .sb_edd_div .sb_edd_form {
-    background: #fff !important;
+    background: rgb(var(--color-background)) !important;
     border: 0 !important;
     border-radius: 0 !important;
     padding: 1.25rem !important;
@@ -240,6 +250,24 @@
   assign media_count = product.media.size
   assign first_3d_model = product.media | where: 'media_type', 'model' | first
   assign icon_list_block = section.blocks | where: 'type', 'icon_list' | first
+
+  assign gallery_custom_blocks = section.blocks | where: 'type', 'custom_gallery_image'
+  assign gallery_custom_count = 0
+  assign gallery_custom_active = false
+  if section.settings.gallery_source == 'custom' and gallery_custom_blocks.size > 0
+    capture gallery_custom_count_output
+      render 'product-custom-gallery-h1-count', section: section, product: product, product_variant: product.selected_or_first_available_variant
+    endcapture
+    assign gallery_custom_count = gallery_custom_count_output | strip | plus: 0
+    if gallery_custom_count > 0
+      assign gallery_custom_active = true
+    endif
+  endif
+
+  assign gallery_has_media = true
+  if media_count == 0 and gallery_custom_active == false
+    assign gallery_has_media = false
+  endif
 -%}
 
 {%- if first_3d_model -%}
@@ -329,13 +357,16 @@
 
 <div class="section section--padding{% if section.settings.divider %} section--divider{% endif %}{% if section.settings.rounded %} section--rounded relative{% endif %}">
   <div class="page-width{% if media_count > 0 %}{% if section.settings.full_width %} page-width--full{% endif %}{% else %} page-width--narrow{% endif %} relative">
-    <div class="featured-product product product--h1 product--{{ section.settings.gallery_layout }}{% if media_count == 0 %} no-media{% endif %} flex flex-col items-start lg:grid gap-5 w-full relative">
-      {%- if media_count > 0 -%}
+    <div class="featured-product product product--h1 product--{{ section.settings.gallery_layout }}{% if gallery_has_media == false %} no-media{% endif %} flex flex-col items-start lg:grid gap-5 w-full relative">
+      {%- if gallery_has_media -%}
         <div class="product__gallery-container{% if section.settings.enable_sticky_info %} lg:sticky{% endif %} flex flex-col gap-0 md:gap-8 relative w-full">
           {%- render 'product-media-gallery-h1',
             product: product,
             product_id: product.id,
             section_id: section.id,
+            gallery_custom_blocks: gallery_custom_blocks,
+            gallery_custom_active: gallery_custom_active,
+            gallery_custom_count: gallery_custom_count,
             gallery_layout: section.settings.gallery_layout,
             thumbnail_position: section.settings.thumbnail_position,
             image_ratio: section.settings.image_ratio,
@@ -375,6 +406,9 @@
           {%- case block.type -%}
             {%- when '@app' -%}
               {%- render block -%}
+
+            {%- when 'delivery_estimate' -%}
+              {%- render 'delivery-estimate-h1', product: product, section: section, block: block -%}
 
             {%- when 'reviews_badge' -%}
               {%- render 'reviews-badge-h1', product: product, block: block -%}
@@ -1191,6 +1225,23 @@
       "info": "t:sections.main-product.settings.header__media.info"
     },
     {
+      "type": "select",
+      "id": "gallery_source",
+      "label": "Gallery source",
+      "options": [
+        {
+          "value": "product",
+          "label": "Product media"
+        },
+        {
+          "value": "custom",
+          "label": "Custom gallery"
+        }
+      ],
+      "default": "product",
+      "info": "Custom gallery uses the Custom gallery image blocks. When no image blocks match the selected color and size, the product's own media is shown."
+    },
+    {
       "type": "range",
       "id": "media_size",
       "min": 35,
@@ -1425,8 +1476,40 @@
     }
   ],
   "blocks": [
+    { "type": "delivery_estimate", "name": "H1 delivery estimate", "limit": 1, "settings": [] },
     {
       "type": "@app"
+    },
+    {
+      "type": "custom_gallery_image",
+      "name": "Custom gallery image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "alt",
+          "label": "Alt text",
+          "info": "Describe the image for accessibility and search engines."
+        },
+        {
+          "type": "text",
+          "id": "match_color",
+          "label": "Show for color",
+          "placeholder": "e.g. Midnight Black",
+          "info": "Leave blank to show this image for every color."
+        },
+        {
+          "type": "text",
+          "id": "match_size",
+          "label": "Show for size (capacity)",
+          "placeholder": "e.g. 20L-25L（16.3″ laptop）",
+          "info": "Leave blank to show this image for every size. Enter the capacity exactly as shown on the product."
+        }
+      ]
     },
     {
       "type": "breadcrumb",

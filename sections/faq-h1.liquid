@@ -1,3 +1,5 @@
+<script src="{{ 'faq-h1.js' | asset_url }}" defer="defer"></script>
+
 <style>
   #shopify-section-{{ section.id }} {
     --section-padding-top: {{ section.settings.padding_top }}px;
@@ -70,6 +72,23 @@
     font-weight: 600;
     font-size: 1.125rem;
     line-height: 1;
+  }
+  #shopify-section-{{ section.id }} .faq-h1__variant-spec {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-4);
+  }
+  #shopify-section-{{ section.id }} .faq-h1__variant-spec + .faq-h1__variant-spec {
+    margin-block-start: var(--sp-6);
+  }
+  #shopify-section-{{ section.id }} .faq-h1__variant-spec-label {
+    font-weight: 600;
+    font-size: 1.125rem;
+    line-height: 1;
+  }
+  #shopify-section-{{ section.id }} .faq-h1__variant-spec-value > * {
+    margin: 0;
   }
 
   #shopify-section-{{ section.id }} .faq-h1__row {
@@ -161,6 +180,7 @@
       padding-block-end: 1.5rem;
     }
     #shopify-section-{{ section.id }} .faq-h1__rte p strong,
+    #shopify-section-{{ section.id }} .faq-h1__variant-spec-label,
     #shopify-section-{{ section.id }} .faq-h1__region-label {
       font-size: 1.5rem;
     }
@@ -193,13 +213,26 @@
                 {%- comment %}theme-check-enable UnclosedHTMLElement{% endcomment %}
               {%- endif -%}
               {%- assign has_open_item = true -%}
+              {%- comment %}theme-check-disable UnclosedHTMLElement{% endcomment %}
               <details class="details" is="accordion-details"{% if block.settings.open %} open{% endif %} {{ block.shopify_attributes }}>
                 <summary class="details__summary flex items-center justify-between gap-4 cursor-pointer">
                   <span class="faq-h1__title">{{ block.settings.title | escape }}</span>
                   {{ plus_icon }}
                 </summary>
                 <div class="details__content faq-h1__content">
-                  {%- if block.settings.content != blank -%}
+              {%- comment %}theme-check-enable UnclosedHTMLElement{% endcomment %}
+                  {%- if block.settings.use_variant_metafields -%}
+                    <faq-h1-variant-specs>
+                      <div class="faq-h1__rte" data-faq-h1-variant-specs-content>
+                        {%- render 'variant-specifications-h1', variant: product.selected_or_first_available_variant, fallback_content: block.settings.content -%}
+                      </div>
+                      {%- for variant in product.variants -%}
+                        <template data-faq-h1-variant-specs-template="{{ variant.id }}">
+                          {%- render 'variant-specifications-h1', variant: variant, fallback_content: block.settings.content -%}
+                        </template>
+                      {%- endfor -%}
+                    </faq-h1-variant-specs>
+                  {%- elsif block.settings.content != blank -%}
                     {%- liquid
                       assign faq_content = block.settings.content
                       assign faq_content = faq_content | replace: '</strong><br/>', '</strong>'
@@ -213,7 +246,20 @@
               {%- if has_open_item -%}
                 <div class="faq-h1__row" {{ block.shopify_attributes }}>
                   {%- render 'icon-feature-h1', icon: block.settings.icon -%}
-                  <span>{{ block.settings.text | escape }}</span>
+                  {%- if block.settings.variant_fitment != blank and block.settings.variant_fitment != 'none' -%}
+                    <faq-h1-variant-specs>
+                      <span data-faq-h1-variant-specs-content>
+                        {%- render 'variant-fitment-h1', variant: product.selected_or_first_available_variant, field: block.settings.variant_fitment, fallback_text: block.settings.text -%}
+                      </span>
+                      {%- for variant in product.variants -%}
+                        <template data-faq-h1-variant-specs-template="{{ variant.id }}">
+                          {%- render 'variant-fitment-h1', variant: variant, field: block.settings.variant_fitment, fallback_text: block.settings.text -%}
+                        </template>
+                      {%- endfor -%}
+                    </faq-h1-variant-specs>
+                  {%- else -%}
+                    <span>{{ block.settings.text | escape }}</span>
+                  {%- endif -%}
                 </div>
               {%- endif -%}
 
@@ -241,7 +287,9 @@
                         {%- if logo_file != blank -%}
                           {%- assign logo_h = logo_parts[1] | strip | default: 28 -%}
                           {%- assign logo_alt = logo_file | remove: 'airline-' | remove: '-h1' | split: '.' | first | replace: '-', ' ' | capitalize -%}
+                          {%- comment %}theme-check-disable ImgWidthAndHeight{% endcomment %}
                           <img src="{{ logo_file | asset_url }}" alt="{{ logo_alt | escape }}" loading="lazy" style="--logo-h: {{ logo_h }}px">
+                          {%- comment %}theme-check-enable ImgWidthAndHeight{% endcomment %}
                         {%- endif -%}
                       {%- endfor -%}
                     {%- endif -%}
@@ -353,6 +401,13 @@
         },
         {
           "type": "checkbox",
+          "id": "use_variant_metafields",
+          "label": "Use selected variant specifications",
+          "info": "Uses custom.capacity, custom.dimensions, and custom.weight from the selected variant. Falls back to Content when none are set.",
+          "default": false
+        },
+        {
+          "type": "checkbox",
           "id": "open",
           "label": "Open by default",
           "default": false
@@ -382,6 +437,18 @@
           "id": "text",
           "label": "t:sections.global.settings.text.label",
           "default": "Fits laptops up to 16 inch displays"
+        },
+        {
+          "type": "select",
+          "id": "variant_fitment",
+          "label": "Selected variant fitment",
+          "info": "Reads a single-line variant metafield. Text is the fallback when that field is empty.",
+          "options": [
+            { "value": "none", "label": "Use Text" },
+            { "value": "laptop_fitment", "label": "Laptop: custom.laptop_fitment" },
+            { "value": "tablet_fitment", "label": "Tablet: custom.tablet_fitment" }
+          ],
+          "default": "none"
         }
       ]
     },

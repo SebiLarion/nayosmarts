@@ -102,6 +102,20 @@
     color: rgb(var(--color-foreground));
   }
 
+  #shopify-section-{{ section.id }} .bundle-card-h1__prices {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  #shopify-section-{{ section.id }} .bundle-card-h1__original-price {
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: #e4452a;
+    text-decoration-line: line-through;
+    text-decoration-thickness: 0.15em;
+  }
+
   #shopify-section-{{ section.id }} .bundle-card-h1__savings {
     font-size: var(--text-sm);
     font-weight: 500;
@@ -417,6 +431,19 @@
                               else
                                 assign item_price = matched_variant.price | money | strip_html
                               endif
+                              assign item_discounted_cents = matched_variant.price | times: 85 | divided_by: 100
+                              if settings.currency_code_enabled
+                                assign item_discounted_price = item_discounted_cents | money_with_currency | strip_html
+                              else
+                                assign item_discounted_price = item_discounted_cents | money | strip_html
+                              endif
+                              assign item_savings_cents = matched_variant.price | minus: item_discounted_cents
+                              if settings.currency_code_enabled
+                                assign item_savings_price = item_savings_cents | money_with_currency | strip_html
+                              else
+                                assign item_savings_price = item_savings_cents | money | strip_html
+                              endif
+                              assign item_savings_text = 'products.general.save_html' | t: saved_amount: item_savings_price | strip_html
                             endif
                           -%}
                           {%- if matched_variant != blank -%}
@@ -429,6 +456,8 @@
                                 data-title="{{ card_product.title | escape }}"
                                 data-color="{{ value_name | escape }}"
                                 data-price="{{ item_price | escape }}"
+                                data-discounted-price="{{ item_discounted_price | escape }}"
+                                data-savings-text="{{ item_savings_text | escape }}"
                                 data-available="{% if matched_variant.available %}true{% else %}false{% endif %}"
                                 {% if item_media %}
                                   data-image="{{ item_media | image_url: width: 900 }}"
@@ -466,10 +495,27 @@
                   <div class="bundle-card-h1__field">
                     <select class="select" data-bundle-variants aria-label="{{ card_product.options.first | default: 'Options' | escape }}">
                       {%- for variant in card_product.variants -%}
+                        {%- liquid
+                          assign variant_discounted_cents = variant.price | times: 85 | divided_by: 100
+                          if settings.currency_code_enabled
+                            assign variant_discounted_price = variant_discounted_cents | money_with_currency | strip_html
+                          else
+                            assign variant_discounted_price = variant_discounted_cents | money | strip_html
+                          endif
+                          assign variant_savings_cents = variant.price | minus: variant_discounted_cents
+                          if settings.currency_code_enabled
+                            assign variant_savings_price = variant_savings_cents | money_with_currency | strip_html
+                          else
+                            assign variant_savings_price = variant_savings_cents | money | strip_html
+                          endif
+                          assign variant_savings_text = 'products.general.save_html' | t: saved_amount: variant_savings_price | strip_html
+                        -%}
                         <option
                           value="{{ variant.id }}"
                           data-available="{{ variant.available }}"
                           data-price="{% if settings.currency_code_enabled %}{{ variant.price | money_with_currency | strip_html }}{% else %}{{ variant.price | money | strip_html }}{% endif %}"
+                          data-discounted-price="{{ variant_discounted_price | escape }}"
+                          data-savings-text="{{ variant_savings_text | escape }}"
                           {% if variant == current_variant %}selected{% endif %}
                         >
                           {{- variant.title | escape -}}
@@ -491,11 +537,26 @@
                           else
                             assign v_price = variant.price | money | strip_html
                           endif
+                          assign v_discounted_cents = variant.price | times: 85 | divided_by: 100
+                          if settings.currency_code_enabled
+                            assign v_discounted_price = v_discounted_cents | money_with_currency | strip_html
+                          else
+                            assign v_discounted_price = v_discounted_cents | money | strip_html
+                          endif
+                          assign v_savings_cents = variant.price | minus: v_discounted_cents
+                          if settings.currency_code_enabled
+                            assign v_savings_price = v_savings_cents | money_with_currency | strip_html
+                          else
+                            assign v_savings_price = v_savings_cents | money | strip_html
+                          endif
+                          assign v_savings_text = 'products.general.save_html' | t: saved_amount: v_savings_price | strip_html
                         -%}
                         {
                           "id": {{ variant.id }},
                           "available": {{ variant.available }},
                           "price": {{ v_price | json }},
+                          "discountedPrice": {{ v_discounted_price | json }},
+                          "savingsText": {{ v_savings_text | json }},
                           "options": {{ variant.options | json }},
                           "image": {% if v_media %}{{ v_media | image_url: width: 900 | json }}{% else %}null{% endif %},
                           "imageSrcset": {% if v_media %}"{{ v_media | image_url: width: 360 }} 360w, {{ v_media | image_url: width: 540 }} 540w, {{ v_media | image_url: width: 900 }} 900w"{% else %}null{% endif %}
@@ -505,17 +566,35 @@
                   </script>
                 {%- endif -%}
 
+                {%- liquid
+                  assign current_discounted_cents = current_variant.price | times: 85 | divided_by: 100
+                  assign current_savings_cents = current_variant.price | minus: current_discounted_cents
+                  if settings.currency_code_enabled
+                    assign current_savings_price = current_savings_cents | money_with_currency | strip_html
+                  else
+                    assign current_savings_price = current_savings_cents | money | strip_html
+                  endif
+                -%}
                 <div class="bundle-card-h1__price-row">
-                  <span class="bundle-card-h1__price" data-bundle-price>
-                    {%- if settings.currency_code_enabled -%}
-                      {{ current_variant.price | money_with_currency | strip_html }}
-                    {%- else -%}
-                      {{ current_variant.price | money | strip_html }}
-                    {%- endif -%}
+                  <span class="bundle-card-h1__prices">
+                    <span class="bundle-card-h1__price" data-bundle-price>
+                      {%- if settings.currency_code_enabled -%}
+                        {{ current_discounted_cents | money_with_currency | strip_html }}
+                      {%- else -%}
+                        {{ current_discounted_cents | money | strip_html }}
+                      {%- endif -%}
+                    </span>
+                    <span class="bundle-card-h1__original-price" data-bundle-original-price>
+                      {%- if settings.currency_code_enabled -%}
+                        {{ current_variant.price | money_with_currency | strip_html }}
+                      {%- else -%}
+                        {{ current_variant.price | money | strip_html }}
+                      {%- endif -%}
+                    </span>
                   </span>
-                  {%- if block.settings.savings_text != blank -%}
-                    <span class="bundle-card-h1__savings">{{ block.settings.savings_text | escape }}</span>
-                  {%- endif -%}
+                  <span class="bundle-card-h1__savings" data-bundle-savings>
+                    {{- 'products.general.save_html' | t: saved_amount: current_savings_price -}}
+                  </span>
                 </div>
 
                 <div class="bundle-card-h1__form">
@@ -784,12 +863,6 @@
           "label": "Color products",
           "limit": 12,
           "info": "Select every color sibling of this product, including the current one. Up to 12. If empty, Color variants on the selected product are used."
-        },
-        {
-          "type": "text",
-          "id": "savings_text",
-          "label": "Savings text",
-          "info": "Shown in orange next to the price, e.g. $35 USD cheaper"
         }
       ]
     }

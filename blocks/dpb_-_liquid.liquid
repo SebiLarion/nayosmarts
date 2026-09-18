@@ -1,0 +1,198 @@
+{%- comment -%}
+{
+  "pack_name": "Liquid block",
+  "pack_author": "Design Packs",
+  "license": "© Design Packs. All rights reserved. This code is protected by copyright law and may not be reproduced, distributed, or used without explicit permission from the author. Shopify complies with the Digital Millennium Copyright Act (DMCA) and responds to claims of copyright infringement using DMCA procedures, which could result in the termination of your Shopify account.",
+}
+{%- endcomment -%}
+
+{% comment %} Security Code - hides section when app uninstalled {% endcomment %}
+{%- unless content_for_header contains 'design_packs_file.js' -%}
+  {%- if request.design_mode -%}
+    <div class="dsgn-pck__no-app-warning">
+      <div class="dsgn-pck__no-app-warning-background">
+      </div>
+      <div class="dsgn-pck__no-app-warning-text dsgn-pck__rte">
+        <p><strong>WARNING!</strong> This premium section will not display properly without an active subscription for <a href="https://apps.shopify.com/design-packs" target="_blank" rel="noopener nofollow">Design Packs</a>. If you need any support please email <a href="mailto:info@design-packs.com" target="_blank" rel="noopener">info@design-packs.com</a> with your questions.</p>
+      </div>
+    </div>
+  {%- endif -%}
+  {%- break -%}
+{%- endunless -%}
+
+{%- capture css_styles -%}
+<style data-dp-css="blocks/_dpb_-_liquid.liquid">
+
+.dsgn-pck__block-id-{{ block.id }} {
+  display: flex;
+  width: 100%;
+}
+
+.dsgn-pck__block-id-{{ block.id }} .dsgn-pck__block-container {
+  container-type: inline-size;
+  container-name: dp-liquid-container;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Custom CSS */
+{%- if block.settings.enable_custom_css == true and block.settings.custom_css != blank -%}
+  {%- assign custom_css_rules = block.settings.custom_css | strip | split: '}' -%}
+  {%- for rule in custom_css_rules -%}
+    {%- assign clean_rule = rule | strip -%}
+    {%- if clean_rule contains '{' and clean_rule != blank -%}
+      {%- assign rule_parts = clean_rule | split: '{' -%}
+      {%- if rule_parts.size >= 2 -%}
+        {%- assign selector_part = rule_parts[0] | strip -%}
+        {%- assign css_part = rule_parts[1] | strip -%}
+        {%- if css_part != blank -%}
+          {%- if selector_part == blank -%}
+            #DP--{{ block.id }} { {{ css_part }} }
+          {%- else -%}
+            #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+
+  /* Small context - small container and mobile */
+  {%- capture small_context -%}
+    {%- if block.settings.enable_custom_css == true and block.settings.mobile_css != blank -%}
+      {%- assign mobile_css_rules = block.settings.mobile_css | strip | split: '}' -%}
+      {%- for rule in mobile_css_rules -%}
+        {%- assign clean_rule = rule | strip -%}
+        {%- if clean_rule contains '{' and clean_rule != blank -%}
+          {%- assign rule_parts = clean_rule | split: '{' -%}
+          {%- if rule_parts.size >= 2 -%}
+            {%- assign selector_part = rule_parts[0] | strip -%}
+            {%- assign css_part = rule_parts[1] | strip -%}
+            {%- if css_part != blank -%}
+              {%- if selector_part == blank -%}
+                #DP--{{ block.id }} { {{ css_part }} }
+              {%- else -%}
+                #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endcapture -%}
+
+  @supports (container-type: inline-size) {
+    @container dp-liquid-container (max-width: 300px) {
+      {{ small_context }}
+    }
+  }
+
+  @media (max-width: 767px) {
+    {{ small_context }}
+  }
+
+  {%- if block.settings.hidden_on == 'mobile' -%}
+    @media (max-width: 767px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+
+  {%- if block.settings.hidden_on == 'desktop' -%}
+    @media (min-width: 768px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+</style>
+{%- endcapture -%}
+
+{%- comment -%} Assign: Preview section js fix {%- endcomment -%}
+{%- assign section_id = section.id | replace: '+', '' | replace: '=', '' -%}
+
+{%- if block.settings.liquid != blank -%}
+  {%- if block.settings.remove_external_container == false -%}
+    <div id="DP--{{ block.id }}" class="DP--{{ block.id }} dsgn-pck__block dsgn-pck__block--liquid dsgn-pck__block-id-{{ block.id }} dsgn-pck__block--{{ block.type }} dsgn-pck__block--{{ block.index }}" {{ block.shopify_attributes }}>
+      <div class="dsgn-pck__block-container">
+      {%- endif -%}
+      {% if block.settings.custom_css != blank %}
+        {{ css_styles }}
+      {% endif %}
+      {{ block.settings.liquid }}
+      {%- if block.settings.remove_external_container == false -%}
+      </div>
+    </div>
+  {%- endif -%}
+{%- endif -%}
+
+{% schema %}
+  {
+    "name": "Liquid/HTML 🎒",
+    "tag": null,
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Copy and paste your custom code."
+      },
+      {
+        "type": "liquid",
+        "id": "liquid",
+        "label": "Liquid and/or HTML"
+      },
+      {
+        "type": "checkbox",
+        "id": "remove_external_container",
+        "label": "Remove container elements (advanced)",
+        "default": false,
+        "info": "Liquid will be added without the containing elements of the block. eg. <div class='dsgn-pck__block-container'> is removed so your code is the only thing rendered."
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_custom_css",
+        "label": "Enable custom CSS",
+        "default": false
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_css == true }}",
+        "type": "liquid",
+        "id": "custom_css",
+        "label": "Custom CSS"
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_css == true }}",
+        "type": "liquid",
+        "id": "mobile_css",
+        "label": "Mobile & narrow custom CSS",
+        "info": "Applied on small screens or in tight spaces."
+      },
+      {
+        "type": "select",
+        "id": "hidden_on",
+        "label": "Hidden on",
+      "default": "none",
+        "options": [
+          {
+            "value": "none",
+            "label": "None"
+          },
+          {
+            "value": "desktop",
+            "label": "Desktop"
+          },
+          {
+            "value": "mobile",
+            "label": "Mobile"
+          }
+        ]
+      },
+    ],
+    "presets": [
+      {
+        "name": "Liquid/HTML 🎒",
+        "category": "* Design Packs: Basic"
+      }
+    ],
+  }
+{% endschema %}

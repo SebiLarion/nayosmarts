@@ -11,7 +11,7 @@
   "context": {
     "market": "hong-kong"
   },
-  "parent": "product.hreman-h1.json",
+  "parent": "product.herman-h1-test-b.json",
   "sections": {
     "main-product": {
       "settings": {},

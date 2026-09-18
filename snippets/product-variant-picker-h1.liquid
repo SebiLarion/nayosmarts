@@ -372,7 +372,7 @@
                     assign matched_variant = fallback_variant
                   endif
 
-                  assign card_media = matched_variant.featured_media | default: product.featured_media
+                  assign card_media = matched_variant.metafields.custom.variant_size_image.value | default: matched_variant.featured_media | default: product.featured_media
                   assign desc_mf = blank
                   if matched_variant != blank and description_namespace != blank and description_key != blank
                     assign desc_mf = matched_variant.metafields[description_namespace][description_key]

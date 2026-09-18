@@ -1,0 +1,213 @@
+{% if block.settings.header_row == true %}
+    <style>
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__table-display__row {
+        background-color: {{ block.settings.background_color }};
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__table-display__row th {
+        color: {{ block.settings.text_color }};
+      }
+    </style>
+    <thead class="dsgn-pck__table-display__header dsgn-pck__block-id-{{ block.id }}" {{ block.shopify_attributes }}>
+      <tr class="dsgn-pck__table-display__row">
+        {%- for i in (1..10) -%}
+          {%- capture column -%}header_column_{{ i }}{%- endcapture -%}
+          <th scope="col" class="dsgn-pck__text">{{ block.settings[column] }}</th>
+        {%- endfor -%}
+      </tr>
+    </thead>
+  {%- else -%}
+    {% if block.settings.highlight_row == true %}
+      <style>
+        .dsgn-pck__block-id-{{ block.id }}.dsgn-pck__table-display__row {
+          background-color: {{ block.settings.highlight_background_color }};
+        }
+
+        .dsgn-pck__block-id-{{ block.id }}.dsgn-pck__table-display__row td {
+          color: {{ block.settings.highlight_text_color }};
+        }
+      </style>
+    {% endif %}
+    <tr class="dsgn-pck__table-display__row dsgn-pck__block-id-{{ block.id }}" {{ block.shopify_attributes }}>
+      {%- for i in (1..10) -%}
+        {%- capture column -%}column_{{ i }}{%- endcapture -%}
+        <td class="dsgn-pck__table-display__cell dsgn-pck__text" data-label="">
+          {{ block.settings[column] | default: "&nbsp" }}
+        </td>
+      {%- endfor -%}
+    </tr>
+  {%- endif -%}
+
+{% schema %}
+{
+  "name": "Row",
+  "tag": null,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "header_row",
+      "label": "Header row",
+      "default": false,
+      "info": "Assigns the row as a header row. Recommended for the first row."
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == true }}",
+      "type": "color",
+      "id": "text_color",
+      "label": "Headings"
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == true }}",
+      "type": "color",
+      "id": "background_color",
+      "label": "Row background",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == false }}",
+      "type": "checkbox",
+      "id": "highlight_row",
+      "label": "Highlight row",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == false and block.settings.highlight_row == true }}",
+      "type": "color",
+      "id": "highlight_text_color",
+      "label": "Text"
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == false and block.settings.highlight_row == true }}",
+      "type": "color",
+      "id": "highlight_background_color",
+      "label": "Background",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == true }}",
+      "type": "text",
+      "id": "header_column_1",
+      "label": "Header column 1"
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == true }}",
+      "type": "text",
+      "id": "header_column_2",
+      "label": "Header column 2"
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == true }}",
+      "type": "text",
+      "id": "header_column_3",
+      "label": "Header column 3"
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == true }}",
+      "type": "text",
+      "id": "header_column_4",
+      "label": "Header column 4"
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == true }}",
+      "type": "text",
+      "id": "header_column_5",
+      "label": "Header column 5"
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == true }}",
+      "type": "text",
+      "id": "header_column_6",
+      "label": "Header column 6"
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == true }}",
+      "type": "text",
+      "id": "header_column_7",
+      "label": "Header column 7"
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == true }}",
+      "type": "text",
+      "id": "header_column_8",
+      "label": "Header column 8"
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == true }}",
+      "type": "text",
+      "id": "header_column_9",
+      "label": "Header column 9"
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == true }}",
+      "type": "text",
+      "id": "header_column_10",
+      "label": "Header column 10"
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == false }}",
+      "type": "richtext",
+      "id": "column_1",
+      "label": "Column 1"
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == false }}",
+      "type": "richtext",
+      "id": "column_2",
+      "label": "Column 2"
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == false }}",
+      "type": "richtext",
+      "id": "column_3",
+      "label": "Column 3"
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == false }}",
+      "type": "richtext",
+      "id": "column_4",
+      "label": "Column 4"
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == false }}",
+      "type": "richtext",
+      "id": "column_5",
+      "label": "Column 5"
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == false }}",
+      "type": "richtext",
+      "id": "column_6",
+      "label": "Column 6"
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == false }}",
+      "type": "richtext",
+      "id": "column_7",
+      "label": "Column 7"
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == false }}",
+      "type": "richtext",
+      "id": "column_8",
+      "label": "Column 8"
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == false }}",
+      "type": "richtext",
+      "id": "column_9",
+      "label": "Column 9"
+    },
+    {
+      "visible_if": "{{ block.settings.header_row == false }}",
+      "type": "richtext",
+      "id": "column_10",
+      "label": "Column 10"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Row"
+    }
+  ]
+}
+{% endschema %}

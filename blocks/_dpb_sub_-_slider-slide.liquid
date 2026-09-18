@@ -1,0 +1,67 @@
+{% comment %} Images: responsive image widths {% endcomment %}
+{%- assign widths = '180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 1950, 2100, 2260, 2450, 2700, 3000, 3350, 3750, 4100' -%}
+
+{% comment %} Images: placeholder image {% endcomment %}
+{%- capture placeholder_image -%}
+  <svg width="2400" height="2400" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
+    <rect x="0" y="0" width="24" height="24" fill="#f0f0f0"/>
+    <circle cx="7.5" cy="7.5" r="1.5" fill="#ccc"/>
+    <path d="M3 18L8.5 12.5L13 17L17.5 11L21 18H3Z" fill="#ccc"/>
+  </svg>
+{%- endcapture -%}
+
+{%- assign enable_metafield_detect = block.settings.enabled_metafield_detect | default: section.settings.enable_metafield_detect | default: false -%}
+
+{% if block.settings.image == blank and enable_metafield_detect == true %}
+  {% break %}
+{% endif %}
+<div class="dsgn-pck__slide">
+  {%- if block.settings.link != blank -%}
+    <a href="{{ block.settings.link }}">
+  {%- endif -%}
+    {%- capture sizes -%}
+      (max-width: 480px) {{ block.settings.image_width }}, 50vw
+    {%- endcapture -%}
+    {%- if block.settings.image != blank -%}
+      <div class="dsgn-pck__image__wrapper">
+        <svg class="dsgn-pck__svg-sizer" viewBox="0 0 {{ block.settings.image.width }} {{ block.settings.image.height }}"></svg>
+        {{ block.settings.image | image_url: width: block.settings.image.width | image_tag:  widths: widths, sizes: sizes }}
+      </div>
+    {%- elsif enable_metafield_detect == false -%}
+      <div class="dsgn-pck__image__wrapper">
+        {{ placeholder_image | strip }}
+      </div>
+    {%- endif -%}
+    {%- if block.settings.text != blank -%}
+      <div class="dsgn-pck__text dsgn-pck__rte">
+        {{ block.settings.text }}
+      </div>
+    {%- endif -%}
+  {%- if block.settings.link != blank -%}
+    </a>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Slide",
+  "tag": null,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Slide"
+    }
+  ]
+}
+{% endschema %}

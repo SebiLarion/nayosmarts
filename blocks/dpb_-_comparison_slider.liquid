@@ -1,0 +1,641 @@
+{%- comment -%}
+{
+  "pack_name": "Comparison slider block",
+  "pack_author": "Design Packs",
+  "license": "© Design Packs. All rights reserved. This code is protected by copyright law and may not be reproduced, distributed, or used without explicit permission from the author. Shopify complies with the Digital Millennium Copyright Act (DMCA) and responds to claims of copyright infringement using DMCA procedures, which could result in the termination of your Shopify account.",
+}
+{%- endcomment -%}
+
+{% comment %} Security Code - hides section when app uninstalled {% endcomment %}
+{%- unless content_for_header contains 'design_packs_file.js' -%}
+  {%- if request.design_mode -%}
+    <div class="dsgn-pck__no-app-warning">
+      <div class="dsgn-pck__no-app-warning-background">
+      </div>
+      <div class="dsgn-pck__no-app-warning-text dsgn-pck__rte">
+        <p><strong>WARNING!</strong> This premium section will not display properly without an active subscription for <a href="https://apps.shopify.com/design-packs" target="_blank" rel="noopener nofollow">Design Packs</a>. If you need any support please email <a href="mailto:info@design-packs.com" target="_blank" rel="noopener">info@design-packs.com</a> with your questions.</p>
+      </div>
+    </div>
+  {%- endif -%}
+  {%- break -%}
+{%- endunless -%}
+
+{%- comment -%} Assign: Preview section js fix {%- endcomment -%}
+{%- assign section_id = section.id | replace: '+', '' | replace: '=', '' -%}
+{%- assign block_index = section.blocks | find_index: 'id', block.id | plus: 1 -%}
+
+{%- assign enable_metafield_detect = block.settings.enable_metafield_detect | default: section.settings.enable_metafield_detect | default: false -%}
+
+{% comment %} Images: responsive image widths {% endcomment %}
+{%- assign widths = '180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 1950, 2100, 2260, 2450, 2700, 3000, 3350, 3750, 4100' -%}
+
+{% if enable_metafield_detect == true %}
+  {% if block.settings.left_image == blank or block.settings.right_image == blank %}
+    {% continue %}
+  {% endif %}
+{% endif %}
+
+{%- comment -%} Images: all placeholders {%- endcomment -%}
+{%- assign placeholder_image_id = 'RbbdzZBKRDY' -%}
+{%- assign placeholder_image_id_2 = 'DBtgQI-9XdM' -%}
+
+{%- assign block_horizontal_setting = block.settings.horizontal_alignment | default: 'default' -%}
+
+{%- capture css_styles -%}
+<style data-dp-css="blocks/_dpb_-_comparison_slider.liquid">
+
+  [id*=preview-block] .dsgn-pck__comparison-slider-container {
+    container-type: normal !important;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} {
+    width: {{ block.settings.base_width }}%;
+    max-width: {{ block.settings.max_width | remove: 'px' }}px;
+    display: flex;
+    {%- if block.settings.horizontal_alignment == 'left' -%}
+      align-self: flex-start;
+      margin-left: 0;
+      margin-right: auto;
+      --block-horizontal-alignment: flex-start;
+    {%- elsif block.settings.horizontal_alignment == 'right' -%}
+      align-self: flex-end;
+      margin-left: auto;
+      margin-right: 0;
+      --block-horizontal-alignment: flex-end;
+    {%- elsif block.settings.horizontal_alignment == 'center' -%}
+      align-self: center;
+      margin-left: auto;
+      margin-right: auto;
+      --block-horizontal-alignment: center;
+    {%- else -%}
+      margin-left: var(--block-margin-left, 0);
+      margin-right: var(--block-margin-right, 0);
+    {%- endif -%}
+    --section-horizontal-alignment: {%- if section.settings.text_alignment == 'center' -%}center{%- elsif section.settings.text_alignment == 'right' -%}flex-end{%- endif -%};
+    align-self: var(--block-horizontal-alignment, var(--section-horizontal-alignment));
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__comparison-slider-container {
+    container-type: inline-size;
+    container-name: dp-comparison-slider-container;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__compare {
+    position: relative;
+    aspect-ratio: {{ block.settings.left_image.width | default: 1200 }} / {{ block.settings.left_image.height | default: 800 }};
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__comparison__slider {
+    position: absolute;
+    z-index: 1;
+    width: 50px;
+    height: 50px;
+    cursor: grab;
+    display: block !important;
+    position: relative;
+    top: calc(50% - 25px);
+    left: calc(50% - 25px);
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__comparison__slider:active {
+    cursor: grabbing;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__comparison__slider-handle {
+    background: {{ block.settings.handle_color }};
+    border: 4px solid {{ block.settings.border_color }};
+    border-radius: 50%;
+    transition: border-color 0.2s;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    display: flex;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__comparison__slider-handle svg {
+    width: 50%;
+    height: 50%;
+    margin: auto;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__comparison__slider-handle svg path {
+    fill: {{ block.settings.drag_color }};
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__comparison__slider img {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    object-fit: cover;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__comparison__image {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__comparison__overlay {
+    border-right: 2px solid {{ block.settings.border_color }};
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__comparison__overlay:after {
+    display: block;
+    content: '';
+    width: 2px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: {{ block.settings.border_color }};
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__comparison__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    max-width: none;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__comparison__overlay img {
+    height: 100%;
+    width: auto;
+  }
+
+  /* Custom CSS */
+  {%- if block.settings.enable_custom_css == true and block.settings.custom_css != blank -%}
+    {%- assign custom_css_rules = block.settings.custom_css | strip | split: '}' -%}
+    {%- for rule in custom_css_rules -%}
+      {%- assign clean_rule = rule | strip -%}
+      {%- if clean_rule contains '{' and clean_rule != blank -%}
+        {%- assign rule_parts = clean_rule | split: '{' -%}
+        {%- if rule_parts.size >= 2 -%}
+          {%- assign selector_part = rule_parts[0] | strip -%}
+          {%- assign css_part = rule_parts[1] | strip -%}
+          {%- if css_part != blank -%}
+            {%- if selector_part == blank -%}
+              #DP--{{ block.id }} { {{ css_part }} }
+            {%- else -%}
+              #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+
+  /* Small context - small container and mobile */
+  {%- capture small_context -%}
+
+    /* Mobile & narrow custom CSS */
+    {%- if block.settings.enable_custom_css == true and block.settings.mobile_css != blank -%}
+      {%- assign mobile_css_rules = block.settings.mobile_css | strip | split: '}' -%}
+      {%- for rule in mobile_css_rules -%}
+        {%- assign clean_rule = rule | strip -%}
+        {%- if clean_rule contains '{' and clean_rule != blank -%}
+          {%- assign rule_parts = clean_rule | split: '{' -%}
+          {%- if rule_parts.size >= 2 -%}
+            {%- assign selector_part = rule_parts[0] | strip -%}
+            {%- assign css_part = rule_parts[1] | strip -%}
+            {%- if css_part != blank -%}
+              {%- if selector_part == blank -%}
+                #DP--{{ block.id }} { {{ css_part }} }
+              {%- else -%}
+                #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endcapture -%}
+
+  @supports (container-type: inline-size) {
+    @container dp-comparison-slider-container (max-width: 300px) {
+      {{ small_context }}
+    }
+  }
+
+  @media (max-width: 767px) {
+    {{ small_context }}
+  }
+
+  /* Hide or show on mobile and desktop */
+  {%- if block.settings.hidden_on == 'mobile' -%}
+    @media (max-width: 767px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+
+  {%- if block.settings.hidden_on == 'desktop' -%}
+    @media (min-width: 768px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+
+</style>
+{%- endcapture -%}
+
+{%- capture js_scripts -%}
+  <script type="module" defer>
+    /**
+     * Custom element for handling image comparison slider functionality
+     * @extends HTMLElement
+     */
+    class ComparisonSlider extends HTMLElement {
+      constructor() {
+        super();
+        this.section = this.closest('#DP--{{ section_id }}');
+        this.slider = this.querySelector('.dsgn-pck__comparison-slider-block');
+        this.isClicked = false;
+        this.isDragging = false;
+        this.currentX = 0;
+        this.startX = 0;
+        this.sliderWidth = 0;
+        this.imageWidth = 0;
+
+        /* Bind methods to preserve context */
+        this.handleMouseDown = this.handleMouseDown.bind(this);
+        this.handleMouseMove = this.handleMouseMove.bind(this);
+        this.handleMouseUp = this.handleMouseUp.bind(this);
+        this.handleTouchStart = this.handleTouchStart.bind(this);
+        this.handleTouchMove = this.handleTouchMove.bind(this);
+        this.handleTouchEnd = this.handleTouchEnd.bind(this);
+        this.handleResize = this.handleResize.bind(this);
+      }
+
+      connectedCallback() {
+        this.initComparisonSlider();
+        window.addEventListener('resize', this.handleResize);
+      }
+
+      disconnectedCallback() {
+        this.removeEventListeners();
+        window.removeEventListener('resize', this.handleResize);
+      }
+
+      /**
+       * Initialize the comparison slider
+       */
+      initComparisonSlider() {
+        try {
+          const image = this.querySelector('.dsgn-pck__comparison__overlay');
+          const slider = this.querySelector('.dsgn-pck__comparison__slider');
+
+          if (!image || !slider) {
+            console.error('Required elements not found');
+            return;
+          }
+
+          this.image = image;
+          this.slider = slider;
+          this.updateDimensions();
+          this.setupEventListeners();
+          this.setInitialPosition();
+        } catch (error) {
+          console.error('Error initializing slider:', error);
+        }
+      }
+
+      /**
+       * Update slider dimensions
+       */
+      updateDimensions() {
+        if (!this.slider || !this.image) return;
+
+        const rect = this.slider.getBoundingClientRect();
+        this.sliderWidth = rect.width;
+        this.imageWidth = this.image.parentElement.offsetWidth;
+      }
+
+      /**
+       * Set initial slider position
+       */
+      setInitialPosition() {
+        if (!this.slider || !this.image) return;
+
+        const initialPosition = this.imageWidth / 2;
+        this.image.style.width = `${initialPosition}px`;
+        this.slider.style.left = `${initialPosition - this.sliderWidth / 2}px`;
+      }
+
+      /**
+       * Setup event listeners
+       */
+      setupEventListeners() {
+        this.slider.addEventListener('mousedown', this.handleMouseDown);
+        this.slider.addEventListener('touchstart', this.handleTouchStart);
+
+        document.addEventListener('mousemove', this.handleMouseMove);
+        document.addEventListener('mouseup', this.handleMouseUp);
+        document.addEventListener('touchmove', this.handleTouchMove);
+        document.addEventListener('touchend', this.handleTouchEnd);
+      }
+
+      /**
+       * Remove event listeners
+       */
+      removeEventListeners() {
+        if (!this.slider) return;
+
+        this.slider.removeEventListener('mousedown', this.handleMouseDown);
+        this.slider.removeEventListener('touchstart', this.handleTouchStart);
+
+        document.removeEventListener('mousemove', this.handleMouseMove);
+        document.removeEventListener('mouseup', this.handleMouseUp);
+        document.removeEventListener('touchmove', this.handleTouchMove);
+        document.removeEventListener('touchend', this.handleTouchEnd);
+      }
+
+      /**
+       * Handle mouse down event
+       * @param {MouseEvent} event
+       */
+      handleMouseDown(event) {
+        this.isClicked = true;
+        this.isDragging = true;
+        this.startX = event.pageX - this.slider.offsetLeft;
+        this.slider.style.cursor = 'grabbing';
+      }
+
+      /**
+       * Handle mouse move event
+       * @param {MouseEvent} event
+       */
+      handleMouseMove(event) {
+        if (!this.isDragging) return;
+
+        event.preventDefault();
+        this.currentX = event.pageX - this.startX;
+        this.updateSliderPosition();
+      }
+
+      /**
+       * Handle mouse up event
+       */
+      handleMouseUp() {
+        this.isClicked = false;
+        this.isDragging = false;
+        this.slider.style.cursor = 'grab';
+      }
+
+      /**
+       * Handle touch start event
+       * @param {TouchEvent} event
+       */
+      handleTouchStart(event) {
+        event.preventDefault();
+        this.isClicked = true;
+        this.isDragging = true;
+        this.startX = event.touches[0].pageX - this.slider.offsetLeft;
+        this.slider.style.cursor = 'grabbing';
+      }
+
+      /**
+       * Handle touch move event
+       * @param {TouchEvent} event
+       */
+      handleTouchMove(event) {
+        if (!this.isDragging) return;
+
+        event.preventDefault();
+        this.currentX = event.touches[0].pageX - this.startX;
+        this.updateSliderPosition();
+      }
+
+      /**
+       * Handle touch end event
+       */
+      handleTouchEnd() {
+        this.handleMouseUp();
+      }
+
+      /**
+       * Handle window resize event
+       */
+      handleResize() {
+        this.updateDimensions();
+        this.setInitialPosition();
+      }
+
+      /**
+       * Update slider position based on current X position
+       */
+      updateSliderPosition() {
+        if (!this.slider || !this.image) return;
+
+        const position = Math.max(0, Math.min(this.currentX, this.imageWidth));
+        const percentage = (position / this.imageWidth) * 100;
+
+        this.image.style.width = `${percentage}%`;
+        this.slider.style.left = `${position - this.sliderWidth / 2}px`;
+      }
+    }
+
+    if (!customElements.get('dp-comparison-slider')) {
+      customElements.define('dp-comparison-slider', ComparisonSlider);
+    }
+  </script>
+{%- endcapture -%}
+
+<div id="DP--{{ block.id }}" class="DP--{{ block.id }} dsgn-pck__block dsgn-pck__block-id-{{ block.id }} dsgn-pck__block--{{ block.type }} dsgn-pck__block--{{ block.index }}" {{ block.shopify_attributes }} {% if section.settings.animation != blank %}style="--dsgn-pck-animate: {{ block_index }};"{% endif %}>
+  {{ css_styles }}
+  <dp-comparison-slider class="dsgn-pck__comparison-slider-container">
+    <div class="dsgn-pck__compare dsgn-pck__comparison-slider-block">
+      <div class="dsgn-pck__comparison__image dsgn-pck__comparison__image--right dsgn-pck__caption--right">
+        {%- if block.settings.right_image -%}
+          {%- capture sizes -%}
+            {{ block.settings.base_width }}vw
+          {%- endcapture -%}
+          {{ block.settings.right_image | image_url: width: 5000 | image_tag:  widths: widths, sizes: sizes }}
+        {%- elsif enable_metafield_detect == false -%}
+          <img src="https://cdn.shopify.com/s/files/1/0577/7673/4361/files/{{ placeholder_image_id }}_1200x.jpg"
+            alt=""
+            loading="lazy"
+            width="1200"
+            height="800">
+        {%- endif -%}
+        {%- if block.settings.right_caption != blank -%}
+          <span class="dsgn-pck__caption dsgn-pck__caption--right">{{ block.settings.right_caption }}</span>
+        {%- endif -%}
+      </div>
+      <div class="dsgn-pck__comparison__slider">
+        {%- if block.settings.handle_image -%}
+          {{ block.settings.handle_image | image_url: width: 800 | image_tag: loading: 'lazy' }}
+        {%- else -%}
+          <div class="dsgn-pck__comparison__slider-handle">
+            <svg viewBox="0 0 20 20" ><path d="M6 0a1 1 0 0 0-1 1v18a1 1 0 1 0 2 0v-18a1 1 0 0 0-1-1zm8 0a1 1 0 0 0-1 1v18a1 1 0 1 0 2 0v-18a1 1 0 0 0-1-1z"></path></svg>
+          </div>
+        {%- endif -%}
+      </div>
+      <div class="dsgn-pck__comparison__image dsgn-pck__comparison__overlay dsgn-pck__comparison__image--left">
+        {%- if block.settings.left_image -%}
+          {%- capture sizes -%}
+            {{ block.settings.base_width }}vw
+          {%- endcapture -%}
+          {{ block.settings.left_image | image_url: width: 5000 | image_tag:  widths: widths, sizes: sizes }}
+        {%- elsif enable_metafield_detect == false -%}
+          <img src="https://cdn.shopify.com/s/files/1/0577/7673/4361/files/{{ placeholder_image_id_2 }}.jpg"
+            alt=""
+            loading="lazy"
+            width="1200"
+            height="800">
+        {%- endif -%}
+        {%- if block.settings.left_caption != blank -%}
+          <span class="dsgn-pck__caption dsgn-pck__caption--left">{{ block.settings.left_caption }}</span>
+        {%- endif -%}
+      </div>
+    </div>
+  </dp-comparison-slider>
+  {{ js_scripts }}
+</div>
+
+{% schema %}
+{
+  "name": "Comparison slider 🎒",
+  "class": "DP__block--comparison-slider",
+  "tag": null,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "left_image",
+      "label": "Left image"
+    },
+    {
+      "type": "image_picker",
+      "id": "right_image",
+      "label": "Right image"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "drag_color",
+      "label": "Handle icon",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "handle_color",
+      "label": "Handle background",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "🖼 Layout"
+    },
+    {
+      "type": "range",
+      "id": "base_width",
+      "label": "Size",
+      "min": 50,
+      "max": 100,
+      "default": 100,
+      "unit": "%",
+      "info": "Size is based on the width of the container. [Learn more]( https://design-packs.gitbook.io/docs/fundamentals/block-settings/size-controls-for-image-and-video-blocks)"
+    },
+    {
+      "type": "text",
+      "id": "max_width",
+      "label": "Maximum width",
+      "placeholder": "eg. 1200px",
+      "info": "Sets width constraint for content."
+    },
+    {
+      "visible_if": "{{ block.settings.base_width < 100 or block.settings.max_width != blank }}",
+      "type": "select",
+      "id": "horizontal_alignment",
+      "label": "Alignment",
+      "default": "default",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "hidden_on",
+      "label": "Hidden on",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "desktop",
+          "label": "Desktop"
+        },
+        {
+          "value": "mobile",
+          "label": "Mobile"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_css",
+      "label": "Enable custom CSS",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "mobile_css",
+      "label": "Mobile & narrow custom CSS",
+      "info": "Applied on small screens or in tight spaces."
+    },
+    {
+      "type": "paragraph",
+      "content": "Open [Design Packs](/admin/apps/design-packs-1/dashboard) to add/update new sections and blocks."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Comparison slider 🎒",
+      "category": "* Design Packs: Interactive"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,41 @@
+{%- liquid
+  assign capacity = variant.metafields.custom.capacity
+  assign dimensions = variant.metafields.custom.dimensions
+  assign weight = variant.metafields.custom.weight
+
+  assign has_variant_specifications = false
+  if capacity != blank or dimensions != blank or weight != blank
+    assign has_variant_specifications = true
+  endif
+-%}
+
+<span hidden data-faq-h1-selected-variant="{{ variant.id }}"></span>
+
+{%- if has_variant_specifications -%}
+  {%- if capacity != blank -%}
+    <div class="faq-h1__variant-spec" data-faq-h1-variant-spec="capacity">
+      <strong class="faq-h1__variant-spec-label">Capacity</strong>
+      <div class="faq-h1__variant-spec-value">{{ capacity | metafield_tag }}</div>
+    </div>
+  {%- endif -%}
+  {%- if dimensions != blank -%}
+    <div class="faq-h1__variant-spec" data-faq-h1-variant-spec="dimensions">
+      <strong class="faq-h1__variant-spec-label">Dimensions</strong>
+      <div class="faq-h1__variant-spec-value">{{ dimensions | metafield_tag }}</div>
+    </div>
+  {%- endif -%}
+  {%- if weight != blank -%}
+    <div class="faq-h1__variant-spec" data-faq-h1-variant-spec="weight">
+      <strong class="faq-h1__variant-spec-label">Weight</strong>
+      <div class="faq-h1__variant-spec-value">{{ weight | metafield_tag }}</div>
+    </div>
+  {%- endif -%}
+{%- elsif fallback_content != blank -%}
+  {%- liquid
+    assign normalized_fallback = fallback_content
+    assign normalized_fallback = normalized_fallback | replace: '</strong><br/>', '</strong>'
+    assign normalized_fallback = normalized_fallback | replace: '</strong><br />', '</strong>'
+    assign normalized_fallback = normalized_fallback | replace: '</strong><br>', '</strong>'
+  -%}
+  {{ normalized_fallback }}
+{%- endif -%}

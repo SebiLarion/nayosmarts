@@ -16423,3 +16423,7 @@ shopify-account::part(dialog) .account__heading {
         padding: var(--sp-8) var(--sp-12);
     }
 }
+
+.shop-the-feed .badges {
+  display: none;
+}

@@ -1,0 +1,1512 @@
+
+{%- assign block = block | default: section -%}
+{% assign variant_style = block.settings.variant_style %}
+{% assign show_swatches = block.settings.show_swatches %}
+{% assign show_variant_images = block.settings.show_variant_images %}
+{% assign show_legacy_swatches = block.settings.show_legacy_swatches %}
+{% assign hide_single_variant = block.settings.hide_single_variant %}
+{% assign is_hidden = is_hidden | default: false %}
+
+{% liquid
+  assign product_resource = closest.product | default: section.settings.product | default: product | default: collections["all"].products.first
+  if request.visual_preview_mode and product_resource == blank
+    assign product_resource = collections.all.products.first
+  endif
+-%}
+
+{% capture css_styles %}
+<style>
+
+  .dsgn-pck__block--group:has(.dsgn-pck__variant-picker) {
+    z-index: 2;
+  }
+
+  .dsgn-pck__variant-picker {
+    position: relative;
+    z-index: 2;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__variant-picker__form {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    {%- if block.settings.enable_custom_font != blank -%}
+      font-family: var(--custom-font);
+      font-weight: var(--custom-font-weight);
+      font-style: var(--custom-font-style);
+      {%- elsif section.settings.override_theme_font != blank -%}
+      font-family: var(--main-font);
+      font-weight: var(--main-font-weight);
+      font-style: var(--main-font-style);
+    {%- endif -%}
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__variant-option + .dsgn-pck__variant-option {
+    margin-top: 15px;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__swatch {
+    display: none;
+    background: var(--swatch-background);
+    background-position: var(--swatch-focal-point, center);
+    border-radius: 50%;
+    outline: 1px solid #000;
+    width: 40px;
+    height: 40px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} input:checked ~ .dsgn-pck__swatch {
+    outline: 2px solid #000;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__unavailable-strikethrough {
+    stroke: var(--dp-text-color, #000);
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__unavailable-strikethrough[hidden] {
+    display: none;
+  }
+
+  {% if block.settings.hide_unavailable_variants == true %}
+    .dsgn-pck__block-id-{{ block.id }} label.dsgn-pck__variant-option__button-label.is-unavailable {
+      display: none;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__hybrid-dropdown__option.is-unavailable {
+      display: none;
+    }
+  {% endif %}
+
+  .dsgn-pck__block-id-{{ block.id }}.dsgn-pck--show-swatches {
+
+    .dsgn-pck__native-swatches-available + .dsgn-pck__variant-option--dropdowns {
+      display: none;
+    }
+
+    .dsgn-pck__color-option + .dsgn-pck__variant-option--dropdowns {
+      display: none;
+    }
+
+    .dsgn-pck__swatch.dsgn-pck__swatch--color:not(:empty) {
+      display: block;
+    }
+
+    .dsgn-pck__swatch.dsgn-pck__swatch--swatch-image:not(:empty) {
+      display: block;
+    }
+
+    .dsgn-pck__swatch.dsgn-pck__swatch--swatch-image:not(:empty) ~ .dsgn-pck__swatch--color,
+    .dsgn-pck__swatch.dsgn-pck__swatch--swatch-image:not(:empty) ~ .dsgn-pck__swatch--file-image,
+    .dsgn-pck__swatch.dsgn-pck__swatch--swatch-image:not(:empty) ~ .dsgn-pck__swatch--variant-image,
+    .dsgn-pck__swatch.dsgn-pck__swatch--swatch-image:not(:empty) ~ .dsgn-pck__variant-option__button-label__text {
+      display: none;
+    }
+
+    .dsgn-pck__swatch.dsgn-pck__swatch--color:not(:empty) ~ .dsgn-pck__swatch--variant-image,
+    .dsgn-pck__swatch.dsgn-pck__swatch--color:not(:empty) ~ .dsgn-pck__swatch--file-image,
+    .dsgn-pck__swatch.dsgn-pck__swatch--color:not(:empty) ~ .dsgn-pck__swatch--swatch-image,
+    .dsgn-pck__swatch.dsgn-pck__swatch--color:not(:empty) ~ .dsgn-pck__variant-option__button-label__text {
+      display: none;
+    }
+
+  }
+
+  .dsgn-pck__block-id-{{ block.id }}.dsgn-pck--show-variant-images {
+
+    .dsgn-pck__swatch.dsgn-pck__swatch--variant-image:not(:empty) {
+      display: block;
+    }
+
+    .dsgn-pck__swatch.dsgn-pck__swatch--variant-image:not(:empty) ~ .dsgn-pck__swatch--image,
+    .dsgn-pck__swatch.dsgn-pck__swatch--variant-image:not(:empty) ~ .dsgn-pck__swatch--color,
+    .dsgn-pck__swatch.dsgn-pck__swatch--variant-image:not(:empty) ~ .dsgn-pck__swatch--file-image,
+    .dsgn-pck__swatch.dsgn-pck__swatch--variant-image:not(:empty) ~ .dsgn-pck__variant-option__button-label__text {
+      display: none;
+    }
+
+    .dsgn-pck__color-option + .dsgn-pck__variant-option--dropdowns {
+      display: none;
+    }
+  }
+
+  .dsgn-pck__block-id-{{ block.id }}.dsgn-pck--show-legacy-swatches {
+
+    .dsgn-pck__swatch.dsgn-pck__swatch--file-image:not(:empty) {
+      display: block;
+    }
+
+    .dsgn-pck__swatch.dsgn-pck__swatch--file-image:not(:empty) ~ .dsgn-pck__swatch--variant-image,
+    .dsgn-pck__swatch.dsgn-pck__swatch--file-image:not(:empty) ~ .dsgn-pck__swatch--color,
+    .dsgn-pck__swatch.dsgn-pck__swatch--file-image:not(:empty) ~ .dsgn-pck__swatch--swatch-image,
+    .dsgn-pck__swatch.dsgn-pck__swatch--file-image:not(:empty) ~ .dsgn-pck__variant-option__button-label__text {
+      display: none;
+    }
+
+    .dsgn-pck__color-option + .dsgn-pck__variant-option--dropdowns {
+      display: none;
+    }
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__variant-option--buttons {
+    border: none;
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 10px;
+    row-gap: 10px;
+    margin: 0;
+    padding: 0;
+    justify-content: var(--block-horizontal-alignment, {%- if section.settings.text_alignment == 'center' -%}center{%- elsif section.settings.text_alignment == 'right' -%}flex-end{%- else -%}flex-start{%- endif -%});
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__variant-option__swatch-container {
+    width: 100%;
+    margin-bottom: {{ block.settings.label_margin_bottom | default: 8 }}px;
+    text-align: var(--block-text-alignment, {%- if section.settings.text_alignment == 'center' -%}center{%- elsif section.settings.text_alignment == 'right' -%}right{%- else -%}left{%- endif -%});
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__variant-option--dropdowns {
+    display: none;
+  }
+
+  {%- if block.settings.show_option_labels == false -%}
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__variant-option__swatch-container,
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__variant-option__dropdown-label {
+      display: none;
+    }
+  {%- endif -%}
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__variant-option__swatch-label {
+    font-weight: {{ block.settings.label_font_weight | default: '600' }};
+    color: {{ block.settings.label_text_color | default: 'var(--block-text-color, var(--dp-text-color, #000))' }};
+    font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__variant-option__swatch-label:after {
+    content: ':';
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__variant-option__swatch-value {
+    font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__variant-option__dropdown-label {
+    font-weight: {{ block.settings.label_font_weight | default: '600' }};
+    color: {{ block.settings.label_text_color | default: 'var(--block-text-color, var(--dp-text-color, #000))' }};
+    font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+    margin-bottom: {{ block.settings.label_margin_bottom | default: 8 }}px;
+    display: block;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__variant-option__button-label {
+    cursor: pointer;
+    position: relative;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__variant-option__button-label input {
+    display: none;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__variant-option__button-label__text {
+    display: block;
+    padding: 5px 10px;
+    outline: 1px solid {{ block.settings.border_color | default: 'var(--dp-text-color, #000)' }};
+    border-radius: {{ block.settings.button_border_radius | default: 4 }}px;
+    position: relative;
+    color: {{ block.settings.text_color | default: 'var(--block-text-color, var(--dp-text-color, #000))' }};
+    font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+    background-color: {{ block.settings.background_color | default: 'transparent' }};
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__variant-option__button-label__text:hover {
+    background-color: {{ block.settings.hover_background_color | default: '#f0f0f0' }};
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__variant-option__button-label input:checked ~ .dsgn-pck__variant-option__button-label__text {
+    outline: 2px solid {{ block.settings.selected_border_color | default: 'var(--dp-text-color, #000)' }};
+  }
+
+
+  {% if variant_style == 'dropdowns' %}
+
+    .dsgn-pck__block-id-{{ block.id }}:not(.dsgn-pck--show-swatches):not(.dsgn-pck--show-variant-images):not(.dsgn-pck--show-legacy-swatches) .dsgn-pck__variant-option--buttons {
+      display: none;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__variant-option--buttons:not(.dsgn-pck__native-swatches-available):not(.dsgn-pck__color-option) {
+      display: none;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__variant-option--dropdowns {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__variant-option__select-wrapper {
+      border-radius: {{ block.settings.dropdown_border_radius | default: 6 }}px;
+      border: 1.5px solid {{ block.settings.border_color | default: 'var(--dp-text-color, #888)' }};
+      background: {{ block.settings.background_color | default: '#fff' }};
+      color: {{ block.settings.text_color | default: 'var(--block-text-color, var(--dp-text-color, #222))' }};
+      position: relative;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__variant-option__select {
+      width: 100%;
+      appearance: none;
+      min-width: 160px;
+      padding: 0.5em 2.5em 0.5em 1em;
+      border: none;
+      outline: none;
+      background: transparent;
+      background-image: none !important;
+      color: {{ block.settings.text_color | default: 'var(--block-text-color, var(--dp-text-color, #222))' }};
+      font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__variant-option__select:focus {
+      border-color: {{ block.settings.selected_border_color | default: 'var(--dp-text-color, #000)' }};
+      outline: none;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__variant-option__select-wrapper .icon-caret {
+      position: absolute;
+      right: 1em;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      width: 1em;
+      height: 1em;
+      fill: var(--dp-text-color, #000);
+    }
+
+    .dsgn-pck__is-hybrid-open .dsgn-pck__variant-option__select {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .hybrid-dropdown {
+      position: relative;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__is-hybrid-open .hybrid-dropdown {
+      z-index: 2;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__hybrid-dropdown__menu {
+      display: none;
+      position: absolute;
+      left: 0;
+      top: 100%;
+      z-index: 2;
+      min-width: 100%;
+      background: {{ block.settings.background_color | default: '#fff' }};
+      border: 1.5px solid {{ block.settings.border_color | default: 'var(--dp-text-color, #888)' }};
+      border-radius: 0 0 {{ block.settings.dropdown_border_radius | default: 8 }}px {{ block.settings.dropdown_border_radius | default: 8 }}px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      margin-top: -2px;
+      max-height: 220px;
+      overflow-y: auto;
+      padding: 0.25em 0;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__hybrid-dropdown__option {
+      padding: 0.75em 1.25em;
+      cursor: pointer;
+      color: {{ block.settings.text_color | default: 'var(--block-text-color, var(--dp-text-color, #222))' }};
+      font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+      background: {{ block.settings.background_color | default: '#fff' }};
+      transition: background 0.15s;
+      outline: none;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__hybrid-dropdown__option:hover,
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__hybrid-dropdown__option:focus {
+      background: {{ block.settings.hover_background_color | default: '#f0f4fa' }};
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__hybrid-dropdown__option.dsgn-pck__is-selected {
+      background: {{ block.settings.hover_background_color | default: '#e6f0ff' }};
+      font-weight: 600;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__hybrid-dropdown__option.is-unavailable {
+      color: #aaa;
+      cursor: not-allowed;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__hybrid-dropdown__option.is-sold-out {
+      color: #aaa;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .hybrid-dropdown__unavailable {
+      font-size: 0.9em;
+      color: #c00;
+      margin-left: 0.5em;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .hybrid-dropdown__sold-out {
+      font-size: 0.9em;
+      color: #888;
+      margin-left: 0.5em;
+    }
+  {% endif %}
+
+  /* Custom CSS */
+  {%- if block.settings.enable_custom_css == true and block.settings.custom_css != blank -%}
+    {%- assign custom_css_rules = block.settings.custom_css | strip | split: '}' -%}
+    {%- for rule in custom_css_rules -%}
+      {%- assign clean_rule = rule | strip -%}
+      {%- if clean_rule contains '{' and clean_rule != blank -%}
+        {%- assign rule_parts = clean_rule | split: '{' -%}
+        {%- if rule_parts.size >= 2 -%}
+          {%- assign selector_part = rule_parts[0] | strip -%}
+          {%- assign css_part = rule_parts[1] | strip -%}
+          {%- if css_part != blank -%}
+            {%- if selector_part == blank -%}
+              #DP--{{ block.id }} { {{ css_part }} }
+            {%- else -%}
+              #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+
+  /* Small context - small container and mobile */
+  {%- capture small_context -%}
+
+    /* Mobile & narrow custom CSS */
+    {%- if block.settings.enable_custom_css == true and block.settings.mobile_css != blank -%}
+      {%- assign mobile_css_rules = block.settings.mobile_css | strip | split: '}' -%}
+      {%- for rule in mobile_css_rules -%}
+        {%- assign clean_rule = rule | strip -%}
+        {%- if clean_rule contains '{' and clean_rule != blank -%}
+          {%- assign rule_parts = clean_rule | split: '{' -%}
+          {%- if rule_parts.size >= 2 -%}
+            {%- assign selector_part = rule_parts[0] | strip -%}
+            {%- assign css_part = rule_parts[1] | strip -%}
+            {%- if css_part != blank -%}
+              {%- if selector_part == blank -%}
+                #DP--{{ block.id }} { {{ css_part }} }
+              {%- else -%}
+                #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endcapture -%}
+
+  @supports (container-type: inline-size) {
+    @container dp-variant-picker (max-width: 300px) {
+      {{ small_context }}
+    }
+  }
+
+  @media (max-width: 767px) {
+    {{ small_context }}
+  }
+</style>
+{% endcapture %}
+
+{% capture js_scripts %}
+  <script type="module" defer>
+
+    class dpVariantPicker extends HTMLElement {
+      #pendingRequestUrl;
+      #abortController;
+      #hybridDropdownStates = [];
+      #onDocumentMouseDown;
+      variants = [];
+
+      connectedCallback() {
+        this.addEventListener('change', this.variantChanged.bind(this));
+        this.loadVariantsForLocalUpdates();
+        this.cacheAddToCartDefaultLabels();
+        this.initHybridDropdowns();
+        this.syncSelectionUI();
+      }
+
+      disconnectedCallback() {
+        if (this.#onDocumentMouseDown) {
+          document.removeEventListener('mousedown', this.#onDocumentMouseDown);
+          this.#onDocumentMouseDown = undefined;
+        }
+      }
+
+      loadVariantsForLocalUpdates() {
+        const variantsScript = this.querySelector('script[data-dp-variants]');
+        if (!variantsScript) return;
+
+        try {
+          this.variants = JSON.parse(variantsScript.textContent) || [];
+        } catch (error) {
+          this.variants = [];
+          console.warn('[VariantPicker] Could not parse local variants JSON');
+        }
+      }
+
+      initHybridDropdowns() {
+        this.#hybridDropdownStates = [];
+        const menus = this.querySelectorAll('.dsgn-pck__hybrid-dropdown__menu');
+
+        for (const menu of menus) {
+          const selectWrapper = menu.closest('.dsgn-pck__variant-option__select-wrapper');
+          if (!selectWrapper) continue;
+
+          const select = selectWrapper.querySelector('.dsgn-pck__variant-option__select');
+          if (!(select instanceof HTMLSelectElement)) continue;
+
+          const options = Array.from(menu.querySelectorAll('.dsgn-pck__hybrid-dropdown__option'));
+          if (!options.length) continue;
+
+          const openMenu = () => {
+            menu.style.display = 'block';
+            menu.removeAttribute('hidden');
+            menu.classList.add('dsgn-pck__is-hybrid-open');
+            select.setAttribute('aria-expanded', 'true');
+
+            const selectedOption = menu.querySelector('.dsgn-pck__is-selected') || menu.querySelector('.dsgn-pck__hybrid-dropdown__option');
+            selectedOption?.focus();
+          };
+
+          const closeMenu = () => {
+            menu.style.display = 'none';
+            menu.setAttribute('hidden', '');
+            menu.classList.remove('dsgn-pck__is-hybrid-open');
+            select.setAttribute('aria-expanded', 'false');
+          };
+
+          const syncSelectedClass = () => {
+            for (const option of options) {
+              option.classList.toggle('dsgn-pck__is-selected', option.dataset.value === select.value);
+            }
+          };
+
+          select.addEventListener('mousedown', (event) => {
+            event.preventDefault();
+            openMenu();
+          });
+
+          select.addEventListener('focus', openMenu);
+          select.addEventListener('change', syncSelectedClass);
+          select.addEventListener('blur', () => setTimeout(closeMenu, 100));
+          menu.addEventListener('blur', () => setTimeout(closeMenu, 100));
+          this.#hybridDropdownStates.push({ selectWrapper, closeMenu });
+
+          for (const [index, option] of options.entries()) {
+            option.addEventListener('click', (event) => {
+              event.preventDefault();
+              if (option.classList.contains('is-unavailable')) return;
+
+              select.value = option.dataset.value;
+              select.dispatchEvent(new Event('change', { bubbles: true }));
+              closeMenu();
+            });
+
+            option.addEventListener('keydown', (event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                option.click();
+                return;
+              }
+
+              if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                (options[index + 1] || options[0])?.focus();
+                return;
+              }
+
+              if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                (options[index - 1] || options[options.length - 1])?.focus();
+                return;
+              }
+
+              if (event.key === 'Escape') {
+                closeMenu();
+                select.focus();
+              }
+            });
+          }
+
+          syncSelectedClass();
+        }
+
+        if (!this.#onDocumentMouseDown) {
+          this.#onDocumentMouseDown = (event) => {
+            if (!(event.target instanceof Node)) return;
+
+            for (const state of this.#hybridDropdownStates) {
+              if (!state.selectWrapper.contains(event.target)) {
+                state.closeMenu();
+              }
+            }
+          };
+          document.addEventListener('mousedown', this.#onDocumentMouseDown);
+        }
+      }
+
+      async variantChanged(event) {
+        if (!(event.target instanceof HTMLElement)) return;
+
+        const target = event.target;
+        const productDetailsScope = this.closest('.dsgn-pck__product-details');
+        this.updateSelectedOption(target);
+        this.syncSelectionUI();
+
+        const isOnProductPage = window.Theme?.template?.name === 'product' || window.location.pathname.includes('/products/');
+        const currentUrl = this.dataset.productUrl?.split('?')[0];
+        const newUrl = target.dataset.connectedProductUrl;
+        const loadsNewProduct = Boolean(isOnProductPage && newUrl && newUrl !== currentUrl);
+
+        if (loadsNewProduct && newUrl) {
+          window.location.href = newUrl;
+          return;
+        }
+
+        const variantCount = parseInt(this.dataset.variantCount || '0', 10);
+        const shouldUseLocalUpdate = variantCount > 0 && variantCount < 250 && this.variants.length > 0;
+
+        if (shouldUseLocalUpdate) {
+          this.updateVariantWithLocalData();
+          return;
+        }
+
+        const selectedOptionValues = this.getSelectedOptionValueIds();
+
+        const sectionId = this.dataset.sectionId;
+        let variantId = null;
+        if (target instanceof HTMLInputElement && target.type === 'radio') {
+          variantId = target.dataset.variantId || null;
+        } else if (target instanceof HTMLSelectElement) {
+          const selectedOption = target.options[target.selectedIndex];
+          variantId = selectedOption?.dataset.variantId || null;
+        }
+
+        if (sectionId) {
+          let fetchUrl = `${this.dataset.productUrl}?section_id=${sectionId}`;
+          if (selectedOptionValues.length) {
+            fetchUrl += `&option_values=${selectedOptionValues.join(',')}`;
+          }
+
+          try {
+            const response = await fetch(fetchUrl);
+            const html = await response.text();
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const hiddenContent = doc.querySelector('.dsgn-pck__hidden-product-content');
+
+            if (hiddenContent) {
+              const newPicker = hiddenContent.querySelector('dp-variant-picker');
+              if (newPicker) {
+                const variantJson = newPicker.querySelector('script[type="application/json"]:not([data-dp-variants])')?.textContent;
+                this.replaceWith(newPicker);
+
+                if (variantJson) {
+                  const variant = JSON.parse(variantJson);
+                  newPicker.applyVariantSelectionState(variant, { scopeElement: productDetailsScope, skipPriceUpdate: true });
+                }
+              }
+
+              const newPrice = hiddenContent.querySelector('dp-product-price');
+              if (newPrice) {
+                const priceScope = productDetailsScope || this.closest('.dsgn-pck__product-details') || this.closest('.dsgn-pck__section') || document;
+                const oldPrices = Array.from(priceScope.querySelectorAll(`dp-product-price[data-product-id='${newPrice.dataset.productId}']`));
+                for (const [index, oldPrice] of oldPrices.entries()) {
+                  const priceNode = index === 0 ? newPrice : newPrice.cloneNode(true);
+                  oldPrice.replaceWith(priceNode);
+                }
+              }
+            }
+          } catch (error) {
+            console.error('[variant-picker] Error fetching section HTML:', error);
+          }
+        } else {
+          const requestUrl = this.buildRequestUrl(target);
+          this.fetchUpdatedSection(requestUrl);
+        }
+
+        const url = new URL(window.location.href);
+
+        if (isOnProductPage) {
+          const isHighVariantProduct = this.dataset.isHighVariantProduct === 'true';
+
+          if (isHighVariantProduct && selectedOptionValues.length) {
+            url.searchParams.delete('variant');
+            url.searchParams.delete('option_values');
+            const optionValuesString = selectedOptionValues.join(',');
+            const currentSearch = url.search;
+            const separator = currentSearch ? '&' : '?';
+            url.href = `${url.origin}${url.pathname}${currentSearch}${separator}option_values=${optionValuesString}`;
+          } else if (variantId) {
+            url.searchParams.set('variant', variantId);
+            url.searchParams.delete('option_values');
+          } else {
+            url.searchParams.delete('variant');
+            url.searchParams.delete('option_values');
+          }
+        }
+
+        if (url.href !== window.location.href) {
+          history.replaceState({}, '', url.toString());
+        }
+      }
+
+      updateVariantWithLocalData() {
+        const selectedOptionLabels = this.getSelectedOptionLabels();
+        const variant = this.findVariantFromSelectedOptions(selectedOptionLabels);
+
+        this.applyVariantSelectionState(variant, { updateUrl: true });
+      }
+
+      syncSelectionUI() {
+        this.syncButtonSwatchValues();
+        this.updateOptionAvailabilityTopDown();
+      }
+
+      applyVariantSelectionState(variant, { updateUrl = false, scopeElement = null, skipPriceUpdate = false } = {}) {
+        if (updateUrl) {
+          this.updateUrlForLocalVariant(variant);
+        }
+
+        this.dispatchVariantChangeEvent(variant);
+        if (!skipPriceUpdate) {
+          this.updatePriceBlocks(variant);
+        }
+        this.updateAddToCartButtons(variant, scopeElement);
+      }
+
+      updateOptionAvailabilityTopDown() {
+        if (!this.variants.length) return;
+
+        const selectedOptions = this.getSelectedOptionLabels();
+        const buttonOptionGroups = Array.from(this.querySelectorAll('.dsgn-pck__variant-option--buttons'));
+
+        for (let optionIndex = 0; optionIndex < buttonOptionGroups.length; optionIndex += 1) {
+          const group = buttonOptionGroups[optionIndex];
+          const fixedSelections = selectedOptions.slice(0, optionIndex);
+          const radioInputs = Array.from(group.querySelectorAll('input[type="radio"]'));
+
+          for (const input of radioInputs) {
+            const hasAnyVariant = this.hasVariantForPath(fixedSelections, optionIndex, input.value);
+            const hasAvailableVariant = this.hasVariantForPath(fixedSelections, optionIndex, input.value, true);
+            const isUnavailable = !hasAnyVariant;
+            const isSoldOut = hasAnyVariant && !hasAvailableVariant;
+
+            this.setButtonOptionAvailabilityState(input, { isUnavailable, isSoldOut });
+          }
+        }
+
+        const dropdowns = Array.from(this.querySelectorAll('.dsgn-pck__variant-option__select-wrapper'));
+        for (let optionIndex = 0; optionIndex < dropdowns.length; optionIndex += 1) {
+          const wrapper = dropdowns[optionIndex];
+          const select = wrapper.querySelector('.dsgn-pck__variant-option__select');
+          const menu = wrapper.querySelector('.dsgn-pck__hybrid-dropdown__menu');
+          if (!(select instanceof HTMLSelectElement) || !menu) continue;
+
+          const fixedSelections = selectedOptions.slice(0, optionIndex);
+          const menuOptions = Array.from(menu.querySelectorAll('.dsgn-pck__hybrid-dropdown__option'));
+
+          for (const option of Array.from(select.options)) {
+            const hasAnyVariant = this.hasVariantForPath(fixedSelections, optionIndex, option.value);
+            const hasAvailableVariant = this.hasVariantForPath(fixedSelections, optionIndex, option.value, true);
+            const isUnavailable = !hasAnyVariant;
+            const isSoldOut = hasAnyVariant && !hasAvailableVariant;
+
+            option.classList.toggle('is-unavailable', isUnavailable);
+            option.classList.toggle('is-sold-out', isSoldOut);
+
+            const optionLabel = option.dataset.label || option.textContent.trim();
+            option.dataset.label = optionLabel;
+
+            if (isUnavailable) {
+              option.textContent = `${optionLabel} - Unavailable`;
+            } else if (isSoldOut) {
+              option.textContent = `${optionLabel} - Sold out`;
+            } else {
+              option.textContent = optionLabel;
+            }
+
+            const menuOption = menuOptions.find((item) => item.dataset.value === option.value);
+            if (menuOption) {
+              menuOption.classList.toggle('is-unavailable', isUnavailable);
+              menuOption.classList.toggle('is-sold-out', isSoldOut);
+
+              const unavailableText = menuOption.querySelector('.hybrid-dropdown__unavailable');
+              const soldOutText = menuOption.querySelector('.hybrid-dropdown__sold-out');
+              if (unavailableText) {
+                unavailableText.hidden = !isUnavailable;
+              }
+              if (soldOutText) {
+                soldOutText.hidden = !isSoldOut;
+              }
+            }
+          }
+        }
+      }
+
+      hasVariantForPath(fixedSelections, targetOptionIndex, targetOptionValue, requireAvailable = false) {
+        for (const variant of this.variants) {
+          if (requireAvailable && !variant.available) continue;
+
+          let matchesPreviousSelections = true;
+          for (let i = 0; i < fixedSelections.length; i += 1) {
+            const variantValue = this.getVariantOptionByIndex(variant, i);
+            if (variantValue !== fixedSelections[i]) {
+              matchesPreviousSelections = false;
+              break;
+            }
+          }
+
+          if (!matchesPreviousSelections) continue;
+
+          if (this.getVariantOptionByIndex(variant, targetOptionIndex) === targetOptionValue) {
+            return true;
+          }
+        }
+
+        return false;
+      }
+
+      getVariantOptionByIndex(variant, optionIndex) {
+        if (optionIndex === 0) return variant.option1;
+        if (optionIndex === 1) return variant.option2;
+        if (optionIndex === 2) return variant.option3;
+        return null;
+      }
+
+      setButtonOptionAvailabilityState(input, { isUnavailable = false, isSoldOut = false } = {}) {
+        const label = input.closest('.dsgn-pck__variant-option__button-label');
+        if (!label) return;
+
+        label.classList.toggle('is-unavailable', isUnavailable);
+        label.classList.toggle('is-sold-out', isSoldOut);
+
+        const strikethrough = label.querySelector('.dsgn-pck__unavailable-strikethrough');
+        if (strikethrough instanceof SVGElement) {
+          if (isUnavailable || isSoldOut) {
+            strikethrough.removeAttribute('hidden');
+          } else {
+            strikethrough.setAttribute('hidden', '');
+          }
+        }
+      }
+
+      syncButtonSwatchValues() {
+        const optionGroups = this.querySelectorAll('.dsgn-pck__variant-option--buttons');
+
+        for (const group of optionGroups) {
+          if (!this.isElementVisible(group)) continue;
+
+          const valueElement = group.querySelector('.dsgn-pck__variant-option__swatch-value');
+          if (!valueElement) continue;
+
+          const selectedRadio = group.querySelector('input[type="radio"]:checked');
+          if (!(selectedRadio instanceof HTMLInputElement) || !selectedRadio.value) continue;
+
+          valueElement.textContent = selectedRadio.value;
+        }
+      }
+
+      getSelectedOptionLabels() {
+        return this.getSelectedOptionValuesByPosition(({ value }) => value);
+      }
+
+      getSelectedOptionValueIds() {
+        return this.getSelectedOptionValuesByPosition(({ optionValueId }) => optionValueId);
+      }
+
+      getSelectedOptionValuesByPosition(mapSelection) {
+        const selectionsByPosition = new Map();
+        const optionGroups = Array.from(this.querySelectorAll('.dsgn-pck__variant-option--buttons'));
+
+        for (const group of optionGroups) {
+          if (!this.isElementVisible(group)) continue;
+
+          const selectedRadio = group.querySelector('input[type="radio"]:checked');
+          if (!(selectedRadio instanceof HTMLInputElement)) continue;
+
+          const optionPosition = this.getOptionPositionFromInputId(selectedRadio.dataset.inputId);
+          if (!optionPosition) continue;
+
+          const mappedValue = mapSelection({
+            value: selectedRadio.value,
+            optionValueId: selectedRadio.dataset.optionValueId || ''
+          });
+
+          if (mappedValue) {
+            selectionsByPosition.set(optionPosition, mappedValue);
+          }
+        }
+
+        const selects = Array.from(this.querySelectorAll('.dsgn-pck__variant-option__select'));
+        for (const select of selects) {
+          if (!this.isElementVisible(select)) continue;
+
+          const selectedOption = select.options[select.selectedIndex];
+          if (!(selectedOption instanceof HTMLOptionElement)) continue;
+
+          const optionPosition = this.getOptionPositionFromInputId(selectedOption.dataset.inputId);
+          if (!optionPosition || selectionsByPosition.has(optionPosition)) continue;
+
+          const mappedValue = mapSelection({
+            value: selectedOption.value,
+            optionValueId: selectedOption.dataset.optionValueId || ''
+          });
+
+          if (mappedValue) {
+            selectionsByPosition.set(optionPosition, mappedValue);
+          }
+        }
+
+        return Array.from(selectionsByPosition.entries())
+          .sort(([a], [b]) => a - b)
+          .map(([, value]) => value);
+      }
+
+      getOptionPositionFromInputId(inputId) {
+        if (!inputId) return null;
+        const [position] = inputId.split('-');
+        const parsedPosition = Number.parseInt(position, 10);
+        return Number.isNaN(parsedPosition) ? null : parsedPosition;
+      }
+
+      isElementVisible(element) {
+        for (let node = element; node; node = node.parentElement) {
+          const styles = window.getComputedStyle(node);
+          if (styles.display === 'none' || styles.visibility === 'hidden') {
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      findVariantFromSelectedOptions(selectedOptionLabels) {
+        if (!selectedOptionLabels.length) return null;
+
+        for (const variant of this.variants) {
+          const variantOptions = [variant.option1, variant.option2, variant.option3].filter(Boolean);
+          if (variantOptions.length !== selectedOptionLabels.length) continue;
+
+          let isMatch = true;
+          for (let i = 0; i < variantOptions.length; i += 1) {
+            if (variantOptions[i] !== selectedOptionLabels[i]) {
+              isMatch = false;
+              break;
+            }
+          }
+
+          if (isMatch) return variant;
+        }
+
+        return null;
+      }
+
+      updateUrlForLocalVariant(variant) {
+        const url = new URL(window.location.href);
+
+        url.searchParams.delete('option_values');
+        if (variant?.id) {
+          url.searchParams.set('variant', String(variant.id));
+        } else {
+          url.searchParams.delete('variant');
+        }
+
+        if (url.href !== window.location.href) {
+          history.replaceState({}, '', url.toString());
+        }
+      }
+
+      dispatchVariantChangeEvent(variant) {
+        this.dispatchEvent(
+          new CustomEvent('variant:change', {
+            detail: { variant, productId: this.dataset.productId },
+            bubbles: true
+          })
+        );
+      }
+
+      updatePriceBlocks(variant) {
+        {%- comment -%} Scope to the whole product (not a layout sub-group) so price blocks placed outside a product-details-group still update. data-product-id isolates the product. {%- endcomment -%}
+        const scope = this.closest('.dsgn-pck__product-details') || this.closest('.dsgn-pck__section') || document;
+        const priceBlocks = scope.querySelectorAll(`dp-product-price[data-product-id='${this.dataset.productId}']`);
+        if (!priceBlocks.length) return;
+
+        for (const block of priceBlocks) {
+          const sellingPrice = block.querySelector('.dsgn-pck__selling-price');
+          const compareAtPrice = block.querySelector('.dsgn-pck__compare-at-price');
+          const useCurrencyCode = block.getAttribute('data-use-currency-code') === 'true';
+
+          if (!sellingPrice && !compareAtPrice) continue;
+
+          if (!variant || typeof variant.price === 'undefined') {
+            if (sellingPrice) {
+              sellingPrice.textContent = '';
+            }
+
+            if (compareAtPrice) {
+              compareAtPrice.textContent = '';
+              compareAtPrice.setAttribute('data-compare-at-price', '0');
+            }
+            continue;
+          }
+
+          if (sellingPrice) {
+            sellingPrice.textContent = this.formatMoney(variant.price, useCurrencyCode);
+          }
+
+          if (compareAtPrice) {
+            if (variant.compare_at_price && variant.compare_at_price > variant.price) {
+              compareAtPrice.textContent = this.formatMoney(variant.compare_at_price, useCurrencyCode);
+              compareAtPrice.setAttribute('data-compare-at-price', String(variant.compare_at_price));
+            } else {
+              compareAtPrice.textContent = '';
+              compareAtPrice.setAttribute('data-compare-at-price', '0');
+            }
+          }
+        }
+      }
+
+      updateAddToCartButtons(variant, scopeElement = null) {
+        {%- comment -%} Same product-level scope as updatePriceBlocks so buy-buttons placed outside a product-details-group still update. {%- endcomment -%}
+        const scope = scopeElement || this.closest('.dsgn-pck__product-details') || this.closest('.dsgn-pck__section') || document;
+        if (!(scope instanceof Element)) return;
+
+        const productForms = Array.from(scope.querySelectorAll('form[action*="/cart/add"]'));
+        if (!productForms.length) return;
+
+        const hasVariant = Boolean(variant?.id);
+        const canPurchase = Boolean(variant?.id && variant.available);
+
+        for (const form of productForms) {
+          const variantIdInput = form.querySelector('input[name="id"]');
+          if (variantIdInput instanceof HTMLInputElement) {
+            variantIdInput.value = hasVariant ? String(variant.id) : '';
+          }
+
+          const submitElements = Array.from(form.querySelectorAll('button[type="submit"], input[type="submit"]'));
+          for (const submitElement of submitElements) {
+            if (submitElement instanceof HTMLButtonElement) {
+              submitElement.disabled = !canPurchase;
+              submitElement.setAttribute('aria-disabled', String(!canPurchase));
+
+              const labelElement =
+                submitElement.querySelector('[data-add-to-cart-text], [data-add-to-cart-label], .dsgn-pck__add-to-cart-text__content') ||
+                submitElement.querySelector('.dsgn-pck__add-to-cart-text');
+              if (!(labelElement instanceof HTMLElement)) {
+                continue;
+              }
+
+              const labels = this.getSubmitLabels(submitElement, labelElement);
+              const unavailableLabel = hasVariant ? labels.soldOutText : labels.unavailableText;
+
+              if (!labelElement.dataset.defaultText) {
+                if (labels.defaultText) {
+                  labelElement.dataset.defaultText = labels.defaultText;
+                }
+
+                const currentLabel = labelElement.textContent?.trim() || '';
+                if (!labelElement.dataset.defaultText && !this.isAvailabilityStatusLabel(currentLabel, labels)) {
+                  labelElement.dataset.defaultText = currentLabel;
+                }
+              }
+
+              const fallbackDefault = labels.defaultText || labelElement.dataset.defaultText || '';
+              labelElement.textContent = canPurchase ? (labelElement.dataset.defaultText || fallbackDefault) : unavailableLabel;
+              continue;
+            }
+
+            if (submitElement instanceof HTMLInputElement) {
+              submitElement.disabled = !canPurchase;
+              submitElement.setAttribute('aria-disabled', String(!canPurchase));
+              const labels = this.getSubmitLabels(submitElement);
+              const unavailableLabel = hasVariant ? labels.soldOutText : labels.unavailableText;
+
+              if (!submitElement.dataset.defaultText) {
+                if (labels.defaultText) {
+                  submitElement.dataset.defaultText = labels.defaultText;
+                }
+
+                const currentValue = submitElement.value?.trim() || '';
+                if (!submitElement.dataset.defaultText && !this.isAvailabilityStatusLabel(currentValue, labels)) {
+                  submitElement.dataset.defaultText = currentValue;
+                }
+              }
+
+              const fallbackDefault = labels.defaultText || submitElement.dataset.defaultText || '';
+              submitElement.value = canPurchase ? (submitElement.dataset.defaultText || fallbackDefault) : unavailableLabel;
+            }
+          }
+        }
+      }
+
+      isAvailabilityStatusLabel(text, { soldOutText = 'Sold out', unavailableText = 'Unavailable' } = {}) {
+        const normalized = (text || '').trim().toLowerCase();
+        return normalized === soldOutText.trim().toLowerCase() || normalized === unavailableText.trim().toLowerCase();
+      }
+
+      getSubmitLabels(submitElement, labelElement = null) {
+        const defaultText =
+          submitElement.dataset.addToCartDefaultText ||
+          labelElement?.dataset.addToCartDefaultText ||
+          '';
+        const soldOutText =
+          submitElement.dataset.addToCartSoldOutText ||
+          labelElement?.dataset.addToCartSoldOutText ||
+          'Sold out';
+        const unavailableText =
+          submitElement.dataset.addToCartUnavailableText ||
+          labelElement?.dataset.addToCartUnavailableText ||
+          'Unavailable';
+
+        return {
+          defaultText: defaultText.trim(),
+          soldOutText: soldOutText.trim(),
+          unavailableText: unavailableText.trim()
+        };
+      }
+
+      cacheAddToCartDefaultLabels() {
+        const scope = this.closest('.dsgn-pck__product-details') || this.closest('.dsgn-pck__section') || document;
+        if (!(scope instanceof Element)) return;
+
+        const productForms = Array.from(scope.querySelectorAll('form[action*="/cart/add"]'));
+        if (!productForms.length) return;
+
+        for (const form of productForms) {
+          const submitElements = Array.from(form.querySelectorAll('button[type="submit"], input[type="submit"]'));
+
+          for (const submitElement of submitElements) {
+            if (submitElement instanceof HTMLButtonElement) {
+              const labelElement =
+                submitElement.querySelector('[data-add-to-cart-text], [data-add-to-cart-label], .dsgn-pck__add-to-cart-text__content') ||
+                submitElement.querySelector('.dsgn-pck__add-to-cart-text');
+              if (!(labelElement instanceof HTMLElement)) continue;
+              const labels = this.getSubmitLabels(submitElement, labelElement);
+
+              if (!labelElement.dataset.defaultText) {
+                if (labels.defaultText) {
+                  labelElement.dataset.defaultText = labels.defaultText;
+                }
+
+                const currentLabel = labelElement.textContent?.trim() || '';
+                if (!labelElement.dataset.defaultText && !this.isAvailabilityStatusLabel(currentLabel, labels)) {
+                  labelElement.dataset.defaultText = currentLabel;
+                }
+              }
+              continue;
+            }
+
+            if (submitElement instanceof HTMLInputElement && !submitElement.dataset.defaultText) {
+              const labels = this.getSubmitLabels(submitElement);
+              if (labels.defaultText) {
+                submitElement.dataset.defaultText = labels.defaultText;
+              }
+
+              const currentValue = submitElement.value?.trim() || '';
+              if (!submitElement.dataset.defaultText && !this.isAvailabilityStatusLabel(currentValue, labels)) {
+                submitElement.dataset.defaultText = currentValue;
+              }
+            }
+          }
+        }
+      }
+
+      formatMoney(amountInCents, useCurrencyCode = false) {
+        const moneyFormat = {{ shop.money_format | json }};
+        const moneyWithCurrencyFormat = {{ shop.money_with_currency_format | json }};
+        const format = useCurrencyCode ? moneyWithCurrencyFormat : moneyFormat;
+
+        if (window.Shopify?.formatMoney) {
+          return window.Shopify.formatMoney(amountInCents, format);
+        }
+
+        // Manual format fallback when Shopify.formatMoney is not available
+        const cents = amountInCents || 0;
+        const amount = (cents / 100).toFixed(2);
+        const amountWithCommas = amount.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        const amountNoDecimals = (cents / 100).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        const amountWithCommaSeparator = amount.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        const amountNoDecimalsWithCommaSeparator = (cents / 100).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+        return format
+          .replace(/\{\{\s*amount_with_comma_separator\s*\}\}/, amountWithCommaSeparator)
+          .replace(/\{\{\s*amount_no_decimals_with_comma_separator\s*\}\}/, amountNoDecimalsWithCommaSeparator)
+          .replace(/\{\{\s*amount_no_decimals\s*\}\}/, amountNoDecimals)
+          .replace(/\{\{\s*amount\s*\}\}/, amountWithCommas);
+      }
+
+      updateSelectedOption(target) {
+        //console.log('[VariantPicker] updateSelectedOption', target);
+        if (typeof target === 'string') {
+          const targetElement = this.querySelector(`[data-option-value-id="${target}"]`);
+          if (!targetElement) throw new Error('Target element not found');
+          target = targetElement;
+        }
+        if (target instanceof HTMLInputElement) {
+          target.checked = true;
+        }
+        if (target instanceof HTMLSelectElement) {
+          const newValue = target.value;
+          const newSelectedOption = Array.from(target.options).find((option) => option.value === newValue);
+          if (!newSelectedOption) throw new Error('Option not found');
+          for (const option of target.options) {
+            option.removeAttribute('selected');
+          }
+          newSelectedOption.setAttribute('selected', 'selected');
+        }
+      }
+
+      buildRequestUrl(selectedOption, source = null, sourceSelectedOptionsValues = []) {
+        let productUrl = selectedOption.dataset.connectedProductUrl || this.#pendingRequestUrl || this.dataset.productUrl;
+        this.#pendingRequestUrl = productUrl;
+        const params = [];
+        if (this.selectedOptionsValues.length && !source) {
+          params.push(`option_values=${this.selectedOptionsValues.join(',')}`);
+        } else if (source === 'product-card') {
+          if (this.selectedOptionsValues.length) {
+            params.push(`option_values=${sourceSelectedOptionsValues.join(',')}`);
+          } else {
+            params.push(`option_values=${selectedOption.dataset.optionValueId}`);
+          }
+        }
+        if (this.closest('quick-add-component') || this.closest('swatches-variant-picker-component')) {
+          if (productUrl?.includes('?')) {
+            productUrl = productUrl.split('?')[0];
+          }
+          const url = `${productUrl}?section_id=section-rendering-product-card&${params.join('&')}`;
+          //console.log('[VariantPicker] buildRequestUrl (quick-add/swatches):', url);
+          return url;
+        }
+        const url = `${productUrl}?${params.join('&')}`;
+        //console.log('[VariantPicker] buildRequestUrl:', url);
+        return url;
+      }
+
+      async fetchUpdatedSection(requestUrl) {
+        this.#abortController?.abort();
+        this.#abortController = new AbortController();
+
+        try {
+          const response = await fetch(requestUrl, { signal: this.#abortController.signal });
+          const responseText = await response.text();
+          this.#pendingRequestUrl = undefined;
+
+          const html = new DOMParser().parseFromString(responseText, 'text/html');
+          html.querySelector('overflow-list[defer]')?.removeAttribute('defer');
+          const textContent = html.querySelector('dp-variant-picker script[type="application/json"]:not([data-dp-variants])')?.textContent;
+          if (!textContent) return;
+
+          this.updateVariantPicker(html);
+          const variantData = JSON.parse(textContent);
+          this.applyVariantSelectionState(variantData);
+        } catch (error) {
+          if (error.name === 'AbortError') return;
+          console.error('[VariantPicker] fetch error:', error);
+        }
+      }
+
+      updateVariantPicker(newHtml) {
+        //console.log('[VariantPicker] updateVariantPicker', newHtml);
+        let newProduct;
+        const newVariantPickerSource = newHtml.querySelector(this.tagName.toLowerCase());
+        if (!newVariantPickerSource) {
+          //console.error('[VariantPicker] No new variant picker source found');
+          throw new Error('No new variant picker source found');
+        }
+        if (newVariantPickerSource instanceof HTMLElement) {
+          const newProductId = newVariantPickerSource.dataset.productId;
+          const newProductUrl = newVariantPickerSource.dataset.productUrl;
+          if (newProductId && newProductUrl && this.dataset.productId !== newProductId) {
+            newProduct = { id: newProductId, url: newProductUrl };
+          }
+          this.dataset.productId = newProductId;
+          this.dataset.productUrl = newProductUrl;
+        }
+        // morph(this, newVariantPickerSource); // Uncomment if morph is available
+        this.innerHTML = newVariantPickerSource.innerHTML; // fallback if morph is not available
+        return newProduct;
+      }
+
+      get selectedOption() {
+        const selectedOption = this.querySelector('select option[selected], fieldset input:checked');
+        //console.log('[VariantPicker] get selectedOption:', selectedOption);
+        if (!(selectedOption instanceof HTMLInputElement || selectedOption instanceof HTMLOptionElement)) {
+          return undefined;
+        }
+        return selectedOption;
+      }
+
+      get selectedOptionId() {
+        const { selectedOption } = this;
+        //console.log('[VariantPicker] get selectedOptionId:', selectedOption);
+        if (!selectedOption) return undefined;
+        const { optionValueId } = selectedOption.dataset;
+        if (!optionValueId) {
+          throw new Error('No option value ID found');
+        }
+        return optionValueId;
+      }
+
+      get selectedOptionsValues() {
+        const selectedOptions = Array.from(this.querySelectorAll('select option[selected], fieldset input:checked'));
+      //console.log('[VariantPicker] get selectedOptionsValues:', selectedOptions);
+        return selectedOptions.map((option) => {
+          const { optionValueId } = option.dataset;
+          if (!optionValueId) throw new Error('No option value ID found');
+          return optionValueId;
+        });
+      }
+    }
+
+    if (!customElements.get('dp-variant-picker')) {
+      customElements.define('dp-variant-picker', dpVariantPicker);
+    }
+  </script>
+{% endcapture %}
+
+{% if hide_single_variant and product_resource.variants.size == 1 %}
+  {% break %}
+{% endif %}
+
+<div id="DP--{{ block.id }}" class="DP--{{ block.id }} dsgn-pck__block dsgn-pck__block-id-{{ block.id }} dsgn-pck__variant-picker dsgn-pck__variant-picker--{{ variant_style }} {% if show_swatches == true and show_variant_images == false %}dsgn-pck--show-swatches{% endif %} {% if show_variant_images == true %}dsgn-pck--show-variant-images{% endif %} {% if show_legacy_swatches == true %}dsgn-pck--show-legacy-swatches{% endif %}">
+  {{ css_styles }}
+  {% unless product_resource.has_only_default_variant %}
+    <dp-variant-picker
+      data-section-id="{{ section.id }}"
+      data-product-id="{{ product_resource.id }}"
+      data-block-id="{{ block.id }}"
+      data-product-url="{{ product_resource.url }}"
+      data-variant-count="{{ product_resource.variants.size }}"
+      ref="mainVariantPicker"
+      {% if product.variants.size > 100 %}
+        data-is-high-variant-product="true"
+      {% endif %}
+      {% if product.id == product_resource.id %}
+        data-template-product-match="true"
+      {% endif %}
+      {{ block.shopify_attributes }}>
+      <form class="dsgn-pck__variant-picker__form" {% if is_hidden == false %}data-dp-variant-picker-form{% endif %}>
+        {%- for product_option in product_resource.options_with_values -%}
+          {%- liquid
+            assign swatch_count = product_option.values | map: 'swatch' | compact | size
+
+            if variant_style == 'buttons'
+              assign fieldset_id = section.id | append: '-' | append: product_resource.id | append: '-' | append: product_option.name | handleize
+              assign option_id_attribute = 'data-option-id="' | append: fieldset_id | append: '"'
+              assign longest_value = 0
+            endif
+          -%}
+          {% assign option_name = product_option.name | escape | handleize %}
+            <fieldset
+              class="dsgn-pck__variant-option dsgn-pck__variant-option--buttons {% if swatch_count > 0 and show_swatches == true %}dsgn-pck__native-swatches-available{% endif %} {% if option_name contains 'color' or option_name contains 'colour' %}dsgn-pck__color-option{% endif %}"
+              {{ option_id_attribute }}
+            >
+              <legend class="dsgn-pck__variant-option__swatch-container">
+                <span class="dsgn-pck__variant-option__swatch-label">{{ product_option.name | escape }}</span>
+                <span class="dsgn-pck__variant-option__swatch-value">{{ product_option.selected_value }}</span>
+              </legend>
+              {%- for product_option_value in product_option.values -%}
+                {% if product_option_value.size > longest_value and option_id_attribute %}
+                  {% assign longest_value = product_option_value.size %}
+                {% endif %}
+                <label class="dsgn-pck__variant-option__button-label{% unless product_option_value.available %} is-unavailable{% endunless %}">
+                  <input
+                    type="radio"
+                    name="{{ product_option.name | escape }}-{{ block.id }}-{{ product_resource.id }}"
+                    value="{{ product_option_value | escape }}"
+                    aria-label="{{ product_option_value.name }}"
+                    {% if product_option_value.available == false %}
+                      aria-disabled="true"
+                    {% endif %}
+                    data-input-id="{{ product_option.position }}-{{ forloop.index0 }}"
+                    data-option-value-id="{{ product_option_value.id }}"
+                    data-option-available="{{ product_option_value.available }}"
+                    data-connected-product-url="{{ product_option_value.product_url }}"
+                    data-variant-id="{{ product_option_value.variant.id }}"
+                    {% if product_option_value.selected %}
+                      checked
+                    {% endif %}
+                  >
+
+                    {% comment %} Native Shopify swatch image {% endcomment %}
+                    {% if product_option_value.swatch.image %}
+                      {% liquid
+                        assign swatch_image_url = product_option_value.swatch.image | image_url: width: 80
+                        assign swatch_value = 'url(' | append: swatch_image_url | append: ')'
+                      %}
+                      <span
+                        class="dsgn-pck__swatch dsgn-pck__swatch--swatch-image{% if swatch_value == null %} dsgn-pck__swatch--unavailable{% endif %}"
+                        style="--swatch-background: {{ swatch_value }};"
+                      >{%- if swatch_image_url != null -%}<span class="dsgn-pck__swatch-value-exists"></span>{%- endif -%}</span>
+                    {% endif %}
+
+                    {% comment %} Variant swatch color {% endcomment %}
+                    {% if product_option_value.swatch.color %}
+                      {% liquid
+                        assign swatch_value = 'rgb(' | append: product_option_value.swatch.color.rgb | append: ')'
+                      %}
+                      <span
+                        class="dsgn-pck__swatch dsgn-pck__swatch--color{% if swatch_value == null %} dsgn-pck__swatch--unavailable{% endif %}"
+                        style="--swatch-background: {{ swatch_value }};"
+                      >{%- if swatch_value != null -%}<span class="dsgn-pck__swatch-value-exists"></span>{%- endif -%}</span>
+                    {% endif %}
+
+                    {% if option_name contains 'color' or option_name contains 'colour' %}
+
+                      {% liquid
+                        assign featured_media = product_option_value.variant.featured_media
+
+                        # If the variant has no featured media, and we have a combined listing product, then fall back to
+                        # using the featured media of the child product that is linked to this option value.
+                        if featured_media == blank and product_option_value.product_url
+                          assign featured_media = product_option_value.variant.product.featured_media
+                        endif
+                      %}
+
+                      {% comment %} Variant featured image {% endcomment %}
+                      {% if featured_media %}
+                        {% liquid
+                          assign swatch_image_width = 100 | times: 2
+                          assign swatch_image_url = featured_media | image_url: width: swatch_image_width
+                          assign swatch_value = 'url(' | append: swatch_image_url | append: ')'
+                        %}
+                        <span
+                          class="dsgn-pck__swatch dsgn-pck__swatch--variant-image{% if swatch_value == null %} dsgn-pck__swatch--unavailable{% endif %}"
+                          style="--swatch-background: {{ swatch_value }};"
+                        >{%- if swatch_image_url != null -%}<span class="dsgn-pck__swatch-value-exists"></span>{%- endif -%}</span>
+                      {% endif %}
+
+                      {% comment %} Custom swatch image/ default color fallback {% endcomment %}
+                      {% liquid
+                        assign swatch_image_width = 100 | times: 2
+                        assign swatch_file_image_url = product_option_value | replace: ' ', '-' | append: '.png' | file_img_url: '50x'
+                        assign swatch_file_image_value = 'url(' | append: swatch_file_image_url | append: ')'
+                      %}
+                      <span
+                        class="dsgn-pck__swatch dsgn-pck__swatch--file-image{% if swatch_value == null %} dsgn-pck__swatch--unavailable{% endif %}"
+                        style="--swatch-background: {{ swatch_file_image_value }}; background-color: {{ product_option_value }};"
+                      >{%- if swatch_file_image_url != null -%}<span class="dsgn-pck__swatch-value-exists"></span>{%- endif -%}</span>
+                    {% endif %}
+
+                    <span class="dsgn-pck__variant-option__button-label__text">{{ product_option_value | escape }}</span>
+
+                  <svg
+                    class="dsgn-pck__unavailable-strikethrough"
+                    width="100%"
+                    height="100%"
+                    viewBox="0 0 100 46"
+                    preserveAspectRatio="xMidYMid slice"
+                    {% if product_option_value.available %}
+                      hidden
+                    {% endif %}
+                  >
+                    {% # 25deg %}
+                    <line x1="100" y1="0" x2="0" y2="46" vector-effect="non-scaling-stroke" />
+                  </svg>
+                </label>
+              {%- endfor -%}
+            </fieldset>
+          {%- if block.settings.variant_style == 'dropdowns' or is_hidden == true -%}
+            {% liquid
+              assign property_being_updated = false
+              if settings.variant_swatch_width != settings.variant_swatch_height
+                assign property_being_updated = true
+                # (original width / original height) x new height (20px at the moment) = new width
+                assign new_width = settings.variant_swatch_width | times: 1.0 | divided_by: settings.variant_swatch_height | times: 20
+              endif
+            %}
+
+            <div class="dsgn-pck__variant-option dsgn-pck__variant-option--dropdowns">
+              <label for="Option-{{ block.id }}-{{ forloop.index0 }}" class="dsgn-pck__variant-option__dropdown-label">{{ product_option.name | escape }}</label>
+              <div
+                class="dsgn-pck__variant-option__select-wrapper"
+                style="
+                  {%- if property_being_updated  -%}
+                    --variant-picker-swatch-width: clamp(10px,{{ new_width }}px, 50px);
+                  {%- endif -%}
+                "
+              >
+                <select
+                  id="Option-{{ block.id }}-{{ forloop.index0 }}"
+                  name="options[{{ product_option.name | escape }}]"
+                  class="dsgn-pck__variant-option__select"
+                >
+                  {%- for product_option_value in product_option.values -%}
+                    <option
+                      value="{{ product_option_value | escape }}"
+                      data-label="{{ product_option_value | escape }}"
+                      data-input-id="{{ product_option.position }}-{{ forloop.index0 }}"
+                      data-option-value-id="{{ product_option_value.id }}"
+                      data-variant-id="{{ product_option_value.variant.id }}"
+                      data-connected-product-url="{{ product_option_value.product_url }}"
+                      {% if product_option_value.selected %}
+                        selected="selected"
+                      {% endif %}
+                    >
+                      {% if product_option_value.available == false %}
+                        {{ product_option_value | escape }} - Unavailable
+                      {% else %}
+                        {{ product_option_value | escape }}
+                      {% endif %}
+                    </option>
+                  {%- endfor -%}
+                </select>
+                <svg
+                  aria-hidden="true"
+                  focusable="false"
+                  class="icon icon-caret"
+                  viewBox="0 0 10 6"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M9.354.646a.5.5 0 00-.708 0L5 4.293 1.354.646a.5.5 0 00-.708.708l4 4a.5.5 0 00.708 0l4-4a.5.5 0 000-.708z"
+                    fill="currentColor"
+                  ></path>
+                </svg>
+                <!-- Custom dropdown menu (hidden by default) -->
+                <div class="dsgn-pck__hybrid-dropdown__menu" hidden>
+                  {% for product_option_value in product_option.values %}
+                    <div
+                      class="dsgn-pck__hybrid-dropdown__option{% if product_option_value.selected %} dsgn-pck__is-selected{% endif %}{% unless product_option_value.available %} is-unavailable{% endunless %}"
+                      data-value="{{ product_option_value | escape }}"
+                      tabindex="0"
+                    >
+                      {{ product_option_value | escape }}
+                      <span class="hybrid-dropdown__unavailable" {% if product_option_value.available %}hidden{% endif %}>(Unavailable)</span>
+                      <span class="hybrid-dropdown__sold-out" hidden>(Sold out)</span>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+        {% if product_resource.variants.size < 250 %}
+          <script type="application/json" data-dp-variants>
+            {{ product_resource.variants | json }}
+          </script>
+        {% endif %}
+
+        <script type="application/json">
+          {{ product_resource.selected_or_first_available_variant | json }}
+        </script>
+      </form>
+    </dp-variant-picker>
+  {% endunless %}
+  {{ js_scripts }}
+</div>

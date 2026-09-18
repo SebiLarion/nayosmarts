@@ -1,0 +1,17 @@
+{%- liquid
+  assign total = 0
+
+  for block in section.blocks
+    if block.type == 'custom_gallery_image'
+      capture block_matches
+        render 'product-custom-gallery-h1-match', block: block, product: product, product_variant: product_variant
+      endcapture
+
+      if block_matches contains 'true'
+        assign total = total | plus: 1
+      endif
+    endif
+  endfor
+
+  echo total
+-%}

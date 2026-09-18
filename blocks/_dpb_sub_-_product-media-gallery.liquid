@@ -1,0 +1,1486 @@
+{%- comment -%}
+{
+  "pack_name": "Product media gallery",
+  "pack_author": "Design Packs",
+  "license": "© Design Packs. All rights reserved. This code is protected by copyright law and may not be reproduced, distributed, or used without explicit permission from the author. Shopify complies with the Digital Millennium Copyright Act (DMCA) and responds to claims of copyright infringement using DMCA procedures, which could result in the termination of your Shopify account.",
+}
+{%- endcomment -%}
+
+{% comment %} Security Code - hides section when app uninstalled {% endcomment %}
+{%- unless content_for_header contains 'design_packs_file.js' -%}
+  {%- if request.design_mode -%}
+    <div class="dsgn-pck__no-app-warning">
+      <div class="dsgn-pck__no-app-warning-background">
+      </div>
+      <div class="dsgn-pck__no-app-warning-text dsgn-pck__rte">
+        <p><strong>WARNING!</strong> This premium section will not display properly without an active subscription for <a href="https://apps.shopify.com/design-packs" target="_blank" rel="noopener nofollow">Design Packs</a>. If you need any support please email <a href="mailto:info@design-packs.com" target="_blank" rel="noopener">info@design-packs.com</a> with your questions.</p>
+      </div>
+    </div>
+  {%- endif -%}
+  {%- break -%}
+{%- endunless -%}
+
+{%- comment -%} Assign: Preview section js fix {%- endcomment -%}
+{%- assign section_id = section.id | replace: '+', '' | replace: '=', '' -%}
+
+{%- assign block_index = section.blocks | find_index: 'id', block.id | plus: 1 -%}
+
+{% comment %} Images: responsive image widths {% endcomment %}
+{%- assign widths = '180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 1950, 2100, 2260, 2450, 2700, 3000, 3350, 3750, 4100' -%}
+
+{% assign product = closest.product | default: section.settings.product | default: product | default: collections["all"].products.first %}
+
+{%- capture css_styles %}
+<style>
+  /*! Flickity v2.2.2
+  https://flickity.metafizzy.co
+  ---------------------------------------------- */
+  .dsgn-pck__block-id-{{ block.id }} {
+  .flickity-enabled{position:relative}.flickity-enabled:focus{outline:0;box-shadow: none;}.flickity-viewport{overflow:hidden;position:relative;height:100%}.flickity-slider{position:absolute;width:100%;height:100%}.flickity-enabled.is-draggable{-webkit-tap-highlight-color:transparent;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.flickity-enabled.is-draggable .flickity-viewport{cursor:move;cursor:-webkit-grab;cursor:grab}.flickity-enabled.is-draggable .flickity-viewport.is-pointer-down{cursor:-webkit-grabbing;cursor:grabbing}.flickity-button{position:absolute;background:hsla(0,0%,100%,.75);border:none;color:#333}.flickity-button:hover{background:#fff;cursor:pointer}.flickity-button:focus{outline:0;box-shadow:0 0 0 5px #19f}.flickity-button:active{opacity:.6}.flickity-button:disabled{opacity:.3;cursor:auto;pointer-events:none}.flickity-button-icon{fill:currentColor}.flickity-prev-next-button{top:50%;width:44px;height:44px;border-radius:50%;transform:translateY(-50%)}.flickity-prev-next-button.previous{left:10px}.flickity-prev-next-button.next{right:10px}.flickity-rtl .flickity-prev-next-button.previous{left:auto;right:10px}.flickity-rtl .flickity-prev-next-button.next{right:auto;left:10px}.flickity-prev-next-button .flickity-button-icon{position:absolute;left:20%;top:20%;width:60%;height:60%}.flickity-page-dots{position:absolute;width:100%;bottom:-25px;padding:0;margin:0;list-style:none;text-align:center;line-height:1}.flickity-rtl .flickity-page-dots{direction:rtl}.flickity-page-dots .dot{display:inline-block;width:10px;height:10px;margin:0 8px;background:#333;border-radius:50%;opacity:.25;cursor:pointer}.flickity-page-dots .dot.is-selected{opacity:1}
+  }
+
+  {%- if block.settings.enable_lightbox != blank -%}
+  .bp-img-wrap,.bp-wrap{top:0;left:0;width:100%;height:100%;contain:strict}.bp-controls,.bp-zoomed.bp-small .bp-controls button{pointer-events:none}.bp-cap,.bp-count{color:rgba(255,255,255,.9)}.bp-cap,.bp-controls{transition:opacity .3s}@keyframes bp-fadein{from{opacity:.01}to{opacity:1}}@keyframes bp-bar{from{transform:translateX(-100%)}to{transform:translateX(0)}}@keyframes bp-o{from{transform:rotate(0)}to{transform:rotate(360deg)}}.bp-wrap{position:fixed;z-index:999;touch-action:none;-webkit-tap-highlight-color:transparent}.bp-img,.bp-img-wrap,.bp-inner,.bp-vid audio{position:absolute}.bp-wrap>div:first-child{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.75);animation:.48s cubic-bezier(.215,.61,.355,1) bp-fadein; display: block}.bp-vid audio{left:14px;width:calc(100% - 28px);bottom:14px;height:50px}.bp-inner{top:0;left:0;width:100%;height:100%;display:flex}.bp-html{display:contents}.bp-html>:first-child{margin:auto}.bp-img-wrap.bp-drag .bp-img{cursor:grabbing}.bp-img,.bp-noclose:not(.bp-zoomed) .bp-img-wrap{cursor:zoom-in}.bp-close{contain:layout size}.bp-img{top:50%;left:50%;user-select:none;background-size:100% 100%}.bp-controls,.bp-img div,.bp-img img{top:0;width:100%;position:absolute;height:100%}.bp-img div,.bp-img img{left:0}.bp-img .bp-o,.bp-noclose .bp-x{display:none}.bp-zoomed .bp-img{cursor:grab}.bp-zoomed .bp-cap{opacity:0;animation:none!important}.bp-zoomed.bp-small .bp-controls{opacity:0}.bp-controls{left:0;text-align:left;animation:.3s bp-fadein}.bp-controls button{pointer-events:auto;cursor:pointer;position:absolute;border:0;background:rgba(0,0,0,.15);opacity:.9;transition:.1s;contain:content}.bp-controls button:hover{background-color:rgba(0,0,0,.2);opacity:1}.bp-controls svg{fill:#fff}.bp-count{position:absolute;line-height:1;margin:16px;height:50px;width:100px}.bp-next,.bp-prev{top:50%;right:0;margin-top:-32px;height:64px;width:58px;border-radius:3px 0 0 3px}.bp-next:hover:before,.bp-prev:hover:before{transform:translateX(-2px)}.bp-next:before,.bp-prev:before{content:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z'/%3E%3C/svg%3E");position:absolute;left:7px;top:9px;width:46px;transition:.2s}.bp-prev{right:auto;left:0;transform:scalex(-1)}.bp-x{top:0;right:0;height:55px;width:58px;border-radius:0 0 0 3px}.bp-x:before{content:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='%23fff'%3E%3Cpath d='M24 10l-2-2-6 6-6-6-2 2 6 6-6 6 2 2 6-6 6 6 2-2-6-6z'/%3E%3C/svg%3E");position:absolute;width:37px;top:8px;right:10px}.bp-if,.bp-vid{position:relative;margin:auto;background:0 0/100% 100% #000}.bp-bar,.bp-cap,.bp-inline{position:absolute}.bp-if div,.bp-if iframe,.bp-if video,.bp-vid div,.bp-vid iframe,.bp-vid video{top:0;left:0;width:100%;height:100%;position:absolute;border:0}.bp-load{display:flex;background-size:100% 100%;overflow:hidden;z-index:1}.bp-bar{top:0;left:0;height:3px;width:100%;transform:translateX(-100%);background:rgba(255,255,255,.9);border-radius:0 3px 3px 0;animation:4s both bp-bar}.bp-o,.bp-o:after{border-radius:50%;width:90px;height:90px}.bp-o{margin:auto;border:10px solid rgba(255,255,255,.2);border-left-color:rgba(255,255,255,.9);animation:1s linear infinite bp-o}.bp-cap{bottom:2%;background:rgba(9,9,9,.8);border-radius:4px;max-width:95%;line-height:1.3;padding:.6em 1.2em;left:50%;transform:translateX(-50%);width:fit-content;width:-moz-fit-content;display:table;animation:.2s bp-fadein}.bp-cap a{color:inherit}.bp-lock{overflow-y:hidden}.bp-lock body{overflow:scroll}.bp-noclose:not(.bp-zoomed){touch-action:pan-y}@media (prefers-reduced-motion){.bp-wrap *{animation-duration:0s!important}}@media (max-width:500px){.bp-x{height:47px;width:47px}.bp-x:before{width:34px;top:6px;right:6px}.bp-next,.bp-prev{margin-top:-27px;height:54px;width:45px}.bp-next:before,.bp-prev:before{top:7px;left:2px;width:43px}.bp-o,.bp-o:after{border-width:6px;width:60px;height:60px}.bp-count{margin:12px 10px}} .bp-img img:not([src]) {visibility: unset;}
+
+  .bp-wrap{z-index:1000;}
+  {%- endif -%}
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__lightbox-true,
+  .DP--{{ section_id }} a.dsgn-pck__lightbox-true:not([href]) {
+    cursor: zoom-in;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-block {
+    --page-dots: false;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-block .flickity-viewport {
+    height: auto;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-block-container {
+    position: relative;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slide {
+    width: 100%;
+    border-radius: {{ block.settings.border_radius }}px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slide .dsgn-pck__image__wrapper {
+    border-radius: {{ block.settings.border_radius }}px;
+    overflow: hidden;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .flickity-enabled:has(.flickity-slider > *:only-child) .flickity-button {
+    display: none;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .flickity-button-icon {
+    color: {{ block.settings.arrow_color }};
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .flickity-prev-next-button {
+    background: {{ block.settings.arrow_background_color | default: 'hsla(0,0%,100%,.75)' }};
+    width: {{ block.settings.arrow_size | default: 44 }}px;
+    height: {{ block.settings.arrow_size | default: 44 }}px;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .flickity-button.flickity-prev-next-button:hover {
+    opacity: 1;
+    background: {{ block.settings.arrow_background_color | default: 'hsla(0,0%,100%,.75)' }};
+  }
+
+  {%- if block.settings.show_arrows != true -%}
+    .dsgn-pck__block-id-{{ block.id }} .flickity-prev-next-button {
+      display: none;
+    }
+  {%- endif -%}
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-thumbnails-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    width: 100%;
+    position: relative;
+  }
+
+  {%- if block.settings.thumbnail_display == 'none' -%}
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-thumbnails-container {
+      display: none;
+    }
+  {%- endif -%}
+
+  {%- if block.settings.thumbnail_display == 'left_scroll' or block.settings.thumbnail_display == 'right_scroll' -%}
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-container {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      {%- if block.settings.thumbnail_display == 'left_scroll' -%}
+        flex-direction: row;
+      {%- else -%}
+        flex-direction: row-reverse;
+      {%- endif -%}
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-block-container {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-thumbnails-container {
+      flex: 0 0 100px;
+      width: 100px;
+      margin-top: 0;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-thumbnails {
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex: 1;
+      width: 100%;
+      scrollbar-width: thin;
+      max-height: 100%;
+      display: flex;
+      gap: 5px;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-thumbnails::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-thumbnails::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 3px;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-thumbnails::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 3px;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-thumbnails::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__thumbnail {
+      flex: 0 0 auto;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__thumbnail-nav-button {
+      position: relative;
+      width: 100%;
+      height: 40px;
+      left: auto;
+      top: auto;
+      transform: none;
+      flex-shrink: 0;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__thumbnail-nav-button--prev {
+      transform: rotate(180deg);
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__thumbnail-nav-button--next {
+      transform: none;
+      right: auto;
+      top: calc(100% - 40px);
+    }
+
+  {%- endif -%}
+
+  {%- comment -%} Base styles for horizontal bottom scroll (default) {%- endcomment -%}
+  {%- unless block.settings.thumbnail_display == 'left_scroll' or block.settings.thumbnail_display == 'right_scroll' -%}
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-thumbnails {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      flex: 1;
+      scroll-behavior: smooth;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__thumbnail {
+      flex: 0 0 20%;
+      width: 20%;
+      max-width: 120px;
+    }
+  {%- endunless -%}
+
+  {%- comment -%} Common thumbnail styles {%- endcomment -%}
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__thumbnail {
+    border: 2px solid transparent;
+    border-radius: {{ block.settings.border_radius }}px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    height: auto;
+    aspect-ratio: 1/1;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    position: relative;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} span.dsgn-pck__thumbnail-icon {
+    position: absolute;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__thumbnail.selected {
+    border-color: {{ block.settings.thumbnail_selected_color | default: '#000000' }};
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__thumbnail:only-child {
+    display: none;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  {%- comment -%} Base styles for thumbnail nav buttons {%- endcomment -%}
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__thumbnail-nav-button {
+    position: absolute;
+    z-index: 2;
+    display: inline-block;
+    padding: 4px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M0 7.33l2.829-2.83 9.175 9.339 9.167-9.339 2.829 2.83-11.996 12.17z' fill='{{ block.settings.thumbnail_arrow_color | default: '#000000' | replace: "#", "%23" }}'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 20px;
+    width: 40px;
+    height: 40px;
+    background-position: center;
+    border-radius: 30px;
+    opacity: 1;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  {%- comment -%} Horizontal bottom scroll button positioning {%- endcomment -%}
+  {%- unless block.settings.thumbnail_display == 'left_scroll' or block.settings.thumbnail_display == 'right_scroll' -%}
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__thumbnail-nav-button {
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%) rotate(90deg);
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__thumbnail-nav-button--next {
+      transform: translateY(-50%) rotate(270deg);
+      left: auto;
+      right: 0;
+    }
+  {%- endunless -%}
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__thumbnail-nav-button.dsgn-pck__disabled {
+    opacity: 0;
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+
+  {%- if block.settings.show_thumbnail_arrows != true -%}
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__thumbnail-nav-button {
+      display: none;
+    }
+  {%- endif -%}
+
+
+  .dsgn-pck__block-id-{{ block.id }} model-viewer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__video__wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__video__wrapper--hosted video {
+    object-fit: cover;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__video__wrapper--hosted video:not(:root):fullscreen {
+    object-fit: contain;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__video__wrapper {
+    width: 100%;
+    border-radius: {{ block.settings.border_radius }}px;
+    overflow: hidden;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__video__wrapper--external iframe {
+    object-fit: cover;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    display: block;
+  }
+
+  {%- if block.settings.gallery_layout == 'slideshow' -%}
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-block:after {
+      content: 'flickity';
+      display: none;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-block:not(.flickity-enabled) .dsgn-pck__slide ~ .dsgn-pck__slide {
+      display: none;
+    }
+  {%- endif -%}
+
+  {%- if block.settings.gallery_layout == 'grid' -%}
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-block {
+      display: grid;
+      grid-template-columns: repeat({{ block.settings.per_row }}, 1fr);
+      --gutter: {{ block.settings.gutter }}px;
+      gap: var(--gutter);
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-thumbnails-container {
+      display: none;
+    }
+
+    {% if product.media.size == 1 and block.settings.per_row > 1 %}
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-block {
+        grid-template-columns: 1fr;
+      }
+    {% endif %}
+    {% if product.media.size == 2 and block.settings.per_row > 2 %}
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-block {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    {% endif %}
+    {% if product.media.size == 3 and block.settings.per_row > 3 %}
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-block {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    {% endif %}
+    {% if product.media.size == 4 and block.settings.per_row > 4 %}
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-block {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    {% endif %}
+  {%- endif -%}
+
+  /* Custom CSS */
+  {%- if block.settings.enable_custom_css == true and block.settings.custom_css != blank -%}
+    {%- assign custom_css_rules = block.settings.custom_css | strip | split: '}' -%}
+    {%- for rule in custom_css_rules -%}
+      {%- assign clean_rule = rule | strip -%}
+      {%- if clean_rule contains '{' and clean_rule != blank -%}
+        {%- assign rule_parts = clean_rule | split: '{' -%}
+        {%- if rule_parts.size >= 2 -%}
+          {%- assign selector_part = rule_parts[0] | strip -%}
+          {%- assign css_part = rule_parts[1] | strip -%}
+          {%- if css_part != blank -%}
+            {%- if selector_part == blank -%}
+              #DP--{{ block.id }} { {{ css_part }} }
+            {%- else -%}
+              #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+
+  /* Small context - small container and mobile */
+  {%- capture small_context -%}
+
+    {%- if block.settings.mobile_gallery_layout == 'slideshow' -%}
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-block {
+        display: block;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-block:after {
+        content: 'flickity';
+        display: none;
+      }
+
+      {%- comment -%} Override vertical thumbnail layout on mobile {%- endcomment -%}
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-container {
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-block-container {
+        width: 100%;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-thumbnails-container {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        height: auto;
+        flex: 0 0 auto;
+        margin-top: 16px;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-thumbnails {
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__thumbnail {
+        flex: 0 0 20%;
+        width: 20%;
+        max-width: 120px;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__thumbnail-nav-button {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%) rotate(90deg);
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__thumbnail-nav-button--next {
+        transform: translateY(-50%) rotate(270deg);
+        left: auto;
+        right: 0;
+      }
+
+      {%- if block.settings.mobile_show_arrows != true -%}
+        .dsgn-pck__block-id-{{ block.id }} .flickity-prev-next-button {
+          display: none;
+        }
+      {%- endif -%}
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__thumbnail.selected {
+        border-color: {{ block.settings.mobile_thumbnail_selected_color | default: '#000000' }};
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__thumbnail-nav-button {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M0 7.33l2.829-2.83 9.175 9.339 9.167-9.339 2.829 2.83-11.996 12.17z' fill='{{ block.settings.mobile_thumbnail_arrow_color | default: '#000000' | replace: "#", "%23" }}'/%3E%3C/svg%3E");
+      }
+
+      {%- if block.settings.mobile_show_thumbnail_arrows != true -%}
+        .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__thumbnail-nav-button {
+          display: none;
+        }
+      {%- endif -%}
+
+      {%- if block.settings.mobile_thumbnail_display == 'none' -%}
+        .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-thumbnails-container {
+          display: none;
+        }
+      {%- endif -%}
+
+      .dsgn-pck__block-id-{{ block.id }} .flickity-button-icon {
+        color: {{ block.settings.mobile_arrow_color | default: '#000000' }};
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .flickity-prev-next-button {
+        background: {{ block.settings.mobile_arrow_background_color | default: '#ffffff' }};
+        width: {{ block.settings.mobile_arrow_size | default: 44 }}px;
+        height: {{ block.settings.mobile_arrow_size | default: 44 }}px;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-block:not(.flickity-enabled) .dsgn-pck__slide ~ .dsgn-pck__slide {
+        display: none;
+      }
+
+    {%- endif -%}
+
+    {%- if block.settings.mobile_gallery_layout == 'grid' -%}
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-block:after {
+        content: '';
+        display: none;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-block {
+        display: grid;
+        grid-template-columns: repeat({{ block.settings.mobile_per_row }}, 1fr);
+        --gutter: {{ block.settings.mobile_gutter }}px;
+        gap: var(--gutter);
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-thumbnails-container {
+        display: none;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__slider-block:not(.flickity-enabled) .dsgn-pck__slide ~ .dsgn-pck__slide {
+        display: block;
+      }
+    {%- endif -%}
+
+    /* Mobile & narrow custom CSS */
+    {%- if block.settings.enable_custom_css == true and block.settings.mobile_css != blank -%}
+      {%- assign mobile_css_rules = block.settings.mobile_css | strip | split: '}' -%}
+      {%- for rule in mobile_css_rules -%}
+        {%- assign clean_rule = rule | strip -%}
+        {%- if clean_rule contains '{' and clean_rule != blank -%}
+          {%- assign rule_parts = clean_rule | split: '{' -%}
+          {%- if rule_parts.size >= 2 -%}
+            {%- assign selector_part = rule_parts[0] | strip -%}
+            {%- assign css_part = rule_parts[1] | strip -%}
+            {%- if css_part != blank -%}
+              {%- if selector_part == blank -%}
+                #DP--{{ block.id }} { {{ css_part }} }
+              {%- else -%}
+                #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endcapture -%}
+
+  @supports (container-type: inline-size) {
+    @container dp-media-gallery-block (max-width: 300px) {
+      {{ small_context }}
+    }
+  }
+
+  @media (max-width: 767px) {
+    {{ small_context }}
+  }
+
+</style>
+{%- endcapture -%}
+
+{%- capture js_scripts -%}
+  <script data-dsgn-pck-external-js="{{ section_id }}" src="https://cdn.shopify.com/s/files/1/0577/7673/4361/files/flickity-2.3.0.pkgd.min.js?v=1671485005" defer></script>
+  <script data-dsgn-pck-external-js="{{ section_id }}" src="https://cdn.shopify.com/s/files/1/0577/7673/4361/files/flickity-fade-1.0.0.min.js?v=1659560790" defer></script>
+  {%- if block.settings.enable_lightbox != blank -%}
+    <script data-dsgn-pck-external-js="{{ section_id }}" src="https://cdn.shopify.com/s/files/1/0577/7673/4361/files/bigger-picture.min.js?v=1661823226" defer></script>
+  {%- endif -%}
+  <script type="module" defer>
+    class dpMediaGalleryBlock extends HTMLElement {
+      constructor() {
+        super();
+        this.section = this.closest('#DP--{{ section_id }}');
+        this.slider = this.querySelector('.dsgn-pck__slider-block');
+        this.thumbnailsContainer = this.querySelector('.dsgn-pck__slider-thumbnails');
+        this.thumbnailTrack = this.querySelector('[data-thumbnail-track]');
+        this.thumbnailPrevButton = this.querySelector('.dsgn-pck__thumbnail-nav-button--prev');
+        this.thumbnailNextButton = this.querySelector('.dsgn-pck__thumbnail-nav-button--next');
+        this.flkty = null;
+        this.thumbFlkty = null;
+        this.handleViewportResize = () => {
+          this.syncViewportHeight();
+        };
+      }
+
+      connectedCallback() {
+        this.waitForFlickity().then(() => {
+          this.initSlider();
+          this.initThumbnails();
+          this.initThumbnailArrows();
+          this.syncThumbnailHeight();
+        });
+      }
+
+      syncThumbnailHeight() {
+        const thumbnailContainer = this.querySelector('.dsgn-pck__slider-thumbnails-container');
+        if (!thumbnailContainer) return;
+
+        const syncHeight = () => {
+          const isVertical = window.getComputedStyle(thumbnailContainer).flexDirection === 'column';
+          if (!isVertical) {
+            thumbnailContainer.style.height = '';
+            return;
+          }
+
+          if (this.slider) {
+            const sliderHeight = this.slider.offsetHeight;
+            thumbnailContainer.style.height = `${sliderHeight}px`;
+          }
+        };
+
+        syncHeight();
+
+        if (this.flkty) {
+          this.flkty.on('settle', syncHeight);
+          this.flkty.on('change', syncHeight);
+        }
+
+        window.addEventListener('resize', syncHeight);
+      }
+
+      async waitForFlickity() {
+        while (typeof window.Flickity === 'undefined') {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      }
+
+      disconnectedCallback() {
+        window.removeEventListener('resize', this.handleViewportResize);
+        this.destroySlider();
+        this.destroyThumbnails();
+      }
+
+      syncViewportHeight() {
+        if (!this.slider || !this.flkty) return;
+
+        const viewport = this.slider.querySelector('.flickity-viewport');
+        if (!viewport) return;
+
+        const selectedElement = this.flkty.selectedElement || this.slider.querySelector('.dsgn-pck__slide');
+        if (!selectedElement) return;
+
+        const selectedHeight = Math.round(selectedElement.getBoundingClientRect().height);
+        if (selectedHeight <= 0) return;
+
+        viewport.style.height = `${selectedHeight}px`;
+      }
+
+      initSlider() {
+        const elem = this.slider;
+
+        const getProperty = (property, fallback = null) => {
+          const value = getComputedStyle(elem).getPropertyValue(property).trim();
+          if (!value) return fallback;
+          try {
+            return JSON.parse(value);
+          } catch {
+            return fallback;
+          }
+        };
+
+        try {
+          this.flkty = new Flickity(elem, {
+            cellAlign: 'left',
+            contain: true,
+            wrapAround: true,
+            adaptiveHeight: true,
+            imagesLoaded: true,
+            setGallerySize: false,
+            watchCSS: true,
+            prevNextButtons: getProperty('--show-arrows', true),
+            autoPlay: getProperty('--autoplay', false),
+            fade: getProperty('--slider-animation', false),
+            pageDots: getProperty('--page-dots', true),
+            draggable: getProperty('--draggable', true),
+            freeScrollFriction: getProperty('--free-scroll-friction', 0.075),
+            selectedAttraction: getProperty('--selected-attraction', 0.025),
+            friction: getProperty('--friction', 0.28),
+            dragThreshold: getProperty('--drag-threshold', 3)
+          });
+
+          this.flkty.on('ready', () => this.syncViewportHeight());
+          this.flkty.on('change', () => this.syncViewportHeight());
+          this.flkty.on('settle', () => this.syncViewportHeight());
+
+          requestAnimationFrame(() => this.syncViewportHeight());
+          window.setTimeout(() => this.syncViewportHeight(), 120);
+          window.addEventListener('resize', this.handleViewportResize);
+        } catch (error) {
+          console.error('Error initializing Flickity:', error);
+        }
+
+        // Enable lightbox if setting is enabled and BiggerPicture is available
+        if (this.slider.querySelector('.dsgn-pck__lightbox-true')) {
+          this.enableLightbox(this.slider);
+        }
+
+        // Listen for variant change events scoped to this section
+        const galleryScope = this.closest('.dsgn-pck__product-group') || this.closest('.dsgn-pck__section') || document;
+        galleryScope.addEventListener('variant:change', (variant) => {
+          //console.log('[MediaGallery] variant:change', variant);
+
+          if (!variant?.detail?.variant?.featured_media || !this.flkty) return;
+
+          const targetMediaId = variant.detail.variant.featured_media.id;
+
+          // Loop through gallery cells to find the matching media ID
+          let matchingIndex = null;
+          this.flkty.cells.forEach((cell, index) => {
+            const cellEl = cell.element;
+            const mediaId = parseInt(cellEl.getAttribute('data-media-id'), 10);
+            if (mediaId === targetMediaId) {
+              matchingIndex = index;
+            }
+          });
+          if (matchingIndex !== null) {
+            const isInstant = this.getAttribute('data-variant-transition') === 'instant';
+            this.flkty.select(matchingIndex, false, isInstant);
+          }
+        });
+      }
+
+      initThumbnails() {
+        if (!this.thumbnailsContainer) return;
+        const thumbnails = this.thumbnailsContainer.querySelectorAll('.dsgn-pck__thumbnail');
+        if (!thumbnails.length) return;
+        // Set up click events
+        thumbnails.forEach((thumb, idx) => {
+          thumb.addEventListener('click', () => {
+            this.flkty && this.flkty.select(idx);
+          });
+        });
+        // Highlight selected thumbnail
+        if (this.flkty) {
+          this.flkty.on('change', (index) => {
+            thumbnails.forEach((thumb, idx) => {
+              thumb.classList.toggle('selected', idx === index);
+              if (idx === index) {
+                // Scroll to center the selected thumbnail
+                const container = thumb.closest('.thumbnails-container') || thumb.parentElement;
+                if (container) {
+                  const thumbRect = thumb.getBoundingClientRect();
+                  const containerRect = container.getBoundingClientRect();
+                  const isVertical = window.getComputedStyle(container).flexDirection === 'column';
+
+                  if (isVertical) {
+                    const scrollTop = container.scrollTop;
+                    const thumbCenter = thumbRect.top - containerRect.top + scrollTop + (thumbRect.height / 2);
+                    const containerCenter = container.clientHeight / 2;
+                    const targetScrollTop = thumbCenter - containerCenter;
+
+                    container.scrollTo({
+                      top: Math.max(0, targetScrollTop),
+                      behavior: 'smooth'
+                    });
+                  } else {
+                    const scrollLeft = container.scrollLeft;
+                    const thumbCenter = thumbRect.left - containerRect.left + scrollLeft + (thumbRect.width / 2);
+                    const containerCenter = container.clientWidth / 2;
+                    const targetScrollLeft = thumbCenter - containerCenter;
+
+                    container.scrollTo({
+                      left: Math.max(0, targetScrollLeft),
+                      behavior: 'smooth'
+                    });
+                  }
+                }
+              }
+            });
+          });
+          // Set initial selected
+          thumbnails[0]?.classList.add('selected');
+        }
+      }
+
+      initThumbnailArrows() {
+        if (!this.thumbnailTrack || !this.thumbnailPrevButton || !this.thumbnailNextButton) return;
+
+        // Determine if we're in vertical or horizontal mode
+        const isVertical = window.getComputedStyle(this.thumbnailTrack).flexDirection === 'column';
+
+        // Helper to update button states
+        const updateButtonStates = () => {
+          if (isVertical) {
+            const trackScrollHeight = this.thumbnailTrack.scrollHeight;
+            const trackOuterHeight = this.thumbnailTrack.clientHeight;
+
+            this.thumbnailPrevButton.classList.remove("dsgn-pck__disabled");
+            this.thumbnailNextButton.classList.remove("dsgn-pck__disabled");
+
+            if (this.thumbnailTrack.scrollTop <= 0) {
+              this.thumbnailPrevButton.classList.add("dsgn-pck__disabled");
+            }
+
+            let scrollTop = this.thumbnailTrack.scrollTop + 1;
+            if (scrollTop > trackScrollHeight - trackOuterHeight) {
+              this.thumbnailNextButton.classList.add("dsgn-pck__disabled");
+            }
+          } else {
+            const trackScrollWidth = this.thumbnailTrack.scrollWidth;
+            const trackOuterWidth = this.thumbnailTrack.clientWidth;
+
+            this.thumbnailPrevButton.classList.remove("dsgn-pck__disabled");
+            this.thumbnailNextButton.classList.remove("dsgn-pck__disabled");
+
+            if (this.thumbnailTrack.scrollLeft <= 0) {
+              this.thumbnailPrevButton.classList.add("dsgn-pck__disabled");
+            }
+
+            let scrollLeft = this.thumbnailTrack.scrollLeft + 1;
+            if (scrollLeft > trackScrollWidth - trackOuterWidth) {
+              this.thumbnailNextButton.classList.add("dsgn-pck__disabled");
+            }
+          }
+        };
+
+        // Initial state
+        updateButtonStates();
+
+        // Remove previous listeners if any
+        this.thumbnailTrack.onscroll = null;
+        this.thumbnailPrevButton.onclick = null;
+        this.thumbnailNextButton.onclick = null;
+
+        // Add listeners
+        this.thumbnailTrack.addEventListener("scroll", updateButtonStates);
+
+        if (isVertical) {
+          this.thumbnailPrevButton.addEventListener('click', () => {
+            this.thumbnailTrack.scrollTo({
+              top: this.thumbnailTrack.scrollTop - (this.thumbnailTrack.firstElementChild.offsetHeight + 8),
+              behavior: "smooth"
+            });
+          });
+          this.thumbnailNextButton.addEventListener('click', () => {
+            this.thumbnailTrack.scrollTo({
+              top: this.thumbnailTrack.scrollTop + this.thumbnailTrack.firstElementChild.offsetHeight + 8,
+              behavior: "smooth"
+            });
+          });
+        } else {
+          this.thumbnailPrevButton.addEventListener('click', () => {
+            this.thumbnailTrack.scrollTo({
+              left: this.thumbnailTrack.scrollLeft - (this.thumbnailTrack.firstElementChild.offsetWidth + 8),
+              behavior: "smooth"
+            });
+          });
+          this.thumbnailNextButton.addEventListener('click', () => {
+            this.thumbnailTrack.scrollTo({
+              left: this.thumbnailTrack.scrollLeft + this.thumbnailTrack.firstElementChild.offsetWidth + 8,
+              behavior: "smooth"
+            });
+          });
+        }
+      }
+
+      enableLightbox(slider) {
+        const bp = BiggerPicture({
+          target: document.body
+        });
+
+        const imageLinks = slider.querySelectorAll('.dsgn-pck__lightbox-true');
+
+        for (const link of imageLinks) {
+          link.addEventListener('click', openGallery);
+        }
+
+        function openGallery(e) {
+          e.preventDefault();
+          bp.open({
+            items: imageLinks,
+            el: e.currentTarget
+          });
+        }
+      }
+
+      destroySlider() {
+        if (this.flkty && typeof this.flkty.destroy === 'function') {
+          this.flkty.destroy();
+        }
+        this.flkty = null;
+      }
+      destroyThumbnails() {
+        // No Flickity instance for thumbs, just remove listeners if needed
+      }
+    }
+    if (!customElements.get('dp-media-gallery-block')) {
+      customElements.define('dp-media-gallery-block', dpMediaGalleryBlock);
+    }
+  </script>
+{%- endcapture -%}
+
+{%- capture content_for_blocks -%}
+  {% content_for 'blocks' %}
+{%- endcapture -%}
+
+<div id="DP--{{ block.id }}" class="DP--{{ block.id }} dsgn-pck__block-id-{{ block.id }} dsgn-pck__block--{{ block_index }} dsgn-pck__product-media-gallery">
+  {{ css_styles }}
+  <dp-media-gallery-block class="dsgn-pck__slider-container" data-variant-transition="{{ block.settings.variant_transition | default: 'slide' }}">
+    <div class="dsgn-pck__slider-block-container">
+      {{ content_for_blocks }}
+      <div id="slideshow-{{ block.id }}" class="dsgn-pck__slider-block">
+        {%- liquid
+          # Get the selected variant's featured media
+          assign selected_variant = product.selected_or_first_available_variant
+          assign featured_media_id = selected_variant.featured_media.id
+
+          # Create a reordered media array with featured media first
+          assign reordered_media = ''
+
+          # First, add the featured media if it exists
+          if featured_media_id != blank
+            for media in product.media
+              if media.id == featured_media_id
+                assign reordered_media = reordered_media | append: media.id | append: ','
+                break
+              endif
+            endfor
+          endif
+
+          # Then add all other media
+          for media in product.media
+            unless media.id == featured_media_id
+              assign reordered_media = reordered_media | append: media.id | append: ','
+            endunless
+          endfor
+
+          # Convert to array
+          assign media_ids = reordered_media | split: ','
+        -%}
+        {%- for media_id in media_ids -%}
+          {%- if media_id != blank -%}
+            {%- assign media_id_num = media_id | plus: 0 -%}
+            {%- assign media = product.media | where: 'id', media_id_num | first -%}
+          {%- if block.settings.image_crop == 'none' -%}
+            {%- assign image_crop_width = media.preview_image.width | default: '1000' -%}
+            {%- assign image_crop_height = media.preview_image.height | default: '1500' -%}
+          {%- else -%}
+            {%- assign image_crop_width = block.settings.image_crop | default: media.preview_image.width | split: ':' | first | times: 1000 -%}
+            {%- assign image_crop_height = block.settings.image_crop | default: media.preview_image.height | split: ':' | last | times: 1000 -%}
+          {%- endif -%}
+          <div class="dsgn-pck__media-item dsgn-pck__slide" data-media-id="{{ media.id }}" {%- if media.media_type == 'image' -%}data-image-id="{{ media.id }}"{%- endif -%}>
+            {%- if block.settings.enable_lightbox == true -%}
+              {%- if media.media_type == 'image' -%}
+                {%- assign link = media | image_url: width: 5000 -%}
+                {%- liquid
+                  assign url_clean = link | split: '?' | first
+                  assign separator = '/'
+                  if url_clean contains '#'
+                    assign separator = '#'
+                  endif
+                  assign url_slug = url_clean | split: separator | last | replace: '-', ' ' | replace: '_', ' ' | strip
+                  assign aria_label = media.alt | default: url_slug | default: link
+                -%}
+                <a href="{{ link }}"
+                  class="dsgn-pck__absolute-link dsgn-pck__lightbox-{{ block.settings.enable_lightbox }}"
+                  aria-label="{{ aria_label | escape }}"
+                  data-bp-type="image"
+                  data-img="{{ media | image_url: width: 5000 }}"
+                  data-alt="{{ media.alt }}"
+                  data-height="{{ media.preview_image.height }}"
+                  data-width="{{ media.preview_image.width }}">
+                  {{ media.alt }}
+                </a>
+              {%- elsif media.media_type == 'video' and media.sources and media.sources.size > 0 and media.sources[0].url != blank -%}
+                {%- assign width = 1000 -%}
+                {%- assign height = 1000.0 | divided_by: media.aspect_ratio -%}
+                {%- capture sources -%}
+                [
+                  {%- for source in media.sources -%}
+                    { "src": "{{ source.url | escape }}", "type": "video/{{ source.format | escape }}" }{%- unless forloop.last -%},{%- endunless -%}
+                  {%- endfor -%}
+                ]
+                {%- endcapture -%}
+                {%- assign link = '#' -%}
+                {%- liquid
+                  assign url_clean = link | split: '?' | first
+                  assign separator = '/'
+                  if url_clean contains '#'
+                    assign separator = '#'
+                  endif
+                  assign url_slug = url_clean | split: separator | last | replace: '-', ' ' | replace: '_', ' ' | strip
+                  assign aria_label = media.alt | default: url_slug | default: link
+                -%}
+                <a
+                  class="dsgn-pck__absolute-link dsgn-pck__lightbox-{{ block.settings.enable_lightbox }}"
+                  href="{{ link }}"
+                  aria-label="{{ aria_label | escape }}"
+                  data-width="{{ width }}"
+                  data-height="{{ height }}"
+                  data-sources='{{ sources | strip_newlines }}'
+                  data-alt="{{ media.alt }}">
+                  {{ media.alt }}
+                </a>
+              {%- elsif media.media_type == 'external_video' and media.host and media.external_id -%}
+                {%- if media.host == 'youtube' -%}
+                  {%- capture link -%}https://www.youtube.com/watch?v={{ media.external_id }}{%- endcapture -%}
+                  {%- liquid
+                    assign url_clean = link | split: '?' | first
+                    assign separator = '/'
+                    if url_clean contains '#'
+                      assign separator = '#'
+                    endif
+                    assign url_slug = url_clean | split: separator | last | replace: '-', ' ' | replace: '_', ' ' | strip
+                    assign aria_label = media.alt | default: url_slug | default: link
+                  -%}
+                  <a href="{{ link }}"
+                    class="dsgn-pck__absolute-link dsgn-pck__lightbox-{{ block.settings.enable_lightbox }}"
+                    aria-label="{{ aria_label | escape }}"
+                    data-iframe="https://www.youtube.com/embed/{{ media.external_id }}?autoplay=1&playsinline=1"
+                    data-width="1920"
+                    data-height="1012"
+                    data-alt="{{ media.alt }}">
+                    {{ media.alt }}
+                  </a>
+                {%- elsif media.host == 'vimeo' -%}
+                  {%- capture link -%}https://vimeo.com/{{ media.external_id }}{%- endcapture -%}
+                  {%- liquid
+                    assign url_clean = link | split: '?' | first
+                    assign separator = '/'
+                    if url_clean contains '#'
+                      assign separator = '#'
+                    endif
+                    assign url_slug = url_clean | split: separator | last | replace: '-', ' ' | replace: '_', ' ' | strip
+                    assign aria_label = media.alt | default: url_slug | default: link
+                  -%}
+                  <a href="{{ link }}"
+                    class="dsgn-pck__absolute-link dsgn-pck__lightbox-{{ block.settings.enable_lightbox }}"
+                    aria-label="{{ aria_label | escape }}"
+                    data-iframe="https://player.vimeo.com/video/{{ media.external_id }}?autoplay=1"
+                    data-width="1920"
+                    data-height="1012"
+                    data-alt="{{ media.alt }}">
+                    {{ media.alt }}
+                  </a>
+                {%- endif -%}
+              {%- elsif media.media_type == 'model' and media.sources and media.sources.size > 0 and media.sources[0].url != blank -%}
+                {%- comment -%} Get the model source URL - use the first available source {%- endcomment -%}
+                {%- assign model_source_url = media.sources | where: "format", "glb" | first -%}
+                {%- unless model_source_url -%}
+                  {%- assign model_source_url = media.sources[0] -%}
+                {%- endunless -%}
+                {%- assign link = '#' -%}
+                {%- liquid
+                  assign url_clean = link | split: '?' | first
+                  assign separator = '/'
+                  if url_clean contains '#'
+                    assign separator = '#'
+                  endif
+                  assign url_slug = url_clean | split: separator | last | replace: '-', ' ' | replace: '_', ' ' | strip
+                  assign aria_label = media.alt | default: url_slug | default: link
+                -%}
+                <a href="{{ link }}"
+                  class="dsgn-pck__absolute-link dsgn-pck__lightbox-{{ block.settings.enable_lightbox }}"
+                  aria-label="{{ aria_label | escape }}"
+                  data-html="&lt;model-viewer src='{{ model_source_url.url | escape }}' ar auto-rotate camera-controls style='width:100%;height:60vh;display:block;background:#fff'&gt;&lt;/model-viewer&gt;"
+                  data-width="1000"
+                  data-height="600"
+                  data-alt="{{ media.alt | escape }}">
+                  {{ media.alt }}
+                </a>
+              {%- endif -%}
+            {% endif %}
+                {%- capture sizes -%}
+                  (max-width: 480px) {{ section.settings.base_width | at_least: 70 | append: 'vw' }}, {{ section.settings.base_width | divided_by: 2 | append: 'vw' }}
+                {%- endcapture -%}
+                {%- if media.media_type == 'image' -%}
+                  <div class="dsgn-pck__image__wrapper">
+                    <svg viewBox="0 0 {{ image_crop_width }} {{ image_crop_height }}"></svg>
+                    <picture>
+                      {{ media | image_url: width: 5000 | image_tag: widths: widths, sizes: sizes }}
+                    </picture>
+                  </div>
+                {%- elsif media.media_type == 'video' -%}
+                  <div class="dsgn-pck__video__wrapper dsgn-pck__video__wrapper--hosted">
+                    <svg viewBox="0 0 {{ image_crop_width }} {{ image_crop_height }}"></svg>
+                    {{ media | video_tag: image_size: '2048x2048', controls: true, autoplay: false, loop: false, muted: false }}
+                  </div>
+                {%- elsif media.media_type == 'external_video' -%}
+                  <div class="dsgn-pck__video__wrapper dsgn-pck__video__wrapper--external">
+                    {{ media | external_video_tag: image_size: '2048x2048', controls: true }}
+                  </div>
+                {%- elsif media.media_type == 'model' -%}
+                  <div class="dsgn-pck__image__wrapper">
+                    <svg viewBox="0 0 {{ image_crop_width }} {{ image_crop_height }}"></svg>
+                    {{ media | model_viewer_tag: image_size: '2048x2048', reveal: 'interaction', auto-rotate: false, ar: true }}
+                  </div>
+                {%- endif -%}
+          </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+    <div class="dsgn-pck__slider-thumbnails-container">
+      <div class="dsgn-pck__thumbnail-nav-button dsgn-pck__thumbnail-nav-button--prev dsgn-pck__disabled">
+      </div>
+      <div class="dsgn-pck__slider-thumbnails" data-thumbnail-track>
+        {%- for media_id in media_ids -%}
+          {%- if media_id != blank -%}
+            {%- assign media_id_num = media_id | plus: 0 -%}
+            {%- assign media = product.media | where: 'id', media_id_num | first -%}
+          <div class="dsgn-pck__thumbnail" data-image-id="{{ media.id }}">
+            <img src="{{ media.preview_image | image_url: width: 500 }}" alt="{{ media.alt | escape }}" width="{{ media.preview_image.width }}" height="{{ media.preview_image.height }}" />
+            {%- if media.media_type == 'video' or media.media_type == 'external_video' -%}
+              <span class="dsgn-pck__thumbnail-icon dsgn-pck__thumbnail-icon--video" aria-label="Video">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="rgba(0,0,0,0.5)"/><polygon points="10,8 16,12 10,16" fill="#fff"/></svg>
+              </span>
+            {%- elsif media.media_type == 'model' -%}
+              <span class="dsgn-pck__thumbnail-icon dsgn-pck__thumbnail-icon--model" aria-label="3D Model">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="rgba(0,0,0,0.5)"/><path d="M7 10l5-3 5 3v4l-5 3-5-3v-4z" stroke="#fff" stroke-width="1.5" fill="none"/></svg>
+              </span>
+            {%- endif -%}
+          </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+      <div class="dsgn-pck__thumbnail-nav-button dsgn-pck__thumbnail-nav-button--next">
+      </div>
+    </div>
+    {{ js_scripts }}
+  </dp-media-gallery-block>
+</div>
+
+{% schema %}
+{
+  "name": "Product media gallery",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "_dpb_sub_-_product-badge"
+    }
+  ],
+  "settings": [
+    {
+      "type": "select",
+      "id": "image_crop",
+      "label": "Image aspect ratio",
+      "default": "none",
+      "options": [
+        {
+          "value": "4:3",
+          "label": "Landscape (4:3)"
+        },
+        {
+          "value": "2:3",
+          "label": "Portrait (2:3)"
+        },
+        {
+          "value": "1:1",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "none",
+          "label": "Original"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_lightbox",
+      "label": "Enable lightbox",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "gallery_layout",
+      "label": "Media layout",
+      "default": "slideshow",
+      "options": [
+        {
+          "value": "grid",
+          "label": "Grid"
+        },
+        {
+          "value": "slideshow",
+          "label": "Slideshow"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.gallery_layout == 'grid' }}",
+      "type": "header",
+      "content": "Grid layout"
+    },
+    {
+      "visible_if": "{{ block.settings.gallery_layout == 'grid' }}",
+      "type": "range",
+      "id": "per_row",
+      "label": "Media per row",
+      "default": 2,
+      "min": 1,
+      "max": 4
+    },
+    {
+      "visible_if": "{{ block.settings.gallery_layout == 'grid' }}",
+      "type": "range",
+      "id": "gutter",
+      "label": "Gutter size",
+      "default": 20,
+      "min": 0,
+      "max": 40
+    },
+    {
+      "visible_if": "{{ block.settings.gallery_layout == 'slideshow' }}",
+      "type": "header",
+      "content": "Slideshow arrows"
+    },
+    {
+      "visible_if": "{{ block.settings.gallery_layout == 'slideshow' }}",
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show arrows",
+      "default": true
+    },
+    {
+      "visible_if": "{{ block.settings.show_arrows == true and block.settings.gallery_layout == 'slideshow' }}",
+      "type": "color",
+      "id": "arrow_color",
+      "label": "Arrows",
+      "default": "#000000",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ block.settings.show_arrows == true and block.settings.gallery_layout == 'slideshow' }}",
+      "type": "color",
+      "id": "arrow_background_color",
+      "label": "Arrow background",
+      "default": "#ffffff",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ block.settings.show_arrows == true and block.settings.gallery_layout == 'slideshow' }}",
+      "type": "range",
+      "id": "arrow_size",
+      "label": "Arrow size",
+      "min": 24,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 44
+    },
+    {
+      "visible_if": "{{ block.settings.gallery_layout == 'slideshow' }}",
+      "type": "select",
+      "id": "variant_transition",
+      "label": "Variant change transition",
+      "info": "How the gallery transitions when a variant is selected.",
+      "default": "slide",
+      "options": [
+        {
+          "value": "slide",
+          "label": "Slide"
+        },
+        {
+          "value": "instant",
+          "label": "Instant"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.gallery_layout == 'slideshow' }}",
+      "type": "header",
+      "content": "Slideshow thumbnails"
+    },
+    {
+      "visible_if": "{{ block.settings.gallery_layout == 'slideshow' }}",
+      "type": "select",
+      "id": "thumbnail_display",
+      "label": "Thumbnail display",
+      "default": "bottom_scroll",
+      "options": [
+        {
+          "value": "left_scroll",
+          "label": "Left"
+        },
+        {
+          "value": "right_scroll",
+          "label": "Right"
+        },
+        {
+          "value": "bottom_scroll",
+          "label": "Bottom"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.thumbnail_display != 'none' and block.settings.gallery_layout == 'slideshow' }}",
+      "type": "color",
+      "id": "thumbnail_selected_color",
+      "label": "Selected thumbnail",
+      "default": "#000000",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ block.settings.thumbnail_display != 'none' and block.settings.gallery_layout == 'slideshow' }}",
+      "type": "checkbox",
+      "id": "show_thumbnail_arrows",
+      "label": "Show thumbnail arrows",
+      "default": true
+    },
+    {
+      "visible_if": "{{ block.settings.thumbnail_display != 'none' and block.settings.show_thumbnail_arrows == true and block.settings.gallery_layout == 'slideshow' }}",
+      "type": "color",
+      "id": "thumbnail_arrow_color",
+      "label": "Thumbnail arrow color",
+      "default": "#000000",
+      "alpha": true
+    },
+    {
+      "type": "header",
+      "content": "Mobile"
+    },
+    {
+      "type": "select",
+      "id": "mobile_gallery_layout",
+      "label": "Mobile layout",
+      "default": "slideshow",
+      "options": [
+        {
+          "value": "slideshow",
+          "label": "Slideshow"
+        },
+        {
+          "value": "grid",
+          "label": "Grid"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.mobile_gallery_layout == 'grid' }}",
+      "type": "range",
+      "id": "mobile_per_row",
+      "label": "Media per row (mobile)",
+      "default": 1,
+      "min": 1,
+      "max": 4
+    },
+    {
+      "visible_if": "{{ block.settings.mobile_gallery_layout == 'grid' }}",
+      "type": "range",
+      "id": "mobile_gutter",
+      "label": "Gutter size (mobile)",
+      "default": 10,
+      "min": 0,
+      "max": 40
+    },
+    {
+      "visible_if": "{{ block.settings.mobile_gallery_layout == 'slideshow' }}",
+      "type": "header",
+      "content": "Mobile slideshow arrows"
+    },
+    {
+      "visible_if": "{{ block.settings.mobile_gallery_layout == 'slideshow' }}",
+      "type": "checkbox",
+      "id": "mobile_show_arrows",
+      "label": "Show arrows (mobile)",
+      "default": true
+    },
+    {
+      "visible_if": "{{ block.settings.mobile_show_arrows == true and block.settings.mobile_gallery_layout == 'slideshow' }}",
+      "type": "color",
+      "id": "mobile_arrow_color",
+      "label": "Arrows",
+      "default": "#000000",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ block.settings.mobile_show_arrows == true and block.settings.mobile_gallery_layout == 'slideshow' }}",
+      "type": "color",
+      "id": "mobile_arrow_background_color",
+      "label": "Arrow background (mobile)",
+      "default": "#ffffff",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ block.settings.mobile_show_arrows == true and block.settings.mobile_gallery_layout == 'slideshow' }}",
+      "type": "range",
+      "id": "mobile_arrow_size",
+      "label": "Arrow size (mobile)",
+      "min": 24,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 44
+    },
+    {
+      "visible_if": "{{ block.settings.mobile_gallery_layout == 'slideshow' }}",
+      "type": "header",
+      "content": "Mobile slideshow thumbnails"
+    },
+    {
+      "visible_if": "{{ block.settings.mobile_gallery_layout == 'slideshow' }}",
+      "type": "select",
+      "id": "mobile_thumbnail_display",
+      "label": "Mobile thumbnail display",
+      "default": "bottom_scroll",
+      "options": [
+        {
+          "value": "bottom_scroll",
+          "label": "Bottom scroll"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.mobile_thumbnail_display != 'none' and block.settings.mobile_gallery_layout == 'slideshow' }}",
+      "type": "color",
+      "id": "mobile_thumbnail_selected_color",
+      "label": "Selected thumbnail (mobile)",
+      "default": "#000000",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ block.settings.mobile_thumbnail_display != 'none' and block.settings.mobile_gallery_layout == 'slideshow' }}",
+      "type": "checkbox",
+      "id": "mobile_show_thumbnail_arrows",
+      "label": "Show thumbnail arrows (mobile)",
+      "default": true
+    },
+    {
+      "visible_if": "{{ block.settings.mobile_thumbnail_display != 'none' and block.settings.mobile_show_thumbnail_arrows == true and block.settings.mobile_gallery_layout == 'slideshow' }}",
+      "type": "color",
+      "id": "mobile_thumbnail_arrow_color",
+      "label": "Thumbnail arrow color (mobile)",
+      "default": "#000000",
+      "alpha": true
+    },
+    {
+      "type": "header",
+      "content": "🎨 Design"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Rounded corners",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_css",
+      "label": "Enable custom CSS",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "mobile_css",
+      "label": "Mobile & narrow custom CSS",
+      "info": "Applied on small screens or in tight spaces."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product media gallery",
+      "category": "* Design Packs: Products"
+    }
+  ]
+}
+{% endschema %}

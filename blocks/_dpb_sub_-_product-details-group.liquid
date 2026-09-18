@@ -1,0 +1,882 @@
+{%- comment -%}
+{
+  "pack_name": "Product details group block",
+  "pack_author": "Design Packs",
+  "license": "© Design Packs. All rights reserved. This code is protected by copyright law and may not be reproduced, distributed, or used without explicit permission from the author. Shopify complies with the Digital Millennium Copyright Act (DMCA) and responds to claims of copyright infringement using DMCA procedures, which could result in the termination of your Shopify account.",
+}
+{%- endcomment -%}
+
+{% comment %} Security Code - hides section when app uninstalled {% endcomment %}
+{%- unless content_for_header contains 'design_packs_file.js' -%}
+  {%- if request.design_mode -%}
+    <div class="dsgn-pck__no-app-warning">
+      <div class="dsgn-pck__no-app-warning-background">
+      </div>
+      <div class="dsgn-pck__no-app-warning-text dsgn-pck__rte">
+        <p><strong>WARNING!</strong> This premium section will not display properly without an active subscription for <a href="https://apps.shopify.com/design-packs" target="_blank" rel="noopener nofollow">Design Packs</a>. If you need any support please email <a href="mailto:info@design-packs.com" target="_blank" rel="noopener">info@design-packs.com</a> with your questions.</p>
+      </div>
+    </div>
+  {%- endif -%}
+  {%- break -%}
+{%- endunless -%}
+
+{%- assign block_text_color_alpha = block.settings.text_color | color_extract: 'alpha' | default: 0 -%}
+
+{%- assign block_horizontal_setting = block.settings.horizontal_alignment | default: 'default' -%}
+
+{% capture css_styles %}
+<style data-dp-css="blocks/_dpb_sub_-_product-details-group.liquid">
+  .dsgn-pck__block-id-{{ block.id }} {
+    overflow: hidden;
+    display: flex;
+    width: {{ block.settings.base_width }}%;
+    max-width: {{ block.settings.max_width | remove: 'px' }}px;
+    {% if block_text_color_alpha != 0 %}
+      --dp-heading-color: {{ block.settings.text_color }};
+      --dp-text-color: {{ block.settings.text_color }};
+      color: {{ block.settings.text_color }};
+    {% endif %}
+    background-color: {{ block.settings.background_solid }};
+    background-image: {{ block.settings.background_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+    border: {{ block.settings.border_style }} {{ block.settings.border_width }}px {{ block.settings.border_color }};
+    {% if block.settings.enable_box_shadow %}
+      box-shadow:
+        {% case block.settings.card_box_shadow_intensity %}
+          {% when 'subtle' %} 0 1px 4px 0 {{ block.settings.card_box_shadow_color }}33;
+          {% when 'medium' %} 0 2px 8px 0 {{ block.settings.card_box_shadow_color }}55;
+          {% when 'strong' %} 0 4px 16px 0 {{ block.settings.card_box_shadow_color }}88;
+          {% when 'custom' %} {{ block.settings.card_box_shadow_custom_value }};
+          {% else %} none;
+        {% endcase %}
+    {% else %}
+      box-shadow: none;
+    {% endif %}
+    {% if block.settings.padding_type == 'range' %}
+      padding: {{ block.settings.padding_top }}px {{ block.settings.padding_right }}px {{ block.settings.padding_bottom }}px {{ block.settings.padding_left }}px;
+    {% elsif block.settings.padding_type == 'custom' %}
+      padding: {{ block.settings.padding }};
+    {% else %}
+      padding: 0;
+    {% endif %}
+    {%- if section.settings.text_alignment == 'center' and block_horizontal_setting == 'default' -%}
+      margin: 0 auto;
+    {%- elsif section.settings.text_alignment == 'right' and block_horizontal_setting == 'default'  -%}
+      margin: 0 0 0 auto;
+    {%- endif -%}
+    {%- if block.settings.horizontal_alignment == 'left' -%}
+      align-self: flex-start;
+      margin-left: 0;
+      margin-right: auto;
+    {%- elsif block.settings.horizontal_alignment == 'right' -%}
+      align-self: flex-end;
+      margin-left: auto;
+      margin-right: 0;
+    {%- elsif block.settings.horizontal_alignment == 'center' -%}
+      align-self: center;
+      margin-left: auto;
+      margin-right: auto;
+    {%- endif -%}
+    {% if block.settings.content_alignment != 'default' %}
+      --block-horizontal-alignment: {%- if block.settings.content_alignment == 'left' -%}flex-start{%- elsif block.settings.content_alignment == 'right' -%}flex-end{%- elsif block.settings.content_alignment == 'center' -%}center{%- endif -%};
+      --block-text-alignment: {%- if block.settings.content_alignment == 'left' -%}left{%- elsif block.settings.content_alignment == 'right' -%}right{%- elsif block.settings.content_alignment == 'center' -%}center{%- endif -%};
+    {% endif %}
+  }
+
+  {% if block.settings.url != blank %}
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__full-block-link {
+      z-index: -1;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__block,
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__product-media-gallery {
+      pointer-events: none;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} a[href],
+    .dsgn-pck__block-id-{{ block.id }} button,
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__product-form-buttons,
+    .dsgn-pck__block-id-{{ block.id }} form {
+      pointer-events: auto;
+    }
+  {% endif %}
+
+  {% if block.settings.content_direction == 'row' %}
+    .dsgn-pck__block-id-{{ block.id }} {
+      flex-direction: row;
+      column-gap: var(--dp-gap, {{ block.settings.gap }}px);
+      {% if block.settings.vertical_alignment == 'flex-start' %}
+        align-items: flex-start;
+      {% elsif block.settings.vertical_alignment == 'center' %}
+        align-items: center;
+      {% elsif block.settings.vertical_alignment == 'flex-end' %}
+        align-items: flex-end;
+      {% endif %}
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} > .dsgn-pck__block + .dsgn-pck__block {
+      --dp-gap: 0;
+      margin-top: var(--dp-gap, 15px);
+    }
+
+  {% else %}
+    .dsgn-pck__block-id-{{ block.id }} {
+      flex-direction: column;
+      {% if block.settings.vertical_alignment_column == 'top' %}
+        justify-content: flex-start;
+      {% elsif block.settings.vertical_alignment_column == 'middle' %}
+        justify-content: center;
+      {% elsif block.settings.vertical_alignment_column == 'bottom' %}
+        justify-content: flex-end;
+      {% elsif block.settings.vertical_alignment_column == 'space-between' %}
+        justify-content: space-between;
+      {% elsif block.settings.vertical_alignment_column == 'space-around' %}
+        justify-content: space-around;
+      {% endif %}
+
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} > .dsgn-pck__block + .dsgn-pck__block {
+      --dp-gap: {{ block.settings.gap }}px;
+      margin-top: var(--dp-gap, 15px);
+    }
+  {% endif %}
+
+  /* Custom CSS */
+  {%- if block.settings.enable_custom_css == true and block.settings.custom_css != blank -%}
+    {%- assign custom_css_rules = block.settings.custom_css | strip | split: '}' -%}
+    {%- for rule in custom_css_rules -%}
+      {%- assign clean_rule = rule | strip -%}
+      {%- if clean_rule contains '{' and clean_rule != blank -%}
+        {%- assign rule_parts = clean_rule | split: '{' -%}
+        {%- if rule_parts.size >= 2 -%}
+          {%- assign selector_part = rule_parts[0] | strip -%}
+          {%- assign css_part = rule_parts[1] | strip -%}
+          {%- if css_part != blank -%}
+            {%- if selector_part == blank -%}
+              #DP--{{ block.id }} { {{ css_part }} }
+            {%- else -%}
+              #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+
+  /* Small context - small container and mobile */
+  {%- capture small_context -%}
+
+  .dsgn-pck__block-id-{{ block.id }} {
+    {% if block.settings.vertical_on_mobile %}
+      flex-direction: column;
+    {% endif %}
+  }
+
+  /* Mobile padding */
+  {%- if block.settings.mobile_padding_type != 'default' and block.settings.mobile_styles == true -%}
+    .dsgn-pck__block-id-{{ block.id }} {
+      {%- if block.settings.mobile_padding_type == 'custom' -%}
+        padding: {{ block.settings.mobile_padding }};
+      {%- elsif block.settings.mobile_padding_type == 'range' -%}
+        padding: {{ block.settings.mobile_padding_top }}px {{ block.settings.mobile_padding_right }}px {{ block.settings.mobile_padding_bottom }}px {{ block.settings.mobile_padding_left }}px;
+      {%- else -%}
+        padding: 1.2rem;
+      {%- endif -%}
+    }
+  {%- endif -%}
+
+  /* Mobile & narrow custom CSS */
+  {%- if block.settings.enable_custom_css == true and block.settings.mobile_css != blank -%}
+    {%- assign mobile_css_rules = block.settings.mobile_css | strip | split: '}' -%}
+    {%- for rule in mobile_css_rules -%}
+      {%- assign clean_rule = rule | strip -%}
+      {%- if clean_rule contains '{' and clean_rule != blank -%}
+        {%- assign rule_parts = clean_rule | split: '{' -%}
+        {%- if rule_parts.size >= 2 -%}
+          {%- assign selector_part = rule_parts[0] | strip -%}
+          {%- assign css_part = rule_parts[1] | strip -%}
+          {%- if css_part != blank -%}
+            {%- if selector_part == blank -%}
+              #DP--{{ block.id }} { {{ css_part }} }
+            {%- else -%}
+              #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+  {%- endcapture -%}
+
+  @supports (container-type: inline-size) {
+    @container dp-group-container (max-width: 300px) {
+      {{ small_context }}
+    }
+  }
+
+  @media (max-width: 767px) {
+    {{ small_context }}
+  }
+
+  /* Hide or show on mobile and desktop */
+  {%- if block.settings.hidden_on == 'mobile' -%}
+    @media (max-width: 767px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+
+  {%- if block.settings.hidden_on == 'desktop' -%}
+    @media (min-width: 768px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+</style>
+{% endcapture %}
+
+<div id="DP--{{ block.id }}" class="DP--{{ block.id }} dsgn-pck__block dsgn-pck__block-id-{{ block.id }} dsgn-pck__block--group dsgn-pck__group--{{ block.index }} dsgn-pck__product-group {% if block.settings.horizontal_alignment_group == 'default' %}dsgn-pck__justify-{{ section.settings.text_alignment }}{% else %}dsgn-pck__justify-{{ block.settings.horizontal_alignment_group }}{% endif %}" {{ block.shopify_attributes }}>
+  {% if block.settings.url != blank %}
+    {%- assign link = block.settings.url -%}
+    {%- liquid
+      assign url_clean = link | split: '?' | first
+      assign separator = '/'
+      if url_clean contains '#'
+        assign separator = '#'
+      endif
+      assign url_slug = url_clean | split: separator | last | replace: '-', ' ' | replace: '_', ' ' | strip
+      assign aria_label = link.title | default: url_slug | default: link
+    -%}
+    <a href="{{ link }}" class="dsgn-pck__full-block-link dsgn-pck__absolute-link" aria-label="{{ aria_label | escape }}"></a>
+  {% endif %}
+  {{ css_styles }}
+  {% content_for 'blocks' %}
+</div>
+
+
+{% schema %}
+{
+  "name": "Product group",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    },
+    {
+      "type": "_dpb_sub_-_product-media-gallery"
+    },
+    {
+      "type": "_dpb_sub_-_product-details-buy-buttons"
+    },
+    {
+      "type": "_dpb_sub_-_product-details-title"
+    },
+    {
+      "type": "_dpb_sub_-_product-details-variant-picker"
+    },
+    {
+      "type": "_dpb_sub_-_product-details-price"
+    },
+    {
+      "type": "_dpb_sub_-_product-description"
+    },
+    {
+      "type": "_dpb_-_product-badge"
+    },
+    {
+      "type": "_dpb_sub_-_product-details-group"
+    },
+    {
+      "type": "_dpb_-_columns"
+    },
+    {
+      "type": "_dpb_-_group"
+    },
+    {
+      "type": "_dpb_-_breadcrumbs"
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Product group",
+      "info": "Group product information blocks such as title, price, description, variant picker, buy buttons, and media gallery."
+    },
+    {
+      "type": "header",
+      "content": "Composition"
+    },
+    {
+      "type": "select",
+      "id": "content_direction",
+      "label": "Direction",
+      "options": [
+        {
+          "value": "column",
+          "label": "Stacked"
+        },
+        {
+          "value": "row",
+          "label": "Side by side"
+        }
+      ],
+      "default": "column"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment_column",
+      "label": "Vertical alignment",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "middle",
+          "label": "Middle"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        },
+        {
+          "value": "space-between",
+          "label": "Space between"
+        },
+        {
+          "value": "space-around",
+          "label": "Space around"
+        }
+      ],
+      "default": "top",
+      "visible_if": "{{ block.settings.content_direction == 'column' }}"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Content alignment",
+      "default": "default",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment_group",
+      "label": "Horizontal alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "flex-end",
+          "label": "Right"
+        },
+        {
+          "value": "space-between",
+          "label": "Space between"
+        }
+      ],
+      "default": "flex-start",
+      "visible_if": "{{ block.settings.content_direction == 'row' and false }}"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "Vertical alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "Top"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "flex-end",
+          "label": "Bottom"
+        }
+      ],
+      "default": "center",
+      "visible_if": "{{ block.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "align_baseline",
+      "label": "Align to baseline",
+      "default": false,
+      "visible_if": "{{ block.settings.vertical_alignment == 'flex-end' and false }}"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment_flex_direction_column",
+      "label": "Horizontal alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "flex-end",
+          "label": "Right"
+        }
+      ],
+      "default": "flex-start",
+      "visible_if": "{{ block.settings.content_direction != 'row' and false }}"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment_flex_direction_column",
+      "label": "Vertical alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "Top"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "flex-end",
+          "label": "Bottom"
+        },
+        {
+          "value": "space-between",
+          "label": "Space between"
+        }
+      ],
+      "default": "center",
+      "visible_if": "{{ block.settings.content_direction != 'row' and false }}"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between items",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "padding_type",
+      "label": "Padding",
+      "options": [
+        {
+          "value": "auto",
+          "label": "None"
+        },
+        {
+          "value": "range",
+          "label": "Range"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "range"
+    },
+    {
+      "visible_if": "{{ block.settings.padding_type == 'custom' }}",
+      "type": "text",
+      "id": "padding",
+      "label": "Custom padding",
+      "default": "10px 20px 30px 40px",
+      "info": "Enter padding in the format: top right bottom left. Example: 10px 20px 30px 40px [Learn more](https://developer.mozilla.org/en-US/docs/Web/CSS/padding)"
+    },
+    {
+      "visible_if": "{{ block.settings.padding_type == 'range' }}",
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "visible_if": "{{ block.settings.padding_type == 'range' }}",
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "visible_if": "{{ block.settings.padding_type == 'range' }}",
+      "type": "range",
+      "id": "padding_left",
+      "label": "Padding left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "visible_if": "{{ block.settings.padding_type == 'range' }}",
+      "type": "range",
+      "id": "padding_right",
+      "label": "Padding right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "📱 Mobile & narrow display"
+    },
+    {
+      "type": "checkbox",
+      "id": "vertical_on_mobile",
+      "label": "Stack on mobile",
+      "default": true,
+      "visible_if": "{{ block.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_styles",
+      "label": "Enable mobile & narrow styles",
+      "info": "Settings for small screens or in tight spaces"
+    },
+    {
+      "visible_if": "{{ block.settings.mobile_styles == true }}",
+      "type": "select",
+      "id": "mobile_padding_type",
+      "label": "Mobile padding",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "range",
+          "label": "Range"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "default"
+    },
+    {
+      "visible_if": "{{ block.settings.mobile_padding_type == 'custom' }}",
+      "type": "text",
+      "id": "mobile_padding",
+      "label": "Custom padding",
+      "default": "0px 0px 0px 0px",
+      "info": "Enter padding in the format: top right bottom left. Example: 10px 20px 30px 40px"
+    },
+    {
+      "visible_if": "{{ block.settings.mobile_padding_type == 'range' }}",
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "visible_if": "{{ block.settings.mobile_padding_type == 'range' }}",
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "visible_if": "{{ block.settings.mobile_padding_type == 'range' }}",
+      "type": "range",
+      "id": "mobile_padding_left",
+      "label": "Padding left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "visible_if": "{{ block.settings.mobile_padding_type == 'range' }}",
+      "type": "range",
+      "id": "mobile_padding_right",
+      "label": "Padding right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "🎨 Design"
+    },
+    {
+      "visible_if": "{{ false }}",
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "alpha": true
+    },
+    {
+      "type": "color",
+      "id": "background_solid",
+      "label": "Background",
+      "alpha": true
+    },
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "label": "Background gradient",
+      "info": "Background gradient replaces background where possible."
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Rounded corners",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "border_style",
+      "label": "Border style",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "dotted",
+          "label": "Dotted"
+        },
+        {
+          "value": "double",
+          "label": "Double"
+        },
+        {
+          "value": "groove",
+          "label": "Groove"
+        },
+        {
+          "value": "ridge",
+          "label": "Ridge"
+        },
+        {
+          "value": "inset",
+          "label": "Inset"
+        },
+        {
+          "value": "outset",
+          "label": "Outset"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",
+      "label": "Border width",
+      "default": 1,
+      "visible_if": "{{ block.settings.border_style != 'none' }}"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.border_style != 'none' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_box_shadow",
+      "label": "Box shadow",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.enable_box_shadow }}",
+      "type": "select",
+      "id": "card_box_shadow_intensity",
+      "label": "Intensity",
+      "options": [
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "strong", "label": "Strong" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "subtle",
+      "info": "How strong the shadow appears."
+    },
+    {
+      "visible_if": "{{ block.settings.enable_box_shadow and block.settings.card_box_shadow_intensity != 'custom' }}",
+      "type": "color",
+      "id": "card_box_shadow_color",
+      "label": "Shadow color",
+      "default": "#000000"
+    },
+    {
+      "visible_if": "{{ block.settings.enable_box_shadow and block.settings.card_box_shadow_intensity == 'custom' }}",
+      "type": "text",
+      "id": "card_box_shadow_custom_value",
+      "label": "Custom value",
+      "info": "Enter a custom value for the box shadow. Example: 0 1px 4px 0 rgba(0, 0, 0, 0.33)",
+      "default": "0 1px 4px 0 rgba(0, 0, 0, 0.33)"
+    },
+    {
+      "type": "header",
+      "content": "🖼 Layout"
+    },
+    {
+      "type": "range",
+      "id": "base_width",
+      "label": "Size",
+      "default": 100,
+      "min": 20,
+      "max": 100,
+      "unit": "%",
+      "info": "Size is based on the width of the container. [Learn more]( https://design-packs.gitbook.io/docs/fundamentals/block-settings/size-controls-for-image-and-video-blocks)"
+    },
+    {
+      "type": "text",
+      "id": "max_width",
+      "label": "Max width (px)",
+      "info": "Sets width constraint for content."
+    },
+    {
+      "visible_if": "{{ block.settings.base_width < 100 or block.settings.max_width != blank }}",
+      "type": "select",
+      "id": "horizontal_alignment",
+      "label": "Horizontal alignment",
+      "default": "default",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "hidden_on",
+      "label": "Hidden on",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "desktop",
+          "label": "Desktop"
+        },
+        {
+          "value": "mobile",
+          "label": "Mobile"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_css",
+      "label": "Enable custom CSS",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "mobile_css",
+      "label": "Mobile & narrow custom CSS",
+      "info": "Applied on small screens or in tight spaces."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product group 🎒",
+      "category": "* Design Packs: Products"
+    }
+  ]
+}
+{% endschema %}

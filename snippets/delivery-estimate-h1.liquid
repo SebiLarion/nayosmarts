@@ -1,0 +1,60 @@
+{%- comment -%}
+  H1 regional lead times, migrated from the eta-h1 rules.
+  Start from the next working date when ordered on a closed day.
+  Closed days: Saturday, Sunday, Dec 24–25, Jan 1. Cutoff: 18:00 Asia/Shanghai.
+{%- endcomment -%}
+{%- liquid
+  assign country_code = localization.country.iso_code
+  assign asia = 'CN,HK,IN,ID,JP,MY,PH,SG,KR,TW,TH,VN' | split: ','
+  assign europe_canada = 'AT,BE,CA,HR,CZ,DK,FI,FR,DE,GR,HU,IS,IE,IT,LU,NL,NO,PL,PT,RO,SK,ES,SE,CH,GB' | split: ','
+  assign americas = 'AR,BR,CL,CO,CR,MX,PA,PE,US,UY' | split: ','
+  assign oceania = 'AU,NZ' | split: ','
+  assign min_days = 12
+  assign max_days = 20
+  if asia contains country_code
+    assign min_days = 4
+    assign max_days = 7
+  elsif europe_canada contains country_code
+    assign min_days = 5
+    assign max_days = 15
+  elsif americas contains country_code
+    assign min_days = 2
+    assign max_days = 12
+  elsif oceania contains country_code
+    assign min_days = 7
+    assign max_days = 11
+  endif
+  assign form_id = 'DeliveryCountry-' | append: section.id | append: '-' | append: block.id
+  assign return_path = product.url | append: '?variant=' | append: product.selected_or_first_available_variant.id
+  if template.suffix != blank
+    assign return_path = return_path | append: '&view=' | append: template.suffix
+  endif
+-%}
+<h1-delivery-estimate class="delivery-estimate-h1" data-min-days="{{ min_days }}" data-max-days="{{ max_days }}" {{ block.shopify_attributes }}>
+  <p><span data-delivery-message>Estimated delivery in {{ min_days }}–{{ max_days }} working days</span> to {{ localization.country.name | escape }}.</p>
+  {%- if localization.available_countries.size > 1 -%}
+    <details class="delivery-estimate-h1__picker">
+      <summary>Change country <span aria-hidden="true">→</span></summary>
+      {%- form 'localization', id: form_id, return_to: return_path -%}
+        <label for="{{ form_id }}-country">Delivery country</label>
+        <select id="{{ form_id }}-country" name="country_code">
+          {%- for country in localization.available_countries -%}
+            <option value="{{ country.iso_code }}"{% if country.iso_code == country_code %} selected{% endif %}>{{ country.name | escape }} ({{ country.currency.iso_code }})</option>
+          {%- endfor -%}
+        </select>
+        <button type="submit" class="button button--primary">Update destination</button>
+      {%- endform -%}
+    </details>
+  {%- endif -%}
+</h1-delivery-estimate>
+<script src="{{ 'delivery-estimate-h1.js' | asset_url }}" defer="defer"></script>
+<style>
+  #shopify-section-{{ section.id }} .product__info > .delivery-estimate-h1 { margin-block-start: 1.5rem; }
+  .delivery-estimate-h1 { display: block; font-size: 16px; line-height: 1.5; }
+  .delivery-estimate-h1 p { margin: 0; }
+  .delivery-estimate-h1__picker { margin-top: 10px; }
+  .delivery-estimate-h1__picker summary { cursor: pointer; text-decoration: underline; text-underline-offset: 3px; width: fit-content; padding: 8px 0; }
+  .delivery-estimate-h1__picker form { display: grid; gap: 10px; margin-top: 12px; }
+  .delivery-estimate-h1__picker select { width: 100%; min-width: 0; min-height: 44px; padding: 10px 32px 10px 12px; border: 1px solid currentColor; background: rgb(var(--color-background)); color: inherit; font: inherit; }
+  .delivery-estimate-h1__picker button { justify-self: start; min-height: 44px; }
+</style>

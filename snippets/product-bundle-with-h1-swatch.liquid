@@ -29,6 +29,20 @@
     assign item_price = item_variant.price | money | strip_html
   endif
 
+  assign item_discounted_cents = item_variant.price | times: 85 | divided_by: 100
+  if settings.currency_code_enabled
+    assign item_discounted_price = item_discounted_cents | money_with_currency | strip_html
+  else
+    assign item_discounted_price = item_discounted_cents | money | strip_html
+  endif
+  assign item_savings_cents = item_variant.price | minus: item_discounted_cents
+  if settings.currency_code_enabled
+    assign item_savings_price = item_savings_cents | money_with_currency | strip_html
+  else
+    assign item_savings_price = item_savings_cents | money | strip_html
+  endif
+  assign item_savings_text = 'products.general.save_html' | t: saved_amount: item_savings_price | strip_html
+
   assign item_strike_cents = item_variant.compare_at_price
   if item_strike_cents == blank or item_strike_cents == 0
     assign item_strike_cents = item_variant.price
@@ -130,6 +144,8 @@
     data-title="{{ item_product.title | escape }}"
     data-color="{{ item_color | escape }}"
     data-price="{{ item_price | escape }}"
+    data-discounted-price="{{ item_discounted_price | escape }}"
+    data-savings-text="{{ item_savings_text | escape }}"
     data-strike-price="{{ item_strike_price | escape }}"
     data-strike-cents="{{ item_strike_cents }}"
     data-available="{% if item_variant.available %}true{% else %}false{% endif %}"

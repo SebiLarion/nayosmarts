@@ -449,10 +449,7 @@
 {%- liquid
   assign heading = section.settings.heading | default: 'See how they carry it'
   assign modal_id = 'CarryItModal-' | append: section.id
-  assign form_id = 'CarryItForm-' | append: section.id
   assign cols = section.blocks.size | at_most: 3 | at_least: 1
-  assign current_variant = product.selected_or_first_available_variant
-  assign product_media = current_variant.featured_media | default: product.featured_media
 -%}
 
 <div class="section section--padding{% if section.settings.divider %} section--divider{% endif %}">
@@ -532,6 +529,62 @@
                       <span class="carry-it-h1__caption">{{ caption | escape }}</span>
                     {%- endif -%}
                   </button>
+                  <template data-carry-it-h1-product>
+                    {%- liquid
+                      assign card_product = block.settings.product
+                      assign card_variant = card_product.first_available_variant | default: card_product.variants.first
+                      assign requested_variant_id = block.settings.variant_id | strip
+                      if requested_variant_id != blank
+                        assign card_variant = blank
+                        for candidate in card_product.variants
+                          assign candidate_id = candidate.id | append: ''
+                          if candidate_id == requested_variant_id
+                            assign card_variant = candidate
+                            break
+                          endif
+                        endfor
+                      endif
+                      assign card_media = card_variant.featured_media | default: card_product.featured_media
+                      assign form_id = 'CarryItForm-' | append: section.id | append: '-' | append: block.id
+                    -%}
+                    {%- if card_product != blank and card_variant != blank -%}
+                      <div class="carry-it-h1-modal__footer">
+                        <div class="carry-it-h1-modal__product">
+                          <div class="carry-it-h1-modal__thumb" data-carry-it-h1-thumb>
+                            {%- if card_media != blank -%}
+                              {{- card_media | image_url: width: 240 | image_tag: loading: 'lazy', widths: '96, 192, 240', sizes: '96px', alt: card_product.title -}}
+                            {%- endif -%}
+                          </div>
+                          <p class="carry-it-h1-modal__product-title" data-carry-it-h1-title>{{ card_product.title | escape }}{% unless card_product.has_only_default_variant %} — {{ card_variant.title | escape }}{% endunless %}</p>
+                        </div>
+
+                        {%- form 'product', card_product, is: 'product-form', id: form_id, data-type: 'add-to-cart-form', class: 'carry-it-h1-modal__form' -%}
+                          <input type="hidden" name="id" value="{{ card_variant.id }}" data-carry-it-h1-variant>
+                          <input type="hidden" name="quantity" value="1">
+                          <button
+                            type="submit"
+                            name="add"
+                            class="carry-it-h1-modal__add"
+                            is="hover-button"
+                            data-carry-it-h1-add
+                            data-add-label="{{ 'products.product.add_to_cart' | t | escape }}"
+                            data-sold-out-label="{{ 'products.product.sold_out' | t | escape }}"
+                            {%- unless card_variant.available %} disabled{% endunless -%}
+                          >
+                            <span class="btn-text">
+                              <span data-carry-it-h1-add-label>
+                                {%- if card_variant.available -%}
+                                  {{- 'products.product.add_to_cart' | t -}}
+                                {%- else -%}
+                                  {{- 'products.product.sold_out' | t -}}
+                                {%- endif -%}
+                              </span>
+                            </span>
+                          </button>
+                        {%- endform -%}
+                      </div>
+                    {%- endif -%}
+                  </template>
                   {%- if block.settings.video != blank -%}
                     <template data-carry-it-h1-video>
                       {%- capture video_html -%}
@@ -600,43 +653,7 @@
                 </button>
               </div>
 
-              {%- if product != blank -%}
-                <div class="carry-it-h1-modal__footer">
-                  <div class="carry-it-h1-modal__product">
-                    <div class="carry-it-h1-modal__thumb" data-carry-it-h1-thumb>
-                      {%- if product_media != blank -%}
-                        {{- product_media | image_url: width: 240 | image_tag: loading: 'lazy', widths: '96, 192, 240', sizes: '96px', alt: product.title -}}
-                      {%- endif -%}
-                    </div>
-                    <p class="carry-it-h1-modal__product-title" data-carry-it-h1-title>{{ product.title | escape }}</p>
-                  </div>
-
-                  {%- form 'product', product, is: 'product-form', id: form_id, data-type: 'add-to-cart-form', class: 'carry-it-h1-modal__form' -%}
-                    <input type="hidden" name="id" value="{{ current_variant.id }}" data-carry-it-h1-variant>
-                    <input type="hidden" name="quantity" value="1">
-                    <button
-                      type="submit"
-                      name="add"
-                      class="carry-it-h1-modal__add"
-                      is="hover-button"
-                      data-carry-it-h1-add
-                      data-add-label="{{ 'products.product.add_to_cart' | t | escape }}"
-                      data-sold-out-label="{{ 'products.product.sold_out' | t | escape }}"
-                      {%- unless current_variant.available %} disabled{% endunless -%}
-                    >
-                      <span class="btn-text">
-                        <span data-carry-it-h1-add-label>
-                          {%- if current_variant.available -%}
-                            {{- 'products.product.add_to_cart' | t -}}
-                          {%- else -%}
-                            {{- 'products.product.sold_out' | t -}}
-                          {%- endif -%}
-                        </span>
-                      </span>
-                    </button>
-                  {%- endform -%}
-                </div>
-              {%- endif -%}
+              <div data-carry-it-h1-product-host></div>
             </div>
           </div>
         </x-modal>
@@ -723,6 +740,18 @@
           "id": "heading",
           "label": "Caption",
           "default": "Urban Commute"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product shown in video",
+          "info": "Choose the product for this video's Add to bag row. Leave blank to hide the row."
+        },
+        {
+          "type": "text",
+          "id": "variant_id",
+          "label": "Variant ID (optional)",
+          "info": "For a specific size, paste its numeric variant ID from the product's Shopify admin URL. Leave blank to use the first available variant. An ID outside the selected product hides the purchase row."
         },
         {
           "type": "image_picker",

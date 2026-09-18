@@ -15,12 +15,12 @@
 
   /* Theme parks the footer under the last section (absolute + parallax).
      Keep this block in normal page flow so it does not cover footer links. */
-  body.template-hreman-h1 .footer-group {
+  body.template-herman-h1 .footer-group {
     position: relative !important;
     z-index: auto !important;
   }
 
-  body.template-hreman-h1 [is="footer-parallax"] {
+  body.template-herman-h1 [is="footer-parallax"] {
     transform: none !important;
   }
 
@@ -164,6 +164,13 @@
     object-position: center;
   }
 
+  #shopify-section-{{ section.id }} .compare-h1__media-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    color: inherit;
+  }
+
   #shopify-section-{{ section.id }} .compare-h1__content {
     display: flex;
     flex: 1 1 auto;
@@ -190,12 +197,16 @@
   #shopify-section-{{ section.id }} .compare-h1__title {
     margin: 0;
     width: 100%;
+    max-width: 100%;
+    overflow: hidden;
     font-family: var(--font-heading-family);
     font-weight: 600;
     font-size: 1.25rem;
     line-height: 1.5;
     letter-spacing: -0.48px;
     text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     color: #171717;
   }
 
@@ -418,6 +429,13 @@
               <compare-card-h1 class="compare-h1__card" {{ block.shopify_attributes }}>
                 <div class="compare-h1__inner">
                   <div class="compare-h1__media">
+                    {%- if card_product != blank -%}
+                      <a
+                        class="compare-h1__media-link"
+                        href="{{ card_product.url }}"
+                        aria-label="{{ card_title | escape }}"
+                      >
+                    {%- endif -%}
                     <div data-compare-image="outside">
                       {%- if card_image != blank -%}
                         {{- card_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '236, 392, 600, 900', sizes: '(min-width: 768px) 392px, 236px', alt: card_title, is: 'lazy-image' -}}
@@ -429,6 +447,9 @@
                       <div data-compare-image="inside" hidden>
                         {{- inside_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '236, 392, 600, 900', sizes: '(min-width: 768px) 392px, 236px', alt: card_title, is: 'lazy-image' -}}
                       </div>
+                    {%- endif -%}
+                    {%- if card_product != blank -%}
+                      </a>
                     {%- endif -%}
                   </div>
 

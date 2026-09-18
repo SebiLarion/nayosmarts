@@ -1,0 +1,234 @@
+{%- comment -%}
+{
+  "pack_name": "Spacer block",
+  "pack_author": "Design Packs",
+  "license": "© Design Packs. All rights reserved. This code is protected by copyright law and may not be reproduced, distributed, or used without explicit permission from the author. Shopify complies with the Digital Millennium Copyright Act (DMCA) and responds to claims of copyright infringement using DMCA procedures, which could result in the termination of your Shopify account.",
+}
+{%- endcomment -%}
+
+{% comment %} Security Code - hides section when app uninstalled {% endcomment %}
+{%- unless content_for_header contains 'design_packs_file.js' -%}
+  {%- if request.design_mode -%}
+    <div class="dsgn-pck__no-app-warning">
+      <div class="dsgn-pck__no-app-warning-background">
+      </div>
+      <div class="dsgn-pck__no-app-warning-text dsgn-pck__rte">
+        <p><strong>WARNING!</strong> This premium section will not display properly without an active subscription for <a href="https://apps.shopify.com/design-packs" target="_blank" rel="noopener nofollow">Design Packs</a>. If you need any support please email <a href="mailto:info@design-packs.com" target="_blank" rel="noopener">info@design-packs.com</a> with your questions.</p>
+      </div>
+    </div>
+  {%- endif -%}
+  {%- break -%}
+{%- endunless -%}
+
+
+{%- comment -%} Assign: Preview section js fix {%- endcomment -%}
+{%- assign section_id = section.id | replace: '+', '' | replace: '=', '' -%}
+
+{%- capture css_styles -%}
+<style data-dp-css="blocks/_dpb_-_spacer.liquid">
+
+  [id*=preview-block] {
+    container-type: normal !important;
+  }
+
+  #shopify-section-{{ section_id }} .DP--{{ section_id }} .dsgn-pck__block-id-{{ block.id }},
+  #shopify-section-{{ section_id }} .DP--{{ section_id }} .dsgn-pck__block-id-{{ block.id }} + .dsgn-pck__block {
+    margin-top: 0;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }},
+  .dsgn-pck__block-id-{{ block.id }} + .dsgn-pck__block {
+    margin-top: 0;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} {
+    container-type: inline-size;
+    container-name: dp-spacer-container;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__spacer {
+    height: {{ block.settings.size }}px;
+    display: block !important;
+  }
+
+   /* Custom CSS */
+    {%- if block.settings.enable_custom_css == true and block.settings.custom_css != blank -%}
+      {%- assign custom_css_rules = block.settings.custom_css | strip | split: '}' -%}
+      {%- for rule in custom_css_rules -%}
+        {%- assign clean_rule = rule | strip -%}
+        {%- if clean_rule contains '{' and clean_rule != blank -%}
+          {%- assign rule_parts = clean_rule | split: '{' -%}
+          {%- if rule_parts.size >= 2 -%}
+            {%- assign selector_part = rule_parts[0] | strip -%}
+            {%- assign css_part = rule_parts[1] | strip -%}
+            {%- if css_part != blank -%}
+              {%- if selector_part == blank -%}
+                #DP--{{ block.id }} { {{ css_part }} }
+              {%- else -%}
+                #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+
+  /* Small context - small container and mobile */
+  {%- capture small_context -%}
+
+    {%- if block.settings.mobile_spacing_enabled == true -%}
+      {%- assign mobile_size = block.settings.mobile_size -%}
+    {%- else -%}
+      {%- assign mobile_size = block.settings.size -%}
+    {%- endif -%}
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__spacer {
+      height: {{ mobile_size }}px;
+    }
+
+    
+
+    /* Mobile & narrow custom CSS */
+    {%- if block.settings.enable_custom_css == true and block.settings.mobile_css != blank -%}
+      {%- assign mobile_css_rules = block.settings.mobile_css | strip | split: '}' -%}
+      {%- for rule in mobile_css_rules -%}
+        {%- assign clean_rule = rule | strip -%}
+        {%- if clean_rule contains '{' and clean_rule != blank -%}
+          {%- assign rule_parts = clean_rule | split: '{' -%}
+          {%- if rule_parts.size >= 2 -%}
+            {%- assign selector_part = rule_parts[0] | strip -%}
+            {%- assign css_part = rule_parts[1] | strip -%}
+            {%- if css_part != blank -%}
+              {%- if selector_part == blank -%}
+                #DP--{{ block.id }} { {{ css_part }} }
+              {%- else -%}
+                #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endcapture -%}
+
+  {% comment %} @supports (container-type: inline-size) {
+    @container dp-spacer-container (max-width: 300px) {
+      {{ small_context }}
+    }
+  } {% endcomment %}
+
+  @media (max-width: 767px) {
+    {{ small_context }}
+  }
+
+  /* Hide or show on mobile and desktop */
+  {%- if block.settings.hidden_on == 'mobile' -%}
+    @media (max-width: 767px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+
+  {%- if block.settings.hidden_on == 'desktop' -%}
+    @media (min-width: 768px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+</style>
+{%- endcapture -%}
+<div id="DP--{{ block.id }}" class="DP--{{ block.id }} dsgn-pck__block dsgn-pck__block--spacer dsgn-pck__block-id-{{ block.id }} dsgn-pck__block--{{ block.type }} dsgn-pck__block--{{ block.index }} dsgn-pck__justify-{%- if block.settings.block_alignment != 'default' -%}{{ block.settings.block_alignment }}{%- else -%}{{ section.settings.text_alignment }}{%- endif -%}" {{ block.shopify_attributes }}>
+  {{ css_styles }}
+  <div class="dsgn-pck__spacer" aria-hidden="true"></div>
+</div>
+
+{% schema %}
+  {
+    "name": "Spacer 🎒",
+    "tag": null,
+    "settings": [
+      {
+        "type": "range",
+        "id": "size",
+        "label": "Spacing",
+        "min": 0,
+        "max": 100,
+        "default": 40,
+        "unit": "px",
+        "info": "Set to 0 to remove spacing between blocks."
+      },
+      {
+        "type": "checkbox",
+        "id": "mobile_spacing_enabled",
+        "label": "Enable custom mobile spacing",
+        "default": false,
+        "info": "If disabled, mobile spacing will be automatically adjusted based on the desktop spacing (75% of the desktop spacing)"
+      },
+      {
+        "visible_if": "{{ block.settings.mobile_spacing_enabled }}",
+        "type": "range",
+        "id": "mobile_size",
+        "label": "Mobile spacing height",
+        "min": 0,
+        "max": 100,
+        "default": 40,
+        "unit": "px"
+      },
+      {
+        "type": "header",
+        "content": "🖼 Layout"
+      },
+      {
+        "type": "select",
+        "id": "hidden_on",
+        "label": "Hidden on",
+      "default": "none",
+        "options": [
+          {
+            "value": "none",
+            "label": "None"
+          },
+          {
+            "value": "desktop",
+            "label": "Desktop"
+          },
+          {
+            "value": "mobile",
+            "label": "Mobile"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_custom_css",
+        "label": "Enable custom CSS",
+        "default": false
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_css == true }}",
+        "type": "liquid",
+        "id": "custom_css",
+        "label": "Custom CSS"
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_css == true }}",
+        "type": "liquid",
+        "id": "mobile_css",
+        "label": "Mobile & narrow custom CSS",
+        "info": "Applied on small screens or in tight spaces."
+      },
+      {
+        "type": "paragraph",
+        "content": "Open [Design Packs](/admin/apps/design-packs-1/dashboard) to add/update new sections and blocks."
+      }
+    ],
+    "presets": [
+      {
+        "name": "Spacer 🎒",
+        "category": "* Design Packs: Layout"
+      }
+    ],
+  }
+{% endschema %}

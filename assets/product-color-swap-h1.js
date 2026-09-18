@@ -37,6 +37,97 @@
     return url.toString();
   }
 
+  function parseJson(node) {
+    if (!node) return null;
+
+    try {
+      return JSON.parse(node.textContent);
+    } catch (error) {
+      console.warn('[color-swap-h1] could not read variant data', error);
+      return null;
+    }
+  }
+
+  function getVariantMap(section) {
+    var entries = parseJson(section.querySelector('script[data-color-swap-variant-map]'));
+    return Array.isArray(entries) ? entries : [];
+  }
+
+  function getEntryByUrl(entries, productUrl) {
+    var pathname = new URL(productUrl, window.location.origin).pathname;
+
+    return entries.find(function (entry) {
+      return entry.url && new URL(entry.url, window.location.origin).pathname === pathname;
+    });
+  }
+
+  function optionIndex(optionNames, name) {
+    if (!Array.isArray(optionNames)) return -1;
+
+    return optionNames.findIndex(function (optionName) {
+      return String(optionName).toLowerCase() === name;
+    });
+  }
+
+  function getMatchingVariant(section, productUrl) {
+    var currentVariant = parseJson(section.querySelector('product-info script[data-selected-variant]'));
+    if (!currentVariant || !Array.isArray(currentVariant.options)) return null;
+
+    var entries = getVariantMap(section);
+    var currentLink = section.querySelector(SWATCH_SELECTOR + '[aria-current="true"]');
+    var currentUrl = currentLink
+      ? currentLink.getAttribute('data-product-url') || currentLink.getAttribute('href')
+      : window.location.pathname;
+    var currentEntry = getEntryByUrl(entries, currentUrl);
+    var targetEntry = getEntryByUrl(entries, productUrl);
+    if (!currentEntry || !targetEntry || !Array.isArray(targetEntry.variants)) return null;
+
+    var currentSizeIndex = optionIndex(currentEntry.optionNames, 'size');
+    var targetSizeIndex = optionIndex(targetEntry.optionNames, 'size');
+
+    // These sibling products currently have Size as their only option. Keeping
+    // this fallback makes the mapping work if that option is renamed locally.
+    if (currentSizeIndex < 0 && currentEntry.optionNames.length === 1) currentSizeIndex = 0;
+    if (targetSizeIndex < 0 && targetEntry.optionNames.length === 1) targetSizeIndex = 0;
+
+    if (currentSizeIndex >= 0 && targetSizeIndex >= 0) {
+      var selectedSize = currentVariant.options[currentSizeIndex];
+      return targetEntry.variants.find(function (variant) {
+        return Array.isArray(variant.options) && variant.options[targetSizeIndex] === selectedSize;
+      });
+    }
+
+    // If Size cannot be identified, preserve an exact option combination when
+    // both products share the same option structure.
+    return targetEntry.variants.find(function (variant) {
+      return (
+        Array.isArray(variant.options) &&
+        variant.options.length === currentVariant.options.length &&
+        variant.options.every(function (value, index) {
+          return value === currentVariant.options[index];
+        })
+      );
+    });
+  }
+
+  function resolveProductUrl(section, productUrl) {
+    var url = new URL(productUrl, window.location.origin);
+    var matchingVariant = getMatchingVariant(section, url.toString());
+
+    if (matchingVariant && matchingVariant.id) {
+      url.searchParams.set('variant', matchingVariant.id);
+    }
+
+    // Keep local theme-preview context while testing. These parameters are not
+    // present on normal storefront URLs and therefore do not affect production.
+    ['view', 'country'].forEach(function (parameter) {
+      var value = new URL(window.location.href).searchParams.get(parameter);
+      if (value && !url.searchParams.has(parameter)) url.searchParams.set(parameter, value);
+    });
+
+    return url.toString();
+  }
+
   function fetchSection(productUrl, sectionId) {
     var requestUrl = buildRequestUrl(productUrl, sectionId);
     if (cache.has(requestUrl)) return Promise.resolve(cache.get(requestUrl));
@@ -306,7 +397,8 @@
       .then(function (html) {
         if (!options || options.updateHistory !== false) {
           var target = new URL(productUrl, window.location.origin);
-          window.history.pushState({ colorSwapH1: true, url: target.pathname }, '', target.pathname);
+          var targetLocation = target.pathname + target.search;
+          window.history.pushState({ colorSwapH1: true, url: targetLocation }, '', targetLocation);
         }
 
         updateHead(productUrl, pageTitle);
@@ -345,6 +437,7 @@
     if (!section || !sectionId || !productUrl) return;
 
     event.preventDefault();
+    productUrl = resolveProductUrl(section, productUrl);
     render(section, productUrl, link.getAttribute('data-page-title'));
   });
 
@@ -352,9 +445,12 @@
     var link = event.target.closest && event.target.closest(SWATCH_SELECTOR);
     if (!link || link.getAttribute('aria-current') === 'true') return;
 
+    var section = getSection(link);
     var sectionId = getSectionId(link);
     var productUrl = link.getAttribute('data-product-url') || link.getAttribute('href');
-    if (!sectionId || !productUrl) return;
+    if (!section || !sectionId || !productUrl) return;
+
+    productUrl = resolveProductUrl(section, productUrl);
 
     var requestUrl = buildRequestUrl(productUrl, sectionId);
     if (cache.has(requestUrl)) return;
@@ -387,15 +483,16 @@
       : null;
     if (currentPath === window.location.pathname) return;
 
-    var target = document.querySelector(
-      SWATCH_SELECTOR + '[data-product-url="' + window.location.pathname + '"]'
-    );
+    var target = Array.from(document.querySelectorAll(SWATCH_SELECTOR)).find(function (link) {
+      var productUrl = link.getAttribute('data-product-url') || link.getAttribute('href');
+      return productUrl && new URL(productUrl, window.location.origin).pathname === window.location.pathname;
+    });
     if (!target) {
       window.location.reload();
       return;
     }
 
-    render(section, window.location.pathname, target.getAttribute('data-page-title'), {
+    render(section, window.location.pathname + window.location.search, target.getAttribute('data-page-title'), {
       updateHistory: false
     });
   });

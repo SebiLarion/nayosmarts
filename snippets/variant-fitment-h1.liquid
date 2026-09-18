@@ -1,0 +1,7 @@
+{%- liquid
+  assign fitment = variant.metafields.custom[field].value
+  if fitment == blank
+    assign fitment = fallback_text
+  endif
+-%}
+<span data-faq-h1-selected-variant="{{ variant.id }}" data-faq-h1-fitment="{{ field | escape }}">{{ fitment | escape }}</span>

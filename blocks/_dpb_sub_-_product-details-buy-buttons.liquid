@@ -1,0 +1,1154 @@
+{%- comment -%}
+{
+  "pack_name": "Product details buy buttons",
+  "pack_author": "Design Packs",
+  "license": "© Design Packs. All rights reserved. This code is protected by copyright law and may not be reproduced, distributed, or used without explicit permission from the author. Shopify complies with the Digital Millennium Copyright Act (DMCA) and responds to claims of copyright infringement using DMCA procedures, which could result in the termination of your Shopify account.",
+}
+{%- endcomment -%}
+
+{% comment %} Security Code - hides section when app uninstalled {% endcomment %}
+{%- unless content_for_header contains 'design_packs_file.js' -%}
+  {%- if request.design_mode -%}
+    <div class="dsgn-pck__no-app-warning">
+      <div class="dsgn-pck__no-app-warning-background">
+      </div>
+      <div class="dsgn-pck__no-app-warning-text dsgn-pck__rte">
+        <p><strong>WARNING!</strong> This premium section will not display properly without an active subscription for <a href="https://apps.shopify.com/design-packs" target="_blank" rel="noopener nofollow">Design Packs</a>. If you need any support please email <a href="mailto:info@design-packs.com" target="_blank" rel="noopener">info@design-packs.com</a> with your questions.</p>
+      </div>
+    </div>
+  {%- endif -%}
+  {%- break -%}
+{%- endunless -%}
+
+{%- comment -%} Assign: Preview section js fix {%- endcomment -%}
+{%- assign block_id = section.id | append: block.id | replace: '+', '' | replace: '=', '' -%}
+
+{% liquid
+  assign product = closest.product | default: section.settings.product | default: product | default: collections["all"].products.first
+  if request.visual_preview_mode and product == blank
+    assign product = collections.all.products.first
+  endif
+
+  assign variant = product.selected_or_first_available_variant
+  assign inventory_quantity = variant.inventory_quantity
+  assign inventory_policy = variant.inventory_policy
+
+  if variant.inventory_management == 'shopify'
+    assign inventory_managed = true
+  endif
+
+  if variant.quantity_rule.min > variant.inventory_quantity and inventory_managed and inventory_policy == 'deny'
+    assign quantity_rule_soldout = true
+  endif
+
+  if inventory_managed
+    if inventory_quantity <= 0 and inventory_policy == 'deny' or quantity_rule_soldout
+      assign can_add_to_cart = false
+      assign add_to_cart_text = block.settings.sold_out_text | default: 'Sold out'
+    else
+      assign can_add_to_cart = true
+      assign add_to_cart_text = block.settings.add_to_cart_text | default: 'Add to cart'
+    endif
+  else
+    if product.selected_or_first_available_variant != null
+      assign can_add_to_cart = true
+      assign add_to_cart_text = block.settings.add_to_cart_text | default: 'Add to cart'
+    else
+      assign can_add_to_cart = false
+      assign add_to_cart_text = block.settings.unavailable_text | default: 'Unavailable'
+    endif
+  endif
+%}
+
+{% liquid
+  assign buy_button_alpha = block.settings.button_background_color | color_extract: 'alpha'
+  assign label_alpha = block.settings.button_label_color | color_extract: 'alpha' | default: 0
+%}
+
+{%- comment -%}
+  Design System override flag — true when the block emits its own button visuals
+  (design system off, OR user chose "Tweak" override, OR role = 'none' meaning None).
+  When false, the block emits only structural CSS so the styleguide button role rule
+  (incl. the product add-to-cart force rule) owns colour / background / radius / hover.
+  Buttons use the 'none' sentinel. See CLAUDE.md "Block Override Architecture".
+{%- endcomment -%}
+{%- assign block_override_active = false -%}
+{%- if section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'none' -%}
+  {%- assign block_override_active = true -%}
+{%- endif -%}
+
+{% capture css_styles %}
+  <style>
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      text-decoration: none;
+      padding: var(--dp-button-padding, 0.5em 1.2em);
+      margin-top: 0;
+      border: thin solid;
+      transition: all 0.3s ease-in-out;
+      {%- if block_override_active and block.settings.button_radius != -1 -%}
+        border-radius: {{ block.settings.button_radius }}px;
+        --block-button-border-radius: {{ block.settings.button_radius }}px;
+      {%- endif -%}
+      line-height: var(--dp-g-button-line-height, var(--dp-button-line-height, calc(3px + 2ex + 3px)));
+      font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+      {%- if section.settings.override_theme_font != blank -%}
+      font-family: var(--main-font);
+      font-weight: var(--main-font-weight);
+      font-style: var(--main-font-style);
+      {%- endif -%}
+      width: 100%;
+      min-height: 48px;
+      line-height: 1;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} {
+      --dp-button-height: 48px;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__add-to-cart-button {
+      {%- comment -%} Visual props gated: when a role is active (override off) the styleguide add-to-cart force rule owns colour/background, reading --block-button-* if the user tweaks. {%- endcomment -%}
+      {%- if block_override_active -%}
+        {%- if label_alpha != 0 -%}
+          color: {{ block.settings.button_label_color }};
+          --block-button-color: {{ block.settings.button_label_color }};
+        {%- endif -%}
+        border-color: {%- if buy_button_alpha != 0 -%}{{ block.settings.button_background_color }}{%- else -%}{{ block.settings.button_label_color }}{%- endif -%};
+        --block-button-border-color: {%- if buy_button_alpha != 0 -%}{{ block.settings.button_background_color }}{%- else -%}{{ block.settings.button_label_color }}{%- endif -%};
+        {%- if buy_button_alpha != 0 -%}
+          background: {{ block.settings.button_background_color }} !important;
+          --block-button-background-color-solid: {{ block.settings.button_background_color }};
+        {%- endif -%}
+        {%- if block.settings.button_background_gradient != blank -%}
+          background: {{ block.settings.button_background_gradient }} !important;
+          --block-button-background-color: {{ block.settings.button_background_gradient }};
+          --block-button-background-color-solid: {{ block.settings.button_background_gradient }};
+        {%- endif -%}
+      {%- endif -%}
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__add-to-cart-button:hover {
+      opacity: 1;
+      {%- if block_override_active -%}
+        {%- if block.settings.button_background_gradient != blank -%}
+          background: {{ block.settings.button_background_gradient }} !important;
+          --block-button-background-color-hover: {{ block.settings.button_background_gradient }};
+          border-color: transparent;
+        {%- elsif buy_button_alpha != 0 -%}
+          background: {{ block.settings.button_background_color | color_darken: 10 }} !important;
+          --block-button-background-color-hover: {{ block.settings.button_background_color | color_darken: 10 }};
+          border-color: transparent;
+        {%- else -%}
+          background: {{ block.settings.button_label_color | color_modify: 'alpha', 0.1 }} !important;
+          --block-button-background-color-hover: {{ block.settings.button_label_color | color_modify: 'alpha', 0.1 }};
+        {%- endif -%}
+      {%- endif -%}
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__add-to-cart-button[disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__add-to-cart-text {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__add-to-cart-price {
+      font-weight: 600;
+      margin-left: 8px;
+      opacity: 0.9;
+      white-space: nowrap;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__buy-buttons-block {
+      width: 100%;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__product-form-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      column-gap: {{ block.settings.gap }}px;
+      row-gap: {{ block.settings.gap }}px;
+    }
+
+    {%- if block.settings.stack_quantity_selector == true -%}
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__product-form-buttons {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: {{ block.settings.gap }}px;
+      }
+    {%- endif -%}
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__product-form-buttons > *:not(.dsgn-pck__quantity-selector) {
+      flex: 1;
+      min-width: 185px;
+    }
+
+    {%- if block.settings.show_accelerated_checkout == true -%}
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__product-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: {{ block.settings.gap }}px;
+      }
+    {%- endif -%}
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__product-buttons--stacked {
+      display: flex;
+      flex-direction: column;
+      gap: {{ block.settings.gap }}px;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__product-form-buttons button {
+      width: 100%;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__add-to-cart-button {
+      position: relative;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .shopify-payment-button__button {
+      min-height: var(--dp-button-height, 48px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      text-decoration: none;
+      padding: var(--dp-button-padding, 0.5em 1.2em);
+      margin-top: 0;
+      border: thin solid;
+      transition: all 0.3s ease-in-out;
+      {%- if block_override_active and block.settings.button_radius != -1 -%}
+        border-radius: {{ block.settings.button_radius }}px;
+        --block-button-border-radius: {{ block.settings.button_radius }}px;
+      {%- else -%}
+        border-radius: var(--dp-g-button-radius, var(--dp-button-radius, 4px));
+      {%- endif -%}
+      line-height: var(--dp-g-button-line-height, var(--dp-button-line-height, calc(3px + 2ex + 3px)));
+      font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+      {%- if section.settings.override_theme_font != blank -%}
+      font-family: var(--main-font);
+      font-weight: var(--main-font-weight);
+      font-style: var(--main-font-style);
+      {%- endif -%}
+      min-height: 48px;
+      line-height: 1;
+      color: {{ block.settings.accelerated_checkout_text_color | default: '#ffffff' }};
+      background-color: {{ block.settings.accelerated_checkout_background_color | default: '#000000' }};
+      border: 1px solid {{ block.settings.accelerated_checkout_background_color | default: '#000000' }};
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__product-form-buttons .shopify-payment-button__button:hover {
+      opacity: 0.9;
+      background-color: {{ block.settings.accelerated_checkout_background_color | default: '#000000' | color_darken: 10 }};
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .shopify-payment-button__button:before,
+    .dsgn-pck__block-id-{{ block.id }} .shopify-payment-button__button:after {
+      display: none;
+    }
+
+    /* Quantity selector */
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__quantity-selector {
+      flex-grow: 0;
+      display: flex;
+      align-items: center;
+      border: 1px solid {{ block.settings.quantity_selector_border_color | default: '#e0e0e0' }};
+      border-radius: {{ block.settings.quantity_selector_radius | default: 4 }}px;
+      background: {{ block.settings.quantity_selector_background_color | default: '#fafbfc' }};
+      height: var(--dp-button-height, 48px);
+      min-height: var(--dp-button-height, 48px);
+      min-width: 120px;
+      {%- if block.settings.stack_quantity_selector == true -%}
+        max-width: 160px;
+      {%- endif -%}
+      padding: 3px;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__quantity-selector input[type="number"] {
+      width: 48px;
+      text-align: center;
+      border: none;
+      background: transparent;
+      font-size: 16px;
+      outline: none;
+      appearance: textfield;
+      color: {{ block.settings.quantity_selector_text_color | default: '#000000' }};
+      flex: 1;
+    }
+
+    /* Hide spin buttons in WebKit browsers */
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__quantity-selector input[type=number]::-webkit-inner-spin-button,
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__quantity-selector input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Optional: for Firefox */
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__quantity-selector input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__quantity-selector button {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+      border-radius: 4px;
+      color: {{ block.settings.quantity_selector_text_color | default: '#000000' }};
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__quantity-selector button:hover {
+      background: {{ block.settings.quantity_selector_text_color | default: '#000000' | color_modify: 'alpha', 0.1 }};
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__quantity-selector button:active,
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__quantity-selector button:focus {
+      background: {{ block.settings.quantity_selector_text_color | default: '#000000' | color_modify: 'alpha', 0.2 }};
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__quantity-selector .svg-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__quantity-selector input[type="number"]:disabled {
+      color: {{ block.settings.quantity_selector_text_color | default: '#000000' | color_modify: 'alpha', 0.4 }};
+      background: {{ block.settings.quantity_selector_background_color | default: '#fafbfc' | color_modify: 'alpha', 0.5 }};
+      cursor: not-allowed;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__quantity-selector:has(input:disabled) {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__quantity-selector button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__quantity-selector button:disabled:hover {
+      background: transparent;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .visually-hidden {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+
+    /* Custom CSS */
+    {%- if block.settings.enable_custom_css == true and block.settings.custom_css != blank -%}
+      {%- assign custom_css_rules = block.settings.custom_css | strip | split: '}' -%}
+      {%- for rule in custom_css_rules -%}
+        {%- assign clean_rule = rule | strip -%}
+        {%- if clean_rule contains '{' and clean_rule != blank -%}
+          {%- assign rule_parts = clean_rule | split: '{' -%}
+          {%- if rule_parts.size >= 2 -%}
+            {%- assign selector_part = rule_parts[0] | strip -%}
+            {%- assign css_part = rule_parts[1] | strip -%}
+            {%- if css_part != blank -%}
+              {%- if selector_part == blank -%}
+                #DP--{{ block.id }} { {{ css_part }} }
+              {%- else -%}
+                #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+
+    /* Small context - small container and mobile */
+    {%- capture small_context -%}
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__add-to-cart-price {
+        margin-left: 6px;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__product-buttons {
+        grid-template-columns: 1fr;
+      }
+
+      /* Mobile & narrow custom CSS */
+      {%- if block.settings.enable_custom_css == true and block.settings.mobile_css != blank -%}
+        {%- assign mobile_css_rules = block.settings.mobile_css | strip | split: '}' -%}
+        {%- for rule in mobile_css_rules -%}
+          {%- assign clean_rule = rule | strip -%}
+          {%- if clean_rule contains '{' and clean_rule != blank -%}
+            {%- assign rule_parts = clean_rule | split: '{' -%}
+            {%- if rule_parts.size >= 2 -%}
+              {%- assign selector_part = rule_parts[0] | strip -%}
+              {%- assign css_part = rule_parts[1] | strip -%}
+              {%- if css_part != blank -%}
+                {%- if selector_part == blank -%}
+                  #DP--{{ block.id }} { {{ css_part }} }
+                {%- else -%}
+                  #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+                {%- endif -%}
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    {%- endcapture -%}
+
+    @supports (container-type: inline-size) {
+      @container dp-product-form-component (max-width: 300px) {
+        {{ small_context }}
+      }
+    }
+
+    @media (max-width: 767px) {
+      {{ small_context }}
+    }
+
+  </style>
+{% endcapture %}
+
+{%- capture js_scripts -%}
+  <script type="application/json" data-dsgn-pck="{{ block_id }}">
+    {
+      "id": {{ block_id | json }},
+      "add_to_cart_text": {{ block.settings.add_to_cart_text | json }},
+      "sold_out_text": {{ block.settings.sold_out_text | json }},
+      "unavailable_text": {{ block.settings.unavailable_text | json }},
+      "custom_theme_trigger": {{ block.settings.custom_theme_trigger | json }}
+    }
+  </script>
+  <script type="module" defer>
+    class dpProductFormComponent extends HTMLElement {
+      constructor() {
+        super();
+        this.block = this.closest('.dsgn-pck__buy-buttons-container');
+        this.form = this.querySelector('form[data-type="add-to-cart-form"]');
+        this.button = this.form?.querySelector('button[type="submit"]');
+        this.variantInput = this.form?.querySelector('input[name="id"]');
+        const script = this.block?.querySelector('script[data-dsgn-pck]');
+        this.settings = script ? JSON.parse(script.textContent) : {};
+        // Bind once so add/removeEventListener reference the same function (symmetric on
+        // connect/disconnect — required for repeated injection, e.g. quickview drawer).
+        this.boundHandleSubmit = this.handleSubmit.bind(this);
+        this.boundHandleVariantInfo = this.handleVariantInfo.bind(this);
+      }
+
+      connectedCallback() {
+        if (!this.form) return;
+        this.scope = this.closest('.dsgn-pck__product-details') || this.closest('.dsgn-pck__product-group') || this.closest('.dsgn-pck__section') || document;
+        this.form.addEventListener('submit', this.boundHandleSubmit);
+        this.scope.addEventListener('variant:change', this.boundHandleVariantInfo);
+      }
+
+      disconnectedCallback() {
+        if (!this.form) return;
+        this.form.removeEventListener('submit', this.boundHandleSubmit);
+        if (this.scope) {
+          this.scope.removeEventListener('variant:change', this.boundHandleVariantInfo);
+        }
+      }
+
+      handleVariantInfo(event) {
+        //console.log('handleVariantInfo');
+        //console.log('event', event);
+        if (!event || !event.detail) return;
+
+        const variant = event.detail.variant;
+
+        if (this.variantInput) {
+          this.variantInput.value = variant && variant.id ? variant.id : '';
+        }
+        if (!this.button) return;
+
+        // Update button text and state
+        const textContentSpan = this.button.querySelector('.dsgn-pck__add-to-cart-text__content');
+        const priceSpan = this.button.querySelector('.dsgn-pck__add-to-cart-price');
+
+        // Update quantity selector state
+        const quantityInput = this.form?.querySelector('input[name="quantity"]');
+        const quantityMinusButton = this.form?.querySelector('button[name="minus"]');
+        const quantityPlusButton = this.form?.querySelector('button[name="plus"]');
+
+        if (!variant || !variant.id) {
+          if (textContentSpan) textContentSpan.textContent = this.settings.unavailable_text;
+          this.button.disabled = true;
+          if (priceSpan) priceSpan.style.display = 'none';
+
+          // Disable quantity selector
+          if (quantityInput) quantityInput.disabled = true;
+          if (quantityMinusButton) quantityMinusButton.disabled = true;
+          if (quantityPlusButton) quantityPlusButton.disabled = true;
+        } else if (!variant.available) {
+          if (textContentSpan) textContentSpan.textContent = this.settings.sold_out_text;
+          this.button.disabled = true;
+          if (priceSpan) priceSpan.style.display = 'none';
+
+          // Disable quantity selector
+          if (quantityInput) quantityInput.disabled = true;
+          if (quantityMinusButton) quantityMinusButton.disabled = true;
+          if (quantityPlusButton) quantityPlusButton.disabled = true;
+        } else {
+          if (textContentSpan) textContentSpan.textContent = this.settings.add_to_cart_text;
+          this.button.disabled = false;
+
+          // Enable quantity selector
+          if (quantityInput) quantityInput.disabled = false;
+          if (quantityMinusButton) quantityMinusButton.disabled = false;
+          if (quantityPlusButton) quantityPlusButton.disabled = false;
+
+          // Update price if price span exists and variant has price
+          if (priceSpan && variant.price !== undefined) {
+            priceSpan.style.display = '';
+            const formattedPrice = this.formatPrice(variant.price);
+            priceSpan.textContent = formattedPrice;
+            priceSpan.setAttribute('data-price', variant.price);
+            priceSpan.setAttribute('data-price-formatted', formattedPrice);
+          }
+        }
+      }
+
+      formatPrice(priceInCents) {
+        // Convert cents to currency amount
+        const price = priceInCents / 100;
+
+        // Get the shop's currency from the global Shopify object or use USD as fallback
+        const currency = window.Shopify?.currency?.active || 'USD';
+
+        // Create a simple currency symbol mapping for common currencies
+        const currencySymbols = {
+          'USD': '$',
+          'CAD': '$',
+          'EUR': '€',
+          'GBP': '£',
+          'JPY': '¥',
+          'AUD': '$',
+          'CHF': 'CHF',
+          'SEK': 'kr',
+          'NOK': 'kr',
+          'DKK': 'kr'
+        };
+
+        const symbol = currencySymbols[currency] || '$';
+
+        // Format with just the symbol and number (like Shopify's money filter)
+        return symbol + price.toFixed(2);
+      }
+
+      async handleSubmit(e) {
+        e.preventDefault();
+        if (this.button) this.button.disabled = true;
+
+        const addToCartOption = this.button?.dataset.dsgnPckAddToCart || 'refresh';
+
+        // Build FormData from the entire form so that fields injected by
+        // subscription / bundle / customization apps (e.g. Appstle's
+        // `selling_plan` and any `properties[...]`) are submitted too.
+        const formData = new FormData(this.form);
+
+        if (!formData.has('quantity')) {
+          formData.append('quantity', '1');
+        }
+
+        try {
+          await this.addItemToCart(formData, addToCartOption);
+        } catch (error) {
+          console.error('Error adding to cart:', error);
+          alert('Error adding to cart. Please try again.');
+        } finally {
+          if (this.button) this.button.disabled = false;
+        }
+      }
+
+      async addItemToCart(formData, addToCartOption) {
+        const response = await fetch('/cart/add.js', {
+          method: 'post',
+          headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const resp = await response.json();
+
+        if (addToCartOption === 'custom_theme_trigger') {
+          // Execute the custom theme trigger code
+          const customCode = this.settings.custom_theme_trigger || '';
+          if (customCode && customCode.trim() !== '') {
+            try {
+              // Create a function from the string and execute it with the response
+              const executeCustomCode = new Function('response', customCode);
+              executeCustomCode(resp);
+            } catch (error) {
+              console.error('Error executing custom theme trigger:', error);
+              // Fallback to default behavior
+              location.reload();
+            }
+          } else {
+            location.reload();
+          }
+        } else if (addToCartOption === 'go_to_cart') {
+          window.location.href = '/cart';
+        } else {
+          location.reload();
+        }
+      }
+    }
+
+    class dpQuantitySelectorComponent extends HTMLElement {
+      constructor() {
+        super();
+        this.input = this.querySelector('input[type="number"]');
+        this.minusButton = this.querySelector('button[name="minus"]');
+        this.plusButton = this.querySelector('button[name="plus"]');
+        // Bind once so add/removeEventListener reference the same function.
+        this.boundDecreaseQuantity = this.decreaseQuantity.bind(this);
+        this.boundIncreaseQuantity = this.increaseQuantity.bind(this);
+        this.boundValidateQuantity = this.validateQuantity.bind(this);
+      }
+
+      connectedCallback() {
+        if (this.minusButton) {
+          this.minusButton.addEventListener('click', this.boundDecreaseQuantity);
+        }
+        if (this.plusButton) {
+          this.plusButton.addEventListener('click', this.boundIncreaseQuantity);
+        }
+        if (this.input) {
+          this.input.addEventListener('change', this.boundValidateQuantity);
+        }
+      }
+
+      disconnectedCallback() {
+        if (this.minusButton) {
+          this.minusButton.removeEventListener('click', this.boundDecreaseQuantity);
+        }
+        if (this.plusButton) {
+          this.plusButton.removeEventListener('click', this.boundIncreaseQuantity);
+        }
+        if (this.input) {
+          this.input.removeEventListener('change', this.boundValidateQuantity);
+        }
+      }
+
+      decreaseQuantity() {
+        if (!this.input) return;
+        const currentValue = parseInt(this.input.value) || 1;
+        const min = parseInt(this.input.min) || 1;
+        const step = parseInt(this.input.step) || 1;
+        const newValue = Math.max(min, currentValue - step);
+        this.input.value = newValue;
+        this.input.dispatchEvent(new Event('change'));
+      }
+
+      increaseQuantity() {
+        if (!this.input) return;
+        const currentValue = parseInt(this.input.value) || 1;
+        const max = parseInt(this.input.max) || Infinity;
+        const step = parseInt(this.input.step) || 1;
+        const newValue = Math.min(max, currentValue + step);
+        this.input.value = newValue;
+        this.input.dispatchEvent(new Event('change'));
+      }
+
+      validateQuantity() {
+        if (!this.input) return;
+        const value = parseInt(this.input.value) || 1;
+        const min = parseInt(this.input.min) || 1;
+        const max = parseInt(this.input.max) || Infinity;
+        const step = parseInt(this.input.step) || 1;
+
+        // Ensure value is within bounds and follows step rules
+        let validValue = Math.max(min, Math.min(max, value));
+
+        // Ensure value follows step increments
+        const remainder = (validValue - min) % step;
+        if (remainder !== 0) {
+          validValue = validValue - remainder + (remainder >= step / 2 ? step : 0);
+        }
+
+        this.input.value = Math.max(min, validValue);
+      }
+    }
+
+    if (!customElements.get('dp-product-form-component')) {
+      customElements.define('dp-product-form-component', dpProductFormComponent);
+    }
+
+    if (!customElements.get('dp-quantity-selector-component')) {
+      customElements.define('dp-quantity-selector-component', dpQuantitySelectorComponent);
+    }
+  </script>
+{%- endcapture -%}
+
+<div id="DP--{{ block.id }}" class="DP--{{ block.id }} dsgn-pck__block-id-{{ block.id }} dsgn-pck__block dsgn-pck__buy-buttons-container" {{ block.shopify_attributes }}>
+  {{ css_styles }}
+
+  {%- if product != blank -%}
+    {%- assign product_form_id = 'DP-BuyButtons-ProductForm-' | append: block.id -%}
+    <dp-product-form-component
+      data-section-id="{{ section.id }}"
+      data-product-id="{{ product.id }}"
+      data-product-url="{{ product.url }}"
+      on:submit="/handleSubmit"
+      data-quantity-default="{% if product.selected_or_first_available_variant.quantity_rule.min %}{{ product.selected_or_first_available_variant.quantity_rule.min }}{% else %}1{% endif %}"
+    >
+      <div
+        class="visually-hidden"
+        aria-live="assertive"
+        role="status"
+        aria-atomic="true"
+        ref="liveRegion"
+      ></div>
+      {%- form 'product', product, id: product_form_id, novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+        <input
+          type="hidden"
+          name="id"
+          ref="variantId"
+          value="{{ product.selected_or_first_available_variant.id }}"
+        >
+        <div
+          class="dsgn-pck__product-form-buttons"
+        >
+          {% liquid
+            assign variant = product.selected_or_first_available_variant
+          %}
+
+          {% if block.settings.show_quantity_selector %}
+            {% if block.settings.stack_quantity_selector == true %}
+              <div class="dsgn-pck__quantity-selector--stacked">
+            {% endif %}
+              <dp-quantity-selector-component class="dsgn-pck__quantity-selector" ref="quantitySelectors[]">
+                <button
+                  class="dsgn-pck__quantity-minus"
+                  type="button"
+                  name="minus"
+                  ref="quantityButtons[]"
+                >
+                  <span class="visually-hidden">Decrease quantity</span
+                  ><span class="svg-wrapper icon-minus">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M3.33333 8H12.6667" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
+                </button>
+                <input
+                  type="number"
+                  name="quantity"
+                  value="{% if variant.quantity_rule.min > 1 %}{{ variant.quantity_rule.min }}{% else %}1{% endif %}"
+                  min="{% if variant.quantity_rule.min %}{{ variant.quantity_rule.min }}{% else %}1{% endif %}"
+                  ref="quantityInput"
+                  {% if variant.quantity_rule.max %}
+                    max="{{ variant.quantity_rule.max }}"
+                  {% endif %}
+                  step="{{ variant.quantity_rule.increment | default: 1 }}"
+                  {% if variant.available == false %}
+                    disabled
+                  {% endif %}
+                >
+                <button
+                  class="dsgn-pck__quantity-plus"
+                  type="button"
+                  name="plus"
+                  ref="quantityButtons[]"
+                >
+                  <span class="visually-hidden">Increase quantity</span
+                  ><span class="svg-wrapper icon-plus">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M8 3.33333V12.6667M3.33333 8H12.6667" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
+                </button>
+              </dp-quantity-selector-component>
+            {% if block.settings.stack_quantity_selector == true %}
+              </div>
+            {% endif %}
+          {% endif %}
+
+          {% liquid
+            assign id = 'DP-BuyButtons-ProductSubmitButton-' | append: block.id
+          %}
+
+          {%- liquid
+            assign default_add_to_cart_text = block.settings.add_to_cart_text | default: 'Add to cart'
+            assign product_variant_media = product.selected_or_first_available_variant.featured_media.preview_image | image_url: width: 100
+            if product.selected_or_first_available_variant.featured_media.preview_image == blank
+              assign product_variant_media = product.featured_media.preview_image | image_url: width: 100
+            endif
+          -%}
+
+          <div class="dsgn-pck__product-buttons {% if block.settings.stack_buttons == true %}dsgn-pck__product-buttons--stacked{% endif %}">
+
+            <dp-add-to-cart-component ref="addToCartButtonContainer" data-product-variant-media="{{ product_variant_media }}">
+              <button
+                id="{{ id }}"
+                type="submit"
+                name="add"
+                ref="addToCartButton"
+                on:click="/handleClick"
+                class="dsgn-pck__button dsgn-pck__add-to-cart-button {% if section.settings.design_system == 'global_style' and block.settings.custom_style_name != 'none' and block.settings.custom_style_name != blank %}{{ block.settings.custom_style_name }}{% endif %}"
+                data-dsgn-pck-add-to-cart="{{ block.settings.add_to_cart_option | default: 'refresh' }}"
+                data-add-to-cart-default-text="{{ block.settings.add_to_cart_text | default: 'Add to cart' | escape }}"
+                data-add-to-cart-sold-out-text="{{ block.settings.sold_out_text | default: 'Sold out' | escape }}"
+                data-add-to-cart-unavailable-text="{{ block.settings.unavailable_text | default: 'Unavailable' | escape }}"
+                {% unless can_add_to_cart %}
+                  disabled
+                {% endunless %}
+              >
+                <span class="dsgn-pck__add-to-cart-text">
+                  {% if block.settings.cart_icon != blank %}
+                    {% if can_add_to_cart %}
+                      <span class="svg-wrapper dsgn-pck__add-to-cart-icon">
+
+                          <img src="{{ block.settings.cart_icon | image_url: width: 16 }}" alt="Cart" width="16" height="16">
+                      </span>
+                    {% endif %}
+                  {% endif %}
+
+                  <span class="dsgn-pck__add-to-cart-text__content dsgn-pck__button-text">
+                    {{- add_to_cart_text | default: default_add_to_cart_text -}}
+                  </span>
+                  {% if block.settings.show_price_in_button %}
+                    <span class="dsgn-pck__add-to-cart-price" data-price="{{ variant.price | money_without_currency }}" data-price-formatted="{{ variant.price | money }}">
+                      {{ variant.price | money }}
+                    </span>
+                  {% endif %}
+                </span>
+              </button>
+            </dp-add-to-cart-component>
+
+            {% if block.settings.show_accelerated_checkout %}
+
+              <div
+                class="dsgn-pck__accelerated-checkout-block"
+                ref="acceleratedCheckoutButtonContainer"
+                {{ block.shopify_attributes }}
+                {% if request.visual_preview_mode %}
+                  data-shopify-visual-preview
+                {% endif %}
+                {% unless can_add_to_cart %}
+                  hidden
+                {% endunless %}
+              >
+                <style>
+                  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__accelerated-checkout-block[data-shopify-visual-preview] {
+                    width: 300px;
+                  }
+
+                  .dsgn-pck__block-id-{{ block.id }} more-payment-options-link {
+                    font-size: smaller;
+                  }
+
+                  .dsgn-pck__block-id-{{ block.id }} more-payment-options-link a {
+                    --button-color: var(--color-primary);
+                  }
+
+                  .dsgn-pck__block-id-{{ block.id }} more-payment-options-link a:hover {
+                    --button-color: var(--color-primary-hover);
+                  }
+
+                  .dsgn-pck__block-id-{{ block.id }} .shopify-payment-button__more-options[aria-hidden='true'] {
+                    display: none;
+                  }
+                </style>
+                {% if product != blank %}
+                  {%- form 'product', product -%}
+                    {{ form | payment_button }}
+                  {%- endform -%}
+                {% endif %}
+              </div>
+            {% endif %}
+
+          </div>
+        </div>
+      {%- endform -%}
+    </dp-product-form-component>
+  {%- else -%}
+    <div class="dsgn-pck__product-form-buttons">
+      <button
+        type="submit"
+        name="add"
+        class="dsgn-pck__button"
+        disabled
+      >
+        {{ block.settings.sold_out_text | default: 'Sold out' }}
+      </button>
+    </div>
+  {%- endif -%}
+
+  {{ js_scripts }}
+</div>
+
+{% schema %}
+{
+  "name": "Buy buttons 🎒",
+  "tag": null,
+  "settings": [
+    {
+      "visible_if": "{{ section.settings.design_system == 'global_style' }}",
+      "type": "select",
+      "id": "custom_style_name",
+      "label": "🌈 Button style",
+      "info": "Apply a button style from your Design System.",
+      "default": "none",
+      "options": [
+        { "value": "dsgn-pck__button-primary", "label": "Primary" },
+        { "value": "dsgn-pck__button-secondary", "label": "Secondary" },
+        { "value": "dsgn-pck__button-tertiary", "label": "Tertiary" },
+        { "value": "dsgn-pck__button-link", "label": "Link" },
+        { "value": "dsgn-pck__button-custom-1", "label": "Custom 1" },
+        { "value": "dsgn-pck__button-custom-2", "label": "Custom 2" },
+        { "value": "dsgn-pck__button-custom-3", "label": "Custom 3" },
+        { "value": "dsgn-pck__button-custom-4", "label": "Custom 4" },
+        { "value": "dsgn-pck__add-to-cart-button", "label": "Add to cart" },
+        { "value": "dsgn-pck__button-view-options", "label": "View options" },
+        { "value": "none", "label": "None" }
+      ]
+    },
+    {
+      "visible_if": "{{ section.settings.design_system == 'global_style' and block.settings.custom_style_name != 'none' }}",
+      "type": "checkbox",
+      "id": "override",
+      "label": "Tweak button style",
+      "default": false,
+      "info": "Give a custom look to these buy buttons."
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between items",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'none' }}",
+      "type": "range",
+      "id": "button_radius",
+      "label": "Button border radius",
+      "min": -1,
+      "max": 50,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'none' }}",
+      "type": "color",
+      "id": "button_label_color",
+      "label": "Button label",
+      "default": "#ffffff"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'none' }}",
+      "type": "color",
+      "id": "button_background_color",
+      "label": "Button background",
+      "default": "#121212",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'none' }}",
+      "type": "color_background",
+      "id": "button_background_gradient",
+      "label": "Button background gradient",
+      "info": "Background gradient overrides the button background color."
+    },
+    {
+      "type": "header",
+      "content": "Add to cart button"
+    },
+    {
+      "type": "text",
+      "id": "add_to_cart_text",
+      "label": "Add to cart text",
+      "default": "Add to cart"
+    },
+    {
+      "type": "text",
+      "id": "sold_out_text",
+      "label": "Sold out text",
+      "default": "Sold out"
+    },
+    {
+      "type": "text",
+      "id": "unavailable_text",
+      "label": "Unavailable text",
+      "default": "Unavailable"
+    },
+    {
+      "type": "image_picker",
+      "id": "cart_icon",
+      "label": "Button icon"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price_in_button",
+      "label": "Show price in add to cart button",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "add_to_cart_option",
+      "label": "Buy button action",
+      "options": [
+        {
+          "value": "refresh",
+          "label": "Refresh page"
+        },
+        {
+          "value": "go_to_cart",
+          "label": "Go to cart"
+        },
+        {
+          "value": "custom_theme_trigger",
+          "label": "Run custom code (advanced)"
+        }
+      ],
+      "default": "go_to_cart"
+    },
+    {
+      "visible_if": "{{ block.settings.add_to_cart_option == 'custom_theme_trigger' }}",
+      "type": "textarea",
+      "id": "custom_theme_trigger",
+      "label": "JavaScript",
+      "info": "Add code to open the slideout cart in your theme or trigger other actions. [Learn more](https://design-packs.gitbook.io/docs/fundamentals/section-settings/add-custom-events-when-product-is-added-to-cart)"
+    },
+    {
+      "type": "header",
+      "content": "Accelerated checkout"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_accelerated_checkout",
+      "label": "Show accelerated checkout",
+      "default": true
+    },
+    {
+      "visible_if": "{{ block.settings.show_accelerated_checkout == true }}",
+      "type": "color",
+      "id": "accelerated_checkout_text_color",
+      "label": "Label",
+      "default": "#ffffff"
+    },
+    {
+      "visible_if": "{{ block.settings.show_accelerated_checkout == true }}",
+      "type": "color",
+      "id": "accelerated_checkout_background_color",
+      "label": "Background",
+      "default": "#000000"
+    },
+    {
+      "visible_if": "{{ block.settings.show_accelerated_checkout == true }}",
+      "type": "checkbox",
+      "id": "stack_buttons",
+      "label": "Stack beneath add to cart button",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Quantity selector"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quantity_selector",
+      "label": "Show quantity selector",
+      "default": true
+    },
+    {
+      "visible_if": "{{ block.settings.show_quantity_selector == true }}",
+      "type": "color",
+      "id": "quantity_selector_border_color",
+      "label": "Border",
+      "default": "#e0e0e0"
+    },
+    {
+      "visible_if": "{{ block.settings.show_quantity_selector == true }}",
+      "type": "color",
+      "id": "quantity_selector_background_color",
+      "label": "Background",
+      "default": "#fafbfc"
+    },
+    {
+      "visible_if": "{{ block.settings.show_quantity_selector == true }}",
+      "type": "color",
+      "id": "quantity_selector_text_color",
+      "label": "Text",
+      "default": "#000000"
+    },
+    {
+      "visible_if": "{{ block.settings.show_quantity_selector == true }}",
+      "type": "range",
+      "id": "quantity_selector_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 50,
+      "default": 4,
+      "unit": "px"
+    },
+    {
+      "visible_if": "{{ block.settings.show_quantity_selector == true }}",
+      "type": "checkbox",
+      "id": "stack_quantity_selector",
+      "label": "Stack quantity selector above add to cart button",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_css",
+      "label": "Enable custom CSS",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "mobile_css",
+      "label": "Mobile & narrow custom CSS",
+      "info": "Applied on small screens or in tight spaces."
+    },
+    {
+      "type": "paragraph",
+      "content": "Open [Design Packs](/admin/apps/design-packs-1/dashboard) to add/update new sections and blocks."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Buy buttons 🎒",
+      "category": "* Design Packs: Product"
+    }
+  ]
+}
+{% endschema %}

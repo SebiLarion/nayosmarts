@@ -1,0 +1,684 @@
+{%- comment -%}
+{
+  "pack_name": "Audio player block",
+  "pack_author": "Design Packs",
+  "license": "© Design Packs. All rights reserved. This code is protected by copyright law and may not be reproduced, distributed, or used without explicit permission from the author. Shopify complies with the Digital Millennium Copyright Act (DMCA) and responds to claims of copyright infringement using DMCA procedures, which could result in the termination of your Shopify account.",
+}
+{%- endcomment -%}
+
+{% comment %} Security Code - hides section when app uninstalled {% endcomment %}
+{%- unless content_for_header contains 'design_packs_file.js' -%}
+  {%- if request.design_mode -%}
+    <div class="dsgn-pck__no-app-warning">
+      <div class="dsgn-pck__no-app-warning-background">
+      </div>
+      <div class="dsgn-pck__no-app-warning-text dsgn-pck__rte">
+        <p><strong>WARNING!</strong> This premium section will not display properly without an active subscription for <a href="https://apps.shopify.com/design-packs" target="_blank" rel="noopener nofollow">Design Packs</a>. If you need any support please email <a href="mailto:info@design-packs.com" target="_blank" rel="noopener">info@design-packs.com</a> with your questions.</p>
+      </div>
+    </div>
+  {%- endif -%}
+  {%- break -%}
+{%- endunless -%}
+
+{%- comment -%} Assign: Preview section js fix {%- endcomment -%}
+{%- assign section_id = section.id | replace: '+', '' | replace: '=', '' -%}
+{%- assign block_index = section.blocks | find_index: 'id', block.id | plus: 1 -%}
+
+{%- assign enable_metafield_detect = block.settings.enabled_metafield_detect | default: section.settings.enable_metafield_detect | default: false -%}
+
+{% comment %} Images: responsive image widths {% endcomment %}
+{%- assign widths = '180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 1950, 2100, 2260, 2450, 2700, 3000, 3350, 3750, 4100' -%}
+
+{% comment %} Metafields: hide section if there is no content {% endcomment %}
+{% if block.settings.audio_url == blank and enable_metafield_detect == true %}
+  {% continue %}
+{% endif %}
+
+{%- comment -%} Layout: check for horizontal setting {%- endcomment -%}
+{%- assign block_horizontal_setting = block.settings.horizontal_alignment | default: 'default' -%}
+
+{%- capture css_styles -%}
+<style data-dp-css="blocks/_dpb_-_audio_player.liquid">
+
+  [id*=preview-block] .dsgn-pck__audio-player-container {
+    container-type: normal !important;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} {
+    width: {{ block.settings.base_width }}%;
+    max-width: {{ block.settings.max_width | remove: 'px' }}px;
+    display: flex;
+    {%- if block.settings.horizontal_alignment == 'left' -%}
+      align-self: flex-start;
+      margin-left: 0;
+      margin-right: auto;
+      --block-horizontal-alignment: flex-start;
+    {%- elsif block.settings.horizontal_alignment == 'right' -%}
+      align-self: flex-end;
+      margin-left: auto;
+      margin-right: 0;
+      --block-horizontal-alignment: flex-end;
+    {%- elsif block.settings.horizontal_alignment == 'center' -%}
+      align-self: center;
+      margin-left: auto;
+      margin-right: auto;
+      --block-horizontal-alignment: center;
+    {%- else -%}
+      margin-left: var(--block-margin-left, 0);
+      margin-right: var(--block-margin-right, 0);
+    {%- endif -%}
+    --section-horizontal-alignment: {%- if section.settings.text_alignment == 'center' -%}center{%- elsif section.settings.text_alignment == 'right' -%}flex-end{%- endif -%};
+    align-self: var(--block-horizontal-alignment, var(--section-horizontal-alignment));
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__audio-player-container {
+    container-type: inline-size;
+    container-name: dp-audio-player-container;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__audio-player {
+    width: 100%;
+    padding: 20px;
+    color: {{ block.settings.text_color }};
+    margin: auto;
+    border: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
+    border-radius: var(--dp-border-radius, {{ block.settings.border_radius }}px);
+    display: grid;
+    {%- if block.settings.player_style == 'large_image' or block.settings.player_style == 'no_image' -%}
+      grid-template-columns: 1fr;
+    {%- else -%}
+      grid-template-columns: min(50%, 100px) 1fr;
+    {%- endif  -%}
+    gap: 20px;
+    background: {{ block.settings.background_color }};
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__player-controls {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__text-container {
+    margin-bottom: 10px;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__text-container .dsgn-pck__rte p {
+    --dp-text-color: {{ block.settings.text_color }};
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .metadata {
+    margin: 0;
+    margin-bottom: 5px;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__small-heading {
+    margin: 0;
+    margin-bottom: 5px;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__metadata {
+    font-size: smaller;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__radio-icon {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__radio-icon {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__radio-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: calc({{ block.settings.border_radius }}px / 2);
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__radio-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: {{ block.settings.text_color }};
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__play-audio {
+    -webkit-appearance: none;
+    outline: none;
+    cursor: pointer;
+    border: none;
+    width: 24px;
+    height: 24px;
+    aspect-ratio: 1 / 1;
+    background: none;
+    padding: 0;
+    position: relative;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__play-audio svg {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: absolute;
+    display: none;
+    fill: {{ block.settings.text_color }};
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__play-audio:not(.pause) .dsgn-pck__play-icon {
+    display: block;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__play-audio.pause .dsgn-pck__pause-icon {
+    display: block;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__seek-container {
+    position: relative;
+    width: 100%;
+    margin: 0 20px;
+    height: 5px;
+    cursor: pointer;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__current-time-container {
+    margin: 0;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__seek {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border: 1px solid {{ block.settings.text_color }};
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__percentage {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background-color: {{ block.settings.progress_bar_color }};
+    display: block;
+  }
+
+  /* Custom CSS */
+  {%- if block.settings.enable_custom_css == true and block.settings.custom_css != blank -%}
+    {%- assign custom_css_rules = block.settings.custom_css | strip | split: '}' -%}
+    {%- for rule in custom_css_rules -%}
+      {%- assign clean_rule = rule | strip -%}
+      {%- if clean_rule contains '{' and clean_rule != blank -%}
+        {%- assign rule_parts = clean_rule | split: '{' -%}
+        {%- if rule_parts.size >= 2 -%}
+          {%- assign selector_part = rule_parts[0] | strip -%}
+          {%- assign css_part = rule_parts[1] | strip -%}
+          {%- if css_part != blank -%}
+            {%- if selector_part == blank -%}
+              #DP--{{ block.id }} { {{ css_part }} }
+            {%- else -%}
+              #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+
+  /* Small context - small container and mobile */
+  {%- capture small_context -%}
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__audio-player {
+      padding: 18px;
+      grid-template-columns: 1fr;
+    }
+
+    /* Mobile & narrow custom CSS */
+    {%- if block.settings.enable_custom_css == true and block.settings.mobile_css != blank -%}
+      {%- assign mobile_css_rules = block.settings.mobile_css | strip | split: '}' -%}
+      {%- for rule in mobile_css_rules -%}
+        {%- assign clean_rule = rule | strip -%}
+        {%- if clean_rule contains '{' and clean_rule != blank -%}
+          {%- assign rule_parts = clean_rule | split: '{' -%}
+          {%- if rule_parts.size >= 2 -%}
+            {%- assign selector_part = rule_parts[0] | strip -%}
+            {%- assign css_part = rule_parts[1] | strip -%}
+            {%- if css_part != blank -%}
+              {%- if selector_part == blank -%}
+                #DP--{{ block.id }} { {{ css_part }} }
+              {%- else -%}
+                #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endcapture -%}
+
+  @supports (container-type: inline-size) {
+    @container dp-audio-player-container (max-width: 300px) {
+      {{ small_context }}
+    }
+  }
+
+  @media (max-width: 767px) {
+    {{ small_context }}
+  }
+
+  /* Hide or show on mobile and desktop */
+  {%- if block.settings.hidden_on == 'mobile' -%}
+    @media (max-width: 767px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+
+  {%- if block.settings.hidden_on == 'desktop' -%}
+    @media (min-width: 768px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+</style>
+{%- endcapture -%}
+
+{%- capture js_scripts -%}
+  <script type="module" defer>
+    class AudioPlayer extends HTMLElement {
+      constructor() {
+        super();
+        this.section = this.closest('#DP--{{ section_id }}');
+        this.audio = this.querySelector('.dsgn-pck__audio');
+        this.playButton = this.querySelector('.dsgn-pck__play-audio');
+        this.percentageBar = this.querySelector('.dsgn-pck__percentage');
+        this.seekBar = this.querySelector('.dsgn-pck__seek');
+        this.currentTimeDisplay = this.querySelector('.dsgn-pck__current-time');
+        this.totalDurationDisplay = this.querySelector('.dsgn-pck__total-duration');
+
+        /* Bind methods to preserve context */
+        this.togglePlay = this.togglePlay.bind(this);
+        this.handleSeek = this.handleSeek.bind(this);
+        this.updateProgress = this.updateProgress.bind(this);
+        this.handleEnded = this.handleEnded.bind(this);
+      }
+
+      connectedCallback() {
+        if (!this.audio) {
+          console.error('Audio element not found');
+          return;
+        }
+
+        this.initAudioPlayer();
+      }
+
+      disconnectedCallback() {
+        this.removeEventListeners();
+      }
+
+      removeEventListeners() {
+        if (this.playButton) {
+          this.playButton.removeEventListener('click', this.togglePlay);
+        }
+        if (this.seekBar) {
+          this.seekBar.removeEventListener('click', this.handleSeek);
+        }
+        if (this.audio) {
+          this.audio.removeEventListener('timeupdate', this.updateProgress);
+          this.audio.removeEventListener('ended', this.handleEnded);
+          this.audio.removeEventListener('loadedmetadata', this.handleMetadataLoaded);
+        }
+      }
+
+      initAudioPlayer() {
+        try {
+          /* Add event listeners */
+          this.playButton.addEventListener('click', this.togglePlay);
+          this.seekBar.addEventListener('click', this.handleSeek);
+          this.audio.addEventListener('timeupdate', this.updateProgress);
+          this.audio.addEventListener('ended', this.handleEnded);
+          this.audio.addEventListener('loadedmetadata', this.handleMetadataLoaded);
+
+          /* Initialize progress bar */
+          this.updateProgress();
+        } catch (error) {
+          console.error('Error initializing audio player:', error);
+        }
+      }
+
+      togglePlay() {
+        try {
+          if (this.audio.paused) {
+            const playPromise = this.audio.play();
+            if (playPromise !== undefined) {
+              playPromise
+                .then(() => {
+                  this.playButton.classList.add('pause');
+                })
+                .catch(error => {
+                  console.error('Error playing audio:', error);
+                });
+            }
+          } else {
+            this.audio.pause();
+            this.playButton.classList.remove('pause');
+          }
+        } catch (error) {
+          console.error('Error toggling play:', error);
+        }
+      }
+
+      handleSeek(e) {
+        try {
+          const rect = this.seekBar.getBoundingClientRect();
+          const percent = (e.clientX - rect.left) / rect.width;
+          this.audio.currentTime = percent * this.audio.duration;
+        } catch (error) {
+          console.error('Error seeking:', error);
+        }
+      }
+
+      updateProgress() {
+        try {
+          if (this.audio.duration) {
+            const percentage = (this.audio.currentTime / this.audio.duration) * 100;
+            this.percentageBar.style.width = `${percentage}%`;
+            this.currentTimeDisplay.textContent = this.formatTime(this.audio.currentTime);
+          }
+        } catch (error) {
+          console.error('Error updating progress:', error);
+        }
+      }
+
+      handleEnded() {
+        this.playButton.classList.remove('pause');
+        this.percentageBar.style.width = '0';
+        this.currentTimeDisplay.textContent = '00:00';
+      }
+
+      handleMetadataLoaded() {
+        if (this.totalDurationDisplay) {
+          this.totalDurationDisplay.textContent = this.formatTime(this.audio.duration);
+        }
+      }
+
+      formatTime(seconds) {
+        if (isNaN(seconds)) return '00:00';
+
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = Math.floor(seconds % 60);
+
+        const pad = (num) => num.toString().padStart(2, '0');
+
+        if (hours > 0) {
+          return `${hours}:${pad(minutes)}:${pad(secs)}`;
+        }
+        return `${minutes}:${pad(secs)}`;
+      }
+    }
+
+    if (!customElements.get('dp-audio-player')) {
+      customElements.define('dp-audio-player', AudioPlayer);
+    }
+  </script>
+{%- endcapture -%}
+
+<div id="DP--{{ block.id }}" class="DP--{{ block.id }} dsgn-pck__block dsgn-pck__block-id-{{ block.id }} dsgn-pck__block--{{ block.type }} dsgn-pck__block--{{ block.index }}" {{ block.shopify_attributes }} {% if section.settings.animation != blank %}style="--dsgn-pck-animate: {{ block_index }};"{% endif %}>
+  {{ css_styles }}
+  <dp-audio-player class="dsgn-pck__audio-player-container">
+    <div class="dsgn-pck__audio-player">
+      {%- if block.settings.player_style != 'no_image' %}
+        <div class="dsgn-pck__radio-icon">
+          {%- if block.settings.image != blank -%}
+            {{ block.settings.image | image_url: width: 500 | image_tag: widths: widths }}
+          {%- else -%}
+            <svg width="24" height="24" viewBox="0 0 24 24"><path d="M16 24h-8v-1h3.5v-3.018c-3.63-.256-6.5-3.287-6.5-6.982v-2h1v2.01c.005 3.307 2.692 5.99 6 5.99 3.311 0 6-2.689 6-6v-2h1v2c0 3.695-2.87 6.726-6.5 6.982v3.018h3.5v1zm-9-19c0-2.76 2.24-5 5-5s5 2.24 5 5v8c0 2.76-2.24 5-5 5s-5-2.24-5-5v-8zm9 0c0-2.208-1.792-4-4-4s-4 1.792-4 4v8c0 2.208 1.792 4 4 4s4-1.792 4-4v-8z"/></svg>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+      <audio class="dsgn-pck__audio">
+        <source src="{{ block.settings.audio_url }}" type="audio/mpeg" type="audio/mp3">
+      </audio>
+      <div class="dsgn-pck__audio-info">
+        <div class="dsgn-pck__text-container  dsgn-pck__justify-left">
+          {% if block.settings.title != blank %}
+            <h3 class="dsgn-pck__small-heading">{{ block.settings.title }}</h3>
+          {% endif %}
+          <div class="dsgn-pck__metadata dsgn-pck__rte">
+            <span>{{ block.settings.subheading }}</span>
+            {% if block.settings.show_total_time %}
+              <span class="dsgn-pck__total-duration"></span>
+            {%- endif -%}
+          </div>
+          {% if block.settings.text != blank %}
+            <div class="dsgn-pck__text dsgn-pck__rte">
+              {{ block.settings.text }}
+            </div>
+          {% endif %}
+        </div>
+        <div class="dsgn-pck__player-controls">
+          <button class="dsgn-pck__play-audio">
+            <svg class="dsgn-pck__play-icon" width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M23 12l-22 12v-24l22 12zm-21 10.315l18.912-10.315-18.912-10.315v20.63z"/></svg>
+
+            <svg class="dsgn-pck__pause-icon" width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M10 24h-6v-24h6v24zm10 0h-6v-24h6v24zm-11-23h-4v22h4v-22zm10 0h-4v22h4v-22z"/></svg>
+          </button>
+
+          <div class="dsgn-pck__seek-container">
+            <div class="dsgn-pck__seek">
+              <div class="dsgn-pck__percentage"></div>
+            </div>
+          </div>
+
+          <p class="dsgn-pck__current-time-container"><small class="dsgn-pck__current-time">00:00</small></p>
+
+        </div>
+      </div>
+    </div>
+  </dp-audio-player>
+  {{ js_scripts }}
+</div>
+
+{% schema %}
+{
+  "name": "Audio player 🎒",
+  "class": "DP__block--audio-player",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "audio_url",
+      "label": "Audio URL",
+      "info": "Supports .mp3 files. Upload to [Files](/admin/content/files)"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Date, time, location"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_total_time",
+      "label": "Show total time",
+      "default": true
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "type": "select",
+      "id": "player_style",
+      "label": "Player style",
+      "options": [
+        {
+        "value": "small_image",
+        "label": "Small image"
+        },
+        {
+          "value": "large_image",
+          "label": "Large image"
+        },
+        {
+          "value": "no_image",
+          "label": "No image"
+        }
+      ],
+      "default": "small_image"
+    },
+    {
+      "type": "color",
+      "id": "progress_bar_color",
+      "label": "Progress bar",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#121212"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "default": 1,
+      "unit": "px"
+    },
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "label": "Background"
+    },
+    {
+      "type": "header",
+      "content": "🖼 Layout"
+    },
+    {
+      "type": "range",
+      "id": "base_width",
+      "label": "Size",
+      "min": 50,
+      "max": 100,
+      "default": 100,
+      "unit": "%",
+      "info": "Size is based on the width of the container. [Learn more]( https://design-packs.gitbook.io/docs/fundamentals/block-settings/size-controls-for-image-and-video-blocks)"
+    },
+    {
+      "type": "text",
+      "id": "max_width",
+      "label": "Maximum width",
+      "placeholder": "eg. 1200px",
+      "info": "Sets width constraint for content."
+    },
+    {
+      "visible_if": "{{ block.settings.base_width < 100 or block.settings.max_width != blank }}",
+      "type": "select",
+      "id": "horizontal_alignment",
+      "label": "Horizontal alignment",
+      "default": "default",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "hidden_on",
+      "label": "Hidden on",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "desktop",
+          "label": "Desktop"
+        },
+        {
+          "value": "mobile",
+          "label": "Mobile"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_css",
+      "label": "Enable custom CSS",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "mobile_css",
+      "label": "Mobile & narrow custom CSS",
+      "info": "Applied on small screens or in tight spaces."
+    },
+    {
+      "type": "paragraph",
+      "content": "Open [Design Packs](/admin/apps/design-packs-1/dashboard) to add/update new sections and blocks."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Audio player 🎒",
+      "category": "* Design Packs: Interactive"
+    }
+  ]
+}
+{% endschema %}

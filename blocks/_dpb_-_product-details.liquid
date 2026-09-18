@@ -1,0 +1,384 @@
+{%- assign section_id = section.id | replace: '+', '' | replace: '=', '' -%}
+{%- assign block_index = section.blocks | find_index: 'id', block.id | plus: 1 -%}
+{%- assign product = closest.product | default: section.settings.product | default: product | default: collections["all"].products.first -%}
+{%- assign block_horizontal_setting = block.settings.horizontal_alignment | default: 'default' -%}
+{%- assign block_text_color_alpha = block.settings.text_color | color_extract: 'alpha' | default: 0 -%}
+
+{%- capture css_styles -%}
+  <style>
+    .dsgn-pck__block-id-{{ block.id }} {
+      display: flex;
+      flex-direction: column;
+      width: {{ block.settings.base_width | default: 100 }}%;
+      max-width: {{ block.settings.max_width | remove: 'px' }}px;
+      {% if block_text_color_alpha != 0 %}
+        --dp-text-color: {{ block.settings.text_color }};
+        --dp-heading-color: var(--dp-text-color);
+        color: var(--dp-text-color);
+      {% endif %}
+      background-color: {{ block.settings.background_solid }};
+      background-image: {{ block.settings.background_color }};
+      border-radius: {{ block.settings.border_radius }}px;
+      border: {{ block.settings.border_style }} {{ block.settings.border_width }}px {{ block.settings.border_color }};
+      {% if block.settings.padding_type == 'range' %}
+        padding: {{ block.settings.padding_top }}px {{ block.settings.padding_right }}px {{ block.settings.padding_bottom }}px {{ block.settings.padding_left }}px;
+      {% elsif block.settings.padding_type == 'custom' %}
+        padding: {{ block.settings.padding }};
+      {% else %}
+        padding: 0;
+      {% endif %}
+      {%- if section.settings.text_alignment == 'center' and block_horizontal_setting == 'default' -%}
+        margin: 0 auto;
+      {%- elsif section.settings.text_alignment == 'right' and block_horizontal_setting == 'default'  -%}
+        margin: 0 0 0 auto;
+      {%- endif -%}
+      {%- if block.settings.horizontal_alignment == 'left' -%}
+        align-self: flex-start;
+        margin-left: 0;
+        margin-right: auto;
+      {%- elsif block.settings.horizontal_alignment == 'right' -%}
+        align-self: flex-end;
+        margin-left: auto;
+        margin-right: 0;
+      {%- elsif block.settings.horizontal_alignment == 'center' -%}
+        align-self: center;
+        margin-left: auto;
+        margin-right: auto;
+      {%- endif -%}
+    }
+
+    .DP--{{ section_id }} .dsgn-pck__block + .dsgn-pck__block {
+      margin-top: 15px;
+      z-index: auto;
+    }
+
+    .DP--{{ section_id }} .dsgn-pck__product-details > .dsgn-pck__block:first-child {
+      margin-top: 0;
+    }
+
+    /* If details is on the left */
+    .DP--{{ section_id }} .dsgn-pck__grid--main:has(> .dsgn-pck__product-details.dsgn-pck__block--1) {
+      grid-template-columns: minmax(250px, {{ block.settings.content_width }}%) 1fr;
+    }
+    /* If details is on the right */
+    .DP--{{ section_id }} .dsgn-pck__grid--main:has(> .dsgn-pck__product-details.dsgn-pck__block--2) {
+      grid-template-columns: 1fr minmax(250px, {{ block.settings.content_width }}%);
+    }
+
+    .DP--{{ section_id }} .dsgn-pck__grid--main {
+      --column-gap: {{ block.settings.column_gap }}px;
+      --row-gap: {{ block.settings.column_gap }}px;
+      column-gap: var(--column-gap);
+      row-gap: var(--row-gap);
+    }
+
+
+    {% if block.settings.enable_sticky_scroll == true %}
+      @media (min-width: 768px) {
+        .DP--{{ section_id }} .dsgn-pck__grid--main {
+          align-items: start;
+        }
+
+        .DP--{{ section_id }} .dsgn-pck__product-details,
+        .DP--{{ section_id }} .dsgn-pck__featured-product__media {
+          position: sticky;
+          top: {{ block.settings.sticky_scroll_offset }}px;
+        }
+      }
+    {% endif %}
+
+    @media (max-width: 767px) {
+      .DP--{{ section_id }} .dsgn-pck__grid--main,
+      .DP--{{ section_id }} .dsgn-pck__grid--main:has(> .dsgn-pck__product-details.dsgn-pck__block--1),
+      .DP--{{ section_id }} .dsgn-pck__grid--main:has(> .dsgn-pck__product-details.dsgn-pck__block--2) {
+        grid-template-columns: repeat(1, minmax(250px, 1fr));
+        --row-gap: {{ block.settings.row_gap }}px;
+      }
+    }
+  </style>
+{%- endcapture -%}
+
+<div id="DP--{{ block.id }}" class="DP--{{ block.id }} dsgn-pck__block-id-{{ block.id }} dsgn-pck__product-details dsgn-pck__block--{{ block_index }}">
+  {{ css_styles }}
+  {% content_for 'blocks' %}
+</div>
+
+{% schema %}
+{
+  "name": "Product details",
+  "tag": null,
+  "settings": [
+    {
+      "type": "range",
+      "id": "content_width",
+      "label": "Width",
+      "info": "Width of the product details container.",
+      "min": 20,
+      "max": 70,
+      "default": 50,
+      "unit": "%"
+    },
+    {
+      "type": "range",
+      "id": "column_gap",
+      "label": "Column gap",
+      "info": "Add space between product details and product media gallery.",
+      "min": 0,
+      "max": 100,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "row_gap",
+      "label": "Mobile row gap",
+      "info": "Add space between product details and product media gallery on mobile.",
+      "min": 0,
+      "max": 100,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky_scroll",
+      "label": "Enable sticky scroll",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.enable_sticky_scroll == true }}",
+      "type": "range",
+      "id": "sticky_scroll_offset",
+      "label": "Sticky scroll offset",
+      "min": 0,
+      "max": 100,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "padding_type",
+      "label": "Padding",
+      "options": [
+        {
+          "value": "auto",
+          "label": "None"
+        },
+        {
+          "value": "range",
+          "label": "Range"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "auto"
+    },
+    {
+      "visible_if": "{{ block.settings.padding_type == 'custom' }}",
+      "type": "text",
+      "id": "padding",
+      "label": "Custom padding",
+      "default": "10px 20px 30px 40px",
+      "info": "Enter padding in the format: top right bottom left. Example: 10px 20px 30px 40px [Learn more](https://developer.mozilla.org/en-US/docs/Web/CSS/padding)"
+    },
+    {
+      "visible_if": "{{ block.settings.padding_type == 'range' }}",
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "visible_if": "{{ block.settings.padding_type == 'range' }}",
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "visible_if": "{{ block.settings.padding_type == 'range' }}",
+      "type": "range",
+      "id": "padding_left",
+      "label": "Padding left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "visible_if": "{{ block.settings.padding_type == 'range' }}",
+      "type": "range",
+      "id": "padding_right",
+      "label": "Padding right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "🎨 Design"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#000000",
+      "alpha": true
+    },
+    {
+      "type": "color",
+      "id": "background_solid",
+      "label": "Background",
+      "alpha": true
+    },
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "label": "Background gradient",
+      "info": "Background gradient replaces background where possible."
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Rounded corners",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "border_style",
+      "label": "Border style",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "dotted",
+          "label": "Dotted"
+        },
+        {
+          "value": "double",
+          "label": "Double"
+        },
+        {
+          "value": "groove",
+          "label": "Groove"
+        },
+        {
+          "value": "ridge",
+          "label": "Ridge"
+        },
+        {
+          "value": "inset",
+          "label": "Inset"
+        },
+        {
+          "value": "outset",
+          "label": "Outset"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",
+      "label": "Border width",
+      "default": 1,
+      "visible_if": "{{ block.settings.border_style != 'none' }}"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.border_style != 'none' }}"
+    },
+  ],
+  "blocks": [
+    {
+      "type": "@app"
+    },
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "_dpb_sub_-_product-description"
+    },
+    {
+      "type": "_dpb_sub_-_product-details-buy-buttons"
+    },
+    {
+      "type": "_dpb_sub_-_product-details-title"
+    },
+    {
+      "type": "_dpb_sub_-_product-details-variant-picker"
+    },
+    {
+      "type": "_dpb_sub_-_product-details-price"
+    },
+    {
+      "type": "_dpb_sub_-_product-details-group"
+    },
+    {
+      "type": "_dpb_sub_-_product-badge"
+    },
+    {
+      "type": "_dpb_-_breadcrumbs"
+    },
+    {
+      "type": "_dpb_-_columns"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product details",
+      "blocks": [
+        {
+          "type": "_dpb_sub_-_product-details-title"
+        },
+        {
+          "type": "_dpb_sub_-_product-details-price"
+        },
+        {
+          "type": "_dpb_sub_-_product-description"
+        },
+        {
+          "type": "_dpb_sub_-_product-details-variant-picker"
+        },
+        {
+          "type": "_dpb_sub_-_product-details-buy-buttons"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

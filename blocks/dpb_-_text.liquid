@@ -1,0 +1,982 @@
+{%- comment -%}
+{
+  "pack_name": "Text block",
+  "pack_author": "Design Packs",
+  "license": "© Design Packs. All rights reserved. This code is protected by copyright law and may not be reproduced, distributed, or used without explicit permission from the author. Shopify complies with the Digital Millennium Copyright Act (DMCA) and responds to claims of copyright infringement using DMCA procedures, which could result in the termination of your Shopify account.",
+}
+{%- endcomment -%}
+
+{% comment %} Security Code - hides section when app uninstalled {% endcomment %}
+{%- unless content_for_header contains 'design_packs_file.js' -%}
+  {%- if request.design_mode -%}
+    <div class="dsgn-pck__no-app-warning">
+      <div class="dsgn-pck__no-app-warning-background">
+      </div>
+      <div class="dsgn-pck__no-app-warning-text dsgn-pck__rte">
+        <p><strong>WARNING!</strong> This premium section will not display properly without an active subscription for <a href="https://apps.shopify.com/design-packs" target="_blank" rel="noopener nofollow">Design Packs</a>. If you need any support please email <a href="mailto:info@design-packs.com" target="_blank" rel="noopener">info@design-packs.com</a> with your questions.</p>
+      </div>
+    </div>
+  {%- endif -%}
+  {%- break -%}
+{%- endunless -%}
+
+{%- assign section_id = section.id | replace: '+', '' | replace: '=', '' -%}
+{%- assign block_index = section.blocks | find_index: 'id', block.id | plus: 1 -%}
+
+{%- assign enable_metafield_detect = block.settings.enabled_metafield_detect | default: section.settings.enable_metafield_detect | default: false -%}
+
+{%- comment -%} Color: check if color is set to transparent {%- endcomment -%}
+{%- assign text_alpha = block.settings.text_color | color_extract: 'alpha' -%}
+
+{%- assign block_override_active = false -%}
+{%- if section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' -%}
+  {%- assign block_override_active = true -%}
+{%- endif -%}
+
+{%- if block.settings.text == blank -%}
+  {%- break -%}
+{%- endif -%}
+{%- capture css_styles -%}
+  <style data-dp-css="blocks/dpb_-_text.liquid">
+
+    [id*=preview-block] .dsgn-pck__inner-block-container {
+      container-type: normal !important;
+    }
+
+    {%- if block_override_active and block.settings.enable_custom_font != blank -%}
+      {{ block.settings.custom_font | font_face: font_display: 'swap' }}
+      {{ block.settings.custom_font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+      {{ block.settings.custom_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+      {{ block.settings.custom_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+    {% endif %}
+
+    {%- if block_override_active and block.settings.highlight_enable_custom_font != blank -%}
+      {{ block.settings.highlight_custom_font | font_face: font_display: 'swap' }}
+      {{ block.settings.highlight_custom_font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+      {{ block.settings.highlight_custom_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+      {{ block.settings.highlight_custom_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+    {% endif %}
+
+    .dsgn-pck__block-id-{{ block.id }} {
+      width: {{ block.settings.base_width }}%;
+      max-width: {{ block.settings.max_width | remove: 'px' }}px;
+      display: flex;
+      {%- if block.settings.horizontal_alignment == 'left' -%}
+        align-self: flex-start;
+        margin-left: 0;
+        margin-right: auto;
+        --block-horizontal-alignment: flex-start;
+      {%- elsif block.settings.horizontal_alignment == 'right' -%}
+        align-self: flex-end;
+        margin-left: auto;
+        margin-right: 0;
+        --block-horizontal-alignment: flex-end;
+      {%- elsif block.settings.horizontal_alignment == 'center' -%}
+        align-self: center;
+        margin-left: auto;
+        margin-right: auto;
+        --block-horizontal-alignment: center;
+      {%- else -%}
+        margin-left: var(--block-margin-left, 0);
+        margin-right: var(--block-margin-right, 0);
+      {%- endif -%}
+      --section-horizontal-alignment: {%- if section.settings.text_alignment == 'center' -%}center{%- elsif section.settings.text_alignment == 'right' -%}flex-end{%- endif -%};
+      align-self: var(--block-horizontal-alignment, var(--section-horizontal-alignment));
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} > .dsgn-pck__inner-block-container {
+      container-type: inline-size;
+      container-name: dp-text-container;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__text.dsgn-pck__rte *,
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__read-more-text {
+      {%- if block_override_active -%}
+        {%- comment -%}
+          Block override path: emit --block-text-* vars + property declarations.
+          When override is off, this whole block is skipped so the styleguide's
+          role rules win uncontested (no font-size / color clash from this block).
+        {%- endcomment -%}
+        {%- if block.settings.enable_custom_font != blank -%}
+          --block-text-font-family: {{ block.settings.custom_font.family }}, {{ block.settings.custom_font.fallback_families }};
+          --block-text-font-weight: {{ block.settings.custom_font.weight }};
+          --block-text-font-style: {{ block.settings.custom_font.style }};
+        {%- endif -%}
+        {%- if text_alpha != 0 -%}
+          --block-text-color: {{ block.settings.text_color }};
+        {%- endif -%}
+        {%- if block.settings.block_text_size != blank and block.settings.enable_custom_text_size == true -%}
+          --block-text-size: calc({{ block.settings.block_text_size }} * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+        {%- endif -%}
+        {%- if block.settings.enable_custom_text_style -%}
+          {%- if block.settings.text_weight == 'normal' -%}
+            --block-text-font-weight: normal;
+          {%- elsif block.settings.text_weight == 'bold' -%}
+            --block-text-font-weight: bold;
+          {%- elsif block.settings.text_style == 'bold' or block.settings.text_style == 'bold_italic' -%}
+            {%- comment -%} Legacy: pre-split text_style values {%- endcomment -%}
+            --block-text-font-weight: bold;
+          {%- endif -%}
+          {%- if block.settings.text_style == 'italic' or block.settings.text_style == 'bold_italic' -%}
+            --block-text-font-style: italic;
+          {%- elsif block.settings.text_style == 'normal' -%}
+            --block-text-font-style: normal;
+          {%- endif -%}
+          {%- if block.settings.text_transform != 'default' and block.settings.text_transform != 'none' -%}
+            --block-text-text-transform: {{ block.settings.text_transform }};
+          {%- endif -%}
+          {%- if block.settings.letter_spacing != blank -%}
+            --block-text-letter-spacing: {{ block.settings.letter_spacing }};
+          {%- endif -%}
+          {%- if block.settings.line_height != blank -%}
+            --block-text-line-height: {{ block.settings.line_height }};
+          {%- endif -%}
+        {%- endif -%}
+
+        color: var(--block-text-color, inherit);
+        font-size: calc(var(--block-text-size, var(--dp-g-body-size, var(--dp-body-size, 18px))) * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+        {%- if section.settings.override_theme_font != blank -%}
+          font-family: var(--block-text-font-family, var(--main-font));
+          font-weight: var(--block-text-font-weight, var(--main-font-weight));
+          font-style: var(--block-text-font-style, var(--main-font-style));
+        {%- endif -%}
+        {%- if block.settings.enable_custom_text_style -%}
+          {%- if block.settings.text_transform != 'default' and block.settings.text_transform != 'none' -%}
+            text-transform: var(--block-text-text-transform);
+          {%- endif -%}
+          {%- if block.settings.letter_spacing != blank -%}
+            letter-spacing: var(--block-text-letter-spacing);
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- comment -%} Alignment is per-block, always emitted regardless of override state. {%- endcomment -%}
+      {%- if block.settings.block_alignment != 'default' -%}
+        text-align: {{ block.settings.block_alignment }};
+      {%- else -%}
+        text-align: var(--block-text-alignment, var(--section-text-alignment));
+      {%- endif -%}
+    }
+
+    {%- if block_override_active and block.settings.block_text_size != blank and block.settings.enable_custom_text_size == true -%}
+      #DP--{{ block.id }} h1.dsgn-pck__h1 {
+        font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.02 }});
+      }
+
+      #DP--{{ block.id }} h2.dsgn-pck__h2 {
+        font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.018 }});
+      }
+
+      #DP--{{ block.id }} h3.dsgn-pck__h3 {
+        font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.016 }});
+      }
+
+      #DP--{{ block.id }} h4.dsgn-pck__h4 {
+        font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.014 }});
+      }
+
+      #DP--{{ block.id }} h5.dsgn-pck__h5 {
+        font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.012 }});
+      }
+
+      #DP--{{ block.id }} h6.dsgn-pck__h6 {
+        font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+      }
+    {%- endif -%}
+
+    {%- comment -%}
+      Restore browser-default vertical margins on h1-h6 inside the richtext.
+      The global `.dsgn-pck__section h1...h6` reset in design-pack-styles.css
+      zeroes them; `margin: revert` brings the user-agent values back so
+      headings within paragraphs get natural spacing.
+    {%- endcomment -%}
+    .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__text.dsgn-pck__rte :is(h1, h2, h3, h4, h5, h6) {
+      margin: revert;
+    }
+
+    {%- comment -%}
+      When text is centered or right-aligned, use `list-style-position: inside`
+      so bullets travel with the centered/right text instead of hanging in the
+      left margin where they look orphaned.
+    {%- endcomment -%}
+    {%- assign effective_alignment = block.settings.block_alignment -%}
+    {%- if effective_alignment == 'default' -%}
+      {%- assign effective_alignment = section.settings.text_alignment -%}
+    {%- endif -%}
+    {%- if effective_alignment == 'center' or effective_alignment == 'right' -%}
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__text.dsgn-pck__rte ul,
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__text.dsgn-pck__rte ol {
+        list-style-position: inside;
+        padding-left: 0;
+      }
+    {%- endif -%}
+
+    {%- if block_override_active and block.settings.enable_highlighted_text -%}
+      {%- assign highlight_background_text_color_alpha = block.settings.highlight_background_color | color_extract: 'alpha' -%}
+      {%- assign highlight_text_color_alpha = block.settings.highlight_text_color | color_extract: 'alpha' -%}
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__text.dsgn-pck__rte .dsgn-pck__fancy {
+        position: relative;
+
+        {%- if block.settings.highlight_enable_custom_font -%}
+          --block-text-font-family: {{ block.settings.highlight_custom_font.family }}, {{ block.settings.highlight_custom_font.fallback_families }};
+          --block-text-font-weight: {{ block.settings.highlight_custom_font.weight }};
+          --block-text-font-style: {{ block.settings.highlight_custom_font.style }};
+        {%- endif -%}
+        {%- if highlight_text_color_alpha != 0 -%}
+          --block-text-color: {{ block.settings.highlight_text_color }};
+        {%- endif -%}
+
+        {%- if section.settings.override_theme_font != blank -%}
+          font-family: var(--block-text-font-family, var(--main-font));
+          font-weight: var(--block-text-font-weight, var(--main-font-weight));
+          font-style: var(--block-text-font-style, var(--main-font-style));
+        {%- endif -%}
+        {%- if highlight_background_text_color_alpha != 0 -%}
+          background-color: {{ block.settings.highlight_background_color }};
+          padding: 0 0.2em;
+          display: inline-block;
+        {%- endif -%}
+        {%- if highlight_text_color_alpha != 0 -%}
+          color: var(--block-text-color);
+        {%- endif -%}
+      }
+
+      {%- if block.settings.custom_highlight_css != blank -%}
+        {%- assign custom_block_declarations = block.settings.custom_highlight_css | split: '}' -%}
+        {%- for declaration in custom_block_declarations -%}
+          {%- if declaration contains '{' -%}
+            .dsgn-pck__block-id-{{ block.id }} {{ declaration }} }
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+
+    {%- endif -%}
+
+    {%- if block.settings.truncate_text != -1 -%}
+      /* Read more functionality */
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__read-more-toggle {
+        display: none;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__read-more-text {
+        cursor: pointer;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        margin-top: 5px;
+        display: block;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__read-more-container-inner {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        {%- if block.settings.truncate_text == 0 -%}
+          height: 0;
+        {%- else -%}
+          -webkit-line-clamp: {{ block.settings.truncate_text }};
+        {%- endif -%}
+      }
+
+      /* Safari-specific max-height fallback (set via JS) */
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__read-more-container-inner.is-safari {
+        display: block !important;
+        -webkit-line-clamp: unset !important;
+        -webkit-box-orient: unset !important;
+        max-height: var(--safari-max-height, none);
+      }
+
+      @media (max-width: 767px) {
+        .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__read-more-container.dsgn-pck__read-more-container--outlier .dsgn-pck__read-more-toggle:not(:checked) ~ .dsgn-pck__read-more-container-inner.is-safari {
+          -webkit-mask-image: linear-gradient(180deg, black 60%, transparent 100%);
+          mask-image: linear-gradient(180deg, black 60%, transparent 100%);
+        }
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__read-more-toggle:checked ~ .dsgn-pck__read-more-container-inner {
+        overflow: visible;
+        {%- if block.settings.truncate_text == 0 -%}
+          height: auto;
+        {%- else -%}
+          -webkit-line-clamp: unset;
+        {%- endif -%}
+        max-height: none !important;
+        -webkit-mask-image: none;
+        mask-image: none;
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__read-more-text::after {
+        content: '{{ block.settings.read_more_text }}';
+      }
+
+      .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__read-more-toggle:checked ~ .dsgn-pck__read-more-text::after {
+        content: '{{ block.settings.read_less_text }}';
+      }
+    {%- endif -%}
+
+    /* Custom CSS */
+    {%- if block.settings.enable_custom_css == true and block.settings.custom_css != blank -%}
+      {%- assign custom_css_rules = block.settings.custom_css | strip | split: '}' -%}
+      {%- for rule in custom_css_rules -%}
+        {%- assign clean_rule = rule | strip -%}
+        {%- if clean_rule contains '{' and clean_rule != blank -%}
+          {%- assign rule_parts = clean_rule | split: '{' -%}
+          {%- if rule_parts.size >= 2 -%}
+            {%- assign selector_part = rule_parts[0] | strip -%}
+            {%- assign css_part = rule_parts[1] | strip -%}
+            {%- if css_part != blank -%}
+              {%- if selector_part == blank -%}
+                #DP--{{ block.id }} { {{ css_part }} }
+              {%- else -%}
+                #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+
+    /* Small context - small container and mobile */
+    {%- capture small_context -%}
+
+      {%- if block.settings.enable_mobile_base_width -%}
+        .dsgn-pck__block-id-{{ block.id }} {
+          width: {{ block.settings.mobile_base_width }}%;
+        }
+      {%- endif -%}
+
+      {%- if block_override_active and block.settings.mobile_block_text_size != blank and block.settings.enable_custom_text_size == true -%}
+        #DP--{{ block.id }} .dsgn-pck__text.dsgn-pck__rte * {
+          --block-mobile-text-size: calc({{ block.settings.mobile_block_text_size }} * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+          font-size: var(--block-mobile-text-size);
+        }
+
+        #DP--{{ block.id }} h1.dsgn-pck__h1 {
+          font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.mobile_block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.02 }});
+        }
+
+        #DP--{{ block.id }} h2.dsgn-pck__h2 {
+          font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.mobile_block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.018 }});
+        }
+
+        #DP--{{ block.id }} h3.dsgn-pck__h3 {
+          font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.mobile_block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.016 }});
+        }
+
+        #DP--{{ block.id }} h4.dsgn-pck__h4 {
+          font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.mobile_block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.014 }});
+        }
+
+        #DP--{{ block.id }} h5.dsgn-pck__h5 {
+          font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.mobile_block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.012 }});
+        }
+
+        #DP--{{ block.id }} h6.dsgn-pck__h6 {
+          font-size: calc(var(--dp-g-body-size, var(--dp-body-size, {{ block.settings.mobile_block_text_size | default: '18px' }})) * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+        }
+      {%- endif -%}
+
+      {%- if block.settings.enable_custom_css == true and block.settings.mobile_css != blank -%}
+        {%- assign mobile_css_rules = block.settings.mobile_css | strip | split: '}' -%}
+        {%- for rule in mobile_css_rules -%}
+          {%- assign clean_rule = rule | strip -%}
+          {%- if clean_rule contains '{' and clean_rule != blank -%}
+            {%- assign rule_parts = clean_rule | split: '{' -%}
+            {%- if rule_parts.size >= 2 -%}
+              {%- assign selector_part = rule_parts[0] | strip -%}
+              {%- assign css_part = rule_parts[1] | strip -%}
+              {%- if css_part != blank -%}
+                {%- if selector_part == blank -%}
+                  #DP--{{ block.id }} { {{ css_part }} }
+                {%- else -%}
+                  #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+                {%- endif -%}
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    {%- endcapture -%}
+
+    @supports (container-type: inline-size) {
+      @container dp-text-container (max-width: 300px) {
+        {{ small_context }}
+      }
+    }
+
+    @media (max-width: 767px) {
+      {{ small_context }}
+    }
+
+    {%- if block.settings.hidden_on == 'mobile' -%}
+      @media (max-width: 767px) {
+        .dsgn-pck__block-id-{{ block.id }} {
+          display: none;
+        }
+      }
+    {%- endif -%}
+
+    {%- if block.settings.hidden_on == 'desktop' -%}
+      @media (min-width: 768px) {
+        .dsgn-pck__block-id-{{ block.id }} {
+          display: none;
+        }
+      }
+    {%- endif -%}
+  </style>
+{%- endcapture -%}
+
+{%- capture js_scripts -%}
+  <script type="module" defer>
+    class DesignPackText extends HTMLElement {
+      constructor() {
+        super();
+        this.section = this.closest('#DP--{{ section_id }}');
+
+        this.intersectionObserver = null;
+        this.onIntersect = this.onIntersect.bind(this);
+      }
+
+      getLineHeight(element) {
+        const lineHeight = window.getComputedStyle(element).lineHeight;
+        if (lineHeight === 'normal') {
+          const fontSize = parseFloat(window.getComputedStyle(element).fontSize);
+          return fontSize * 1.25;
+        }
+        return parseFloat(lineHeight);
+      }
+
+      connectedCallback() {
+
+        this.parentBlock = this.closest('[class*="dsgn-pck__block-id-"]');
+
+        if (this.dataset.metafieldDetect === 'true') {
+          const rte = this.querySelector('.dsgn-pck__rte');
+
+          if (rte) {
+            const targetTags = ['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6'];
+            const elements = [...rte.children];
+            const textNodes = [...rte.childNodes].filter(n => n.nodeType === Node.TEXT_NODE);
+
+            const allTextNodesEmpty = textNodes.every(n => !n.textContent.trim());
+            const allElementsAreEmptyTargets = elements.length > 0 && elements.every(el =>
+              targetTags.includes(el.tagName) && !el.textContent.trim()
+            );
+
+            if (allTextNodesEmpty && allElementsAreEmptyTargets) {
+              this.parentBlock?.remove();
+              return;
+            }
+          }
+        }
+
+        if (this.parentBlock) {
+          this.intersectionObserver = new window.IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+              this.onIntersect(entry);
+            });
+          }, { threshold: [0, 0.1, 0.5, 1] });
+          this.intersectionObserver.observe(this.parentBlock);
+        }
+
+        const readMore = this.querySelector('.dsgn-pck__read-more-container');
+        if (readMore) {
+          const truncateLines = parseInt(readMore.dataset.truncate);
+          const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+          if (truncateLines > 0 && isSafari) {
+            const innerContainer = readMore.querySelector('.dsgn-pck__read-more-container-inner');
+            if (innerContainer) {
+              innerContainer.classList.add('is-safari');
+
+              const lineHeight = this.getLineHeight(innerContainer);
+              const safariExtraHeight = lineHeight * 0.35;
+              const maxHeight = (lineHeight * truncateLines) + safariExtraHeight;
+
+              innerContainer.style.setProperty('--safari-max-height', `${maxHeight}px`);
+
+              // Force a reflow to ensure styles are applied
+              innerContainer.offsetHeight;
+            }
+          }
+
+          this.setReadMore(readMore);
+        }
+      }
+
+      setReadMore(readMoreContainer){
+        function isScrollable(elementSelector, readMoreContainer) {
+          const element = readMoreContainer.querySelector(elementSelector);
+
+          if (element) {
+            const scrollHeight = element.scrollHeight;
+            const clientHeight = element.clientHeight;
+
+            return scrollHeight > clientHeight;
+          }
+
+          // Return false if the element is not found
+          return false;
+        }
+
+        const isContainerScrollable = isScrollable('.dsgn-pck__read-more-container-inner', readMoreContainer);
+        const readMoreToggle = readMoreContainer.querySelector('.dsgn-pck__read-more-text');
+        const innerContainer = readMoreContainer.querySelector('.dsgn-pck__read-more-container-inner');
+        const isOutlierDevice = innerContainer ? innerContainer.classList.contains('is-safari') : false;
+
+        if (readMoreToggle != null && typeof readMoreToggle != 'undefined'){
+          if (isContainerScrollable) {
+            readMoreToggle.style.display = 'inline-block';
+            if (isOutlierDevice) {
+              readMoreContainer.classList.add('dsgn-pck__read-more-container--outlier');
+            } else {
+              readMoreContainer.classList.remove('dsgn-pck__read-more-container--outlier');
+            }
+          } else {
+            readMoreToggle.style.display = 'none';
+            readMoreContainer.classList.remove('dsgn-pck__read-more-container--outlier');
+          }
+        }
+      }
+
+      disconnectedCallback() {
+        this.removeEventListeners();
+
+        /* Clean up Intersection Observer */
+        if (this.intersectionObserver && this.parentBlock) {
+          this.intersectionObserver.unobserve(this.parentBlock);
+          this.intersectionObserver.disconnect();
+        }
+      }
+
+      onIntersect(entry) {
+        if (entry.isIntersecting) {
+          /* Block is in view */
+          //console.log('Block is in view');
+          if (!this.hasInitialized) {
+            //this.animateText();
+            this.hasInitialized = true;
+          }
+        } else {
+          /* Block is out of view */
+          //console.log('Block is out of view');
+        }
+      }
+
+      removeEventListeners() {
+
+      }
+
+    }
+
+    if (!customElements.get('dp-text')) {
+      customElements.define('dp-text', DesignPackText);
+    }
+  </script>
+{%- endcapture -%}
+
+<div id="DP--{{ block.id }}" class="DP--{{ block.id }} dsgn-pck__block dsgn-pck__block-id-{{ block.id }} dsgn-pck__block--{{ block.type }} dsgn-pck__block--{{ block.index }}{%- if block.settings.block_alignment != 'default' -%} dsgn-pck__justify-{{ block.settings.block_alignment }}{%- endif -%}" {{ block.shopify_attributes }} {% if section.settings.animation != blank %}style="--dsgn-pck-animate: {{ block_index }};"{% endif %}>
+  {{ css_styles }}
+  <dp-text class="dsgn-pck__inner-block-container"{% if enable_metafield_detect %} data-metafield-detect="true"{% endif %}>
+    {%- if block.settings.truncate_text != -1 -%}
+      <div class="dsgn-pck__read-more-container" data-truncate="{{ block.settings.truncate_text }}">
+        <input type="checkbox" id="dsgn-pck__read-more-toggle-{{ block.id }}" class="dsgn-pck__read-more-toggle" aria-hidden>
+        <div class="dsgn-pck__read-more-container-inner">
+    {%- endif -%}
+
+    <div class="dsgn-pck__text dsgn-pck__rte{% if section.settings.design_system == 'global_style' and block.settings.custom_style_name != 'custom' and block.settings.custom_style_name != blank %} dsgn-pck__text-{{ block.settings.custom_style_name }}{% endif %}">
+      {{ block.settings.text
+        | replace: 'h1', 'h1 class="dsgn-pck__h1"'
+        | replace: 'h2', 'h2 class="dsgn-pck__h2"'
+        | replace: 'h3', 'h3 class="dsgn-pck__h3"'
+        | replace: 'h4', 'h4 class="dsgn-pck__h4"'
+        | replace: 'h5', 'h5 class="dsgn-pck__h5"'
+        | replace: 'h6', 'h6 class="dsgn-pck__h6"'
+        | replace: '[', '<span class="dsgn-pck__fancy">'
+          | replace: ']', '</span>'
+        }}
+    </div>
+
+    {%- if block.settings.truncate_text != -1 -%}
+        </div>
+        <label class="dsgn-pck__read-more-text{% if section.settings.design_system == 'global_style' and block.settings.custom_style_name != 'custom' and block.settings.custom_style_name != blank %} dsgn-pck__text-{{ block.settings.custom_style_name }}{% endif %}" for="dsgn-pck__read-more-toggle-{{ block.id }}" aria-hidden><span></span></label>
+      </div>
+    {%- endif -%}
+  </dp-text>
+  {{ js_scripts }}
+</div>
+
+{% schema %}
+  {
+    "name": "Text 🎒",
+    "tag": null,
+    "settings": [
+      {
+        "type": "richtext",
+        "id": "text",
+        "label": "Text",
+        "default": "<p>Drag and drop block options like heading, text, buttons, dividers, and more.</p>"
+      },
+      {
+        "visible_if": "{{ section.settings.design_system == 'global_style' }}",
+        "type": "select",
+        "id": "custom_style_name",
+        "label": "🌈 Text style",
+        "info": "Apply style from your Design System.",
+        "options": [
+          { "value": "body", "label": "Body text" },
+          { "value": "small", "label": "Small text" },
+          { "value": "lead", "label": "Lead" },
+          { "value": "pagination", "label": "Pagination" },
+          { "value": "breadcrumbs", "label": "Breadcrumbs" },
+          { "value": "custom-1", "label": "Custom 1" },
+          { "value": "custom-2", "label": "Custom 2" },
+          { "value": "custom-3", "label": "Custom 3" },
+          { "value": "custom", "label": "None" }
+        ],
+        "default": "body"
+      },
+      {
+        "visible_if": "{{ section.settings.design_system == 'global_style' and block.settings.custom_style_name != 'custom' }}",
+        "type": "checkbox",
+        "id": "override",
+        "label": "Tweak text style",
+        "default": false,
+        "info": "Give a custom look to this individual text block."
+      },
+      {
+        "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "color",
+        "id": "text_color",
+        "label": "Color"
+      },
+      {
+        "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "checkbox",
+        "id": "enable_custom_text_size",
+        "label": "Enable custom text size",
+        "default": false
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_text_size and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "text",
+        "id": "block_text_size",
+        "label": "Text size",
+        "default": "30px",
+        "info": "Leave empty to default to base size of 18px."
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_text_size and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "text",
+        "id": "mobile_block_text_size",
+        "label": "📱 Mobile & narrow display text size (optional)"
+      },
+      {
+        "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "checkbox",
+        "id": "enable_custom_text_style",
+        "label": "Enable custom text style",
+        "default": false
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "select",
+        "id": "text_weight",
+        "label": "Text weight",
+        "default": "default",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "normal",
+            "label": "Normal"
+          },
+          {
+            "value": "bold",
+            "label": "Bold"
+          }
+        ]
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "select",
+        "id": "text_style",
+        "label": "Text style",
+        "default": "default",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "normal",
+            "label": "Normal"
+          },
+          {
+            "value": "italic",
+            "label": "Italic"
+          }
+        ]
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "select",
+        "id": "text_transform",
+        "label": "Text transform",
+        "default": "default",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "none",
+            "label": "None"
+          },
+          {
+            "value": "uppercase",
+            "label": "Uppercase"
+          },
+          {
+            "value": "lowercase",
+            "label": "Lowercase"
+          },
+          {
+            "value": "capitalize",
+            "label": "Capitalize"
+          }
+        ]
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "text",
+        "id": "letter_spacing",
+        "label": "Letter spacing"
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "text",
+        "id": "line_height",
+        "label": "Line height"
+      },
+      {
+        "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "checkbox",
+        "id": "enable_custom_font",
+        "label": "Enable custom font",
+        "default": false
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_font and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "font_picker",
+        "id": "custom_font",
+        "label": "Custom font",
+        "default": "abel_n4"
+      },
+      {
+        "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "checkbox",
+        "id": "enable_highlighted_text",
+        "label": "Enable highlighted text",
+        "default": false,
+        "info": "Use square brackets [] around text that you would like to highlight."
+      },
+      {
+        "visible_if": "{{ block.settings.enable_highlighted_text and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "color",
+        "id": "highlight_text_color",
+        "label": "Text",
+        "default": "#FFFFFF"
+      },
+      {
+        "visible_if": "{{ block.settings.enable_highlighted_text and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "color",
+        "id": "highlight_background_color",
+        "label": "Background",
+        "default": "#000000"
+      },
+      {
+        "visible_if": "{{ block.settings.enable_highlighted_text and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "checkbox",
+        "id": "highlight_enable_custom_font",
+        "label": "Enable custom font on selected text",
+        "default": false
+      },
+      {
+        "visible_if": "{{ block.settings.enable_highlighted_text and block.settings.highlight_enable_custom_font and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "font_picker",
+        "id": "highlight_custom_font",
+        "label": "Custom font",
+        "default": "abel_n4"
+      },
+      {
+        "visible_if": "{{ block.settings.enable_highlighted_text and section.settings.design_system != 'global_style' or block.settings.override or block.settings.custom_style_name == 'custom' }}",
+        "type": "html",
+        "id": "custom_highlight_css",
+        "label": "CSS",
+        "info": "Target the text in the square brackets with the class .dsgn-pck__fancy"
+      },
+      {
+        "type": "select",
+        "id": "block_alignment",
+        "label": "Text alignment",
+        "default": "default",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          },
+          {
+            "value": "default",
+            "label": "Default"
+          }
+        ]
+      },
+      {
+        "type": "range",
+        "id": "truncate_text",
+        "label": "Truncate text",
+        "info": "Truncate by lines. Set to -1 to disable.",
+        "min": -1,
+        "max": 20,
+        "default": -1
+      },
+      {
+        "visible_if": "{{ block.settings.truncate_text != -1 }}",
+        "type": "text",
+        "id": "read_more_text",
+        "label": "Read more text",
+        "default": "Read more"
+      },
+      {
+        "visible_if": "{{ block.settings.truncate_text != -1 }}",
+        "type": "text",
+        "id": "read_less_text",
+        "label": "Read less text",
+        "default": "Read less"
+      },
+      {
+        "type": "header",
+        "content": "🖼 Layout"
+      },
+      {
+        "type": "range",
+        "id": "base_width",
+        "label": "Size",
+        "min": 50,
+        "max": 100,
+        "default": 100,
+        "unit": "%",
+        "info": "Size is based on the width of the container. [Learn more]( https://design-packs.gitbook.io/docs/fundamentals/block-settings/size-controls-for-image-and-video-blocks)"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_mobile_base_width",
+        "label": "Enable custom mobile size",
+        "default": false
+      },
+      {
+        "visible_if": "{{ block.settings.enable_mobile_base_width }}",
+        "type": "range",
+        "id": "mobile_base_width",
+        "label": "📱 Mobile & narrow display size",
+        "min": 50,
+        "max": 100,
+        "default": 100,
+        "unit": "%"
+      },
+      {
+        "type": "text",
+        "id": "max_width",
+        "label": "Maximum width",
+        "placeholder": "eg. 1200px",
+        "info": "Sets width constraint for content."
+      },
+      {
+        "visible_if": "{{ block.settings.base_width < 100 or block.settings.max_width != blank }}",
+        "type": "select",
+        "id": "horizontal_alignment",
+        "label": "Horizontal alignment",
+        "default": "default",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          },
+          {
+            "value": "default",
+            "label": "Default"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "hidden_on",
+        "label": "Hidden on",
+      "default": "none",
+        "options": [
+          {
+            "value": "none",
+            "label": "None"
+          },
+          {
+            "value": "desktop",
+            "label": "Desktop"
+          },
+          {
+            "value": "mobile",
+            "label": "Mobile"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_custom_css",
+        "label": "Enable custom CSS",
+        "default": false
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_css == true }}",
+        "type": "liquid",
+        "id": "custom_css",
+        "label": "Custom CSS"
+      },
+      {
+        "visible_if": "{{ block.settings.enable_custom_css == true }}",
+        "type": "liquid",
+        "id": "mobile_css",
+        "label": "Mobile & narrow custom CSS",
+        "info": "Applied on small screens or in tight spaces."
+      },
+      {
+        "type": "paragraph",
+        "content": "Open [Design Packs](/admin/apps/design-packs-1/dashboard) to add/update new sections and blocks."
+      }
+    ],
+    "presets": [
+      {
+        "name": "Text 🎒",
+        "category": "* Design Packs: Basic"
+      }
+    ],
+  }
+{% endschema %}

@@ -1,0 +1,366 @@
+{%- comment -%}
+{
+  "pack_name": "Tab block",
+  "pack_author": "Design Packs",
+  "license": "© Design Packs. All rights reserved. This code is protected by copyright law and may not be reproduced, distributed, or used without explicit permission from the author. Shopify complies with the Digital Millennium Copyright Act (DMCA) and responds to claims of copyright infringement using DMCA procedures, which could result in the termination of your Shopify account.",
+}
+{%- endcomment -%}
+
+{% comment %} Security Code - hides section when app uninstalled {% endcomment %}
+{%- unless content_for_header contains 'design_packs_file.js' -%}
+  {%- if request.design_mode -%}
+    <div class="dsgn-pck__no-app-warning">
+      <div class="dsgn-pck__no-app-warning-background">
+      </div>
+      <div class="dsgn-pck__no-app-warning-text dsgn-pck__rte">
+        <p><strong>WARNING!</strong> This premium section will not display properly without an active subscription for <a href="https://apps.shopify.com/design-packs" target="_blank" rel="noopener nofollow">Design Packs</a>. If you need any support please email <a href="mailto:info@design-packs.com" target="_blank" rel="noopener">info@design-packs.com</a> with your questions.</p>
+      </div>
+    </div>
+  {%- endif -%}
+  {%- break -%}
+{%- endunless -%}
+
+{%- assign block_index = section.blocks | find_index: 'id', block.id | plus: 1 -%}
+
+{% capture css_styles %}
+<style data-dp-css="blocks/_dpb_-_tab.liquid">
+  .dsgn-pck__block-id-{{ block.id }} {
+    display: flex;
+    {% if block.settings.padding_type == 'range' %}
+      padding: {{ block.settings.padding_top }}px {{ block.settings.padding_right }}px {{ block.settings.padding_bottom }}px {{ block.settings.padding_left }}px;
+    {% elsif block.settings.padding_type == 'custom' %}
+      padding: {{ block.settings.padding }};
+    {% else %}
+      padding: 1.5em;
+    {% endif %}
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__block + .dsgn-pck__block {
+    margin-top: var(--dp-gap, 15px);
+  }
+
+  .dsgn-pck__block-id-{{ block.id }}__button {
+    {% if block.settings.icon_location == "left" %}
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    {% endif %}
+  }
+
+  .dsgn-pck__block-id-{{ block.id }}__button .dsgn-pck__tab-icon {
+    {% if block.settings.icon_location == "left" %}
+      flex: none;
+    {% endif %}
+  }
+
+  .dsgn-pck__block-id-{{ block.id }}__button .dsgn-pck__tab-icon img  {
+    --icon-size: {% if block.settings.icon_size_type == 'percentage' %}{{ block.settings.image_size }}%{% else %}{{ block.settings.image_size_fixed }}px{% endif %};
+    width: var(--icon-size);
+  }
+
+  /* Custom CSS */
+  {%- if block.settings.enable_custom_css == true and block.settings.custom_css != blank -%}
+    {%- assign custom_css_rules = block.settings.custom_css | strip | split: '}' -%}
+    {%- for rule in custom_css_rules -%}
+      {%- assign clean_rule = rule | strip -%}
+      {%- if clean_rule contains '{' and clean_rule != blank -%}
+        {%- assign rule_parts = clean_rule | split: '{' -%}
+        {%- if rule_parts.size >= 2 -%}
+          {%- assign selector_part = rule_parts[0] | strip -%}
+          {%- assign css_part = rule_parts[1] | strip -%}
+          {%- if css_part != blank -%}
+            {%- if selector_part == blank -%}
+              #DP--{{ block.id }} { {{ css_part }} }
+            {%- else -%}
+              #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+
+  /* Small context - small container and mobile */
+  {%- capture small_context -%}
+
+  .dsgn-pck__block-id-{{ block.id }} {
+    {% if block.settings.vertical_on_mobile %}
+      flex-direction: column;
+    {% endif %}
+  }
+
+  /* Mobile & narrow custom CSS */
+  {%- if block.settings.enable_custom_css == true and block.settings.mobile_css != blank -%}
+    {%- assign mobile_css_rules = block.settings.mobile_css | strip | split: '}' -%}
+    {%- for rule in mobile_css_rules -%}
+      {%- assign clean_rule = rule | strip -%}
+      {%- if clean_rule contains '{' and clean_rule != blank -%}
+        {%- assign rule_parts = clean_rule | split: '{' -%}
+        {%- if rule_parts.size >= 2 -%}
+          {%- assign selector_part = rule_parts[0] | strip -%}
+          {%- assign css_part = rule_parts[1] | strip -%}
+          {%- if css_part != blank -%}
+            {%- if selector_part == blank -%}
+              #DP--{{ block.id }} { {{ css_part }} }
+            {%- else -%}
+              #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+  {%- endcapture -%}
+
+  @supports (container-type: inline-size) {
+    @container dp-group-container (max-width: 300px) {
+      {{ small_context }}
+    }
+  }
+
+  @media (max-width: 767px) {
+    {{ small_context }}
+  }
+
+  /* Hide or show on mobile and desktop */
+  {%- if block.settings.hidden_on == 'mobile' -%}
+    @media (max-width: 767px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+
+  {%- if block.settings.hidden_on == 'desktop' -%}
+    @media (min-width: 768px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+</style>
+{% endcapture %}
+
+<!--@split-->
+<button class="dsgn-pck__tab-title dsgn-pck__tab-title--icon-{{ block.settings.icon_location }} dsgn-pck__block-id-{{ block.id }}__button {% if section.settings.mobile_layout == 'stacked' %}dsgn-pck__tab-title--mobile-stacked{% endif %}" data-dsgn-pck-tab-name="select-{{ block.settings.heading | handleize }}__{{ block.id }}" data-dsgn-pck-tab="{{ block.id }}" role="tab" aria-selected="{%- if block_index == 1 -%}true{%- else -%}false{%- endif -%}" data-dsgn-pck-tab-index="{{ block_index }}">
+  {%- if block.settings.tab_icon != blank -%}
+    <div class="dsgn-pck__tab-icon">
+      <img src="{{ block.settings.tab_icon | image_url: width: 100 }}" alt="{{ block.settings.tab_icon.alt | escape }}" width="{{ block.settings.tab_icon.width }}" height="{{ block.settings.tab_icon.height }}" />
+    </div>
+  {%- endif -%}
+  {%- if block.settings.heading != blank or block.settings.tab_subheading != blank -%}
+    <div class="dsgn-pck__tab-text">
+      {%- if block.settings.heading != blank -%}
+        <p class="dsgn-pck__small-heading">{{ block.settings.heading }}</p>
+      {%- endif -%}
+      {%- if block.settings.tab_subheading != blank -%}
+        <div class="dsgn-pck__subheading dsgn-pck__rte">{{ block.settings.tab_subheading }}</div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</button>
+<!--@split-->
+<div id="DP--{{ block.id }}" class="DP--{{ block.id }} dsgn-pck__block-id-{{ block.id }} dsgn-pck__tab-panel dsgn-pck_tab-panel--{{ section.settings.tab_style }} dsgn-pck__grid-tab dsgn-pck__grid-tab--{{ block_index }} dsgn-pck__justify-{{ section.settings.text_alignment }}" data-dsgn-pck-panel="{{ block.id }}" role="tabpanel" aria-hidden="{%- if block_index == 1 -%}false{%- else -%}true{%- endif -%}" data-dsgn-pck-tab-index="{{ block_index }}">
+  {{ css_styles }}
+  <div class="dsgn-pck__tab-panel-inner">
+    {% content_for 'blocks' %}
+  </div>
+</div>
+<!--@split-->
+
+{% schema %}
+{
+  "name": "Tab 🎒",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    },
+    {
+      "type": "_dpb_-_columns"
+    },
+    {
+      "type": "_dpb_-_group"
+    }
+  ],
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Tab heading",
+      "default": "Tab"
+    },
+    {
+      "type": "image_picker",
+      "id": "tab_icon",
+      "label": "Tab icon"
+    },
+    {
+      "visible_if": "{{ block.settings.tab_icon != blank }}",
+      "type": "select",
+      "id": "icon_location",
+      "label": "Icon location",
+      "default": "top",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "left",
+          "label": "Left"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.tab_icon != blank }}",
+      "type": "select",
+      "id": "icon_size_type",
+      "label": "Icon image size",
+      "default": "fixed",
+      "options": [
+        {
+          "value": "percentage",
+          "label": "Percentage"
+        },
+        {
+          "value": "fixed",
+          "label": "Fixed"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.tab_icon != blank and block.settings.icon_size_type == 'percentage' }}",
+      "type": "range",
+      "id": "image_size",
+      "min": 10,
+      "max": 100,
+      "label": "Size",
+      "default": 40,
+      "unit": "%"
+    },
+    {
+      "visible_if": "{{ block.settings.tab_icon != blank and block.settings.icon_size_type == 'fixed' }}",
+      "type": "range",
+      "id": "image_size_fixed",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "label": "Size",
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "richtext",
+      "id": "tab_subheading",
+      "label": "Tab subheading",
+      "info": "Subheading is hidden on mobile and smaller devices"
+    },
+    {
+      "type": "select",
+      "id": "padding_type",
+      "label": "Tab panel padding",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "range",
+          "label": "Range"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "auto"
+    },
+    {
+      "visible_if": "{{ block.settings.padding_type == 'custom' }}",
+      "type": "text",
+      "id": "padding",
+      "label": "Custom padding",
+      "default": "10px 20px 30px 40px",
+      "info": "Enter padding in the format: top right bottom left. Example: 10px 20px 30px 40px [Learn more](https://developer.mozilla.org/en-US/docs/Web/CSS/padding)"
+    },
+    {
+      "visible_if": "{{ block.settings.padding_type == 'range' }}",
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "visible_if": "{{ block.settings.padding_type == 'range' }}",
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "visible_if": "{{ block.settings.padding_type == 'range' }}",
+      "type": "range",
+      "id": "padding_left",
+      "label": "Padding left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "visible_if": "{{ block.settings.padding_type == 'range' }}",
+      "type": "range",
+      "id": "padding_right",
+      "label": "Padding right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_css",
+      "label": "Enable custom CSS",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "mobile_css",
+      "label": "Mobile & narrow custom CSS",
+      "info": "Applied on small screens or in tight spaces."
+    },
+    {
+      "type": "header",
+      "content": "About this block: Tab",
+      "info": "Nest content blocks inside this block to display content in the tab panel."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tab 🎒",
+      "category": "* Design Packs: Tabbed content"
+    }
+  ]
+}
+{% endschema %}

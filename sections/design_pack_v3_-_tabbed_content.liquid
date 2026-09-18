@@ -1,0 +1,1009 @@
+{%- comment -%}
+{
+  "pack_name": "Tabbed content",
+  "pack_author": "Design Packs",
+  "license": "© Design Packs. All rights reserved. This code is protected by copyright law and may not be reproduced, distributed, or used without explicit permission from the author. Shopify complies with the Digital Millennium Copyright Act (DMCA) and responds to claims of copyright infringement using DMCA procedures, which could result in the termination of your Shopify account.",
+}
+{%- endcomment -%}
+
+{% comment %} Security Code - hides section when app uninstalled {% endcomment %}
+{%- unless content_for_header contains 'design_packs_file.js' -%}
+  {%- if request.design_mode -%}
+    <div class="dsgn-pck__no-app-warning">
+      <div class="dsgn-pck__no-app-warning-background">
+      </div>
+      <div class="dsgn-pck__no-app-warning-text dsgn-pck__rte">
+        <p><strong>WARNING!</strong> This premium section will not display properly without an active subscription for <a href="https://apps.shopify.com/design-packs" target="_blank" rel="noopener nofollow">Design Packs</a>. If you need any support please email <a href="mailto:info@design-packs.com" target="_blank" rel="noopener">info@design-packs.com</a> with your questions.</p>
+      </div>
+    </div>
+  {%- endif -%}
+  {%- break -%}
+{%- endunless -%}
+
+{%- comment -%} Assign: Preview section js fix {%- endcomment -%}
+{%- assign section_id = section.id | replace: '+', '' | replace: '=', '' -%}
+
+{% comment %} Blocks: out of order (not within loop) {% endcomment %}
+{%- capture blocks -%}
+  {%- content_for 'blocks' -%}
+{%- endcapture -%}
+
+{%- assign blocks_array = blocks | strip | split: '<!--@split-->' | uniq | compact -%}
+
+{%- comment -%} Color: check if color is set to transparent {%- endcomment -%}
+{%- assign button_alpha = section.settings.button_background_color | color_extract: 'alpha' -%}
+
+{%- comment -%} Images: all placeholders {%- endcomment -%}
+{%- assign placeholder_image_id = 'heather-green-OIKBzKrTdxA-unsplash' -%}
+
+{% comment %} Images: responsive image widths {% endcomment %}
+{%- assign widths = '180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 1950, 2100, 2260, 2450, 2700, 3000, 3350, 3750, 4100' -%}
+
+{%- comment -%} Layout: has user entered measurement value into max-width field? {%- endcomment -%}
+{%- if section.settings.max_width contains 'px' or section.settings.max_width contains '%' -%}
+  {%- assign max_width = section.settings.max_width -%}
+{%- else -%}
+  {%- assign max_width = section.settings.max_width | append: 'px' -%}
+{%- endif -%}
+
+{%- comment -%} Text: custom font_picker values {%- endcomment -%}
+{%- capture font_settings_list -%}
+{{ section.settings.main_font | font_face: font_display: 'swap' }}~
+{{ section.settings.main_font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
+{{ section.settings.main_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}~
+{{ section.settings.main_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
+{{ section.settings.heading_font | font_face: font_display: 'swap' }}~
+{{ section.settings.heading_font | font_modify: 'weight', 'normal' | font_face: font_display: 'swap' }}~
+{{ section.settings.heading_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}~
+{{ section.settings.heading_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+{%- endcapture -%}
+{%- assign font_array = font_settings_list | split: '~' -%}
+
+{%- comment -%} CSS {%- endcomment -%}
+<style>
+
+{%- if section.settings.override_theme_font != blank -%}
+  {%- for font in font_array -%}
+    {%- unless font contains 'error' -%}{{ font }}{%- endunless -%}
+  {%- endfor -%}
+  .DP--{{ section_id }} {
+    --main-font: {{ section.settings.main_font.family }}, {{ section.settings.main_font.fallback_families }};
+    --main-font-weight: {{ section.settings.main_font.weight }};
+    --main-font-style: {{ section.settings.main_font.style }};
+    --heading-font: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }};
+    --heading-font-weight: {{ section.settings.heading_font.weight }};
+    --heading-font-style: {{ section.settings.heading_font.style }};
+  }
+{%- endif -%}
+
+.DP--{{ section_id }} {
+  margin-top: {{ section.settings.outer_margin }}px;
+  margin-bottom: {{ section.settings.outer_margin }}px;
+}
+
+.DP--{{ section_id }} .dsgn-pck__background {
+  background-color: {{ section.settings.background_solid }};
+  background: {{ section.settings.background_color }};
+}
+
+.DP--{{ section_id }} .dsgn-pck__background-image {
+  position: absolute;
+  object-fit: cover;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.DP--{{ section_id }} .dsgn-pck__sizer {
+  padding-top: {{ section.settings.inner_padding }}px;
+  padding-bottom: {{ section.settings.inner_padding }}px;
+  width: {{ section.settings.base_width }}%;
+  max-width: {{ max_width }};
+}
+
+.DP--{{ section_id }} .dsgn-pck__tab-button-wrapper {
+  display: flex;
+  grid-gap: 4px;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.DP--{{ section_id }} .dsgn-pck__tab-title {
+  border: none;
+  transition: 0.3s ease;
+  line-height: var(--dp-g-small-heading-line-height, var(--dp-small-heading-line-height, calc(3px + 2ex + 3px)));
+  color: {{ section.settings.tab_label_color }};
+  font-size: calc(var(--dp-g-small-heading-size, var(--dp-small-heading-size, 25px)) * {{ section.settings.text_size | times: 0.008 }});
+  cursor: pointer;
+  {%- if section.settings.override_theme_font != blank -%}
+    font-family: var(--heading-font);
+    font-weight: var(--heading-font-weight);
+    font-style: var(--heading-font-style);
+  {%- endif -%}
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.DP--{{ section_id }} .dsgn-pck__tab-title p {
+  margin: 0;
+}
+
+{% comment %} Tab icon on top: stack vertically and center {% endcomment %}
+.DP--{{ section_id }} .dsgn-pck__tab-title--icon-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.DP--{{ section_id }} .dsgn-pck__tab-title--icon-top .dsgn-pck__tab-icon {
+  display: flex;
+  justify-content: center;
+}
+
+{% comment %} Tab icon on left: left-align the text next to it {% endcomment %}
+.DP--{{ section_id }} .dsgn-pck__tab-title--icon-left .dsgn-pck__tab-text {
+  text-align: left;
+}
+
+{% comment %} Tab subheading inherits tab label color (overrides .dsgn-pck__rte p) {% endcomment %}
+.DP--{{ section_id }} .dsgn-pck__tab-title .dsgn-pck__subheading,
+.DP--{{ section_id }} .dsgn-pck__tab-title .dsgn-pck__subheading p {
+  color: {{ section.settings.tab_label_color }};
+}
+
+.DP--{{ section_id }} .dsgn-pck__tab-title[aria-selected="true"] .dsgn-pck__subheading,
+.DP--{{ section_id }} .dsgn-pck__tab-title[aria-selected="true"] .dsgn-pck__subheading p {
+  color: {{ section.settings.tab_label_highlight_color }};
+}
+
+{% comment %} Small tabs style  {% endcomment %}
+
+.DP--{{ section_id }} .dsgn-pck_tab-style--small_tabs .dsgn-pck__tab-title {
+  position: relative;
+  border: none;
+  border-radius: 6px 6px 0 0;
+  background: transparent;
+  padding: 1.5rem;
+}
+
+.DP--{{ section_id }} .dsgn-pck_tab-style--small_tabs .dsgn-pck__tab-title:hover {
+  background: {{ section.settings.tab_highlight_color | color_modify: 'alpha', 0.4 }};
+}
+
+
+.DP--{{ section_id }} .dsgn-pck_tab-style--small_tabs .dsgn-pck__tab-title[aria-selected="true"] {
+  {% comment %} background: {{ section.settings.tab_background_color }}; {% endcomment %}
+  background: {{ section.settings.tab_highlight_color }};
+  color: {{ section.settings.tab_label_highlight_color}}
+}
+
+.DP--{{ section_id }} [aria-selected="true"] * {
+  color: {{ section.settings.tab_label_highlight_color }};
+}
+
+.DP--{{ section_id }} .dsgn-pck_tab-panel--small_tabs {
+  border-top: 4px solid {{ section.settings.border_color }};
+}
+
+{% comment %} Big tabs style  {% endcomment %}
+
+.DP--{{ section_id }} .dsgn-pck_tab-style--big_tabs .dsgn-pck__tab-title {
+  position: relative;
+  border-radius: 6px 6px 0 0;
+  background: transparent;
+  padding: 1.5rem;
+  padding-bottom: calc(1.5rem + 4px);
+  width: calc(100% / {{ section.blocks.size }} );
+}
+
+.DP--{{ section_id }} .dsgn-pck_tab-style--big_tabs .dsgn-pck__tab-title::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  width: 0;
+  background: {{ section.settings.border_color }};
+  transition: 0.6s ease;
+}
+
+.DP--{{ section_id }} .dsgn-pck_tab-style--big_tabs .dsgn-pck__tab-title:hover {
+  background: {{ section.settings.tab_background_color | color_modify: 'alpha', 0.4 }};
+}
+
+.DP--{{ section_id }} .dsgn-pck_tab-style--big_tabs .dsgn-pck__tab-title[aria-selected="true"]{
+  background: {{ section.settings.tab_highlight_color }};
+  color: {{ section.settings.tab_label_highlight_color}}
+}
+
+.DP--{{ section_id }} .dsgn-pck_tab-style--big_tabs .dsgn-pck__tab-title[aria-selected="true"]::after {
+  width: 100%;
+}
+
+{% comment %} Button style {% endcomment %}
+
+.DP--{{ section_id }} .dsgn-pck_tab-panel--buttons {
+  border-radius: 10px;
+}
+
+.DP--{{ section_id }} .dsgn-pck_tab-style--buttons.dsgn-pck__tab-button-wrapper {
+  background: {{ section.settings.tab_background_color }};
+  width: max-content;
+  margin: 2rem auto;
+  padding: 1.2rem;
+  border-radius: {{ section.settings.buttons_border_radius }}px;
+  gap: 1rem;
+  max-width: fit-content;
+  align-items: stretch;
+}
+
+.DP--{{ section_id }} .dsgn-pck_tab-style--buttons .dsgn-pck__tab-title {
+  background: transparent;
+  padding: 0.8rem 1.5rem;
+  border-radius: {{ section.settings.buttons_border_radius }}px;
+}
+
+.DP--{{ section_id }} .dsgn-pck_tab-style--buttons .dsgn-pck__tab-title:hover {
+  background: {{ section.settings.tab_highlight_color | color_modify: 'alpha', 0.4 }};
+}
+
+.DP--{{ section_id }} .dsgn-pck_tab-style--buttons .dsgn-pck__tab-title[aria-selected="true"]{
+  background: {{ section.settings.tab_highlight_color }};
+  color: {{ section.settings.tab_label_highlight_color}};
+}
+
+{% comment %} end tab style {% endcomment %}
+
+.DP--{{ section_id }} .dsgn-pck__tab-panel {
+  width: 100%;
+  margin: auto;
+  background: {{ section.settings.text_background_color }};
+}
+
+.DP--{{ section_id }} .dsgn-pck__tab-panel[aria-hidden="false"] {
+  display: flex;
+  position: relative;
+}
+
+.DP--{{ section_id }} .dsgn-pck__tab-panel[aria-hidden="true"] {
+  display: none;
+}
+
+.DP--{{ section_id }} .dsgn-pck__tab-panel-inner {
+  flex: 1 1 100%;
+}
+
+{% comment %} Block styling {% endcomment %}
+.DP--{{ section_id }} .dsgn-pck__block .dsgn-pck__small-heading {
+  font-size: calc(var(--dp-g-small-heading-size, var(--dp-small-heading-size, 24px)) * {{ section.settings.text_size | times: 0.01 }});
+  {%- if section.settings.override_theme_font != blank -%}
+    font-family: var(--heading-font);
+    font-weight: var(--heading-font-weight);
+    font-style: var(--heading-font-style);
+  {%- endif -%}
+}
+
+.DP--{{ section_id }} .dsgn-pck__rte p,
+.DP--{{ section_id }} .dsgn-pck__rte ul {
+  line-height: var(--dp-g-body-line-height, var(--dp-body-line-height, calc(3px + 2.5ex + 3px)));
+  color: {{ section.settings.text_color }};
+  font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | times: 0.01 }});
+  {%- if section.settings.override_theme_font != blank -%}
+  font-family: var(--main-font);
+  font-weight: var(--main-font-weight);
+  font-style: var(--main-font-style);
+  {%- endif -%}
+}
+
+.DP--{{ section_id }} .dsgn-pck__small-text p,
+.DP--{{ section_id }} .dsgn-pck__small-text ul {
+  font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | times: 0.008 }});
+}
+
+{%- if section.settings.text_alignment == 'center' -%}
+  .DP--{{ section_id }} .dsgn-pck__rte ul {
+    display: table;
+    margin: 0 auto;
+    text-align: left;
+  }
+{%- elsif section.settings.text_alignment == 'right' -%}
+  .DP--{{ section_id }} .dsgn-pck__rte ul {
+    display: table;
+    margin-left: auto;
+    text-align: left;
+  }
+{%- endif -%}
+
+.DP--{{ section_id }} .dsgn-pck__block {
+  color: {{ section.settings.text_color }};
+}
+
+.DP--{{ section_id }} .dsgn-pck__block + .dsgn-pck__block {
+  margin-top: 15px;
+}
+{% comment %} End block styling {% endcomment %}
+
+/* Animation */
+{%- if section.settings.animation != 'none' -%}
+  #DP--{{ section_id }}.dsgn-pck__animation-applied [style*="--dsgn-pck-animate"] {
+    animation-name: dsgn-pck__animation--{{ section.settings.animation }};
+  }
+{%- else -%}
+  .DP--{{ section_id }} [style*="--dsgn-pck-animate"] {
+    opacity: 1;
+  }
+{% endif %}
+
+{%- if section.settings.custom_css != blank -%}
+  {%- assign custom_section_declarations = section.settings.custom_css | split: '}' -%}
+  {%- for declaration in custom_section_declarations -%}
+    {%- if declaration contains '{' -%}
+      #DP--{{ section_id }} {{ declaration }} }
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+
+/* Landscape phones and down */
+@media (max-width: 767px) {
+  .DP--{{ section_id }} {
+    margin-top: {{ section.settings.outer_margin | times: 0.75 | round: 0 }}px;
+    margin-bottom: {{ section.settings.outer_margin | times: 0.75 | round: 0 }}px;
+  }
+
+  .DP--{{ section_id }} .dsgn-pck__sizer {
+    max-width: {{ max_width }};
+    padding-top: {{ section.settings.inner_padding | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.inner_padding | times: 0.75 | round: 0 }}px;
+  }
+
+  .DP--{{ section_id }} .dsgn-pck__tab-button-wrapper {
+    justify-content: flex-start;
+    overflow: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  .DP--{{ section_id }} .dsgn-pck__tab-button-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+
+  .DP--{{ section_id }} .dsgn-pck__tab-title {
+    min-width: fit-content;
+    min-height: 44px;
+    white-space: normal;
+  }
+
+  .DP--{{ section_id }} .dsgn-pck_tab-style--big_tabs .dsgn-pck__tab-title {
+    width: unset;
+  }
+
+  .DP--{{ section_id }} .dsgn-pck__tab-title  {
+    line-height: var(--dp-g-small-heading-line-height, var(--dp-small-heading-line-height, calc(3px + 2ex + 3px)));
+    font-size: calc(var(--dp-g-small-heading-size, var(--dp-small-heading-size, 18px)) * {{ section.settings.text_size | times: 0.008 }});
+  }
+
+  .DP--{{ section_id }} .dsgn-pck__subheading {
+    display: none;
+  }
+
+  .DP--{{ section_id }} .dsgn-pck_tab-style--buttons.dsgn-pck__tab-button-wrapper {
+    width: unset;
+    margin: 1rem auto;
+    padding: 0.8rem;
+  }
+
+  .DP--{{ section_id }} .dsgn-pck_tab-style--buttons .dsgn-pck__tab-title {
+    padding: 0.6rem 1.2rem;
+  }
+
+  .DP--{{ section_id }} .dsgn-pck__tab-panel[aria-hidden="false"]{
+    flex-wrap: wrap;
+  }
+
+  {%- if section.settings.mobile_custom_css != blank -%}
+    {%- assign mobile_custom_declarations = section.settings.mobile_custom_css | split: '}' -%}
+    {%- for declaration in mobile_custom_declarations -%}
+      {%- if declaration contains '{' -%}
+        #DP--{{ section_id }} {{ declaration }} }
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+}
+</style>
+
+{%- comment -%} HTML {%- endcomment -%}
+<section id="DP--{{ section_id }}" class="DP--{{ section_id }} dsgn-pck__tabbed-content dsgn-pck__section {{ section.settings.custom_classes }}">
+  {%- if section.settings.anchor_id != blank -%}
+    <div id="{{ section.settings.anchor_id | remove: '#' | handleize }}" class="dsgn-pck__anchor-id" style="height: 0; overflow: hidden;"></div>
+  {%- endif -%}
+  <div class="dsgn-pck__background">
+    {%- if section.settings.show_background_image -%}
+      {%- if section.settings.background_image != blank -%}
+        {{ section.settings.background_image | image_url: width: section.settings.background_image.width | image_tag:  widths: widths, sizes: '100vw', class: 'dsgn-pck__background-image' }}
+      {%- else -%}
+        <img src="https://cdn.shopify.com/s/files/1/0577/7673/4361/files/{{ placeholder_image_id }}_1600x.jpg"
+            class="dsgn-pck__background-image"
+            alt=""
+            loading="lazy"
+            class="dsgn-pck__background-image"
+            width="1600"
+            height="1000">
+      {%- endif -%}
+    {%- endif -%}
+    <div class="dsgn-pck__sizer">
+      <div class="dsgn-pck__wrapper">
+        <div class="dsgn-pck__tab-button-wrapper dsgn-pck_tab-style--{{ section.settings.tab_style }}">
+          {%- for block in blocks_array -%}
+            {%- if block contains 'dsgn-pck__tab-title' -%}
+                {{ block }}
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+        {%- for block in blocks_array -%}
+          {%- if block contains 'dsgn-pck__tab-panel' -%}
+            {{ block }}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Tabbed content",
+  "class": "DP__tabbed-content",
+  "settings": [
+    {
+      "type": "header",
+      "content": "✏️ Text appearance"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Tab text size",
+      "min": 80,
+      "max": 150,
+      "step": 5,
+      "default": 100,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "🎨 Design"
+    },
+    {
+      "type": "select",
+      "id": "tab_style",
+      "label": "Tab style",
+      "default": "small_tabs",
+      "options": [
+        {
+          "value": "small_tabs",
+          "label": "Small tabs"
+        },
+        {
+          "value": "big_tabs",
+          "label": "Big tabs"
+        },
+        {
+          "value": "buttons",
+          "label": "Buttons"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ section.settings.tab_style == 'buttons' }}",
+      "type": "range",
+      "id": "buttons_border_radius",
+      "label": "Button border radius",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "default": 50,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "tab_label_highlight_color",
+      "label": "Selected tab label",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "tab_highlight_color",
+      "label": "Selected tab background",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "tab_label_color",
+      "label": "Tab label",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "tab_background_color",
+      "label": "Tab background",
+      "default": "#ffffff"
+    },
+    {
+      "visible_if": "{{ section.settings.tab_style != 'buttons' }}",
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Tab panel text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "text_background_color",
+      "label": "Tab panel background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "background_solid",
+      "label": "Background",
+      "alpha": true
+    },
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "label": "Background gradient",
+      "info": "Background gradient replaces background where possible."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_background_image",
+      "label": "Show background image",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "header",
+      "content": "🖼 Layout"
+    },
+    {
+      "type": "range",
+      "id": "base_width",
+      "label": "Size",
+      "min": 80,
+      "max": 100,
+      "step": 5,
+      "default": 95,
+      "unit": "%"
+    },
+    {
+      "type": "text",
+      "id": "max_width",
+      "label": "Maximum width",
+      "placeholder": "eg. 1200px",
+      "info": "Sets width constraint for content."
+    },
+    {
+      "type": "range",
+      "id": "inner_padding",
+      "label": "Inner padding",
+      "info": "Only applies to top and bottom.",
+      "min": 0,
+      "max": 100,
+      "default": 40,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "outer_margin",
+      "label": "Outer margin",
+      "info": "Only applies to top and bottom.",
+      "min": 0,
+      "max": 100,
+      "default": 0,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "🚨 Advanced"
+    },
+    {
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "CSS"
+    },
+    {
+      "type": "liquid",
+      "id": "mobile_custom_css",
+      "label": "Mobile CSS",
+      "info": "Applied on screens less than 480px."
+    },
+    {
+      "type": "text",
+      "id": "anchor_id",
+      "label": "Link anchor id",
+      "placeholder": "#design-pack-section",
+      "info": "Enter a unique value to jump to this section from same page using a link or button. Eg. #design-pack-section [Learn more](https://app.gitbook.com/o/UwqKbTxsdQExehd4SSPM/s/iJpf70jLagzGk8zoz4fu/fundamentals/how-to-guides/how-to-jump-link-to-another-section-on-the-same-page)"
+    },
+    {
+      "type": "text",
+      "id": "custom_classes",
+      "label": "Custom classes",
+      "placeholder": "my-custom-class my-custom-class--2",
+      "info": "Add your own CSS classes to section. Eg. my-custom-class my-custom-class--2 [Learn more](https://design-packs.gitbook.io/docs/fundamentals/settings/custom-classes-setting)"
+    },
+    {
+      "type": "checkbox",
+      "id": "override_theme_font",
+      "label": "Override default theme font",
+      "default": false
+    },
+    {
+      "visible_if": "{{ section.settings.override_theme_font == true }}",
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Headings",
+      "default": "serif"
+    },
+    {
+      "visible_if": "{{ section.settings.override_theme_font == true }}",
+      "type": "font_picker",
+      "id": "main_font",
+      "label": "Text",
+      "default": "sans-serif"
+    },
+    {
+      "visible_if": "{{ false }}",
+      "type": "select",
+      "id": "custom_style",
+      "label": "Custom style*",
+      "info": "* Custom styles section is required. [Learn more](https://design-packs.gitbook.io/docs/fundamentals/design-system)",
+      "options": [
+        {
+          "value": "section",
+          "label": "Default section settings"
+          },
+        {
+          "value": "scheme",
+          "label": "Apply scheme"
+        },
+        {
+          "value": "global",
+          "label": "Inherit global style"
+        }
+      ],
+      "default": "global"
+    },
+    {
+      "visible_if": "{{ section.settings.custom_style == 'scheme' }}",
+      "type": "text",
+      "id": "style_scheme",
+      "label": "Style scheme name"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "_dpb_-_tab"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tabbed content 🎒",
+      "category": "* Design Packs: Information",
+      "settings": {
+        "text_size": 100,
+        "tab_style": "buttons",
+        "tab_label_highlight_color": "#ffffff",
+        "tab_highlight_color": "#121212",
+        "tab_label_color": "#121212",
+        "tab_background_color": "#ffffff",
+        "border_color": "#1a30e1",
+        "text_color": "#121212",
+        "text_background_color": "#ffffff",
+        "show_background_image": true,
+        "base_width": 95,
+        "inner_padding": 40,
+        "outer_margin": 0,
+        "override_theme_font": false,
+        "heading_font": "serif",
+        "main_font": "sans-serif"
+      },
+      "blocks": [
+        {
+          "type": "_dpb_-_tab",
+          "name": "Tab 1",
+          "settings": {
+            "heading": "Gallery"
+          },
+          "blocks": [
+            {
+              "type": "_dpb_-_columns",
+              "name": "Columns 🎒",
+              "blocks": [
+                {
+                  "type": "_dpb_sub_-_columns-column",
+                  "settings": {
+                    "padding_left": 0,
+                    "padding_right": 0,
+                    "vertical_alignment": "middle",
+                    "enable_box_shadow": false
+                  },
+                  "blocks": [
+                    {
+                      "type": "dpb_-_review-stars",
+                      "name": "Review stars 🎒",
+                      "settings": {
+                        "star_color": "#121212",
+                        "text_size": "30px"
+                      }
+                    },
+                    {
+                      "type": "dpb_-_heading",
+                      "name": "Heading 🎒"
+                    },
+                    {
+                      "type": "dpb_-_text",
+                      "name": "Text 🎒"
+                    }
+                  ]
+                },
+                {
+                  "type": "_dpb_sub_-_columns-column",
+                  "blocks": [
+                    {
+                      "type": "dpb_-_slider",
+                      "name": "Slider 🎒",
+                      "blocks": [
+                        {
+                          "type": "_dpb_sub_-_slider-slide"
+                        },
+                        {
+                          "type": "_dpb_sub_-_slider-slide"
+                        },
+                        {
+                          "type": "_dpb_sub_-_slider-slide"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "_dpb_-_tab",
+          "name": "Tab 2",
+          "settings": {
+            "heading": "Instructions",
+            "padding_type": "custom",
+            "padding": "3em"
+          },
+          "blocks": [
+            {
+              "type": "dpb_-_heading",
+              "name": "Heading 🎒",
+              "settings": {
+                "title": "Instructions"
+              }
+            },
+            {
+              "type": "dpb_-_text",
+              "name": "Text 🎒",
+              "settings": {
+                "text": "<p><strong>Step 1 - Unbox and Inspect</strong><br/>Carefully remove the product from its packaging. Check for any visible damage or missing parts before use.</p><p><strong>Step 2 - Read the Quick Start Guide</strong><br/>Review the included guide to familiarize yourself with the key features and safety information.</p><p><strong>Step 3 - Charge or Power Up</strong><br/>If your product is battery-operated or rechargeable, plug it in or insert the required batteries. Allow it to fully charge before first use for optimal performance.</p><p><strong>Step 4 - Initial Setup</strong><br/>Follow the setup instructions. This may include adjusting settings, pairing with other devices, or assembling parts.</p><p><strong>Step 5 - Test the Product</strong><br/>Turn on the product and perform a quick test to make sure everything is functioning correctly.</p><p><strong>Step 6 - Regular Maintenance</strong><br/>Clean and store your product according to the care instructions to ensure it lasts longer and performs well.</p><p><strong>Step 7 - Troubleshooting</strong><br/>If you encounter issues, refer to the troubleshooting section in your manual or visit the support website for solutions.</p>"
+              }
+            }
+          ]
+        },
+        {
+          "type": "_dpb_-_tab",
+          "name": "Tab 3",
+          "settings": {
+            "heading": "FAQs",
+            "padding_type": "custom",
+            "padding": "3em"
+          },
+          "blocks": [
+            {
+              "type": "dpb_-_collapsible_content",
+              "name": "Collapsible content 🎒",
+              "settings": {
+                "title": "How long does the battery last on a single charge?"
+              }
+            },
+            {
+              "type": "dpb_-_collapsible_content",
+              "name": "Collapsible content 🎒",
+              "settings": {
+                "title": "Is the product safe to use around pets and children?"
+              }
+            },
+            {
+              "type": "dpb_-_collapsible_content",
+              "name": "Collapsible content 🎒",
+              "settings": {
+                "title": "Can I use the product outdoors?"
+              }
+            },
+            {
+              "type": "dpb_-_collapsible_content",
+              "name": "Collapsible content 🎒",
+              "settings": {
+                "title": "What should I do if the product stops working?"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+{%- comment -%} JSON Settings {%- endcomment -%}
+<script type="application/json" data-dsgn-pck="{{ section_id }}">
+  {
+    "id": {{ section_id | json }},
+    "show_arrows": {{ section.settings.show_arrows | json }},
+    "animation": {{ section.settings.animation | json }}
+  }
+</script>
+{%- comment -%} JavaScript {%- endcomment -%}
+<script data-dsgn-pck-js="{{ section_id }}" type="module" defer>
+(function(){
+
+  const designPack = {
+    settings: {},
+    animateSection: function(entries, observer){
+      // Target the first entry available.
+      let observedSection = entries[0];
+      if (observedSection.isIntersecting) {
+        observedSection.target.classList.add('dsgn-pck__animation-applied');
+      }
+    },
+    switchTab: function(e, section){
+      const tab = e.currentTarget;
+      const tabs = section.querySelectorAll(`[data-dsgn-pck-tab]`);
+      const tabPanel = section.querySelector(`[data-dsgn-pck-panel="${tab.dataset.dsgnPckTab}"]`);
+      const tabPanels = section.querySelectorAll(`[data-dsgn-pck-panel]`);
+      const sliderElem = section.querySelector(`[data-slider="${tab.dataset.dsgnPckTab}"]`);
+
+      tab.scrollIntoView({ behavior: "smooth", block: 'nearest', inline: "center" });
+
+      tabs.forEach(function(elem){
+        elem.setAttribute('aria-selected', false);
+      });
+      tab.setAttribute('aria-selected', true);
+
+      tabPanels.forEach(function(elem){
+        elem.setAttribute('aria-hidden', true);
+      });
+      tabPanel.setAttribute('aria-hidden', false);
+
+      const sliderBlock = tabPanel.querySelector('dp-slider-block');
+      if (sliderBlock !== null && sliderBlock.flkty){
+        sliderBlock.flkty.resize();
+      }
+
+      const comparisonSliderBlocks = section.querySelectorAll('.dsgn-pck__comparison-slider-block');
+      if (typeof comparisonSliderBlocks !== 'undefined' && comparisonSliderBlocks !== null){
+        comparisonSliderBlocks.forEach(comparisonSliderBlock => {
+          designPack.enableComparisonSliderBlock(comparisonSliderBlock);
+        });
+      }
+
+    },
+    load: function(section){
+
+      if (this.settings.animation !== 'none'){
+        const options = {
+          root: null,
+          rootMargin: '0px',
+          threshold: [0, 0.25, 0.5, 0.75, 1]
+        };
+        // Construct Intersection Observer.
+        const observer = new IntersectionObserver( this.animateSection, options );
+        // Observe if element is present.
+        if (section) {
+          observer.observe(section);
+        }
+      }
+
+      const tabs = Array.from(section.querySelectorAll('[data-dsgn-pck-tab]'));
+
+      tabs.forEach(function(tab){
+        tab.addEventListener('click', function(e){
+          designPack.switchTab(e, section);
+        });
+
+        // Keyboard navigation support
+        tab.addEventListener('keydown', function(e){
+          const currentIndex = tabs.indexOf(e.currentTarget);
+          let targetTab = null;
+
+          if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+            e.preventDefault();
+            const nextIndex = (currentIndex + 1) % tabs.length;
+            targetTab = tabs[nextIndex];
+          }
+
+          if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            const prevIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+            targetTab = tabs[prevIndex];
+          }
+
+          if (targetTab) {
+            targetTab.focus();
+            const syntheticEvent = { currentTarget: targetTab };
+            designPack.switchTab(syntheticEvent, section);
+          }
+        });
+      });
+
+    },
+    unload: function(section){
+      section.classList.remove('dsgn-pck__animation-applied')
+    }
+  }
+
+  window.addEventListener('shopify:section:unload', function (e) {
+    const settings = document.querySelector(`[data-dsgn-pck="${e.detail.sectionId}"]`);
+    const sectionId = e.detail.sectionId;
+    const section = document.querySelector(`#DP--${e.detail.sectionId}`);
+    if (sectionId == designPack.settings.id){
+      designPack.unload(section);
+    }
+  });
+
+  window.addEventListener('shopify:block:select', function (e) {
+    const section = document.querySelector(`#DP--${designPack.settings.id}`);
+    if (!section) return;
+
+    const tabPanel = e.target.closest('[data-dsgn-pck-panel]');
+    if (tabPanel) {
+      const tabIndex = tabPanel.getAttribute('data-dsgn-pck-tab-index');
+      if (tabIndex) {
+        const targetTab = section.querySelector(`[data-dsgn-pck-tab-index="${tabIndex}"]`);
+        if (targetTab) {
+          const syntheticEvent = {
+            currentTarget: targetTab
+          };
+          designPack.switchTab(syntheticEvent, section);
+        }
+      }
+    } else {
+      const tabIndex = e.target.getAttribute('data-dsgn-pck-tab-index');
+      if (tabIndex) {
+        const targetTab = section.querySelector(`[data-dsgn-pck-tab-index="${tabIndex}"]`);
+        if (targetTab) {
+          const syntheticEvent = {
+            currentTarget: targetTab
+          };
+          designPack.switchTab(syntheticEvent, section);
+        }
+      }
+    }
+  });
+
+  designPack.settings = JSON.parse(document.querySelector('[data-dsgn-pck="{{ section_id }}"]').innerHTML);
+  const sectionId = {{ section_id | json }};
+  const section = document.querySelector(`#DP--${sectionId}`);
+
+  if (sectionId == designPack.settings.id){
+    designPack.load(section);
+  }
+})()
+</script>

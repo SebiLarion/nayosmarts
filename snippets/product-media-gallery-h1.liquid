@@ -4,6 +4,10 @@
   Desktop uses a 2-column grid with a visible zoom icon on each image and a Show more / Show less
   control. Mobile keeps a swipeable main image with thumbnails.
 
+  Turntable: when the selected variant (or the product) carries the `custom.turntable_video` file
+  metafield, that video is appended as the last gallery slide, matching the watch-video slide used
+  for product media videos.
+
   @param {object} product - Shopify product object with media collection
   @param {string} product_form_id - Form ID for variant media switching
   @param {string} product_id - Product identifier for component targeting
@@ -22,6 +26,9 @@
   @param {boolean} [first_3d_model] - Enable AR/3D viewer
   @param {object} [spinning_block] - Spinning text overlay config
   @param {number} [collapsed_media_count] - Desktop images shown before Show more
+  @param {array} [gallery_custom_blocks] - Custom gallery image blocks from the section
+  @param {boolean} [gallery_custom_active] - Render custom gallery blocks instead of product media
+  @param {number} [gallery_custom_count] - Number of custom gallery images matching the current variant
 
   @example
   {% render 'product-media-gallery-h1',
@@ -44,6 +51,63 @@
   assign featured_media = product_variant.featured_media | default: product.featured_media
   assign collapsed_media_count = collapsed_media_count | default: 4 | plus: 0
   assign media_aspect = featured_media.aspect_ratio | default: 0.88
+
+  assign use_custom_media = false
+  if gallery_custom_active == true and gallery_custom_blocks != blank
+    assign use_custom_media = true
+    assign media_count = gallery_custom_count | default: 0 | plus: 0
+    assign featured_media = nil
+    assign media_aspect = 0.88
+
+    for block in gallery_custom_blocks
+      if block.settings.image != blank
+        capture custom_block_matches
+          render 'product-custom-gallery-h1-match', block: block, product: product, product_variant: product_variant
+        endcapture
+
+        if custom_block_matches contains 'true'
+          assign media_aspect = block.settings.image.aspect_ratio | default: 0.88
+          break
+        endif
+      endif
+    endfor
+  endif
+
+  # Turntable video: the variant metafield wins so a spin can be limited to one colour and size
+  # (for example Midnight Black 25L-30L); the product metafield is the fallback for every variant.
+  assign turntable_video_media = nil
+  assign turntable_video_src = ''
+  assign turntable_video_poster = nil
+  assign turntable_video_aspect = media_aspect
+  assign turntable_video_alt = product.title
+
+  if use_custom_media
+    assign turntable_video_media = product_variant.metafields.custom.turntable_video.value | default: product.metafields.custom.turntable_video.value
+
+    if turntable_video_media != blank
+      if turntable_video_media.sources
+        assign turntable_video_poster = turntable_video_media.preview_image
+        assign turntable_video_aspect = turntable_video_media.aspect_ratio | default: media_aspect
+
+        for source in turntable_video_media.sources
+          if source.format == 'mp4'
+            assign turntable_video_src = source.url
+            break
+          endif
+        endfor
+
+        if turntable_video_src == blank
+          assign turntable_video_src = turntable_video_media.sources.first.url
+        endif
+      else
+        assign turntable_video_src = turntable_video_media
+      endif
+
+      if turntable_video_src != blank
+        assign media_count = media_count | plus: 1
+      endif
+    endif
+  endif
 -%}
 {%- capture sizes -%}(max-width: 767px) calc(100vw - 40px), (max-width: 1023px) calc(100vw - 64px), 75vw{%- endcapture -%}
 
@@ -150,36 +214,105 @@
             {%- if gallery_layout == 'columns' %} lg:grid lg:gap-4 xl:gap-5 grid-cols-2{% endif -%}
             {%- if gallery_layout == 'scroll' %} lg:grid lg:gap-4 xl:gap-5 grid-cols-2{% endif -%}"
           >
-            {%- if featured_media != null -%}
-              {%- render 'product-media-h1',
-                product: product,
-                product_id: product_id,
-                section_id: section_id,
-                product_variant: product_variant,
-                media: featured_media,
-                featured_media: featured_media,
-                variant_images: variant_images,
-                hide_variants: hide_variants,
-                gallery_layout: gallery_layout,
-                image_zoom: image_zoom,
-                image_fill: image_fill,
-                image_ratio: image_ratio,
-                image_ratio_mobile: image_ratio_mobile,
-                preload: true,
-                sizes: sizes,
-                autoplay: enable_video_autoplay,
-                loop: enable_video_looping
-              -%}
-            {%- endif -%}
+            {%- if use_custom_media -%}
+              {%- assign custom_slide_position = 1 -%}
+              {%- for block in gallery_custom_blocks -%}
+                {%- capture custom_block_matches -%}
+                  {%- render 'product-custom-gallery-h1-match', block: block, product: product, product_variant: product_variant -%}
+                {%- endcapture -%}
 
-            {%- for media in product.media -%}
-              {%- if media.id != featured_media.id -%}
+                {%- if custom_block_matches contains 'true' and block.settings.image != blank -%}
+                  {%- liquid
+                    assign custom_media = block.settings.image
+                    assign custom_media_width = custom_media.width | default: 2400
+                    assign media_alt = block.settings.alt | default: product.title
+                    assign custom_loading = 'lazy'
+                    assign custom_fetchpriority = 'auto'
+                    assign custom_lazyimage = 'lazy-image'
+
+                    if custom_slide_position == 1
+                      assign custom_loading = 'eager'
+                      assign custom_fetchpriority = 'high'
+                      assign custom_lazyimage = nil
+                    endif
+                  -%}
+                  <div
+                    class="product__media product-media-h1 card media media--{{ image_ratio }} mobile:media--{{ image_ratio_mobile }}{% unless image_fill %} media--contain{% endunless %} flex w-full shrink-0 relative overflow-hidden"
+                    data-media-type="image"
+                    data-media-id="custom-{{ block.id }}"
+                    style="--aspect-ratio: {{ custom_media.aspect_ratio | default: media_aspect }};"
+                  >
+                    {{- custom_media | image_url: width: custom_media_width | image_tag: loading: custom_loading, fetchpriority: custom_fetchpriority, sizes: sizes, widths: '200,300,400,500,600,700,800,1000,1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,3200', class: 'w-full', alt: media_alt, is: custom_lazyimage -}}
+
+                    {%- if image_zoom != 'none' -%}
+                      <button
+                        type="button"
+                        class="product-media-h1__zoom-button"
+                        is="media-{{ image_zoom }}-button"
+                        aria-label="{{ 'products.media.open_media' | t: index: custom_slide_position | escape }}"
+                        tabindex="-1"
+                      >
+                        <span class="product-media-h1__zoom-icon" aria-hidden="true">
+                          <img
+                            src="{{ 'icon-product-media-zoom.svg' | asset_url }}"
+                            width="56"
+                            height="56"
+                            alt=""
+                          >
+                        </span>
+                      </button>
+                    {%- endif -%}
+                  </div>
+                  {%- assign custom_slide_position = custom_slide_position | plus: 1 -%}
+                {%- endif -%}
+              {%- endfor -%}
+
+              {%- if turntable_video_src != blank -%}
+                {%- liquid
+                  assign watch_label = 'products.media.watch_video' | t
+                  if watch_label contains 'products.media'
+                    assign watch_label = 'Watch video'
+                  endif
+                -%}
+                <div
+                  class="product__media product-media-h1 card media media--{{ image_ratio }} mobile:media--{{ image_ratio_mobile }}{% unless image_fill %} media--contain{% endunless %} flex w-full shrink-0 relative overflow-hidden"
+                  data-media-type="video"
+                  data-media-id="custom-turntable-video"
+                  style="--aspect-ratio: {{ turntable_video_aspect }};"
+                >
+                  <button
+                    type="button"
+                    class="product-media-h1__watch"
+                    data-video-modal-h1
+                    data-video-src="{{ turntable_video_src | escape }}"
+                    data-video-type="video"
+                    {%- if turntable_video_poster != blank %}
+                      data-video-poster="{{ turntable_video_poster | image_url: width: 1600 }}"
+                    {%- endif %}
+                    aria-haspopup="dialog"
+                    aria-label="{{ watch_label | escape }}"
+                  >
+                    {%- if turntable_video_poster != blank -%}
+                      {{- turntable_video_poster | image_url: width: turntable_video_poster.width | image_tag: loading: 'lazy', fetchpriority: 'auto', sizes: sizes, widths: '200,300,400,500,600,700,800,1000,1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,3200', class: 'w-full', alt: turntable_video_alt, is: 'lazy-image' -}}
+                    {%- endif -%}
+                    <span class="product-media-h1__watch-label">
+                      {{ watch_label | escape }}
+                      <svg class="product-media-h1__watch-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                        <circle cx="10" cy="10" r="8.25" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
+                        <path d="M8.15 6.7v6.6L13.7 10 8.15 6.7z" fill="currentColor"></path>
+                      </svg>
+                    </span>
+                  </button>
+                </div>
+              {%- endif -%}
+            {%- else -%}
+              {%- if featured_media != null -%}
                 {%- render 'product-media-h1',
                   product: product,
                   product_id: product_id,
                   section_id: section_id,
                   product_variant: product_variant,
-                  media: media,
+                  media: featured_media,
                   featured_media: featured_media,
                   variant_images: variant_images,
                   hide_variants: hide_variants,
@@ -188,13 +321,37 @@
                   image_fill: image_fill,
                   image_ratio: image_ratio,
                   image_ratio_mobile: image_ratio_mobile,
-                  preload: false,
+                  preload: true,
                   sizes: sizes,
                   autoplay: enable_video_autoplay,
                   loop: enable_video_looping
                 -%}
               {%- endif -%}
-            {%- endfor -%}
+
+              {%- for media in product.media -%}
+                {%- if media.id != featured_media.id -%}
+                  {%- render 'product-media-h1',
+                    product: product,
+                    product_id: product_id,
+                    section_id: section_id,
+                    product_variant: product_variant,
+                    media: media,
+                    featured_media: featured_media,
+                    variant_images: variant_images,
+                    hide_variants: hide_variants,
+                    gallery_layout: gallery_layout,
+                    image_zoom: image_zoom,
+                    image_fill: image_fill,
+                    image_ratio: image_ratio,
+                    image_ratio_mobile: image_ratio_mobile,
+                    preload: false,
+                    sizes: sizes,
+                    autoplay: enable_video_autoplay,
+                    loop: enable_video_looping
+                  -%}
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endif -%}
           </div>
         </slider-element>
 
@@ -246,37 +403,82 @@
         <scroll-shadow id="SliderThumbnails-{{ section_id }}-{{ product_id }}" class="product__thumbnails{% unless mobile_thumbnail %} with-dots{% endunless %}{% if gallery_layout == 'scroll' or gallery_layout == 'columns' %} lg:hidden{% endif %} product__thumbnails--{{ thumbnail_position }} grid items-center relative w-full">
         {%- endif -%}
           <media-dots class="product__thumbnails-list scroll-area grid items-end justify-start gap-4 w-full" aria-controls="SliderGallery-{{ section_id }}-{{ product_id }}">
-            {%- if featured_media != null -%}
-              {%- render 'product-thumbnail',
-                product: product,
-                product_variant: product_variant,
-                media: featured_media,
-                featured_media: featured_media,
-                variant_images: variant_images,
-                hide_variants: hide_variants,
-                image_fill: image_fill,
-                image_ratio: image_ratio,
-                image_ratio_mobile: image_ratio_mobile,
-                position: 0
-              -%}
-            {%- endif -%}
+            {%- if use_custom_media -%}
+              {%- assign custom_thumb_position = 1 -%}
+              {%- for block in gallery_custom_blocks -%}
+                {%- capture custom_block_matches -%}
+                  {%- render 'product-custom-gallery-h1-match', block: block, product: product, product_variant: product_variant -%}
+                {%- endcapture -%}
 
-            {%- for media in product.media -%}
-              {%- if media.id != featured_media.id -%}
+                {%- if custom_block_matches contains 'true' and block.settings.image != blank -%}
+                  {%- liquid
+                    assign custom_media = block.settings.image
+                    assign media_alt = block.settings.alt | default: product.title
+                  -%}
+                  <button
+                    type="button"
+                    class="product__thumbnail media media--{{ image_ratio }} mobile:media--{{ image_ratio_mobile }}{% unless image_fill %} media--contain{% endunless %} relative overflow-hidden"
+                    data-media-id="custom-{{ block.id }}"
+                    aria-label="{{ 'general.accessibility.go_to_item' | t: index: custom_thumb_position | escape }}"
+                    aria-current="{% if custom_thumb_position == 1 %}true{% else %}false{% endif %}"
+                    style="--aspect-ratio: {{ custom_media.aspect_ratio | default: media_aspect }};"
+                  >
+                    {{- custom_media | image_url: width: 400 | image_tag: loading: 'lazy', sizes: '(max-width: 1279px) 180px, 200px', widths: '90,100,180,200,270,300,400', alt: media_alt, is: 'lazy-image' -}}
+                  </button>
+                  {%- assign custom_thumb_position = custom_thumb_position | plus: 1 -%}
+                {%- endif -%}
+              {%- endfor -%}
+
+              {%- if turntable_video_src != blank -%}
+                <button
+                  type="button"
+                  class="product__thumbnail media media--{{ image_ratio }} mobile:media--{{ image_ratio_mobile }}{% unless image_fill %} media--contain{% endunless %} relative overflow-hidden"
+                  data-media-id="custom-turntable-video"
+                  aria-label="{{ 'general.accessibility.go_to_item' | t: index: custom_thumb_position | escape }}"
+                  aria-current="false"
+                  style="--aspect-ratio: {{ turntable_video_aspect }};"
+                >
+                  {%- if turntable_video_poster != blank -%}
+                    {{- turntable_video_poster | image_url: width: 400 | image_tag: loading: 'lazy', sizes: '(max-width: 1279px) 180px, 200px', widths: '90,100,180,200,270,300,400', alt: turntable_video_alt, is: 'lazy-image' -}}
+                  {%- endif -%}
+                  <span class="play-button absolute flex items-center justify-center rounded-full">
+                    {%- render 'icon', icon: 'play' -%}
+                  </span>
+                </button>
+              {%- endif -%}
+            {%- else -%}
+              {%- if featured_media != null -%}
                 {%- render 'product-thumbnail',
                   product: product,
                   product_variant: product_variant,
-                  media: media,
+                  media: featured_media,
                   featured_media: featured_media,
                   variant_images: variant_images,
                   hide_variants: hide_variants,
                   image_fill: image_fill,
                   image_ratio: image_ratio,
                   image_ratio_mobile: image_ratio_mobile,
-                  position: forloop.index
+                  position: 0
                 -%}
               {%- endif -%}
-            {%- endfor -%}
+
+              {%- for media in product.media -%}
+                {%- if media.id != featured_media.id -%}
+                  {%- render 'product-thumbnail',
+                    product: product,
+                    product_variant: product_variant,
+                    media: media,
+                    featured_media: featured_media,
+                    variant_images: variant_images,
+                    hide_variants: hide_variants,
+                    image_fill: image_fill,
+                    image_ratio: image_ratio,
+                    image_ratio_mobile: image_ratio_mobile,
+                    position: forloop.index
+                  -%}
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endif -%}
           </media-dots>
         {%- if gallery_layout != 'dots' -%}
           <template>

@@ -1,0 +1,632 @@
+{%- comment -%}
+{
+  "pack_name": "Review stars block",
+  "pack_author": "Design Packs",
+  "license": "© Design Packs. All rights reserved. This code is protected by copyright law and may not be reproduced, distributed, or used without explicit permission from the author. Shopify complies with the Digital Millennium Copyright Act (DMCA) and responds to claims of copyright infringement using DMCA procedures, which could result in the termination of your Shopify account.",
+}
+{%- endcomment -%}
+
+{% comment %} Security Code - hides section when app uninstalled {% endcomment %}
+{%- unless content_for_header contains 'design_packs_file.js' -%}
+  {%- if request.design_mode -%}
+    <div class="dsgn-pck__no-app-warning">
+      <div class="dsgn-pck__no-app-warning-background">
+      </div>
+      <div class="dsgn-pck__no-app-warning-text dsgn-pck__rte">
+        <p><strong>WARNING!</strong> This premium section will not display properly without an active subscription for <a href="https://apps.shopify.com/design-packs" target="_blank" rel="noopener nofollow">Design Packs</a>. If you need any support please email <a href="mailto:info@design-packs.com" target="_blank" rel="noopener">info@design-packs.com</a> with your questions.</p>
+      </div>
+    </div>
+  {%- endif -%}
+  {%- break -%}
+{%- endunless -%}
+
+{%- comment -%} Assign: Preview section js fix {%- endcomment -%}
+{%- assign section_id = section.id | replace: '+', '' | replace: '=', '' -%}
+{%- assign block_index = section.blocks | find_index: 'id', block.id | plus: 1 -%}
+
+{%- comment -%}
+  Design System wiring — text role drives the review-text typography.
+  text_role_active: a real text role is selected (and DS is on).
+  text_override_active: block writes its own --block-text-* vars (block tweaks role,
+    or DS is off, or role = "None"). When false, the styleguide rule fully owns visuals.
+{%- endcomment -%}
+{%- assign text_role_active = false -%}
+{%- if section.settings.design_system == 'global_style' and block.settings.custom_text_name != 'custom' and block.settings.custom_text_name != blank -%}
+  {%- assign text_role_active = true -%}
+{%- endif -%}
+{%- assign text_override_active = false -%}
+{%- if section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' -%}
+  {%- assign text_override_active = true -%}
+{%- endif -%}
+
+{%- comment -%} Color: check if color is set to transparent {%- endcomment -%}
+{%- assign text_alpha = block.settings.text_color | color_extract: 'alpha' | default: 0 -%}
+
+{%- assign block_horizontal_setting = block.settings.horizontal_alignment | default: 'default' -%}
+
+{%- capture css_styles -%}
+<style data-dp-css="blocks/_dpb_-_review-stars.liquid">
+  {%- if text_override_active and block.settings.text_enable_custom_font and block.settings.text_custom_font != blank -%}
+    {{ block.settings.text_custom_font | font_face: font_display: 'swap' }}
+    {{ block.settings.text_custom_font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+    {{ block.settings.text_custom_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+    {{ block.settings.text_custom_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+  {%- endif -%}
+
+  [id*=preview-block] .dsgn-pck__review-stars {
+    container-type: normal !important;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} {
+    width: {{ block.settings.base_width }}%;
+    max-width: {{ block.settings.max_width | remove: 'px' }}px;
+    --flex-gap: {{ block.settings.gap }}px;
+    --icon-text-gap: {{ block.settings.icon_gap }}px;
+    display: flex;
+    {%- if section.settings.text_alignment == 'center' and block_horizontal_setting == 'default' -%}
+      margin: 0 auto;
+    {%- elsif section.settings.text_alignment == 'right' and block_horizontal_setting == 'default'  -%}
+      margin: 0 0 0 auto;
+    {%- endif -%}
+    {%- if block.settings.horizontal_alignment == 'left' -%}
+      align-self: flex-start;
+      margin-left: 0;
+      margin-right: auto;
+    {%- elsif block.settings.horizontal_alignment == 'right' -%}
+      align-self: flex-end;
+      margin-left: auto;
+      margin-right: 0;
+    {%- elsif block.settings.horizontal_alignment == 'center' -%}
+      align-self: center;
+      margin-left: auto;
+      margin-right: auto;
+    {%- endif -%}
+
+    {%- comment -%} Text typography overrides — written as --block-text-* vars; cascade to .dsgn-pck__review-text. {%- endcomment -%}
+    {%- if text_override_active -%}
+      {%- if text_alpha != 0 -%}
+        --block-text-color: {{ block.settings.text_color }};
+      {%- endif -%}
+      {%- if block.settings.text_enable_custom_size and block.settings.text_size != blank -%}
+        --block-text-size: {{ block.settings.text_size }};
+      {%- endif -%}
+      {%- if block.settings.text_enable_custom_font and block.settings.text_custom_font != blank -%}
+        --block-text-font-family: {{ block.settings.text_custom_font.family }}, {{ block.settings.text_custom_font.fallback_families }};
+        --block-text-font-weight: {{ block.settings.text_custom_font.weight }};
+        --block-text-font-style: {{ block.settings.text_custom_font.style }};
+      {%- endif -%}
+      {%- if block.settings.text_enable_custom_text_style -%}
+        {%- if block.settings.text_text_weight == 'normal' -%}
+          --block-text-font-weight: normal;
+        {%- elsif block.settings.text_text_weight == 'bold' -%}
+          --block-text-font-weight: bold;
+        {%- endif -%}
+        {%- if block.settings.text_text_style == 'italic' -%}
+          --block-text-font-style: italic;
+        {%- elsif block.settings.text_text_style == 'normal' -%}
+          --block-text-font-style: normal;
+        {%- endif -%}
+        {%- if block.settings.text_text_transform != 'default' and block.settings.text_text_transform != blank -%}
+          --block-text-text-transform: {{ block.settings.text_text_transform }};
+        {%- endif -%}
+        {%- if block.settings.text_letter_spacing != blank -%}
+          --block-text-letter-spacing: {{ block.settings.text_letter_spacing }};
+        {%- endif -%}
+        {%- if block.settings.text_line_height != blank -%}
+          --block-text-line-height: {{ block.settings.text_line_height }};
+        {%- endif -%}
+      {%- endif -%}
+    {%- endif -%}
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__review-stars-wrapper {
+    display: flex;
+    align-items: center;
+    gap: {{ block.settings.gap }}px;
+    flex-wrap: wrap;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__stars {
+    display: flex;
+    gap: {{ block.settings.star_gap }}px;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__star {
+    width: {{ block.settings.stars_size }}px;
+    height: {{ block.settings.stars_size }}px;
+    display: flex;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__star svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__star svg path {
+    fill: {{ block.settings.star_color }};
+    stroke: {{ block.settings.star_color }};
+  }
+
+  {%- comment -%} Review text element; reads --block-text-* with safe fallbacks. {%- endcomment -%}
+  .dsgn-pck__block-id-{{ block.id }} div.dsgn-pck__review-content * {
+    color: var(--block-text-color, inherit);
+    font-size: calc(var(--block-text-size, var(--dp-g-body-size, var(--dp-body-size, 18px))) * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+    {%- if section.settings.override_theme_font != blank -%}
+    font-family: var(--block-text-font-family, var(--main-font));
+    font-weight: var(--block-text-font-weight, var(--main-font-weight));
+    font-style: var(--block-text-font-style, var(--main-font-style));
+    {%- else -%}
+    font-family: var(--block-text-font-family, inherit);
+    font-weight: var(--block-text-font-weight, inherit);
+    font-style: var(--block-text-font-style, inherit);
+    {%- endif -%}
+    line-height: var(--block-text-line-height, normal);
+    letter-spacing: var(--block-text-letter-spacing, normal);
+    text-transform: var(--block-text-text-transform, none);
+  }
+
+  /* Custom CSS */
+  {%- if block.settings.enable_custom_css == true and block.settings.custom_css != blank -%}
+    {%- assign custom_css_rules = block.settings.custom_css | strip | split: '}' -%}
+    {%- for rule in custom_css_rules -%}
+      {%- assign clean_rule = rule | strip -%}
+      {%- if clean_rule contains '{' and clean_rule != blank -%}
+        {%- assign rule_parts = clean_rule | split: '{' -%}
+        {%- if rule_parts.size >= 2 -%}
+          {%- assign selector_part = rule_parts[0] | strip -%}
+          {%- assign css_part = rule_parts[1] | strip -%}
+          {%- if css_part != blank -%}
+            {%- if selector_part == blank -%}
+              #DP--{{ block.id }} { {{ css_part }} }
+            {%- else -%}
+              #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+
+  /* Small context - small container and mobile */
+  {%- capture small_context -%}
+
+    {%- if text_override_active and block.settings.text_enable_custom_size and block.settings.mobile_text_size != blank -%}
+      .dsgn-pck__block-id-{{ block.id }} {
+        --block-text-size: {{ block.settings.mobile_text_size }};
+      }
+    {%- endif -%}
+
+  /* Mobile & narrow custom CSS */
+  {%- if block.settings.enable_custom_css == true and block.settings.mobile_css != blank -%}
+    {%- assign mobile_css_rules = block.settings.mobile_css | strip | split: '}' -%}
+    {%- for rule in mobile_css_rules -%}
+      {%- assign clean_rule = rule | strip -%}
+      {%- if clean_rule contains '{' and clean_rule != blank -%}
+        {%- assign rule_parts = clean_rule | split: '{' -%}
+        {%- if rule_parts.size >= 2 -%}
+          {%- assign selector_part = rule_parts[0] | strip -%}
+          {%- assign css_part = rule_parts[1] | strip -%}
+          {%- if css_part != blank -%}
+            {%- if selector_part == blank -%}
+              #DP--{{ block.id }} { {{ css_part }} }
+            {%- else -%}
+              #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+  {%- endcapture -%}
+
+  @supports (container-type: inline-size) {
+    @container dp-icons-container (max-width: 300px) {
+      {{ small_context }}
+    }
+  }
+
+  @media (max-width: 767px) {
+    {{ small_context }}
+  }
+
+  /* Hide or show on mobile and desktop */
+  {%- if block.settings.hidden_on == 'mobile' -%}
+    @media (max-width: 767px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+
+  {%- if block.settings.hidden_on == 'desktop' -%}
+    @media (min-width: 768px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+</style>
+{%- endcapture -%}
+
+<div id="DP--{{ block.id }}" class="DP--{{ block.id }} dsgn-pck__block dsgn-pck__block-id-{{ block.id }} dsgn-pck__block--{{ block.type }} dsgn-pck__block--{{ block.index }}" {{ block.shopify_attributes }} {% if section.settings.animation != blank %}style="--dsgn-pck-animate: {{ block_index }};"{% endif %}>
+  {{ css_styles }}
+  <div class="{% if block.settings.horizontal_alignment == 'default' %}dsgn-pck__justify-{{ section.settings.text_alignment }}{% else %}dsgn-pck__justify-{{ block.settings.horizontal_alignment }}{% endif %}">
+    <div class="dsgn-pck__review-stars-wrapper">
+      <div class="dsgn-pck__stars">
+        {%- for i in (1..5) -%}
+          <div class="dsgn-pck__star">
+            {%- if i <= block.settings.star_rating -%}
+              {%- if block.settings.star_style == 'star_1' -%}
+                <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M5.2 18a.8.8 0 01-.792-.914l.743-5.203-2.917-2.917a.8.8 0 01.434-1.355l4.398-.733 2.218-4.435a.8.8 0 011.435.008l2.123 4.361 4.498.801a.8.8 0 01.425 1.353l-2.917 2.917.744 5.203a.8.8 0 01-1.154.828l-4.382-2.22-4.502 2.223A.792.792 0 015.2 18z" fill="#5C5F62"/></svg>
+              {% elsif block.settings.star_style == 'star_2' -%}
+                <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24"><path d="M12 .288l2.833 8.718h9.167l-7.417 5.389 2.833 8.718-7.416-5.388-7.417 5.388 2.833-8.718-7.416-5.389h9.167z"/></svg>
+              {% elsif block.settings.star_style == 'star_3' -%}
+                <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m11.322 2.923c.126-.259.39-.423.678-.423.289 0 .552.164.678.423.974 1.998 2.65 5.44 2.65 5.44s3.811.524 6.022.829c.403.055.65.396.65.747 0 .19-.072.383-.231.536-1.61 1.538-4.382 4.191-4.382 4.191s.677 3.767 1.069 5.952c.083.462-.275.882-.742.882-.122 0-.244-.029-.355-.089-1.968-1.048-5.359-2.851-5.359-2.851s-3.391 1.803-5.359 2.851c-.111.06-.234.089-.356.089-.465 0-.825-.421-.741-.882.393-2.185 1.07-5.952 1.07-5.952s-2.773-2.653-4.382-4.191c-.16-.153-.232-.346-.232-.535 0-.352.249-.694.651-.748 2.211-.305 6.021-.829 6.021-.829s1.677-3.442 2.65-5.44z" fill-rule="nonzero"/></svg>
+              {% elsif block.settings.star_style == 'star_4' -%}
+                <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm4.326 18.266l-4.326-2.314-4.326 2.313.863-4.829-3.537-3.399 4.86-.671 2.14-4.415 2.14 4.415 4.86.671-3.537 3.4.863 4.829z"/></svg>
+              {% elsif block.settings.star_style == 'star_5' -%}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg>
+              {% endif %}
+            {%- else -%}
+              {%- if block.settings.star_style == 'star_1' -%}
+                <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M6.71 15.116l3.357-1.658.892.452 2.327 1.178-.56-3.912.708-.707 1.29-1.29-3.235-.576-.445-.915-1.059-2.176L8.4 8.683l-1.005.168-2.098.35 1.975 1.975-.141.99-.422 2.95zM5.2 18a.8.8 0 01-.792-.914l.743-5.203-2.917-2.917a.8.8 0 01.434-1.355l4.398-.733 2.218-4.435a.8.8 0 011.435.008l2.123 4.361 4.498.801a.8.8 0 01.425 1.353l-2.917 2.917.744 5.203a.8.8 0 01-1.154.828l-4.382-2.22-4.502 2.223A.792.792 0 015.2 18z" fill="#5C5F62"/></svg>
+              {% elsif block.settings.star_style == 'star_2' -%}
+                <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24"><path d="M12 6.76l1.379 4.246h4.465l-3.612 2.625 1.379 4.246-3.611-2.625-3.612 2.625 1.379-4.246-3.612-2.625h4.465l1.38-4.246zm0-6.472l-2.833 8.718h-9.167l7.416 5.389-2.833 8.718 7.417-5.388 7.416 5.388-2.833-8.718 7.417-5.389h-9.167l-2.833-8.718z"/></svg>
+              {% elsif block.settings.star_style == 'star_3' -%}
+                <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m11.322 2.923c.126-.259.39-.423.678-.423.289 0 .552.164.678.423.974 1.998 2.65 5.44 2.65 5.44s3.811.524 6.022.829c.403.055.65.396.65.747 0 .19-.072.383-.231.536-1.61 1.538-4.382 4.191-4.382 4.191s.677 3.767 1.069 5.952c.083.462-.275.882-.742.882-.122 0-.244-.029-.355-.089-1.968-1.048-5.359-2.851-5.359-2.851s-3.391 1.803-5.359 2.851c-.111.06-.234.089-.356.089-.465 0-.825-.421-.741-.882.393-2.185 1.07-5.952 1.07-5.952s-2.773-2.653-4.382-4.191c-.16-.153-.232-.346-.232-.535 0-.352.249-.694.651-.748 2.211-.305 6.021-.829 6.021-.829s1.677-3.442 2.65-5.44zm.678 2.033-2.361 4.792-5.246.719 3.848 3.643-.948 5.255 4.707-2.505 4.707 2.505-.951-5.236 3.851-3.662-5.314-.756z" fill-rule="nonzero"/></svg>
+              {% elsif block.settings.star_style == 'star_4' -%}
+                <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24"><path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-1.834 9.686l-4.166.575 3.032 2.914-.74 4.139 3.708-1.982 3.708 1.983-.74-4.139 3.032-2.915-4.166-.575-1.834-3.784-1.834 3.784z"/></svg>
+              {% elsif block.settings.star_style == 'star_5' -%}
+                <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24"><path d="M12 5.173l2.335 4.817 5.305.732-3.861 3.71.942 5.27-4.721-2.524-4.721 2.525.942-5.27-3.861-3.71 5.305-.733 2.335-4.817zm0-4.586l-3.668 7.568-8.332 1.151 6.064 5.828-1.48 8.279 7.416-3.967 7.416 3.966-1.48-8.279 6.064-5.827-8.332-1.15-3.668-7.569z"/></svg>
+              {% endif %}
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+      {%- if block.settings.text != blank -%}
+        <div class="dsgn-pck__review-content">
+          <div class="dsgn-pck__text dsgn-pck__review-text dsgn-pck__rte{% if text_role_active %} dsgn-pck__text-{{ block.settings.custom_text_name }}{% endif %}">
+            {{ block.settings.text | replace: '[review_count]', block.settings.review_count }}
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Review stars",
+  "tag": null,
+  "settings": [
+    {
+      "type": "range",
+      "id": "star_rating",
+      "label": "Star rating",
+      "min": 0,
+      "max": 5,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "stars_size",
+      "label": "Stars size",
+      "min": 10,
+      "max": 40,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "info": "Controls the spacing between the stars.",
+      "type": "range",
+      "id": "star_gap",
+      "label": "Star gap",
+      "default": 2,
+      "min": 0,
+      "max": 40,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Star color",
+      "default": "#5C5F62"
+    },
+    {
+      "type": "select",
+      "id": "star_style",
+      "label": "Star style",
+      "default": "star_1",
+      "options": [
+        {
+          "value": "star_1",
+          "label": "Star 1"
+        },
+        {
+          "value": "star_2",
+          "label": "Star 2"
+        },
+        {
+          "value": "star_3",
+          "label": "Star 3"
+        },
+        {
+          "value": "star_4",
+          "label": "Star 4"
+        },
+        {
+          "value": "star_5",
+          "label": "Star 5"
+        }
+      ]
+    },
+    {
+      "info": "Controls the spacing between the stars and the text.",
+      "type": "range",
+      "id": "gap",
+      "label": "Stars/text gap",
+      "default": 5,
+      "min": 0,
+      "max": 40,
+      "unit": "px"
+    },
+    {
+      "type": "text",
+      "id": "review_count",
+      "label": "Review count",
+      "default": "1000+",
+      "info": "Use [review_count] to display the review count in the text area below."
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Over [review_count] 5-star reviews</p>"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system == 'global_style' }}",
+      "type": "select",
+      "id": "custom_text_name",
+      "label": "🌈 Text style",
+      "info": "Apply a text style from your Design System to the review text.",
+      "default": "small",
+      "options": [
+        { "value": "body", "label": "Body text" },
+        { "value": "small", "label": "Small text" },
+        { "value": "lead", "label": "Lead" },
+        { "value": "pagination", "label": "Pagination" },
+        { "value": "breadcrumbs", "label": "Breadcrumbs" },
+        { "value": "custom-1", "label": "Custom 1" },
+        { "value": "custom-2", "label": "Custom 2" },
+        { "value": "custom-3", "label": "Custom 3" },
+        { "value": "custom", "label": "None" }
+      ]
+    },
+    {
+      "visible_if": "{{ section.settings.design_system == 'global_style' and block.settings.custom_text_name != 'custom' }}",
+      "type": "checkbox",
+      "id": "text_override",
+      "label": "Tweak text style",
+      "default": false
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' }}",
+      "type": "header",
+      "content": "🎨 Text style"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "color",
+      "id": "text_color",
+      "label": "Color"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "checkbox",
+      "id": "text_enable_custom_size",
+      "label": "Enable custom text size",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.text_enable_custom_size and section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "text",
+      "id": "text_size",
+      "label": "Text size",
+      "info": "e.g. 14px or 0.9rem"
+    },
+    {
+      "visible_if": "{{ block.settings.text_enable_custom_size and section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "text",
+      "id": "mobile_text_size",
+      "label": "📱 Mobile & narrow display text size",
+      "info": "Leave empty to match custom text size."
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "checkbox",
+      "id": "text_enable_custom_text_style",
+      "label": "Enable custom text style",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.text_enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "select",
+      "id": "text_text_weight",
+      "label": "Text weight",
+      "default": "default",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "bold", "label": "Bold" }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.text_enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "select",
+      "id": "text_text_style",
+      "label": "Text style",
+      "default": "default",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "italic", "label": "Italic" }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.text_enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "select",
+      "id": "text_text_transform",
+      "label": "Text transform",
+      "default": "default",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "lowercase", "label": "Lowercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.text_enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "text",
+      "id": "text_letter_spacing",
+      "label": "Letter spacing"
+    },
+    {
+      "visible_if": "{{ block.settings.text_enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "text",
+      "id": "text_line_height",
+      "label": "Line height"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "checkbox",
+      "id": "text_enable_custom_font",
+      "label": "Enable custom font",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.text_enable_custom_font and section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "font_picker",
+      "id": "text_custom_font",
+      "label": "Text font",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "header",
+      "content": "🖼 Layout"
+    },
+    {
+      "type": "range",
+      "id": "base_width",
+      "label": "Size",
+      "min": 50,
+      "max": 100,
+      "default": 100,
+      "unit": "%",
+      "info": "Size is based on the width of the container. [Learn more]( https://design-packs.gitbook.io/docs/fundamentals/block-settings/size-controls-for-image-and-video-blocks)"
+    },
+    {
+      "type": "text",
+      "id": "max_width",
+      "label": "Maximum width",
+      "placeholder": "eg. 1200px",
+      "info": "Sets width constraint for content."
+    },
+    {
+      "visible_if": "{{ block.settings.base_width < 100 or block.settings.max_width != blank }}",
+      "type": "select",
+      "id": "horizontal_alignment",
+      "label": "Horizontal alignment",
+      "default": "default",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "hidden_on",
+      "label": "Hidden on",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "desktop",
+          "label": "Desktop"
+        },
+        {
+          "value": "mobile",
+          "label": "Mobile"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_css",
+      "label": "Enable custom CSS",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "mobile_css",
+      "label": "Mobile & narrow custom CSS",
+      "info": "Applied on small screens or in tight spaces."
+    },
+    {
+      "visible_if": "{{ false }}",
+      "type": "checkbox",
+      "id": "enable_custom_text_size",
+      "label": "Enable custom text size (deprecated)",
+      "default": false
+    },
+    {
+      "visible_if": "{{ false }}",
+      "type": "text",
+      "id": "block_text_size",
+      "label": "Text size",
+      "info": "Leave empty to default to base size of 18px."
+    },
+    {
+      "visible_if": "{{ false }}",
+      "type": "text",
+      "id": "mobile_block_text_size",
+      "label": "📱 Mobile & narrow display text size (optional)"
+    },
+    {
+      "type": "paragraph",
+      "content": "Open [Design Packs](/admin/apps/design-packs-1/dashboard) to add/update new sections and blocks."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Review stars 🎒",
+      "category": "* Design Packs: Conversion"
+    }
+  ]
+}
+{% endschema %}

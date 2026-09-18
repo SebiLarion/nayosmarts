@@ -1,0 +1,2142 @@
+{%- comment -%}
+{
+  "pack_name": "Countdown timer block",
+  "pack_author": "Design Packs",
+  "license": "© Design Packs. All rights reserved. This code is protected by copyright law and may not be reproduced, distributed, or used without explicit permission from the author. Shopify complies with the Digital Millennium Copyright Act (DMCA) and responds to claims of copyright infringement using DMCA procedures, which could result in the termination of your Shopify account.",
+}
+{%- endcomment -%}
+
+{% comment %} Security Code - hides section when app uninstalled {% endcomment %}
+{%- unless content_for_header contains 'design_packs_file.js' -%}
+  {%- if request.design_mode -%}
+    <div class="dsgn-pck__no-app-warning">
+      <div class="dsgn-pck__no-app-warning-background">
+      </div>
+      <div class="dsgn-pck__no-app-warning-text dsgn-pck__rte">
+        <p><strong>WARNING!</strong> This premium section will not display properly without an active subscription for <a href="https://apps.shopify.com/design-packs" target="_blank" rel="noopener nofollow">Design Packs</a>. If you need any support please email <a href="mailto:info@design-packs.com" target="_blank" rel="noopener">info@design-packs.com</a> with your questions.</p>
+      </div>
+    </div>
+  {%- endif -%}
+  {%- break -%}
+{%- endunless -%}
+
+{%- comment -%} Assign: Preview section js fix {%- endcomment -%}
+{%- assign section_id = section.id | replace: '+', '' | replace: '=', '' -%}
+{%- assign block_index = section.blocks | find_index: 'id', block.id | plus: 1 -%}
+
+{%- assign enable_metafield_detect = block.settings.enable_metafield_detect | default: section.settings.enable_metafield_detect | default: false -%}
+
+{%- comment -%} Schedule: timezone value {%- endcomment -%}
+{%- assign timezone = block.settings.timezone | split: '~' | first | strip -%}
+
+{%- assign block_horizontal_setting = block.settings.horizontal_alignment | default: 'default' -%}
+
+{%- comment -%}
+  Design System integration: when global_style is on and the user has picked
+  a role (not 'custom'), apply the role class directly to the .dsgn-pck__number
+  (heading role) and .dsgn-pck__label (text role) elements. The styleguide rules
+  match those classes and apply role typography. When override is active, the
+  block writes --block-heading-* / --block-text-* vars on the wrapper which
+  cascade and (via the styleguide rule's var() reads) win over the role default.
+{%- endcomment -%}
+{%- assign heading_role_active = false -%}
+{%- if section.settings.design_system == 'global_style' and block.settings.custom_heading_name != 'custom' and block.settings.custom_heading_name != blank -%}
+  {%- assign heading_role_active = true -%}
+{%- endif -%}
+{%- assign text_role_active = false -%}
+{%- if section.settings.design_system == 'global_style' and block.settings.custom_text_name != 'custom' and block.settings.custom_text_name != blank -%}
+  {%- assign text_role_active = true -%}
+{%- endif -%}
+{%- assign heading_override_active = false -%}
+{%- if section.settings.design_system != 'global_style' or block.settings.heading_override or block.settings.custom_heading_name == 'custom' -%}
+  {%- assign heading_override_active = true -%}
+{%- endif -%}
+{%- assign text_override_active = false -%}
+{%- if section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' -%}
+  {%- assign text_override_active = true -%}
+{%- endif -%}
+
+{%- assign heading_color_alpha = block.settings.heading_color | color_extract: 'alpha' | default: 0 -%}
+{%- assign text_color_alpha = block.settings.text_color | color_extract: 'alpha' | default: 0 -%}
+
+{%- comment -%}
+  Compute safe fallbacks for heading + text colors. Each falls back to the
+  setting (when not transparent), then to the section text color (when not
+  transparent), then to a hardcoded default — so we never emit `transparent`
+  as the resolved color when the user hasn't explicitly chosen one.
+{%- endcomment -%}
+{%- assign section_text_alpha = section.settings.text_color | color_extract: 'alpha' | default: 0 -%}
+{%- assign default_safe_color = '#121212' -%}
+{%- if section_text_alpha != 0 -%}
+  {%- assign default_safe_color = section.settings.text_color -%}
+{%- endif -%}
+{%- assign safe_heading_color = default_safe_color -%}
+{%- if heading_color_alpha != 0 -%}
+  {%- assign safe_heading_color = block.settings.heading_color -%}
+{%- endif -%}
+{%- assign safe_text_color = default_safe_color -%}
+{%- if text_color_alpha != 0 -%}
+  {%- assign safe_text_color = block.settings.text_color -%}
+{%- endif -%}
+
+{%- capture css_styles -%}
+<style data-dp-css="blocks/_dpb_-_countdown_timer.liquid">
+
+  {%- if heading_override_active and block.settings.heading_enable_custom_font and block.settings.heading_custom_font != blank -%}
+    {{ block.settings.heading_custom_font | font_face: font_display: 'swap' }}
+    {{ block.settings.heading_custom_font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+    {{ block.settings.heading_custom_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+    {{ block.settings.heading_custom_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+  {%- endif -%}
+  {%- if text_override_active and block.settings.text_enable_custom_font and block.settings.text_custom_font != blank -%}
+    {{ block.settings.text_custom_font | font_face: font_display: 'swap' }}
+    {{ block.settings.text_custom_font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+    {{ block.settings.text_custom_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+    {{ block.settings.text_custom_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+  {%- endif -%}
+
+  [id*=preview-block] .dsgn-pck__countdown-timer-container {
+    container-type: normal !important;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} {
+    width: {{ block.settings.base_width }}%;
+    max-width: {{ block.settings.max_width | remove: 'px' }}px;
+    display: flex;
+    {%- if block.settings.horizontal_alignment == 'left' -%}
+      align-self: flex-start;
+      margin-left: 0;
+      margin-right: auto;
+      --block-horizontal-alignment: flex-start;
+    {%- elsif block.settings.horizontal_alignment == 'right' -%}
+      align-self: flex-end;
+      margin-left: auto;
+      margin-right: 0;
+      --block-horizontal-alignment: flex-end;
+    {%- elsif block.settings.horizontal_alignment == 'center' -%}
+      align-self: center;
+      margin-left: auto;
+      margin-right: auto;
+      --block-horizontal-alignment: center;
+    {%- else -%}
+      margin-left: var(--block-margin-left, 0);
+      margin-right: var(--block-margin-right, 0);
+    {%- endif -%}
+    --section-horizontal-alignment: {%- if section.settings.text_alignment == 'center' -%}center{%- elsif section.settings.text_alignment == 'right' -%}flex-end{%- endif -%};
+    align-self: var(--block-horizontal-alignment, var(--section-horizontal-alignment));
+
+    {%- comment -%} Heading typography overrides — written as --block-heading-* vars; cascade to .dsgn-pck__number. {%- endcomment -%}
+    {%- if heading_override_active -%}
+      {%- if heading_color_alpha != 0 -%}
+        --block-heading-color: {{ block.settings.heading_color }};
+      {%- endif -%}
+      {%- if block.settings.heading_enable_custom_size and block.settings.heading_size != blank -%}
+        --block-heading-size: {{ block.settings.heading_size }};
+      {%- endif -%}
+      {%- if block.settings.heading_enable_custom_font and block.settings.heading_custom_font != blank -%}
+        --block-heading-font-family: {{ block.settings.heading_custom_font.family }}, {{ block.settings.heading_custom_font.fallback_families }};
+        --block-heading-font-weight: {{ block.settings.heading_custom_font.weight }};
+        --block-heading-font-style: {{ block.settings.heading_custom_font.style }};
+      {%- endif -%}
+      {%- if block.settings.heading_enable_custom_text_style -%}
+        {%- if block.settings.heading_text_weight == 'normal' -%}
+          --block-heading-font-weight: normal;
+        {%- elsif block.settings.heading_text_weight == 'bold' -%}
+          --block-heading-font-weight: bold;
+        {%- endif -%}
+        {%- if block.settings.heading_text_style == 'italic' -%}
+          --block-heading-font-style: italic;
+        {%- elsif block.settings.heading_text_style == 'normal' -%}
+          --block-heading-font-style: normal;
+        {%- endif -%}
+        {%- if block.settings.heading_text_transform != 'default' and block.settings.heading_text_transform != blank -%}
+          --block-heading-text-transform: {{ block.settings.heading_text_transform }};
+        {%- endif -%}
+        {%- if block.settings.heading_letter_spacing != blank -%}
+          --block-heading-letter-spacing: {{ block.settings.heading_letter_spacing }};
+        {%- endif -%}
+        {%- if block.settings.heading_line_height != blank -%}
+          --block-heading-line-height: {{ block.settings.heading_line_height }};
+        {%- endif -%}
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- comment -%} Text typography overrides — written as --block-text-* vars; cascade to .dsgn-pck__label. {%- endcomment -%}
+    {%- if text_override_active -%}
+      {%- if text_color_alpha != 0 -%}
+        --block-text-color: {{ block.settings.text_color }};
+      {%- endif -%}
+      {%- if block.settings.text_enable_custom_size and block.settings.text_size != blank -%}
+        --block-text-size: {{ block.settings.text_size }};
+      {%- endif -%}
+      {%- if block.settings.text_enable_custom_font and block.settings.text_custom_font != blank -%}
+        --block-text-font-family: {{ block.settings.text_custom_font.family }}, {{ block.settings.text_custom_font.fallback_families }};
+        --block-text-font-weight: {{ block.settings.text_custom_font.weight }};
+        --block-text-font-style: {{ block.settings.text_custom_font.style }};
+      {%- endif -%}
+      {%- if block.settings.text_enable_custom_text_style -%}
+        {%- if block.settings.text_text_weight == 'normal' -%}
+          --block-text-font-weight: normal;
+        {%- elsif block.settings.text_text_weight == 'bold' -%}
+          --block-text-font-weight: bold;
+        {%- endif -%}
+        {%- if block.settings.text_text_style == 'italic' -%}
+          --block-text-font-style: italic;
+        {%- elsif block.settings.text_text_style == 'normal' -%}
+          --block-text-font-style: normal;
+        {%- endif -%}
+        {%- if block.settings.text_text_transform != 'default' and block.settings.text_text_transform != blank -%}
+          --block-text-text-transform: {{ block.settings.text_text_transform }};
+        {%- endif -%}
+        {%- if block.settings.text_letter_spacing != blank -%}
+          --block-text-letter-spacing: {{ block.settings.text_letter_spacing }};
+        {%- endif -%}
+        {%- if block.settings.text_line_height != blank -%}
+          --block-text-line-height: {{ block.settings.text_line_height }};
+        {%- endif -%}
+      {%- endif -%}
+    {%- endif -%}
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__countdown-timer-container {
+    container-type: inline-size;
+    container-name: dp-countdown-timer-container;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__clock-wrap {
+    flex: 1 0 auto;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__clock {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    letter-spacing: 1px;
+    border: thin solid {{ block.settings.border_color | default: section.settings.text_color }};
+  }
+
+  {%- comment -%} Number = heading element; reads --block-heading-* with a guaranteed-visible fallback. {%- endcomment -%}
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__number {
+    color: var(--block-heading-color, {{ safe_heading_color }});
+    font-size: calc(var(--block-heading-size, calc(1.5 * var(--dp-g-body-size, var(--dp-body-size, 18px)))) * {{ section.settings.text_size | default: 100 | times: 0.01 }});
+    {%- if section.settings.override_theme_font != blank -%}
+    font-family: var(--block-heading-font-family, var(--main-font));
+    font-weight: var(--block-heading-font-weight, var(--main-font-weight, bold));
+    font-style: var(--block-heading-font-style, var(--main-font-style));
+    {%- else -%}
+    font-family: var(--block-heading-font-family, inherit);
+    font-weight: var(--block-heading-font-weight, bold);
+    font-style: var(--block-heading-font-style, inherit);
+    {%- endif -%}
+    line-height: var(--block-heading-line-height, normal);
+    letter-spacing: var(--block-heading-letter-spacing, 1px);
+    text-transform: var(--block-heading-text-transform, uppercase);
+  }
+
+  {%- comment -%} Label = text element; reads --block-text-* with a guaranteed-visible fallback. {%- endcomment -%}
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__label {
+    color: var(--block-text-color, {{ safe_text_color }});
+    font-size: var(--block-text-size, clamp(9px, 0.5em, 45px));
+    {%- if section.settings.override_theme_font != blank -%}
+    font-family: var(--block-text-font-family, var(--main-font));
+    font-weight: var(--block-text-font-weight, var(--main-font-weight));
+    font-style: var(--block-text-font-style, var(--main-font-style));
+    {%- else -%}
+    font-family: var(--block-text-font-family, inherit);
+    font-weight: var(--block-text-font-weight, inherit);
+    font-style: var(--block-text-font-style, inherit);
+    {%- endif -%}
+    line-height: var(--block-text-line-height, normal);
+    letter-spacing: var(--block-text-letter-spacing, 1px);
+    text-transform: var(--block-text-text-transform, uppercase);
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__measurement {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 20px;
+    border-left: thin solid {{ block.settings.border_color | default: section.settings.text_color }};
+  }
+
+  {% comment %} Style options  {% endcomment %}
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__clock.dsgn-pck__clock--style_1 {
+    border: none;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__clock--style_1 .dsgn-pck__measurement {
+    border-left: none;
+  }
+
+  /*---*/
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__clock.dsgn-pck__clock--style_2 {
+    border: none;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__clock--style_2 .dsgn-pck__measurement {
+    border-left: thin solid {{ block.settings.border_color }};
+  }
+
+  /*---*/
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__clock.dsgn-pck__clock--style_3 {
+    border: none;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__clock--style_3 .dsgn-pck__measurement {
+    border-left: none;
+    padding: 8px 16px;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__clock--style_3 .dsgn-pck__measurement .dsgn-pck__number {
+    border-bottom: thin solid {{ block.settings.border_color }};
+    margin-bottom: 12px;
+  }
+
+  /*---*/
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__clock.dsgn-pck__clock--style_4 {
+    border: thin solid {{ block.settings.border_color }};
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__clock--style_4 .dsgn-pck__measurement {
+    border-left: thin solid {{ block.settings.border_color }};
+  }
+
+
+  {% comment %} end Style options {% endcomment %}
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__measurement:first-child {
+    border-left: none;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__number {
+    width: 100%;
+    text-align: center;
+    padding: 5px 0;
+    min-height: 2em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .dsgn-pck__block-id-{{ block.id }} .dsgn-pck__label {
+    width: max-content;
+    padding: 0.5em 0.8em;
+  }
+
+  /* Custom CSS */
+  {%- if block.settings.enable_custom_css == true and block.settings.custom_css != blank -%}
+    {%- assign custom_css_rules = block.settings.custom_css | strip | split: '}' -%}
+    {%- for rule in custom_css_rules -%}
+      {%- assign clean_rule = rule | strip -%}
+      {%- if clean_rule contains '{' and clean_rule != blank -%}
+        {%- assign rule_parts = clean_rule | split: '{' -%}
+        {%- if rule_parts.size >= 2 -%}
+          {%- assign selector_part = rule_parts[0] | strip -%}
+          {%- assign css_part = rule_parts[1] | strip -%}
+          {%- if css_part != blank -%}
+            {%- if selector_part == blank -%}
+              #DP--{{ block.id }} { {{ css_part }} }
+            {%- else -%}
+              #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+
+  /* Small context - small container and mobile */
+  {%- capture small_context -%}
+  /* Mobile & narrow custom CSS */
+  {%- if block.settings.enable_custom_css == true and block.settings.mobile_css != blank -%}
+    {%- assign mobile_css_rules = block.settings.mobile_css | strip | split: '}' -%}
+    {%- for rule in mobile_css_rules -%}
+      {%- assign clean_rule = rule | strip -%}
+      {%- if clean_rule contains '{' and clean_rule != blank -%}
+        {%- assign rule_parts = clean_rule | split: '{' -%}
+        {%- if rule_parts.size >= 2 -%}
+          {%- assign selector_part = rule_parts[0] | strip -%}
+          {%- assign css_part = rule_parts[1] | strip -%}
+          {%- if css_part != blank -%}
+            {%- if selector_part == blank -%}
+              #DP--{{ block.id }} { {{ css_part }} }
+            {%- else -%}
+              #DP--{{ block.id }} {{ selector_part }} { {{ css_part }} }
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+  {%- endcapture -%}
+
+  @supports (container-type: inline-size) {
+    @container dp-countdown-timer-container (max-width: 300px) {
+      {{ small_context }}
+    }
+  }
+
+  @media (max-width: 767px) {
+    {{ small_context }}
+  }
+
+  /* Hide or show on mobile and desktop */
+  {%- if block.settings.hidden_on == 'mobile' -%}
+    @media (max-width: 767px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+
+  {%- if block.settings.hidden_on == 'desktop' -%}
+    @media (min-width: 768px) {
+      .dsgn-pck__block-id-{{ block.id }} {
+        display: none;
+      }
+    }
+  {%- endif -%}
+
+</style>
+{%- endcapture -%}
+
+{%- capture js_scripts -%}
+  <script type="module" defer>
+    /**
+     * Custom element for handling countdown timer functionality
+     * @extends HTMLElement
+     */
+    class CountdownTimer extends HTMLElement {
+      constructor() {
+        super();
+        this.timeinterval = null;
+      }
+
+      connectedCallback() {
+        this.initializeAndEnableClock();
+      }
+
+      initializeAndEnableClock() {
+        const clockSelector = '.dsgn-pck__clock';
+        const clockWrap = this.querySelector('.dsgn-pck__clock-wrap');
+        if (!clockWrap) return;
+
+        const startDate = clockWrap.dataset.timerStart;
+        const endDate = clockWrap.dataset.timerEnd;
+        const resetDaily = clockWrap.dataset.timerResetDaily === "true";
+        const timezone = clockWrap.dataset.timerTimezone;
+        const startMs = Date.parse(startDate);
+        const endMs = Date.parse(endDate);
+
+        function getTimezoneOffset(timezone) {
+          const offsetMatch = timezone.match(/([-+]\d{2}):(\d{2})/);
+          if (offsetMatch) {
+            const hoursOffset = parseInt(offsetMatch[1], 10);
+            const minutesOffset = parseInt(offsetMatch[2], 10);
+            return hoursOffset * 60 + (hoursOffset < 0 ? -minutesOffset : minutesOffset);
+          }
+          return 0;
+        }
+
+        const timezoneOffset = getTimezoneOffset(timezone);
+
+        function getCurrentMsWithTimezone() {
+          const now = new Date();
+          const localTime = now.getTime();
+          const localOffset = now.getTimezoneOffset();
+          const totalOffset = localOffset + timezoneOffset;
+          return localTime + totalOffset * 60 * 1000;
+        }
+
+        const currentMs = getCurrentMsWithTimezone();
+
+        if (endMs <= currentMs || currentMs < startMs) {
+          clockWrap.style.display = 'none';
+          return;
+        }
+
+        const clock = this.querySelector(clockSelector);
+        let self = this;
+
+        function updateClockDisplay(hours, minutes, seconds, days = null) {
+          if (days !== null) {
+            const daysSpan = clock.querySelector('.dsgn-pck__days .dsgn-pck__number');
+            if (resetDaily == true){
+              daysSpan.innerHTML = 0;
+            } else {
+              if (daysSpan.innerHTML != days) daysSpan.innerHTML = days;
+            }
+          }
+
+          const hoursSpan = clock.querySelector('.dsgn-pck__hours .dsgn-pck__number');
+          const minutesSpan = clock.querySelector('.dsgn-pck__minutes .dsgn-pck__number');
+          const secondsSpan = clock.querySelector('.dsgn-pck__seconds .dsgn-pck__number');
+
+          if (hoursSpan.innerHTML != hours) hoursSpan.innerHTML = ('0' + hours).slice(-2);
+          if (minutesSpan.innerHTML != minutes) minutesSpan.innerHTML = ('0' + minutes).slice(-2);
+          if (secondsSpan.innerHTML != seconds) secondsSpan.innerHTML = ('0' + seconds).slice(-2);
+        }
+
+        function calculateTimeLeft(targetTime) {
+          const total = targetTime - getCurrentMsWithTimezone();
+          const days = Math.floor(total / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((total / (1000 * 60 * 60)) % 24);
+          const minutes = Math.floor((total / (1000 * 60)) % 60);
+          const seconds = Math.floor((total / 1000) % 60);
+          return { total, days, hours, minutes, seconds };
+        }
+
+        function updateClockLogic(timeLeft) {
+          updateClockDisplay(timeLeft.hours, timeLeft.minutes, timeLeft.seconds, timeLeft.days);
+
+          if (timeLeft.total <= 0) {
+            clearInterval(self.timeinterval);
+            if (resetDaily) {
+              self.initializeAndEnableClock();
+            }
+          }
+        }
+
+        if (resetDaily) {
+          const resetInterval = 24 * 60 * 60 * 1000;
+
+          function getNextResetTime() {
+            const lastResetTime = new Date(endMs);
+            const timeSinceLastReset = getCurrentMsWithTimezone() - endMs;
+            const timeUntilNextReset = resetInterval - (timeSinceLastReset % resetInterval);
+            return getCurrentMsWithTimezone() + timeUntilNextReset;
+          }
+
+          function updateClock() {
+            const nextResetTime = getNextResetTime();
+            const timeLeft = calculateTimeLeft(nextResetTime);
+            updateClockLogic(timeLeft);
+          }
+
+          updateClock();
+          this.timeinterval = setInterval(updateClock, 1000);
+
+        } else {
+          function updateClock() {
+            const timeLeft = calculateTimeLeft(endMs);
+            updateClockLogic(timeLeft);
+          }
+
+          updateClock();
+          this.timeinterval = setInterval(updateClock, 1000);
+        }
+      }
+    }
+
+    if (!customElements.get('dp-countdown-timer')) {
+      customElements.define('dp-countdown-timer', CountdownTimer);
+    }
+  </script>
+{%- endcapture -%}
+
+<div id="DP--{{ block.id }}" class="DP--{{ block.id }} dsgn-pck__block dsgn-pck__block-id-{{ block.id }} dsgn-pck__block--{{ block.type }} dsgn-pck__block--{{ block.index }}" {{ block.shopify_attributes }} {% if section.settings.animation != blank %}style="--dsgn-pck-animate: {{ block_index }};"{% endif %}>
+  {{ css_styles }}
+  <dp-countdown-timer class="dsgn-pck__countdown-timer-container">
+    {%- if block.settings.text_start_date_enabled == true -%}
+      {%- if block.settings.start_date != blank -%}
+        {%- assign start_date = block.settings.start_date -%}
+      {%- else -%}
+        {%- assign start_date = 'now' | date: '%s' -%}
+      {%- endif -%}
+    {%- elsif block.settings.text_start_date_enabled == false -%}
+      {% capture start_date %} {{ block.settings.start_month }} {{ block.settings.start_day }} {{ block.settings.start_year }} {{ block.settings.start_time }}{% endcapture %}
+    {%- endif -%}
+    {%- if block.settings.text_end_date_enabled == true -%}
+      {%- if block.settings.end_date != blank -%}
+        {%- assign end_date = block.settings.end_date -%}
+      {%- else -%}
+        {%- assign end_date = 'now' | date: '%s' -%}
+      {%- endif -%}
+    {%- elsif block.settings.text_end_date_enabled == false -%}
+      {% capture end_date %} {{ block.settings.end_month }} {{ block.settings.end_day }} {{ block.settings.end_year }} {{ block.settings.end_time }}{% endcapture %}
+    {%- endif -%}
+    <div class="dsgn-pck__clock-wrap"
+      data-timer-start="{{ start_date }} {{ timezone }}"
+      data-timer-end="{{ end_date }} {{ timezone }}"
+      data-timer-reset-daily="{{ block.settings.reset_daily }}"
+      data-timer-timezone="{{ block.settings.timezone }}">
+        {%- assign number_class = 'dsgn-pck__number' -%}
+        {%- if heading_role_active -%}
+          {%- assign number_class = number_class | append: ' dsgn-pck__heading-' | append: block.settings.custom_heading_name -%}
+        {%- endif -%}
+        {%- assign label_class = 'dsgn-pck__label' -%}
+        {%- if text_role_active -%}
+          {%- assign label_class = label_class | append: ' dsgn-pck__text-' | append: block.settings.custom_text_name -%}
+        {%- endif -%}
+        <div class="dsgn-pck__clock dsgn-pck__grid dsgn-pck__clock--{{ block.settings.style_option }}">
+          <div class="dsgn-pck__measurement dsgn-pck__days">
+            <span class="{{ number_class }}">--</span>
+            <span class="{{ label_class }}">{{ block.settings.days_label | default: 'days' }}</span>
+          </div>
+          <div class="dsgn-pck__measurement dsgn-pck__hours">
+            <span class="{{ number_class }}">--</span>
+            <span class="{{ label_class }}">{{ block.settings.hours_label | default: 'hours' }}</span>
+          </div>
+          <div class="dsgn-pck__measurement dsgn-pck__minutes">
+            <span class="{{ number_class }}">--</span>
+            <span class="{{ label_class }}">{{ block.settings.minutes_label | default: 'minutes' }}</span>
+          </div>
+          <div class="dsgn-pck__measurement dsgn-pck__seconds">
+            <span class="{{ number_class }}">--</span>
+            <span class="{{ label_class }} dsgn-pck__seconds-text">{{ block.settings.seconds_label | default: 'seconds' }}</span>
+          </div>
+        </div>
+    </div>
+  </dp-countdown-timer>
+  {{ js_scripts }}
+</div>
+
+{% schema %}
+{
+  "name": "Countdown timer 🎒",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "days_label",
+      "label": "Days label",
+      "default": "days"
+    },
+    {
+      "type": "text",
+      "id": "hours_label",
+      "label": "Hours label",
+      "default": "hours"
+    },
+    {
+      "type": "text",
+      "id": "minutes_label",
+      "label": "Minutes label",
+      "default": "minutes"
+    },
+    {
+      "type": "text",
+      "id": "seconds_label",
+      "label": "Seconds label",
+      "default": "seconds"
+    },
+    {
+      "type": "select",
+      "id": "timezone",
+      "label": "Timezone",
+      "default": "-05:00 ~ (GMT-05:00) Eastern Time (US & Canada)",
+      "options": [
+        {
+          "value": "-11:00 ~ (GMT-11:00) International Date Line West",
+          "label": "(GMT-11:00) International Date Line West"
+        },
+        {
+          "value": "-11:00 ~ (GMT-11:00) Midway Island",
+          "label": "(GMT-11:00) Midway Island"
+        },
+        {
+          "value": "-11:00 ~ (GMT-11:00) American Samoa",
+          "label": "(GMT-11:00) American Samoa"
+        },
+        {
+          "value": "-10:00 ~ (GMT-10:00) Hawaii",
+          "label": "(GMT-10:00) Hawaii"
+        },
+        {
+          "value": "-09:00 ~ (GMT-09:00) Alaska",
+          "label": "(GMT-09:00) Alaska"
+        },
+        {
+          "value": "-08:00 ~ (GMT-08:00) Pacific Time (US & Canada)",
+          "label": "(GMT-08:00) Pacific Time (US & Canada)"
+        },
+        {
+          "value": "-08:00 ~ (GMT-08:00) Tijuana",
+          "label": "(GMT-08:00) Tijuana"
+        },
+        {
+          "value": "-07:00 ~ (GMT-07:00) Mountain Time (US & Canada)",
+          "label": "(GMT-07:00) Mountain Time (US & Canada)"
+        },
+        {
+          "value": "-07:00 ~ (GMT-07:00) Arizona",
+          "label": "(GMT-07:00) Arizona"
+        },
+        {
+          "value": "-07:00 ~ (GMT-07:00) Chihuahua",
+          "label": "(GMT-07:00) Chihuahua"
+        },
+        {
+          "value": "-06:00 ~ (GMT-06:00) Central Time (US & Canada)",
+          "label": "(GMT-06:00) Central Time (US & Canada)"
+        },
+        {
+          "value": "-06:00 ~ (GMT-06:00) Saskatchewan",
+          "label": "(GMT-06:00) Saskatchewan"
+        },
+        {
+          "value": "-06:00 ~ (GMT-06:00) Monterrey",
+          "label": "(GMT-06:00) Monterrey"
+        },
+        {
+          "value": "-05:00 ~ (GMT-05:00) Eastern Time (US & Canada)",
+          "label": "(GMT-05:00) Eastern Time (US & Canada)"
+        },
+        {
+          "value": "-05:00 ~ (GMT-05:00) Indiana (East)",
+          "label": "(GMT-05:00) Indiana (East)"
+        },
+        {
+          "value": "-05:00 ~ (GMT-05:00) Bogota",
+          "label": "(GMT-05:00) Bogota"
+        },
+        {
+          "value": "-05:00 ~ (GMT-05:00) Lima",
+          "label": "(GMT-05:00) Lima"
+        },
+        {
+          "value": "-05:00 ~ (GMT-05:00) Quito",
+          "label": "(GMT-05:00) Quito"
+        },
+        {
+          "value": "-04:00 ~ (GMT-04:00) Atlantic Time (Canada)",
+          "label": "(GMT-04:00) Atlantic Time (Canada)"
+        },
+        {
+          "value": "-04:30 ~ (GMT-04:30) Caracas",
+          "label": "(GMT-04:30) Caracas"
+        },
+        {
+          "value": "-04:00 ~ (GMT-04:00) La Paz",
+          "label": "(GMT-04:00) La Paz"
+        },
+        {
+          "value": "-04:00 ~ (GMT-04:00) Santiago",
+          "label": "(GMT-04:00) Santiago"
+        },
+        {
+          "value": "-03:30 ~ (GMT-03:30) Newfoundland",
+          "label": "(GMT-03:30) Newfoundland"
+        },
+        {
+          "value": "-03:00 ~ (GMT-03:00) Brasilia",
+          "label": "(GMT-03:00) Brasilia"
+        },
+        {
+          "value": "-03:00 ~ (GMT-03:00) Buenos Aires",
+          "label": "(GMT-03:00) Buenos Aires"
+        },
+        {
+          "value": "-04:00 ~ (GMT-04:00) Georgetown",
+          "label": "(GMT-04:00) Georgetown"
+        },
+        {
+          "value": "-03:00 ~ (GMT-03:00) Greenland",
+          "label": "(GMT-03:00) Greenland"
+        },
+        {
+          "value": "-01:00 ~ (GMT-01:00) Azores",
+          "label": "(GMT-01:00) Azores"
+        },
+        {
+          "value": "-01:00 ~ (GMT-01:00) Cape Verde Is.",
+          "label": "(GMT-01:00) Cape Verde Is."
+        },
+        {
+          "value": "+00:00 ~ (GMT+00:00) Dublin",
+          "label": "(GMT+00:00) Dublin"
+        },
+        {
+          "value": "+00:00 ~ (GMT+00:00) Edinburgh",
+          "label": "(GMT+00:00) Edinburgh"
+        },
+        {
+          "value": "+00:00 ~ (GMT+00:00) Lisbon",
+          "label": "(GMT+00:00) Lisbon"
+        },
+        {
+          "value": "+00:00 ~ (GMT+00:00) Casablanca",
+          "label": "(GMT+00:00) Casablanca"
+        },
+        {
+          "value": "+00:00 ~ (GMT+00:00) Monrovia",
+          "label": "(GMT+00:00) Monrovia"
+        },
+        {
+          "value": "+00:00 ~ (GMT+00:00) UTC",
+          "label": "(GMT+00:00) UTC"
+        },
+        {
+          "value": "+01:00 ~ (GMT+01:00) Belgrade",
+          "label": "(GMT+01:00) Belgrade"
+        },
+        {
+          "value": "+01:00 ~ (GMT+01:00) Bratislava",
+          "label": "(GMT+01:00) Bratislava"
+        },
+        {
+          "value": "+01:00 ~ (GMT+01:00) Budapest",
+          "label": "(GMT+01:00) Budapest"
+        },
+        {
+          "value": "+01:00 ~ (GMT+01:00) Ljubljana",
+          "label": "(GMT+01:00) Ljubljana"
+        },
+        {
+          "value": "+01:00 ~ (GMT+01:00) Prague",
+          "label": "(GMT+01:00) Prague"
+        },
+        {
+          "value": "+01:00 ~ (GMT+01:00) Sarajevo",
+          "label": "(GMT+01:00) Sarajevo"
+        },
+        {
+          "value": "+01:00 ~ (GMT+01:00) Skopje",
+          "label": "(GMT+01:00) Skopje"
+        },
+        {
+          "value": "+01:00 ~ (GMT+01:00) Warsaw",
+          "label": "(GMT+01:00) Warsaw"
+        },
+        {
+          "value": "+01:00 ~ (GMT+01:00) Zagreb",
+          "label": "(GMT+01:00) Zagreb"
+        },
+        {
+          "value": "+01:00 ~ (GMT+01:00) Brussels",
+          "label": "(GMT+01:00) Brussels"
+        },
+        {
+          "value": "+01:00 ~ (GMT+01:00) Copenhagen",
+          "label": "(GMT+01:00) Copenhagen"
+        },
+        {
+          "value": "+01:00 ~ (GMT+01:00) Madrid",
+          "label": "(GMT+01:00) Madrid"
+        },
+        {
+          "value": "+01:00 ~ (GMT+01:00) Paris",
+          "label": "(GMT+01:00) Paris"
+        },
+        {
+          "value": "+01:00 ~ (GMT+01:00) Amsterdam",
+          "label": "(GMT+01:00) Amsterdam"
+        },
+        {
+          "value": "+01:00 ~ (GMT+01:00) Berlin",
+          "label": "(GMT+01:00) Berlin"
+        },
+        {
+          "value": "+01:00 ~ (GMT+01:00) Bern",
+          "label": "(GMT+01:00) Bern"
+        },
+        {
+          "value": "+01:00 ~ (GMT+01:00) Rome",
+          "label": "(GMT+01:00) Rome"
+        },
+        {
+          "value": "+01:00 ~ (GMT+01:00) Stockholm",
+          "label": "(GMT+01:00) Stockholm"
+        },
+        {
+          "value": "+01:00 ~ (GMT+01:00) Vienna",
+          "label": "(GMT+01:00) Vienna"
+        },
+        {
+          "value": "+01:00 ~ (GMT+01:00) West Central Africa",
+          "label": "(GMT+01:00) West Central Africa"
+        },
+        {
+          "value": "+02:00 ~ (GMT+02:00) Bucharest",
+          "label": "(GMT+02:00) Bucharest"
+        },
+        {
+          "value": "+02:00 ~ (GMT+02:00) Cairo",
+          "label": "(GMT+02:00) Cairo"
+        },
+        {
+          "value": "+02:00 ~ (GMT+02:00) Helsinki",
+          "label": "(GMT+02:00) Helsinki"
+        },
+        {
+          "value": "+02:00 ~ (GMT+02:00) Kyiv",
+          "label": "(GMT+02:00) Kyiv"
+        },
+        {
+          "value": "+02:00 ~ (GMT+02:00) Riga",
+          "label": "(GMT+02:00) Riga"
+        },
+        {
+          "value": "+02:00 ~ (GMT+02:00) Sofia",
+          "label": "(GMT+02:00) Sofia"
+        },
+        {
+          "value": "+02:00 ~ (GMT+02:00) Tallinn",
+          "label": "(GMT+02:00) Tallinn"
+        },
+        {
+          "value": "+02:00 ~ (GMT+02:00) Vilnius",
+          "label": "(GMT+02:00) Vilnius"
+        },
+        {
+          "value": "+02:00 ~ (GMT+02:00) Athens",
+          "label": "(GMT+02:00) Athens"
+        },
+        {
+          "value": "+02:00 ~ (GMT+02:00) Istanbul",
+          "label": "(GMT+02:00) Istanbul"
+        },
+        {
+          "value": "+03:00 ~ (GMT+03:00) Minsk",
+          "label": "(GMT+03:00) Minsk"
+        },
+        {
+          "value": "+02:00 ~ (GMT+02:00) Jerusalem",
+          "label": "(GMT+02:00) Jerusalem"
+        },
+        {
+          "value": "+02:00 ~ (GMT+02:00) Harare",
+          "label": "(GMT+02:00) Harare"
+        },
+        {
+          "value": "+02:00 ~ (GMT+02:00) Pretoria",
+          "label": "(GMT+02:00) Pretoria"
+        },
+        {
+          "value": "+04:00 ~ (GMT+04:00) Moscow",
+          "label": "(GMT+04:00) Moscow"
+        },
+        {
+          "value": "+04:00 ~ (GMT+04:00) Volgograd",
+          "label": "(GMT+04:00) Volgograd"
+        },
+        {
+          "value": "+03:00 ~ (GMT+03:00) Kuwait",
+          "label": "(GMT+03:00) Kuwait"
+        },
+        {
+          "value": "+03:00 ~ (GMT+03:00) Riyadh",
+          "label": "(GMT+03:00) Riyadh"
+        },
+        {
+          "value": "+03:00 ~ (GMT+03:00) Nairobi",
+          "label": "(GMT+03:00) Nairobi"
+        },
+        {
+          "value": "+03:00 ~ (GMT+03:00) Baghdad",
+          "label": "(GMT+03:00) Baghdad"
+        },
+        {
+          "value": "+03:30 ~ (GMT+03:30) Tehran",
+          "label": "(GMT+03:30) Tehran"
+        },
+        {
+          "value": "+04:00 ~ (GMT+04:00) Abu Dhabi",
+          "label": "(GMT+04:00) Abu Dhabi"
+        },
+        {
+          "value": "+04:00 ~ (GMT+04:00) Muscat",
+          "label": "(GMT+04:00) Muscat"
+        },
+        {
+          "value": "+04:00 ~ (GMT+04:00) Baku",
+          "label": "(GMT+04:00) Baku"
+        },
+        {
+          "value": "+04:00 ~ (GMT+04:00) Tbilisi",
+          "label": "(GMT+04:00) Tbilisi"
+        },
+        {
+          "value": "+04:00 ~ (GMT+04:00) Yerevan",
+          "label": "(GMT+04:00) Yerevan"
+        },
+        {
+          "value": "+04:30 ~ (GMT+04:30) Kabul",
+          "label": "(GMT+04:30) Kabul"
+        },
+        {
+          "value": "+06:00 ~ (GMT+06:00) Ekaterinburg",
+          "label": "(GMT+06:00) Ekaterinburg"
+        },
+        {
+          "value": "+05:00 ~ (GMT+05:00) Islamabad",
+          "label": "(GMT+05:00) Islamabad"
+        },
+        {
+          "value": "+05:00 ~ (GMT+05:00) Karachi",
+          "label": "(GMT+05:00) Karachi"
+        },
+        {
+          "value": "+05:00 ~ (GMT+05:00) Tashkent",
+          "label": "(GMT+05:00) Tashkent"
+        },
+        {
+          "value": "+05:30 ~ (GMT+05:30) Chennai",
+          "label": "(GMT+05:30) Chennai"
+        },
+        {
+          "value": "+05:30 ~ (GMT+05:30) Kolkata",
+          "label": "(GMT+05:30) Kolkata"
+        },
+        {
+          "value": "+05:45 ~ (GMT+05:45) Kathmandu",
+          "label": "(GMT+05:45) Kathmandu"
+        },
+        {
+          "value": "+06:00 ~ (GMT+06:00) Astana",
+          "label": "(GMT+06:00) Astana"
+        },
+        {
+          "value": "+06:00 ~ (GMT+06:00) Dhaka",
+          "label": "(GMT+06:00) Dhaka"
+        },
+        {
+          "value": "+05:30 ~ (GMT+05:30) Sri Jayawardenepura",
+          "label": "(GMT+05:30) Sri Jayawardenepura"
+        },
+        {
+          "value": "+06:00 ~ (GMT+06:00) Almaty",
+          "label": "(GMT+06:00) Almaty"
+        },
+        {
+          "value": "+07:00 ~ (GMT+07:00) Novosibirsk",
+          "label": "(GMT+07:00) Novosibirsk"
+        },
+        {
+          "value": "+06:30 ~ (GMT+06:30) Rangoon",
+          "label": "(GMT+06:30) Rangoon"
+        },
+        {
+          "value": "+07:00 ~ (GMT+07:00) Bangkok",
+          "label": "(GMT+07:00) Bangkok"
+        },
+        {
+          "value": "+07:00 ~ (GMT+07:00) Hanoi",
+          "label": "(GMT+07:00) Hanoi"
+        },
+        {
+          "value": "+07:00 ~ (GMT+07:00) Jakarta",
+          "label": "(GMT+07:00) Jakarta"
+        },
+        {
+          "value": "+08:00 ~ (GMT+08:00) Krasnoyarsk",
+          "label": "(GMT+08:00) Krasnoyarsk"
+        },
+        {
+          "value": "+08:00 ~ (GMT+08:00) Beijing",
+          "label": "(GMT+08:00) Beijing"
+        },
+        {
+          "value": "+08:00 ~ (GMT+08:00) Chongqing",
+          "label": "(GMT+08:00) Chongqing"
+        },
+        {
+          "value": "+08:00 ~ (GMT+08:00) Hong Kong",
+          "label": "(GMT+08:00) Hong Kong"
+        },
+        {
+          "value": "+08:00 ~ (GMT+08:00) Urumqi",
+          "label": "(GMT+08:00) Urumqi"
+        },
+        {
+          "value": "+08:00 ~ (GMT+08:00) Kuala Lumpur",
+          "label": "(GMT+08:00) Kuala Lumpur"
+        },
+        {
+          "value": "+08:00 ~ (GMT+08:00) Singapore",
+          "label": "(GMT+08:00) Singapore"
+        },
+        {
+          "value": "+08:00 ~ (GMT+08:00) Taipei",
+          "label": "(GMT+08:00) Taipei"
+        },
+        {
+          "value": "+08:00 ~ (GMT+08:00) Perth",
+          "label": "(GMT+08:00) Perth"
+        },
+        {
+          "value": "+09:00 ~ (GMT+09:00) Irkutsk",
+          "label": "(GMT+09:00) Irkutsk"
+        },
+        {
+          "value": "+08:00 ~ (GMT+08:00) Ulaan Bataar",
+          "label": "(GMT+08:00) Ulaan Bataar"
+        },
+        {
+          "value": "+09:00 ~ (GMT+09:00) Seoul",
+          "label": "(GMT+09:00) Seoul"
+        },
+        {
+          "value": "+09:00 ~ (GMT+09:00) Osaka",
+          "label": "(GMT+09:00) Osaka"
+        },
+        {
+          "value": "+10:00 ~ (GMT+10:00) Yakutsk",
+          "label": "(GMT+10:00) Yakutsk"
+        },
+        {
+          "value": "+09:30 ~ (GMT+09:30) Darwin",
+          "label": "(GMT+09:30) Darwin"
+        },
+        {
+          "value": "+09:30 ~ (GMT+09:30) Adelaide",
+          "label": "(GMT+09:30) Adelaide"
+        },
+        {
+          "value": "+10:00 ~ (GMT+10:00) Canberra",
+          "label": "(GMT+10:00) Canberra"
+        },
+        {
+          "value": "+10:00 ~ (GMT+10:00) Melbourne",
+          "label": "(GMT+10:00) Melbourne"
+        },
+        {
+          "value": "+10:00 ~ (GMT+10:00) Sydney",
+          "label": "(GMT+10:00) Sydney"
+        },
+        {
+          "value": "+10:00 ~ (GMT+10:00) Brisbane",
+          "label": "(GMT+10:00) Brisbane"
+        },
+        {
+          "value": "+10:00 ~ (GMT+10:00) Hobart",
+          "label": "(GMT+10:00) Hobart"
+        },
+        {
+          "value": "+11:00 ~ (GMT+11:00) Vladivostok",
+          "label": "(GMT+11:00) Vladivostok"
+        },
+        {
+          "value": "+10:00 ~ (GMT+10:00) Guam",
+          "label": "(GMT+10:00) Guam"
+        },
+        {
+          "value": "+10:00 ~ (GMT+10:00) Port Moresby",
+          "label": "(GMT+10:00) Port Moresby"
+        },
+        {
+          "value": "+12:00 ~ (GMT+12:00) Magadan",
+          "label": "(GMT+12:00) Magadan"
+        },
+        {
+          "value": "+12:00 ~ (GMT+12:00) Solomon Is.",
+          "label": "(GMT+12:00) Solomon Is."
+        },
+        {
+          "value": "+12:00 ~ (GMT+12:00) Fiji",
+          "label": "(GMT+12:00) Fiji"
+        },
+        {
+          "value": "+12:00 ~ (GMT+12:00) Kamchatka",
+          "label": "(GMT+12:00) Kamchatka"
+        },
+        {
+          "value": "+12:00 ~ (GMT+12:00) Marshall Is.",
+          "label": "(GMT+12:00) Marshall Is."
+        },
+        {
+          "value": "+12:00 ~ (GMT+12:00) Auckland",
+          "label": "(GMT+12:00) Auckland"
+        },
+        {
+          "value": "+13:00 ~ (GMT+13:00) Nuku'alofa",
+          "label": "(GMT+13:00) Nuku'alofa"
+        },
+        {
+          "value": "+13:00 ~ (GMT+13:00) Tokelau Is.",
+          "label": "(GMT+13:00) Tokelau Is."
+        },
+        {
+          "value": "+13:00 ~ (GMT+13:00) Samoa",
+          "label": "(GMT+13:00) Samoa"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "reset_daily",
+      "label": "24hr countdown daily",
+      "info": "If enabled, the countdown timer will reset daily at the End time for the timezone selected. For midnight, use 12:00am (0:00).",
+    },
+    {
+      "type": "header",
+      "content": "⏱ Start",
+      "info": "The countdown timer will start at the date/time selected. If a future date is selected, it will be hidden until that date/time.",
+    },
+    {
+      "type": "checkbox",
+      "id": "text_start_date_enabled",
+      "label": "Enable text start date",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.text_start_date_enabled == true }}",
+      "type": "text",
+      "id": "start_date",
+      "label": "Date",
+      "info": "Enter the date and time in the format YYYY-MM-DD HH:MM:SS. If left blank, the countdown will start immediately."
+    },
+    {
+      "visible_if": "{{ block.settings.text_start_date_enabled == false }}",
+      "type": "select",
+      "id": "start_month",
+      "label": "Month",
+      "default": "January",
+      "options": [
+        {
+          "value": "January",
+          "label": "January"
+        },
+        {
+          "value": "February",
+          "label": "February"
+        },
+        {
+          "value": "March",
+          "label": "March"
+        },
+        {
+          "value": "April",
+          "label": "April"
+        },
+        {
+          "value": "May",
+          "label": "May"
+        },
+        {
+          "value": "June",
+          "label": "June"
+        },
+        {
+          "value": "July",
+          "label": "July"
+        },
+        {
+          "value": "August",
+          "label": "August"
+        },
+        {
+          "value": "September",
+          "label": "September"
+        },
+        {
+          "value": "October",
+          "label": "October"
+        },
+        {
+          "value": "November",
+          "label": "November"
+        },
+        {
+          "value": "December",
+          "label": "December"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.text_start_date_enabled == false }}",
+      "type": "range",
+      "id": "start_day",
+      "label": "Day",
+      "min": 1,
+      "max": 31,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "visible_if": "{{ block.settings.text_start_date_enabled == false }}",
+      "type": "text",
+      "id": "start_year",
+      "label": "Year",
+      "default": "2021"
+    },
+    {
+      "visible_if": "{{ block.settings.text_start_date_enabled == false }}",
+      "type": "select",
+      "id": "start_time",
+      "label": "Start time",
+      "default": "23:30:00",
+      "options": [
+        {
+          "value": "00:00:00",
+          "label": "12:00 am (0:00)"
+        },
+        {
+          "value": "00:30:00",
+          "label": "12:30 am (0:30)"
+        },
+        {
+          "value": "01:00:00",
+          "label": "1:00 am (1:00)"
+        },
+        {
+          "value": "01:30:00",
+          "label": "1:30 am (1:30)"
+        },
+        {
+          "value": "02:00:00",
+          "label": "2:00 am (2:00)"
+        },
+        {
+          "value": "02:30:00",
+          "label": "2:30 am (2:30)"
+        },
+        {
+          "value": "03:00:00",
+          "label": "3:00 am (3:00)"
+        },
+        {
+          "value": "03:30:00",
+          "label": "3:30 am (3:30)"
+        },
+        {
+          "value": "04:00:00",
+          "label": "4:00 am (4:00)"
+        },
+        {
+          "value": "04:30:00",
+          "label": "4:30 am (4:30)"
+        },
+        {
+          "value": "05:00:00",
+          "label": "5:00 am (5:00)"
+        },
+        {
+          "value": "05:30:00",
+          "label": "5:30 am (5:30)"
+        },
+        {
+          "value": "06:00:00",
+          "label": "6:00 am (6:00)"
+        },
+        {
+          "value": "06:30:00",
+          "label": "6:30 am (6:30)"
+        },
+        {
+          "value": "07:00:00",
+          "label": "7:00 am (7:00)"
+        },
+        {
+          "value": "07:30:00",
+          "label": "7:30 am (7:30)"
+        },
+        {
+          "value": "08:00:00",
+          "label": "8:00 am (8:00)"
+        },
+        {
+          "value": "08:30:00",
+          "label": "8:30 am (8:30)"
+        },
+        {
+          "value": "09:00:00",
+          "label": "9:00 am (9:00)"
+        },
+        {
+          "value": "09:30:00",
+          "label": "9:30 am (9:30)"
+        },
+        {
+          "value": "10:00:00",
+          "label": "10:00 am (10:00)"
+        },
+        {
+          "value": "10:30:00",
+          "label": "10:30 am (10:30)"
+        },
+        {
+          "value": "11:00:00",
+          "label": "11:00 am (11:00)"
+        },
+        {
+          "value": "11:30:00",
+          "label": "11:30 am (11:30)"
+        },
+        {
+          "value": "12:00:00",
+          "label": "12:00 pm (12:00)"
+        },
+        {
+          "value": "12:30:00",
+          "label": "12:30 pm (12:30)"
+        },
+        {
+          "value": "13:00:00",
+          "label": "1:00 pm (13:00)"
+        },
+        {
+          "value": "13:30:00",
+          "label": "1:30 pm (13:30)"
+        },
+        {
+          "value": "14:00:00",
+          "label": "2:00 pm (14:00)"
+        },
+        {
+          "value": "14:30:00",
+          "label": "2:30 pm (14:30)"
+        },
+        {
+          "value": "15:00:00",
+          "label": "3:00 pm (15:00)"
+        },
+        {
+          "value": "15:30:00",
+          "label": "3:30 pm (15:30)"
+        },
+        {
+          "value": "16:00:00",
+          "label": "4:00 pm (16:00)"
+        },
+        {
+          "value": "16:30:00",
+          "label": "4:30 pm (16:30)"
+        },
+        {
+          "value": "17:00:00",
+          "label": "5:00 pm (17:00)"
+        },
+        {
+          "value": "17:30:00",
+          "label": "5:30 pm (17:30)"
+        },
+        {
+          "value": "18:00:00",
+          "label": "6:00 pm (18:00)"
+        },
+        {
+          "value": "18:30:00",
+          "label": "6:30 pm (18:30)"
+        },
+        {
+          "value": "19:00:00",
+          "label": "7:00 pm (19:00)"
+        },
+        {
+          "value": "19:30:00",
+          "label": "7:30 pm (19:30)"
+        },
+        {
+          "value": "20:00:00",
+          "label": "8:00 pm (20:00)"
+        },
+        {
+          "value": "20:30:00",
+          "label": "8:30 pm (20:30)"
+        },
+        {
+          "value": "21:00:00",
+          "label": "9:00 pm (21:00)"
+        },
+        {
+          "value": "21:30:00",
+          "label": "9:30 pm (21:30)"
+        },
+        {
+          "value": "22:00:00",
+          "label": "10:00 pm (22:00)"
+        },
+        {
+          "value": "22:30:00",
+          "label": "10:30 pm (22:30)"
+        },
+        {
+          "value": "23:00:00",
+          "label": "11:00 pm (23:00)"
+        },
+        {
+          "value": "23:30:00",
+          "label": "11:30 pm (23:30)"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "🏁 End",
+      "info": "Select the end date and time for the countdown. The countdown will be hidden at the specified date and time."
+    },
+    {
+      "type": "checkbox",
+      "id": "text_end_date_enabled",
+      "label": "Enable text end date",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.text_end_date_enabled == true }}",
+      "type": "text",
+      "id": "end_date",
+      "label": "End date",
+      "info": "Required. Enter the date and time in the format YYYY-MM-DD HH:MM:SS."
+    },
+    {
+      "visible_if": "{{ block.settings.text_end_date_enabled == false }}",
+      "type": "select",
+      "id": "end_month",
+      "label": "Month",
+      "default": "December",
+      "options": [
+        {
+          "value": "January",
+          "label": "January"
+        },
+        {
+          "value": "February",
+          "label": "February"
+        },
+        {
+          "value": "March",
+          "label": "March"
+        },
+        {
+          "value": "April",
+          "label": "April"
+        },
+        {
+          "value": "May",
+          "label": "May"
+        },
+        {
+          "value": "June",
+          "label": "June"
+        },
+        {
+          "value": "July",
+          "label": "July"
+        },
+        {
+          "value": "August",
+          "label": "August"
+        },
+        {
+          "value": "September",
+          "label": "September"
+        },
+        {
+          "value": "October",
+          "label": "October"
+        },
+        {
+          "value": "November",
+          "label": "November"
+        },
+        {
+          "value": "December",
+          "label": "December"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.text_end_date_enabled == false }}",
+      "type": "range",
+      "id": "end_day",
+      "label": "Day",
+      "min": 1,
+      "max": 31,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "visible_if": "{{ block.settings.text_end_date_enabled == false }}",
+      "type": "text",
+      "id": "end_year",
+      "label": "Year",
+      "default": "2030"
+    },
+    {
+      "visible_if": "{{ block.settings.text_end_date_enabled == false }}",
+      "type": "select",
+      "id": "end_time",
+      "label": "End time",
+      "default": "23:30:00",
+      "options": [
+        {
+          "value": "00:00:00",
+          "label": "12:00 am (0:00)"
+        },
+        {
+          "value": "00:30:00",
+          "label": "12:30 am (0:30)"
+        },
+        {
+          "value": "01:00:00",
+          "label": "1:00 am (1:00)"
+        },
+        {
+          "value": "01:30:00",
+          "label": "1:30 am (1:30)"
+        },
+        {
+          "value": "02:00:00",
+          "label": "2:00 am (2:00)"
+        },
+        {
+          "value": "02:30:00",
+          "label": "2:30 am (2:30)"
+        },
+        {
+          "value": "03:00:00",
+          "label": "3:00 am (3:00)"
+        },
+        {
+          "value": "03:30:00",
+          "label": "3:30 am (3:30)"
+        },
+        {
+          "value": "04:00:00",
+          "label": "4:00 am (4:00)"
+        },
+        {
+          "value": "04:30:00",
+          "label": "4:30 am (4:30)"
+        },
+        {
+          "value": "05:00:00",
+          "label": "5:00 am (5:00)"
+        },
+        {
+          "value": "05:30:00",
+          "label": "5:30 am (5:30)"
+        },
+        {
+          "value": "06:00:00",
+          "label": "6:00 am (6:00)"
+        },
+        {
+          "value": "06:30:00",
+          "label": "6:30 am (6:30)"
+        },
+        {
+          "value": "07:00:00",
+          "label": "7:00 am (7:00)"
+        },
+        {
+          "value": "07:30:00",
+          "label": "7:30 am (7:30)"
+        },
+        {
+          "value": "08:00:00",
+          "label": "8:00 am (8:00)"
+        },
+        {
+          "value": "08:30:00",
+          "label": "8:30 am (8:30)"
+        },
+        {
+          "value": "09:00:00",
+          "label": "9:00 am (9:00)"
+        },
+        {
+          "value": "09:30:00",
+          "label": "9:30 am (9:30)"
+        },
+        {
+          "value": "10:00:00",
+          "label": "10:00 am (10:00)"
+        },
+        {
+          "value": "10:30:00",
+          "label": "10:30 am (10:30)"
+        },
+        {
+          "value": "11:00:00",
+          "label": "11:00 am (11:00)"
+        },
+        {
+          "value": "11:30:00",
+          "label": "11:30 am (11:30)"
+        },
+        {
+          "value": "12:00:00",
+          "label": "12:00 pm (12:00)"
+        },
+        {
+          "value": "12:30:00",
+          "label": "12:30 pm (12:30)"
+        },
+        {
+          "value": "13:00:00",
+          "label": "1:00 pm (13:00)"
+        },
+        {
+          "value": "13:30:00",
+          "label": "1:30 pm (13:30)"
+        },
+        {
+          "value": "14:00:00",
+          "label": "2:00 pm (14:00)"
+        },
+        {
+          "value": "14:30:00",
+          "label": "2:30 pm (14:30)"
+        },
+        {
+          "value": "15:00:00",
+          "label": "3:00 pm (15:00)"
+        },
+        {
+          "value": "15:30:00",
+          "label": "3:30 pm (15:30)"
+        },
+        {
+          "value": "16:00:00",
+          "label": "4:00 pm (16:00)"
+        },
+        {
+          "value": "16:30:00",
+          "label": "4:30 pm (16:30)"
+        },
+        {
+          "value": "17:00:00",
+          "label": "5:00 pm (17:00)"
+        },
+        {
+          "value": "17:30:00",
+          "label": "5:30 pm (17:30)"
+        },
+        {
+          "value": "18:00:00",
+          "label": "6:00 pm (18:00)"
+        },
+        {
+          "value": "18:30:00",
+          "label": "6:30 pm (18:30)"
+        },
+        {
+          "value": "19:00:00",
+          "label": "7:00 pm (19:00)"
+        },
+        {
+          "value": "19:30:00",
+          "label": "7:30 pm (19:30)"
+        },
+        {
+          "value": "20:00:00",
+          "label": "8:00 pm (20:00)"
+        },
+        {
+          "value": "20:30:00",
+          "label": "8:30 pm (20:30)"
+        },
+        {
+          "value": "21:00:00",
+          "label": "9:00 pm (21:00)"
+        },
+        {
+          "value": "21:30:00",
+          "label": "9:30 pm (21:30)"
+        },
+        {
+          "value": "22:00:00",
+          "label": "10:00 pm (22:00)"
+        },
+        {
+          "value": "22:30:00",
+          "label": "10:30 pm (22:30)"
+        },
+        {
+          "value": "23:00:00",
+          "label": "11:00 pm (23:00)"
+        },
+        {
+          "value": "23:30:00",
+          "label": "11:30 pm (23:30)"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ section.settings.design_system == 'global_style' }}",
+      "type": "select",
+      "id": "custom_heading_name",
+      "label": "🌈 Heading style",
+      "info": "Apply a heading style from your Design System to the countdown numbers.",
+      "default": "primary",
+      "options": [
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "display", "label": "Display" },
+        { "value": "eyebrow", "label": "Eyebrow" },
+        { "value": "subheading", "label": "Subheading" },
+        { "value": "custom-1", "label": "Custom 1" },
+        { "value": "custom-2", "label": "Custom 2" },
+        { "value": "custom-3", "label": "Custom 3" },
+        { "value": "custom-4", "label": "Custom 4" },
+        { "value": "custom-5", "label": "Custom 5" },
+        { "value": "custom", "label": "None" }
+      ]
+    },
+    {
+      "visible_if": "{{ section.settings.design_system == 'global_style' and block.settings.custom_heading_name != 'custom' }}",
+      "type": "checkbox",
+      "id": "heading_override",
+      "label": "Tweak heading style",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "🎨 Heading style"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.heading_override or block.settings.custom_heading_name == 'custom' }}",
+      "type": "color",
+      "id": "heading_color",
+      "label": "Color",
+      "default": "#121212"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.heading_override or block.settings.custom_heading_name == 'custom' }}",
+      "type": "checkbox",
+      "id": "heading_enable_custom_size",
+      "label": "Enable custom heading size",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.heading_enable_custom_size and section.settings.design_system != 'global_style' or block.settings.heading_override or block.settings.custom_heading_name == 'custom' }}",
+      "type": "text",
+      "id": "heading_size",
+      "label": "Heading size",
+      "info": "e.g. 24px or 2rem"
+    },
+    {
+      "visible_if": "{{ block.settings.heading_enable_custom_size and section.settings.design_system != 'global_style' or block.settings.heading_override or block.settings.custom_heading_name == 'custom' }}",
+      "type": "text",
+      "id": "mobile_heading_size",
+      "label": "📱 Mobile & narrow display heading size",
+      "info": "Leave empty to match custom heading size."
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.heading_override or block.settings.custom_heading_name == 'custom' }}",
+      "type": "checkbox",
+      "id": "heading_enable_custom_text_style",
+      "label": "Enable custom text style",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.heading_enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.heading_override or block.settings.custom_heading_name == 'custom' }}",
+      "type": "select",
+      "id": "heading_text_weight",
+      "label": "Text weight",
+      "default": "default",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "bold", "label": "Bold" }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.heading_enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.heading_override or block.settings.custom_heading_name == 'custom' }}",
+      "type": "select",
+      "id": "heading_text_style",
+      "label": "Text style",
+      "default": "default",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "italic", "label": "Italic" }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.heading_enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.heading_override or block.settings.custom_heading_name == 'custom' }}",
+      "type": "select",
+      "id": "heading_text_transform",
+      "label": "Text transform",
+      "default": "default",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "lowercase", "label": "Lowercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.heading_enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.heading_override or block.settings.custom_heading_name == 'custom' }}",
+      "type": "text",
+      "id": "heading_letter_spacing",
+      "label": "Letter spacing"
+    },
+    {
+      "visible_if": "{{ block.settings.heading_enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.heading_override or block.settings.custom_heading_name == 'custom' }}",
+      "type": "text",
+      "id": "heading_line_height",
+      "label": "Line height"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.heading_override or block.settings.custom_heading_name == 'custom' }}",
+      "type": "checkbox",
+      "id": "heading_enable_custom_font",
+      "label": "Enable custom font",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.heading_enable_custom_font and section.settings.design_system != 'global_style' or block.settings.heading_override or block.settings.custom_heading_name == 'custom' }}",
+      "type": "font_picker",
+      "id": "heading_custom_font",
+      "label": "Heading font",
+      "default": "assistant_n4"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system == 'global_style' }}",
+      "type": "select",
+      "id": "custom_text_name",
+      "label": "🌈 Text style",
+      "info": "Apply a text style from your Design System to the countdown labels.",
+      "default": "small",
+      "options": [
+        { "value": "body", "label": "Body text" },
+        { "value": "small", "label": "Small text" },
+        { "value": "lead", "label": "Lead" },
+        { "value": "pagination", "label": "Pagination" },
+        { "value": "breadcrumbs", "label": "Breadcrumbs" },
+        { "value": "custom-1", "label": "Custom 1" },
+        { "value": "custom-2", "label": "Custom 2" },
+        { "value": "custom-3", "label": "Custom 3" },
+        { "value": "custom", "label": "None" }
+      ]
+    },
+    {
+      "visible_if": "{{ section.settings.design_system == 'global_style' and block.settings.custom_text_name != 'custom' }}",
+      "type": "checkbox",
+      "id": "text_override",
+      "label": "Tweak text style",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "🎨 Text style"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "color",
+      "id": "text_color",
+      "label": "Color",
+      "default": "#121212"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "checkbox",
+      "id": "text_enable_custom_size",
+      "label": "Enable custom text size",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.text_enable_custom_size and section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "text",
+      "id": "text_size",
+      "label": "Text size",
+      "info": "e.g. 14px or 0.9rem"
+    },
+    {
+      "visible_if": "{{ block.settings.text_enable_custom_size and section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "text",
+      "id": "mobile_text_size",
+      "label": "📱 Mobile & narrow display text size",
+      "info": "Leave empty to match custom text size."
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "checkbox",
+      "id": "text_enable_custom_text_style",
+      "label": "Enable custom text style",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.text_enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "select",
+      "id": "text_text_weight",
+      "label": "Text weight",
+      "default": "default",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "bold", "label": "Bold" }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.text_enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "select",
+      "id": "text_text_style",
+      "label": "Text style",
+      "default": "default",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "italic", "label": "Italic" }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.text_enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "select",
+      "id": "text_text_transform",
+      "label": "Text transform",
+      "default": "default",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "lowercase", "label": "Lowercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.text_enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "text",
+      "id": "text_letter_spacing",
+      "label": "Letter spacing"
+    },
+    {
+      "visible_if": "{{ block.settings.text_enable_custom_text_style and section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "text",
+      "id": "text_line_height",
+      "label": "Line height"
+    },
+    {
+      "visible_if": "{{ section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "checkbox",
+      "id": "text_enable_custom_font",
+      "label": "Enable custom font",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.text_enable_custom_font and section.settings.design_system != 'global_style' or block.settings.text_override or block.settings.custom_text_name == 'custom' }}",
+      "type": "font_picker",
+      "id": "text_custom_font",
+      "label": "Text font",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "header",
+      "content": "🎨 Design"
+    },
+    {
+      "type": "select",
+      "id": "style_option",
+      "label": "Style option",
+      "default": "style_4",
+      "options": [
+        {
+          "value": "style_1",
+          "label": "Style 1"
+        },
+        {
+          "value": "style_2",
+          "label": "Style 2"
+        },
+        {
+          "value": "style_3",
+          "label": "Style 3"
+        },
+        {
+          "value": "style_4",
+          "label": "Style 4"
+        }
+      ]
+    },
+    {
+      "visible_if": "{{ block.settings.style_option != 'style_1' }}",
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "🖼 Layout"
+    },
+    {
+      "type": "range",
+      "id": "base_width",
+      "label": "Size",
+      "min": 50,
+      "max": 100,
+      "default": 100,
+      "unit": "%",
+      "info": "Size is based on the width of the container. [Learn more]( https://design-packs.gitbook.io/docs/fundamentals/block-settings/size-controls-for-image-and-video-blocks)"
+    },
+    {
+      "type": "text",
+      "id": "max_width",
+      "label": "Maximum width",
+      "placeholder": "eg. 1200px",
+      "info": "Sets width constraint for content."
+    },
+    {
+      "visible_if": "{{ block.settings.base_width < 100 or block.settings.max_width != blank }}",
+      "type": "select",
+      "id": "horizontal_alignment",
+      "label": "Alignment",
+      "default": "default",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        },
+        {
+          "value": "default",
+          "label": "Default"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "hidden_on",
+      "label": "Hidden on",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "desktop",
+          "label": "Desktop"
+        },
+        {
+          "value": "mobile",
+          "label": "Mobile"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_css",
+      "label": "Enable custom CSS",
+      "default": false
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    },
+    {
+      "visible_if": "{{ block.settings.enable_custom_css == true }}",
+      "type": "liquid",
+      "id": "mobile_css",
+      "label": "Mobile & narrow custom CSS",
+      "info": "Applied on small screens or in tight spaces."
+    },
+    {
+      "type": "paragraph",
+      "content": "Open [Design Packs](/admin/apps/design-packs-1/dashboard) to add/update new sections and blocks."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Countdown timer 🎒",
+      "category": "* Design Packs: Conversion"
+    }
+  ]
+}
+{% endschema %}

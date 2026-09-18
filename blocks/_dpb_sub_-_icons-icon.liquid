@@ -1,0 +1,189 @@
+{% comment %} Images: responsive image widths {% endcomment %}
+{%- assign widths = '180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 1950, 2100, 2260, 2450, 2700, 3000, 3350, 3750, 4100' -%}
+
+{%- assign enable_metafield_detect = section.settings.enable_metafield_detect | default: block.settings.enable_metafield_detect | default: false -%}
+
+{%- assign background_alpha = block.settings.background_solid | color_extract: 'alpha' | default: 0 -%}
+{%- assign background_color_alpha = block.settings.background_color | color_extract: 'alpha' | default: 0 -%}
+{% style %}
+  .dsgn-pck__icon .dsgn-pck__image__wrapper {
+    color: {{ section.settings.text_color | default: '#000000' }};
+  }
+
+  #DP--{{ block.id }} {
+    color: {{ block.settings.text_color }};
+    background-color: {{ block.settings.background_solid }};
+    background-image: {{ block.settings.background_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+    {% if background_alpha != 0 or background_color_alpha != 0 %}
+      padding: 1rem;
+    {% endif  %}
+    border: {{ block.settings.border_style }} {{ block.settings.border_width }}px {{ block.settings.border_color }};
+  }
+  #DP--{{ block.id }} .dsgn-pck__icon-text {
+    color: {{ block.settings.text_color }};
+  }
+{% endstyle %}
+
+<div id="DP--{{ block.id }}" class="dsgn-pck__flex-item dsgn-pck__item  dsgn-pck__icon dsgn-pck__rte">
+  {%- if enable_metafield_detect == false -%}
+    <a {% if block.settings.link != blank %}href="{{ block.settings.link }}"{% endif %} class="dsgn-pck__image__wrapper">
+      {%- if block.settings.icon != blank -%}
+        <svg class="dsgn-pck__svg-sizer" viewBox="0 0 {{ block.settings.icon.width }} {{ block.settings.icon.height }}"></svg>
+        {{ block.settings.icon | image_url: width: block.settings.icon.width | image_tag: widths: widths, sizes: sizes }}
+      {%- else -%}
+        <svg class="dsgn-pck__svg-sizer" viewBox="0 0 2400 2400"></svg>
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' role='img' aria-label='Checked box' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='1' y='1' width='22' height='22' rx='3' ry='3'/%3E%3Cpath d='M5.5 12.5l5 5L18.5 8.5'/%3E%3C/svg%3E%0A" alt="SVG icon" width="24" height="24" />
+      {%- endif -%}
+    </a>
+  {%- endif -%}
+  {%- if block.settings.heading != blank or block.settings.text != blank -%}
+    <div class="dsgn-pck__icon-content">
+      {%- if block.settings.heading != blank -%}
+          <h4 class="dsgn-pck__icon-heading {% if section.settings.design_system != 'global_style' and block.settings.custom_heading_name != 'custom' %} dsgn-pck__small-heading{% endif %}">
+            {%- if block.settings.link != blank -%}
+              <a href="{{ block.settings.link }}">
+            {%- endif -%}
+              {{ block.settings.heading }}
+            {%- if block.settings.link != blank -%}
+              </a>
+            {%- endif -%}
+          </h4>
+      {%- endif -%}
+      {%- if block.settings.text != blank -%}
+        <p class="dsgn-pck__icon-text dsgn-pck__rte">
+          {{ block.settings.text }}
+        </p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Icon",
+  "tag": null,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "icon",
+      "label": "Icon"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "🎨 Design"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "alpha": true
+    },
+    {
+      "type": "color",
+      "id": "background_solid",
+      "label": "Background",
+      "alpha": true
+    },
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "label": "Background gradient",
+      "info": "Background gradient replaces background where possible."
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Rounded corners",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "border_style",
+      "label": "Border style",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "dotted",
+          "label": "Dotted"
+        },
+        {
+          "value": "double",
+          "label": "Double"
+        },
+        {
+          "value": "groove",
+          "label": "Groove"
+        },
+        {
+          "value": "ridge",
+          "label": "Ridge"
+        },
+        {
+          "value": "inset",
+          "label": "Inset"
+        },
+        {
+          "value": "outset",
+          "label": "Outset"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",
+      "label": "Border width",
+      "default": 1,
+      "visible_if": "{{ block.settings.border_style != 'none' }}"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.border_style != 'none' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Icon"
+    }
+  ]
+}
+{% endschema %}

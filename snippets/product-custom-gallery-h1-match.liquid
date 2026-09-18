@@ -1,0 +1,61 @@
+{%- liquid
+  assign block_image = block.settings.image
+
+  if block_image == blank
+    echo 'false'
+  else
+    assign matches = true
+
+    assign match_color = block.settings.match_color | default: '' | strip
+    if matches and match_color != blank
+      assign block_color_key = match_color | downcase | replace: '–', '-' | replace: '—', '-' | remove: ' '
+      assign product_color = product.metafields.custom.color.value | default: '' | strip | downcase | replace: '–', '-' | replace: '—', '-' | remove: ' '
+      if product_color == blank
+        assign product_color = product.title | default: '' | downcase | replace: '–', '-' | replace: '—', '-' | remove: ' '
+      endif
+
+      if product_color contains block_color_key or block_color_key contains product_color
+        assign color_match = true
+      else
+        assign color_match = false
+      endif
+
+      if color_match == false
+        assign matches = false
+      endif
+    endif
+
+    assign match_size = block.settings.match_size | default: '' | strip
+    if matches and match_size != blank
+      assign block_size_key = match_size | downcase | replace: '–', '-' | replace: '—', '-' | remove: ' ' | remove: 'l'
+      assign option_match = false
+
+      for option in product.options_with_values
+        assign option_position = option.position
+        assign selected_value = ''
+
+        case option_position
+          when 1
+            assign selected_value = product_variant.option1
+          when 2
+            assign selected_value = product_variant.option2
+          when 3
+            assign selected_value = product_variant.option3
+        endcase
+
+        if selected_value != blank
+          assign selected_size_key = selected_value | downcase | replace: '–', '-' | replace: '—', '-' | remove: ' ' | remove: 'l'
+          if selected_size_key contains block_size_key or block_size_key contains selected_size_key
+            assign option_match = true
+          endif
+        endif
+      endfor
+
+      if option_match == false
+        assign matches = false
+      endif
+    endif
+
+    echo matches
+  endif
+-%}
