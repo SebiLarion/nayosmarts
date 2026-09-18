@@ -7,7 +7,6 @@ if (!customElements.get('product-freebie-h1')) {
         this.colorEl = this.querySelector('[data-freebie-color]');
         this.imageEl = this.querySelector('[data-freebie-image]');
         this.compareEl = this.querySelector('[data-freebie-compare]');
-        this.bundleInput = this.querySelector('[data-freebie-bundle]');
         this.swatches = this.querySelectorAll('[data-bundle-swatch]');
         this.thumbGroups = Array.from(this.querySelectorAll('[data-freebie-thumb-group]'));
 
@@ -114,15 +113,6 @@ if (!customElements.get('product-freebie-h1')) {
             this.compareEl.hidden = true;
             this.compareEl.textContent = '';
           }
-        }
-
-        if (this.bundleInput && swatch.dataset.variantId) {
-          this.bundleInput.value = swatch.dataset.variantId;
-        }
-
-        if (this.bundleInput) {
-          this.bundleInput.disabled = swatch.dataset.available === 'false';
-          this.bundleInput.checked = swatch.dataset.available !== 'false';
         }
       }
     }
