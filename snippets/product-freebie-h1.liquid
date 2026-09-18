@@ -2,14 +2,14 @@
   Herman H1 freebie card. Looks like Bundle with, but the gift is free with the
   main product. Choose a default product plus optional per-market products.
 
+  Display only: the gift is added to the cart by the Koala free gift app, so this
+  card never joins the add-to-cart form.
+
   @param {object} block - freebie block settings
-  @param {object} section - Parent product section
   @param {string} section_id - Section id
-  @param {object} product - Main product on the page
-  @param {string} product_form_id - Main add-to-cart form id
 
   @example
-  {% render 'product-freebie-h1', block: block, section: section, section_id: section.id, product: product, product_form_id: product_form_id %}
+  {% render 'product-freebie-h1', block: block, section_id: section.id %}
 {%- enddoc -%}
 
 {%- liquid
@@ -488,21 +488,6 @@
         </div>
       {%- endif -%}
 
-      {%- comment -%}
-        The form attribute stays on the wrapper, never on the input. A form-associated
-        input named "bundles" shadows the theme's ProductForm.bundles getter.
-      {%- endcomment -%}
-      <div class="freebie-h1__bundle" form="{{ product_form_id }}">
-        <input
-          class="sr-only"
-          type="checkbox"
-          name="bundles"
-          value="{{ current_variant.id }}"
-          data-freebie-bundle
-          checked
-          {% unless current_variant.available %}disabled{% endunless %}
-        >
-      </div>
     </div>
 
     <div class="freebie-h1__gallery">
