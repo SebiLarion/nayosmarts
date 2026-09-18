@@ -1065,13 +1065,7 @@
               {%- render 'product-bundle-with-h1', block: block, section: section, section_id: section.id -%}
 
             {%- when 'freebie' -%}
-              {%- render 'product-freebie-h1',
-                block: block,
-                section: section,
-                section_id: section.id,
-                product: product,
-                product_form_id: product_form_id
-              -%}
+              {%- render 'product-freebie-h1', block: block, section_id: section.id -%}
 
             {%- when 'line_item_property' -%}
               {%- assign custom_name = block.settings.title | escape -%}
