@@ -1,0 +1,1368 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main-product": {
+      "type": "main-product",
+      "blocks": {
+        "badges_xAj3pi": {
+          "type": "badges",
+          "settings": {
+            "show_sold_out": false,
+            "show_save_amount": true,
+            "save_type": "percent"
+          }
+        },
+        "title": {
+          "type": "title",
+          "settings": {
+            "title_size": "product-title-sm",
+            "title_size_mobile": "product-title-sm",
+            "title_tag": "h2",
+            "show_price": true,
+            "show_rating": false
+          }
+        },
+        "judge_me_reviews_preview_badge_UAVMKV": {
+          "type": "shopify://apps/judge-me-reviews/blocks/preview_badge/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {}
+        },
+        "text_dT9iQg": {
+          "type": "text",
+          "settings": {
+            "icon": "wallet",
+            "iwidth": "custom",
+            "icon_width": 24,
+            "text": "<a href=\"/collections/new-release\" title=\"New Release\"><strong>NEW ARRIVALS · 10% OFF FOR A LIMITED TIME | CODE: LAUNCH10</strong></a>",
+            "text_size": "text-sm"
+          }
+        },
+        "text_JfyyXk": {
+          "type": "text",
+          "settings": {
+            "icon": "gift",
+            "iwidth": "custom",
+            "icon_width": 24,
+            "text": "<a href=\"https://nayosmart.com/pages/sale\" target=\"_blank\" title=\"https://nayosmart.com/pages/sale\"><strong>Build Your Perfect Carry | 15% Off Backpack & Sling Bundles</strong></a>",
+            "text_size": "text-sm"
+          }
+        },
+        "text_6CpqT9": {
+          "type": "text",
+          "settings": {
+            "icon": "tags",
+            "iwidth": "custom",
+            "icon_width": 24,
+            "text": "<a href=\"https://nayosmart.com/pages/return-policy\" target=\"_blank\" title=\"https://nayosmart.com/pages/return-policy\"><strong>30 Days Return | 2 Years Warranty | Free Worldwide Shipping ：No Minimum</strong></a>",
+            "text_size": "text-sm"
+          }
+        },
+        "variant_picker_T8qXai": {
+          "type": "variant_picker",
+          "settings": {
+            "enable_dynamic_variants": true,
+            "show_variant_labels": true,
+            "picker_type": "button",
+            "enable_color_swatches": true,
+            "color_swatch_type": "variant",
+            "size_chart": ""
+          }
+        },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_quantity_selector": true,
+            "show_price": false,
+            "show_dynamic_checkout": true,
+            "show_gift_card_recipient": false,
+            "enable_back_in_stock": true,
+            "show_back_in_stock_name": true,
+            "show_back_in_stock_phone": true
+          }
+        },
+        "delivery_date_eta_eta_custom_position_with_section_7QxjHR": {
+          "type": "shopify://apps/delivery-date-eta/blocks/ETA_custom_position_with_section/d8155dd1-6598-4174-aaeb-cbcf85a857bc",
+          "settings": {}
+        },
+        "qikify_upsell_product_rcmd_xwPxWK": {
+          "type": "shopify://apps/qikify-upsell/blocks/product_rcmd/2e94b962-8172-4839-8ad9-7837eb8b017a",
+          "settings": {
+            "product": "{{product}}"
+          }
+        },
+        "text_m9nYjV": {
+          "type": "text",
+          "settings": {
+            "icon": "none",
+            "iwidth": "custom",
+            "icon_width": 24,
+            "text": "<strong>Design-Led Everyday Crossbody</br></strong>UL5 is a 230 g, 2.8L X-Pac crossbody bag built around a sculpted cylinder silhouette, and a magnetic flapand. It carries a focused set of everyday essentials while remaining a visible part of the wearer’s city style.",
+            "text_size": "text-base"
+          }
+        },
+        "icon_list_XF9net": {
+          "type": "icon_list",
+          "settings": {
+            "heading": "Product Highlights",
+            "enable_carousel": false,
+            "show_below_media": false
+          }
+        },
+        "collapsible_tab_93tAeA": {
+          "type": "collapsible_tab",
+          "settings": {
+            "opened": false,
+            "style": "with-border",
+            "icon": "award",
+            "heading": "Features",
+            "content": "<ul><li><strong>Sculpted Cylinder Shape</strong><br/>A distinctive cylinder crossbody bag that creates a clear, dimensional profile on the body.</li><li><strong>Lightweight Everyday Carry</strong><br/>At 230g, UL5 feels easy to wear from morning coffee to evening plans.</li><li><strong>2.8L Daily Essentials Storage</strong><br/>Designed for phone, wallet, earbuds, keys, sunglasses and compact personal items.</li><li><strong>X-Pac Structured Shell</strong><br/>X-Pac material adds crisp structure, tactile texture and everyday waterproof.</li><li><strong>Magnetic Flap Access</strong><br/>A one-hand magnetic flap opens smoothly and closes with a satisfying snap.</li><li><strong>Side Quick-Access Pocket</strong><br/>Keeps high-frequency items like keys, earbuds and cards separate and easy to reach.</li><li><strong>Organized Personal Storage</strong><br/>Internal pockets, including a zipper pocket and AirTag pocket, keep small essentials in place.</li><li><strong>Three City-Ready Colors</strong><br/>Carbon Black, Graphite and Olive give UL5 different moods for daily city styling.</li></ul>",
+            "page": "",
+            "liquid": "",
+            "text_size": "text-sm"
+          }
+        },
+        "collapsible_tab_j8pCA6": {
+          "type": "collapsible_tab",
+          "settings": {
+            "opened": false,
+            "style": "with-border",
+            "icon": "swatchbook",
+            "heading": "Materials",
+            "content": "<ul><li><strong>Outer Fabric:</strong> <br/>Dimension-Polyant X-Pac X21 / X42 three-layer composite material</li><li><strong>Lining:</strong> <br/>230T twill polyester fiber</li><li><strong>Weather Resistance:</strong> <br/>The fabric is waterproof.However, because the entire bag is made using a stitching technique, it is not completely waterproof, but it can withstand daily light rain and minor splashes.</li><li><strong>Back Panel:</strong> <br/>Breathable 3D mesh back panel</li><li><strong>Fasteners:</strong> Frosted zinc alloy</li><li><strong>Zipper:</strong> SBS waterproof zipper</li><li><strong>Webbing:</strong> Polyester jacquard webbing</li></ul>",
+            "page": "",
+            "liquid": "",
+            "text_size": "text-sm"
+          }
+        },
+        "collapsible_tab_wPPHkq": {
+          "type": "collapsible_tab",
+          "settings": {
+            "opened": false,
+            "style": "with-border",
+            "icon": "ruler",
+            "heading": "Dimensions",
+            "content": "<p><strong>Capacity:</strong> 2.8L<br/><br/><strong>Weight:</strong> 230 g / 0.51 lb before loading<br/><br/><strong>Dimensions:</strong></p><ul><li><strong>Height:</strong> 9.8\" (25cm)</li><li><strong>Length:</strong> 4.1\" (10.5cm)</li><li><strong>Width:</strong> 4.1\" (10.5cm)<br/></li></ul><p><strong>Available Colors:</strong></p><ul><li>Carbon Black</li><li>Graphite</li><li>Olive</li></ul>",
+            "page": "",
+            "liquid": "",
+            "text_size": "text-sm"
+          }
+        },
+        "collapsible_tab_JMJqJc": {
+          "type": "collapsible_tab",
+          "settings": {
+            "opened": false,
+            "style": "with-border",
+            "icon": "devices",
+            "heading": "Will My Device Fit?",
+            "content": "<ul><li><strong>What can I fit in?</strong><br/><br/>The UL5 cylinder crossbody bag fits a smartphone, wireless earbuds, slim power bank, wallet, sunglasses, car keys, passport, bank/access cards, lipsticks and small cosmetics. Perfect for daily outings, city strolls and quick day trips to hold your must‑have everyday essentials.</li></ul>",
+            "page": "",
+            "liquid": "",
+            "text_size": "text-sm"
+          }
+        },
+        "collapsible_tab_34hga7": {
+          "type": "collapsible_tab",
+          "settings": {
+            "opened": false,
+            "style": "with-border",
+            "icon": "box",
+            "heading": "Shipping And Returns",
+            "content": "<p>We offer <strong>regular </strong>or <strong>express delivery </strong>to most addresses worldwide. For details, please refer to our <a href=\"/pages/shipping-policy\" title=\"Shipping Policy\"><em>shipping policy</em></a>.</p><p><strong>Delivery time</strong> is calculated at checkout based on your location and selected shipping method. Click to view our<a href=\"/pages/delivery-history\" title=\"Delivery History\"><em> store's past delivery records</em></a> for reference.\"</p><p>And we offer <strong>30-day </strong>return and exchange. For details, please refer to our <a href=\"/pages/return-policy\" title=\"Return Policy\"><em>return policy</em></a>.</p>",
+            "page": "",
+            "liquid": "",
+            "text_size": "text-sm"
+          }
+        },
+        "share": {
+          "type": "share",
+          "settings": {
+            "share_label": "Share",
+            "show_help_desk": true,
+            "help_label": "Need help?",
+            "help_type": "drawer",
+            "help_page": "faq",
+            "help_page_external": false
+          }
+        }
+      },
+      "block_order": [
+        "badges_xAj3pi",
+        "title",
+        "judge_me_reviews_preview_badge_UAVMKV",
+        "text_dT9iQg",
+        "text_JfyyXk",
+        "text_6CpqT9",
+        "variant_picker_T8qXai",
+        "buy_buttons",
+        "delivery_date_eta_eta_custom_position_with_section_7QxjHR",
+        "qikify_upsell_product_rcmd_xwPxWK",
+        "text_m9nYjV",
+        "icon_list_XF9net",
+        "collapsible_tab_93tAeA",
+        "collapsible_tab_j8pCA6",
+        "collapsible_tab_wPPHkq",
+        "collapsible_tab_JMJqJc",
+        "collapsible_tab_34hga7",
+        "share"
+      ],
+      "settings": {
+        "enable_sticky_info": true,
+        "media_size": 50,
+        "gallery_layout": "thumbnail",
+        "thumbnail_position": "beside",
+        "image_ratio": "square",
+        "image_zoom": "lightbox",
+        "hide_variants": false,
+        "enable_video_autoplay": true,
+        "enable_video_looping": true,
+        "mobile_layout": "full_width",
+        "image_ratio_mobile": "square",
+        "mobile_thumbnail": true,
+        "padding_top": 0,
+        "padding_bottom": 84,
+        "divider": false,
+        "full_width": true,
+        "rounded": false
+      }
+    },
+    "help-drawer": {
+      "type": "help-drawer",
+      "blocks": {
+        "content-1": {
+          "type": "content",
+          "settings": {
+            "icon": "rocket",
+            "heading": "Shipping Information",
+            "text": "<p>Click to check our <a href=\"/pages/shipping-policy\" title=\"Shipping Policy\">shipping policy</a>.</p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle",
+            "color_text": "#b45309",
+            "color_background": "#fffbeb",
+            "gradient_background": "",
+            "color_highlight": "#ffddbf",
+            "gradient_highlight": ""
+          }
+        },
+        "content-3": {
+          "type": "content",
+          "settings": {
+            "icon": "chat_bubble",
+            "heading": "FAQ’s",
+            "text": "<p>Click to check <a href=\"/pages/faq\" title=\"FAQs\">FAQ's.</a></p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle",
+            "color_text": "#be123c",
+            "color_background": "#fff1f2",
+            "gradient_background": "",
+            "color_highlight": "#ffddbf",
+            "gradient_highlight": ""
+          }
+        },
+        "content-4": {
+          "type": "content",
+          "settings": {
+            "icon": "phone",
+            "heading": "Contact Us",
+            "text": "<p>Email: <a href=\"/pages/contact-us\" title=\"Contact us\">support@nayosmart.com</a></p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle",
+            "color_text": "#4d7c0f",
+            "color_background": "#f7fee7",
+            "gradient_background": "",
+            "color_highlight": "#ffddbf",
+            "gradient_highlight": ""
+          }
+        }
+      },
+      "block_order": [
+        "content-1",
+        "content-3",
+        "content-4"
+      ],
+      "settings": {
+        "heading": "Need help?",
+        "description": "<p>If you have any questions, you are always welcome to contact us. We'll get back to you as soon as possible, within 24 hours on weekdays.</p>"
+      }
+    },
+    "scrolling_text_UhBfFj": {
+      "type": "scrolling-text",
+      "blocks": {
+        "text_aJPRBX": {
+          "type": "text",
+          "settings": {
+            "text": "Backpacks & Slings Style Combos → <strong>15% Off</strong>",
+            "text_size": 24,
+            "text_font": "heading",
+            "highlighted_text": "half_text",
+            "highlighted_scribble": "circle"
+          }
+        }
+      },
+      "block_order": [
+        "text_aJPRBX"
+      ],
+      "name": "t:sections.scrolling-text.name",
+      "settings": {
+        "direction": "left",
+        "speed": 20,
+        "grid_horizontal": 70,
+        "enable_twin": false,
+        "enable_parallax": true,
+        "color_text": "#e4452a",
+        "color_background": "",
+        "gradient_background": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "padding_top": 0,
+        "padding_bottom": 36,
+        "divider": false,
+        "rounded": false
+      }
+    },
+    "video_EcgNMa": {
+      "type": "video",
+      "name": "t:sections.video.name",
+      "settings": {
+        "transparent_header": false,
+        "video": "shopify://files/videos/nayo‑smart‑ul5‑cylinder‑sling‑bag‑lifestyle‑horizontal‑video-PC.webm",
+        "video_url": "",
+        "description": "",
+        "enable_video_autoplay": true,
+        "enable_video_looping": true,
+        "image_height": "800px",
+        "video_mobile": "shopify://files/videos/nayo‑smart‑ul5‑cylinder‑sling‑bag‑lifestyle‑vertical‑short‑video-Mobile.webm",
+        "video_url_mobile": "",
+        "image_height_mobile": "600px",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "divider": false,
+        "full_width": true,
+        "rounded": false
+      }
+    },
+    "rich_text_Xppa7r": {
+      "type": "rich-text",
+      "blocks": {
+        "heading_KxxDfA": {
+          "type": "heading",
+          "settings": {
+            "heading": "For a Well-Composed City Day",
+            "heading_size": "title-sm",
+            "heading_tag": "h1",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle",
+            "highlighted_reveal": false
+          }
+        },
+        "text_9d8EXH": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Light, practical and made for cafés, galleries, day trips and city walks.</p>",
+            "text_font": "body",
+            "text_size": "subtext-md",
+            "text_max_size": 32,
+            "text_line_height": 1.6,
+            "text_letter_spacing": 0,
+            "text_capitalize": false,
+            "secondary_color": false,
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        }
+      },
+      "block_order": [
+        "heading_KxxDfA",
+        "text_9d8EXH"
+      ],
+      "name": "t:sections.rich-text.name",
+      "settings": {
+        "text_alignment": "center",
+        "text_alignment_mobile": "center",
+        "heading": "",
+        "heading_size": "title-md",
+        "heading_alignment": "text-left md:items-end md:flex-row",
+        "heading_width": "small",
+        "heading_tag": "h2",
+        "subheading": "",
+        "description": "",
+        "button_label": "",
+        "button_link": "",
+        "button_external": false,
+        "button_icon": true,
+        "highlighted_text": "none",
+        "highlighted_scribble": "circle",
+        "highlighted_reveal": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "padding_top": 68,
+        "padding_bottom": 0,
+        "divider": false,
+        "narrow": false,
+        "rounded": false
+      }
+    },
+    "design_pack_v3_tabbed_content_JHbnXa": {
+      "type": "design_pack_v3_-_tabbed_content",
+      "blocks": {
+        "dpb_tab_GfwLfx": {
+          "type": "_dpb_-_tab",
+          "name": "Tab 1",
+          "settings": {
+            "heading": "Top View",
+            "icon_location": "top",
+            "icon_size_type": "fixed",
+            "image_size": 40,
+            "image_size_fixed": 40,
+            "tab_subheading": "",
+            "padding_type": "range",
+            "padding": "10px 20px 30px 40px",
+            "padding_top": 0,
+            "padding_bottom": 0,
+            "padding_left": 0,
+            "padding_right": 0,
+            "enable_custom_css": false,
+            "custom_css": "",
+            "mobile_css": ""
+          },
+          "blocks": {
+            "dpb_inset_image_7rr3fA": {
+              "type": "dpb_-_inset_image",
+              "name": "Image 🎒",
+              "settings": {
+                "inset_image": "shopify://shop_images/UL5-Top-PC-EN_1.png",
+                "image_crop": "none",
+                "link": "",
+                "external_link": false,
+                "mobile_inset_image": "shopify://shop_images/UL5-Top-MO-EN.png",
+                "mobile_styles": false,
+                "mobile_image_crop": "none",
+                "mobile_size_type": "percentage",
+                "mobile_base_width": 80,
+                "mobile_size_fixed": 200,
+                "override": false,
+                "border_radius": 0,
+                "border_width": 0,
+                "border_color": "#000000",
+                "button_shadow": "none",
+                "button_shadow_color": "#000000",
+                "button_shadow_custom": "0 1px 4px rgba(0,0,0,0.08)",
+                "enable_overlay": false,
+                "overlay_color": "#00000066",
+                "overlay_gradient": "",
+                "size_type": "percentage",
+                "base_width": 100,
+                "max_width": "",
+                "size_fixed": 300,
+                "horizontal_alignment": "default",
+                "hidden_on": "none",
+                "enable_custom_css": false,
+                "custom_css": "",
+                "mobile_css": ""
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "dpb_inset_image_7rr3fA"
+          ]
+        },
+        "dpb_tab_k9gpDB": {
+          "type": "_dpb_-_tab",
+          "name": "Tab 1",
+          "settings": {
+            "heading": "Front",
+            "icon_location": "top",
+            "icon_size_type": "fixed",
+            "image_size": 40,
+            "image_size_fixed": 40,
+            "tab_subheading": "",
+            "padding_type": "range",
+            "padding": "10px 20px 30px 40px",
+            "padding_top": 0,
+            "padding_bottom": 0,
+            "padding_left": 0,
+            "padding_right": 0,
+            "enable_custom_css": false,
+            "custom_css": "",
+            "mobile_css": ""
+          },
+          "blocks": {
+            "dpb_inset_image_TQpWxP": {
+              "type": "dpb_-_inset_image",
+              "name": "Image 🎒",
+              "settings": {
+                "inset_image": "shopify://shop_images/UL5-Front-PC-EN.png",
+                "image_crop": "none",
+                "link": "",
+                "external_link": false,
+                "mobile_inset_image": "shopify://shop_images/UL5-Front-MO-CN.png",
+                "mobile_styles": false,
+                "mobile_image_crop": "none",
+                "mobile_size_type": "percentage",
+                "mobile_base_width": 80,
+                "mobile_size_fixed": 200,
+                "override": false,
+                "border_radius": 0,
+                "border_width": 0,
+                "border_color": "#000000",
+                "button_shadow": "none",
+                "button_shadow_color": "#000000",
+                "button_shadow_custom": "0 1px 4px rgba(0,0,0,0.08)",
+                "enable_overlay": false,
+                "overlay_color": "#00000066",
+                "overlay_gradient": "",
+                "size_type": "percentage",
+                "base_width": 100,
+                "max_width": "",
+                "size_fixed": 300,
+                "horizontal_alignment": "default",
+                "hidden_on": "none",
+                "enable_custom_css": false,
+                "custom_css": "",
+                "mobile_css": ""
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "dpb_inset_image_TQpWxP"
+          ]
+        }
+      },
+      "block_order": [
+        "dpb_tab_GfwLfx",
+        "dpb_tab_k9gpDB"
+      ],
+      "name": "Tabbed content 🎒",
+      "settings": {
+        "text_size": 80,
+        "tab_style": "buttons",
+        "buttons_border_radius": 50,
+        "tab_label_highlight_color": "#ffffff",
+        "tab_highlight_color": "#121212",
+        "tab_label_color": "#121212",
+        "tab_background_color": "#e6e1d8",
+        "border_color": "#1a30e1",
+        "text_color": "#121212",
+        "text_background_color": "#e6e1d8",
+        "background_solid": "#e6e1d8",
+        "background_color": "",
+        "show_background_image": false,
+        "base_width": 90,
+        "max_width": "",
+        "inner_padding": 0,
+        "outer_margin": 0,
+        "custom_css": "",
+        "mobile_custom_css": "",
+        "anchor_id": "",
+        "custom_classes": "",
+        "override_theme_font": false,
+        "heading_font": "serif",
+        "main_font": "system_ui_n4",
+        "custom_style": "global",
+        "style_scheme": ""
+      }
+    },
+    "image_with_text_8mRgzL": {
+      "type": "image-with-text",
+      "blocks": {
+        "heading_44wzG3": {
+          "type": "heading",
+          "settings": {
+            "heading": "A Distinctive Shape, Made to Move",
+            "heading_size": "title-sm",
+            "heading_tag": "h2",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle",
+            "highlighted_reveal": false
+          }
+        },
+        "text_Jcqjqc": {
+          "type": "text",
+          "settings": {
+            "text": "<p>A rounded silhouette with character—compact, light, and easy to wear.</p>",
+            "text_font": "body",
+            "text_size": "subtext-md",
+            "text_max_size": 32,
+            "text_line_height": 1.6,
+            "text_letter_spacing": 0,
+            "text_capitalize": false,
+            "secondary_color": false,
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        }
+      },
+      "block_order": [
+        "heading_44wzG3",
+        "text_Jcqjqc"
+      ],
+      "name": "t:sections.image-with-text.name",
+      "settings": {
+        "image": "shopify://shop_images/Black_Nayo_Smart_UL5_X_Pac_cylinder_sling_bag_city_plaza_lifestyle_1ea563ad-fdad-40d8-98d0-2a67a6bad19f.jpg",
+        "image_height": "adapt",
+        "image_width": "medium",
+        "layout": "image_first",
+        "text_alignment": "center",
+        "content_position": "align-self-center",
+        "image_height_mobile": "adapt",
+        "text_alignment_mobile": "left",
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_background_2": "",
+        "gradient_background_2": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "padding_top": 32,
+        "padding_bottom": 0,
+        "divider": false,
+        "full_width": false,
+        "rounded": false,
+        "enable_parallax": false,
+        "parallax_direction": "vertical"
+      }
+    },
+    "image_with_text_zVxrWD": {
+      "type": "image-with-text",
+      "blocks": {
+        "heading_RKnHNr": {
+          "type": "heading",
+          "settings": {
+            "heading": "Creative City Days",
+            "heading_size": "title-sm",
+            "heading_tag": "h2",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle",
+            "highlighted_reveal": false
+          }
+        },
+        "text_dWnz3q": {
+          "type": "text",
+          "settings": {
+            "text": "<p>For cafés, studios and galleries—UL5 keeps essentials close and adds a sculpted detail to your day.</p>",
+            "text_font": "body",
+            "text_size": "subtext-md",
+            "text_max_size": 32,
+            "text_line_height": 1.6,
+            "text_letter_spacing": 0,
+            "text_capitalize": false,
+            "secondary_color": false,
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        }
+      },
+      "block_order": [
+        "heading_RKnHNr",
+        "text_dWnz3q"
+      ],
+      "name": "t:sections.image-with-text.name",
+      "settings": {
+        "image": "shopify://shop_images/Grey_Nayo_Smart_UL5_cylinder_sling_bag_European_city_travel_lifestyle_e0cd3bde-040e-4f64-8047-b3476ed6d909.jpg",
+        "image_height": "adapt",
+        "image_width": "medium",
+        "layout": "text_first",
+        "text_alignment": "center",
+        "content_position": "align-self-center",
+        "image_height_mobile": "adapt",
+        "text_alignment_mobile": "left",
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_background_2": "",
+        "gradient_background_2": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "divider": false,
+        "full_width": false,
+        "rounded": false,
+        "enable_parallax": false,
+        "parallax_direction": "vertical"
+      }
+    },
+    "image_with_text_hB7Laa": {
+      "type": "image-with-text",
+      "blocks": {
+        "heading_J8tiiB": {
+          "type": "heading",
+          "settings": {
+            "heading": "Casual Daily Styling",
+            "heading_size": "title-sm",
+            "heading_tag": "h2",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle",
+            "highlighted_reveal": false
+          }
+        },
+        "text_8AjCfg": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Light to carry, easy to style and shaped to finish relaxed city outfits.</p>",
+            "text_font": "body",
+            "text_size": "subtext-md",
+            "text_max_size": 32,
+            "text_line_height": 1.6,
+            "text_letter_spacing": 0,
+            "text_capitalize": false,
+            "secondary_color": false,
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        }
+      },
+      "block_order": [
+        "heading_J8tiiB",
+        "text_8AjCfg"
+      ],
+      "name": "t:sections.image-with-text.name",
+      "settings": {
+        "image": "shopify://shop_images/20260903164324_2673_3.jpg",
+        "image_height": "adapt",
+        "image_width": "medium",
+        "layout": "image_first",
+        "text_alignment": "center",
+        "content_position": "align-self-center",
+        "image_height_mobile": "adapt",
+        "text_alignment_mobile": "left",
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_background_2": "",
+        "gradient_background_2": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "divider": false,
+        "full_width": false,
+        "rounded": false,
+        "enable_parallax": false,
+        "parallax_direction": "vertical"
+      }
+    },
+    "image_with_text_zhDgAy": {
+      "type": "image-with-text",
+      "blocks": {
+        "heading_eNp7Xb": {
+          "type": "heading",
+          "settings": {
+            "heading": "Light Travel Companion",
+            "heading_size": "title-sm",
+            "heading_tag": "h2",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle",
+            "highlighted_reveal": false
+          }
+        },
+        "text_wRk77r": {
+          "type": "text",
+          "settings": {
+            "text": "<p>After the luggage is stored, UL5 keeps passport, phone and small essentials ready for exploring.</p>",
+            "text_font": "body",
+            "text_size": "subtext-md",
+            "text_max_size": 32,
+            "text_line_height": 1.6,
+            "text_letter_spacing": 0,
+            "text_capitalize": false,
+            "secondary_color": false,
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        }
+      },
+      "block_order": [
+        "heading_eNp7Xb",
+        "text_wRk77r"
+      ],
+      "name": "t:sections.image-with-text.name",
+      "settings": {
+        "image": "shopify://shop_images/Black_Nayo_Smart_UL5_cylinder_sling_bag_travel_scene_with_luggage_14f0cdeb-37a4-493e-a69b-ba9e45cb6a45.jpg",
+        "image_height": "adapt",
+        "image_width": "medium",
+        "layout": "text_first",
+        "text_alignment": "center",
+        "content_position": "align-self-center",
+        "image_height_mobile": "adapt",
+        "text_alignment_mobile": "left",
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_background_2": "",
+        "gradient_background_2": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "divider": false,
+        "full_width": false,
+        "rounded": false,
+        "enable_parallax": false,
+        "parallax_direction": "vertical"
+      }
+    },
+    "faq_3CxUa3": {
+      "type": "faq",
+      "blocks": {
+        "question_DUenNj": {
+          "type": "question",
+          "settings": {
+            "title": "<strong>What fits in the UL5 crossbody bag?</strong>",
+            "text": "<p>UL5 is designed for a focused everyday load such as a phone, compact wallet, earbuds, keys, slim power bank, short cable, sunglasses and small personal items. Fit varies by the exact size and shape of each item</p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        },
+        "question_NQc4tk": {
+          "type": "question",
+          "settings": {
+            "title": "<strong>What is X-Pac?</strong>",
+            "text": "<p>X-Pac is a laminated composite material. UL5 uses X21/X42 construction with a durable nylon face, a structural layer and a waterproof film that also gives the material its recognizable grid texture</p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        },
+        "question_xWYE9B": {
+          "type": "question",
+          "settings": {
+            "title": "<strong>Is UL5 waterproof?</strong>",
+            "text": "<p>The X-Pac material includes a waterproof film, but the complete bag has stitched seams and is not fully waterproof. It is suitable for normal daily drizzle, not immersion or prolonged heavy rain</p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        },
+        "question_AAP8nR": {
+          "type": "question",
+          "settings": {
+            "title": "<strong>How does the magnetic flap close?</strong>",
+            "text": "<p>The magnetic strip helps guide the flap back into position and produces a clear closing sound. Open and close it with one hand while the bag is stable.</p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        },
+        "question_cdpADt": {
+          "type": "question",
+          "settings": {
+            "title": "<strong>What is the side pocket for?</strong>",
+            "text": "<p>The side zipper pocket is sized for a small high-frequency item such as earbuds, keys or a transit card.</p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        },
+        "question_mnQCxQ": {
+          "type": "question",
+          "settings": {
+            "title": "<strong>Does UL5 have an AirTag pocket?</strong>",
+            "text": "<p>Yes. UL5 includes a small internal pocket for an Apple AirTag or a similarly sized tracker. The tracker is sold separately.</p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        },
+        "question_m7JTm6": {
+          "type": "question",
+          "settings": {
+            "title": "<strong>Can UL5 be worn crossbody and over one shoulder?</strong>",
+            "text": "<p>Yes. Adjust the strap for back, side, front or one-shoulder carry. Fit depends on body height, clothing and load.</p>",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        }
+      },
+      "block_order": [
+        "question_DUenNj",
+        "question_NQc4tk",
+        "question_xWYE9B",
+        "question_AAP8nR",
+        "question_cdpADt",
+        "question_mnQCxQ",
+        "question_m7JTm6"
+      ],
+      "name": "t:sections.faq.name",
+      "settings": {
+        "style": "with-border",
+        "heading": "FREQUENTLY ASKED QUESTIONS",
+        "heading_size": "title-sm",
+        "heading_alignment": "text-left md:items-end md:flex-row",
+        "heading_tag": "h2",
+        "subheading": "",
+        "description": "",
+        "button_label": "",
+        "button_link": "",
+        "button_external": false,
+        "button_icon": true,
+        "highlighted_text": "none",
+        "highlighted_scribble": "circle",
+        "highlighted_reveal": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "color_overlay": "#ffffff",
+        "overlay_opacity": 4,
+        "padding_top": 20,
+        "padding_bottom": 0,
+        "divider": false,
+        "narrow": false,
+        "rounded": false
+      }
+    },
+    "shop_the_feed_GtrCEQ": {
+      "type": "shop-the-feed",
+      "blocks": {
+        "feed_UzXdmY": {
+          "type": "feed",
+          "settings": {
+            "video": "shopify://files/videos/nayo‑smart‑ul5‑cylinder‑sling‑bag‑packing‑demo‑webm.webm",
+            "enable_video_autoplay": true,
+            "enable_video_looping": true,
+            "video_on_hover": false,
+            "button_label": "",
+            "button_link": "https://nayosmart.com/pages/sale",
+            "button_external": false,
+            "button_icon": false,
+            "account_name": "",
+            "account_description": "",
+            "account_button": "",
+            "account_link": "",
+            "account_link_external": false,
+            "color_text": "#ffffff",
+            "color_button_text": "#000000",
+            "color_button_background": "#ffffff",
+            "color_button_gradient": "",
+            "hotspot_color_text_1": "#ffffff",
+            "hotspot_vertical_1": 45,
+            "hotspot_horizontal_1": 25,
+            "hotspot_product_1": "",
+            "hotspot_color_text_2": "#ffffff",
+            "hotspot_vertical_2": 30,
+            "hotspot_horizontal_2": 65,
+            "hotspot_product_2": "",
+            "hotspot_color_text_3": "#ffffff",
+            "hotspot_vertical_3": 60,
+            "hotspot_horizontal_3": 75,
+            "hotspot_product_3": "",
+            "hotspot_color_text_4": "#ffffff",
+            "hotspot_vertical_4": 50,
+            "hotspot_horizontal_4": 50,
+            "hotspot_product_4": ""
+          }
+        },
+        "feed_8MJeCj": {
+          "type": "feed",
+          "settings": {
+            "image": "shopify://shop_images/Nayo_Smart_UL5_Cylinder_Sling_Bag_Grey_man_riding_bicycle_with_cylinder_crossbody_sling_bag_urban_cycling_lifestyle.png",
+            "enable_video_autoplay": true,
+            "enable_video_looping": true,
+            "video_on_hover": false,
+            "button_label": "",
+            "button_link": "https://nayosmart.com/pages/sale",
+            "button_external": false,
+            "button_icon": false,
+            "account_name": "",
+            "account_description": "",
+            "account_button": "",
+            "account_link": "",
+            "account_link_external": false,
+            "color_text": "#ffffff",
+            "color_button_text": "#000000",
+            "color_button_background": "#ffffff",
+            "color_button_gradient": "",
+            "hotspot_color_text_1": "#ffffff",
+            "hotspot_vertical_1": 45,
+            "hotspot_horizontal_1": 25,
+            "hotspot_product_1": "",
+            "hotspot_color_text_2": "#ffffff",
+            "hotspot_vertical_2": 30,
+            "hotspot_horizontal_2": 65,
+            "hotspot_product_2": "",
+            "hotspot_color_text_3": "#ffffff",
+            "hotspot_vertical_3": 60,
+            "hotspot_horizontal_3": 75,
+            "hotspot_product_3": "",
+            "hotspot_color_text_4": "#ffffff",
+            "hotspot_vertical_4": 50,
+            "hotspot_horizontal_4": 50,
+            "hotspot_product_4": ""
+          }
+        },
+        "feed_FUrijD": {
+          "type": "feed",
+          "settings": {
+            "image": "shopify://shop_images/Nayo_Smart_UL5_Cylinder_Sling_Bag_Grey_outdoor_full_body_lifestyle_crossbody_shot.jpg",
+            "enable_video_autoplay": true,
+            "enable_video_looping": true,
+            "video_on_hover": false,
+            "button_label": "",
+            "button_link": "https://nayosmart.com/pages/sale",
+            "button_external": false,
+            "button_icon": false,
+            "account_name": "",
+            "account_description": "",
+            "account_button": "",
+            "account_link": "",
+            "account_link_external": false,
+            "color_text": "#ffffff",
+            "color_button_text": "#000000",
+            "color_button_background": "#ffffff",
+            "color_button_gradient": "",
+            "hotspot_color_text_1": "#ffffff",
+            "hotspot_vertical_1": 45,
+            "hotspot_horizontal_1": 25,
+            "hotspot_product_1": "",
+            "hotspot_color_text_2": "#ffffff",
+            "hotspot_vertical_2": 30,
+            "hotspot_horizontal_2": 65,
+            "hotspot_product_2": "",
+            "hotspot_color_text_3": "#ffffff",
+            "hotspot_vertical_3": 60,
+            "hotspot_horizontal_3": 75,
+            "hotspot_product_3": "",
+            "hotspot_color_text_4": "#ffffff",
+            "hotspot_vertical_4": 50,
+            "hotspot_horizontal_4": 50,
+            "hotspot_product_4": ""
+          }
+        },
+        "feed_9UxKcn": {
+          "type": "feed",
+          "settings": {
+            "image": "shopify://shop_images/Nayo_Smart_UL5_Cylinder_Sling_Bag_Grey_back_view_man_wearing_cylinder_crossbody_bag_city_street_commute_lifestyle.jpg",
+            "enable_video_autoplay": true,
+            "enable_video_looping": true,
+            "video_on_hover": false,
+            "button_label": "",
+            "button_link": "https://nayosmart.com/pages/sale",
+            "button_external": false,
+            "button_icon": false,
+            "account_name": "",
+            "account_description": "",
+            "account_button": "",
+            "account_link": "",
+            "account_link_external": false,
+            "color_text": "#ffffff",
+            "color_button_text": "#000000",
+            "color_button_background": "#ffffff",
+            "color_button_gradient": "",
+            "hotspot_color_text_1": "#ffffff",
+            "hotspot_vertical_1": 45,
+            "hotspot_horizontal_1": 25,
+            "hotspot_product_1": "",
+            "hotspot_color_text_2": "#ffffff",
+            "hotspot_vertical_2": 30,
+            "hotspot_horizontal_2": 65,
+            "hotspot_product_2": "",
+            "hotspot_color_text_3": "#ffffff",
+            "hotspot_vertical_3": 60,
+            "hotspot_horizontal_3": 75,
+            "hotspot_product_3": "",
+            "hotspot_color_text_4": "#ffffff",
+            "hotspot_vertical_4": 50,
+            "hotspot_horizontal_4": 50,
+            "hotspot_product_4": ""
+          }
+        },
+        "feed_btyhDK": {
+          "type": "feed",
+          "settings": {
+            "image": "shopify://shop_images/Man_with_coffee_wearing_olive_Nayo_Smart_UL5_cylinder_sling_bag_urban_street_crossbody_lifestyle.jpg",
+            "enable_video_autoplay": true,
+            "enable_video_looping": true,
+            "video_on_hover": false,
+            "button_label": "",
+            "button_link": "https://nayosmart.com/pages/sale",
+            "button_external": false,
+            "button_icon": false,
+            "account_name": "",
+            "account_description": "",
+            "account_button": "",
+            "account_link": "",
+            "account_link_external": false,
+            "color_text": "#ffffff",
+            "color_button_text": "#000000",
+            "color_button_background": "#ffffff",
+            "color_button_gradient": "",
+            "hotspot_color_text_1": "#ffffff",
+            "hotspot_vertical_1": 45,
+            "hotspot_horizontal_1": 25,
+            "hotspot_product_1": "",
+            "hotspot_color_text_2": "#ffffff",
+            "hotspot_vertical_2": 30,
+            "hotspot_horizontal_2": 65,
+            "hotspot_product_2": "",
+            "hotspot_color_text_3": "#ffffff",
+            "hotspot_vertical_3": 60,
+            "hotspot_horizontal_3": 75,
+            "hotspot_product_3": "",
+            "hotspot_color_text_4": "#ffffff",
+            "hotspot_vertical_4": 50,
+            "hotspot_horizontal_4": 50,
+            "hotspot_product_4": ""
+          }
+        }
+      },
+      "block_order": [
+        "feed_UzXdmY",
+        "feed_8MJeCj",
+        "feed_FUrijD",
+        "feed_9UxKcn",
+        "feed_btyhDK"
+      ],
+      "name": "t:sections.shop-the-feed.name",
+      "settings": {
+        "columns": 5,
+        "carousel_on_desktop": true,
+        "image_ratio": "adapt",
+        "columns_mobile": "1",
+        "swipe_on_mobile": true,
+        "account_name": "",
+        "show_vendor": false,
+        "show_price": true,
+        "heading": "Experience It Live",
+        "heading_size": "title-md",
+        "heading_alignment": "text-left md:items-end md:flex-row",
+        "heading_tag": "h2",
+        "subheading": "",
+        "description": "",
+        "button_label": "",
+        "button_link": "https://www.instagram.com/nayosmartofficial",
+        "button_external": false,
+        "button_icon": false,
+        "highlighted_text": "none",
+        "highlighted_scribble": "circle",
+        "highlighted_reveal": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "padding_top": 20,
+        "padding_bottom": 32,
+        "divider": false,
+        "full_width": false,
+        "rounded": false
+      }
+    },
+    "lookbook_RawUtM": {
+      "type": "lookbook",
+      "disabled": true,
+      "name": "t:sections.lookbook.name",
+      "settings": {
+        "image": "shopify://shop_images/PC-UL1-B_fe564d94-9bf9-4aca-a9f9-471f6bf4ea13.jpg",
+        "image_mobile": "shopify://shop_images/UL1-B_1aa77650-6128-47cf-9ddc-51cc7b6b8958.jpg",
+        "heading": "",
+        "heading_size": "title-md",
+        "heading_alignment": "text-center md:items-center",
+        "heading_tag": "h2",
+        "heading_position": "none",
+        "subheading": "",
+        "description": "",
+        "button_label": "",
+        "button_link": "",
+        "button_external": false,
+        "button_icon": true,
+        "highlighted_text": "none",
+        "highlighted_scribble": "circle",
+        "highlighted_reveal": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "color_overlay": "#171717",
+        "overlay_opacity": 30,
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "divider": false,
+        "full_width": true,
+        "rounded": false
+      }
+    },
+    "video_with_text_7cmAkj": {
+      "type": "video-with-text",
+      "blocks": {
+        "heading_3d3CXJ": {
+          "type": "heading",
+          "settings": {
+            "heading": "Product Review",
+            "heading_size": "title-sm",
+            "heading_tag": "h2",
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle",
+            "highlighted_reveal": false
+          }
+        },
+        "text_TghmrU": {
+          "type": "text",
+          "settings": {
+            "text": "<p>In-depth product reviews showcasing real usage and key features.</p>",
+            "text_font": "body",
+            "text_size": "subtext-md",
+            "text_max_size": 32,
+            "text_line_height": 1.6,
+            "text_letter_spacing": 0,
+            "text_capitalize": false,
+            "secondary_color": false,
+            "highlighted_text": "none",
+            "highlighted_scribble": "circle"
+          }
+        }
+      },
+      "block_order": [
+        "heading_3d3CXJ",
+        "text_TghmrU"
+      ],
+      "disabled": true,
+      "settings": {
+        "video_url": "https://www.youtube.com/watch?v=x3_2o8lvcME",
+        "cover_image": "shopify://shop_images/maxresdefault_d8371323-b8e3-4dfb-a668-3134cf963c02.jpg",
+        "description": "",
+        "enable_video_autoplay": false,
+        "enable_video_looping": false,
+        "image_height": "adapt",
+        "video_width": "small",
+        "layout": "video_first",
+        "text_alignment": "left",
+        "content_position": "align-self-center",
+        "video_url_mobile": "",
+        "image_height_mobile": "auto",
+        "text_alignment_mobile": "left",
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_background_2": "",
+        "gradient_background_2": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "padding_top": 72,
+        "padding_bottom": 72,
+        "divider": false,
+        "full_width": false,
+        "rounded": false,
+        "enable_parallax": false,
+        "parallax_direction": "vertical"
+      }
+    },
+    "1745459688e1b8f795": {
+      "type": "apps",
+      "blocks": {
+        "judge_me_reviews_review_widget_kgrfet": {
+          "type": "shopify://apps/judge-me-reviews/blocks/review_widget/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {
+            "review_data": "sample_data",
+            "max_width": 1200,
+            "show_shop_reviews": false,
+            "empty_state": "empty_widget"
+          }
+        }
+      },
+      "block_order": [
+        "judge_me_reviews_review_widget_kgrfet"
+      ],
+      "settings": {
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "padding_top": 0,
+        "padding_bottom": 72,
+        "divider": false,
+        "full_width": false,
+        "rounded": true
+      }
+    },
+    "product-recommendations": {
+      "type": "product-recommendations",
+      "settings": {
+        "product_limit": 6,
+        "columns": 5,
+        "carousel_on_desktop": true,
+        "columns_mobile": "1",
+        "swipe_on_mobile": true,
+        "heading": "You may also like",
+        "heading_size": "title-sm",
+        "heading_alignment": "text-left md:items-end md:flex-row",
+        "heading_tag": "h2",
+        "subheading": "",
+        "description": "",
+        "highlighted_text": "none",
+        "highlighted_scribble": "circle",
+        "highlighted_reveal": false,
+        "color_text": "",
+        "color_background": "",
+        "gradient_background": "",
+        "color_highlight": "",
+        "gradient_highlight": "",
+        "color_button_text": "",
+        "color_button_background": "",
+        "color_button_gradient": "",
+        "padding_top": 36,
+        "padding_bottom": 0,
+        "divider": false,
+        "full_width": false,
+        "rounded": true
+      }
+    }
+  },
+  "order": [
+    "main-product",
+    "help-drawer",
+    "scrolling_text_UhBfFj",
+    "video_EcgNMa",
+    "rich_text_Xppa7r",
+    "design_pack_v3_tabbed_content_JHbnXa",
+    "image_with_text_8mRgzL",
+    "image_with_text_zVxrWD",
+    "image_with_text_hB7Laa",
+    "image_with_text_zhDgAy",
+    "faq_3CxUa3",
+    "shop_the_feed_GtrCEQ",
+    "lookbook_RawUtM",
+    "video_with_text_7cmAkj",
+    "1745459688e1b8f795",
+    "product-recommendations"
+  ]
+}
