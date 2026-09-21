@@ -47,8 +47,8 @@
             "fits_button_label": "See what it fits",
             "fits_option_1_label": "Half-Roll (20L)",
             "fits_option_2_label": "Fully packed (25L)",
-            "fits_image_1": "shopify://shop_images/H1-3-ezgif.com-video-to-webp-converter.webp",
-            "fits_image_2": "shopify://shop_images/adrian-unboxing-max-b-ezgif.com-video-to-webp-converter.webp"
+            "fits_image_1": "shopify://shop_images/Adrian_20L_Common_Macbook.png",
+            "fits_image_2": "shopify://shop_images/Adrian_25L_Common_Gaming_laptop_external_monitor.png"
           }
         },
         "product_variations_yiaQCW": {
@@ -77,8 +77,13 @@
             "size_description_metafield": "custom.variant_description"
           }
         },
+        "delivery_date_eta_eta_custom_position_with_section_HYWGwQ": {
+          "type": "shopify://apps/delivery-date-eta/blocks/ETA_custom_position_with_section/d8155dd1-6598-4174-aaeb-cbcf85a857bc",
+          "settings": {}
+        },
         "delivery_date_eta_eta_custom_position_with_section_VNNN8n": {
           "type": "delivery_estimate",
+          "disabled": true,
           "settings": {}
         },
         "buy_buttons": {
@@ -474,6 +479,7 @@
         "title",
         "product_variations_yiaQCW",
         "variant_picker",
+        "delivery_date_eta_eta_custom_position_with_section_HYWGwQ",
         "delivery_date_eta_eta_custom_position_with_section_VNNN8n",
         "buy_buttons",
         "freebie",
@@ -518,7 +524,7 @@
         "gallery_green_16"
       ],
       "custom_css": [
-        "koala-gifts-reward-showcase{display: none!important;}"
+        "koala-gifts-reward-showcase {display: none !important;}"
       ],
       "settings": {
         "enable_sticky_info": false,
