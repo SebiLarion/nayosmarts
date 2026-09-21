@@ -274,9 +274,18 @@
                       {%- assign logo_key = 'logo_' | append: i -%}
                       {%- assign logo = block.settings[logo_key] -%}
                       {%- if logo != blank -%}
-                        {%- assign logo_width = 112 | times: logo.aspect_ratio | round -%}
+                        {%- liquid
+                          # Picked images carry no height of their own, so they need the same
+                          # per-logo height the asset list gets from its file|height syntax.
+                          # Without it every picked logo falls back to the CSS default and ends
+                          # up a different size than the same artwork added as an asset.
+                          assign logo_height_key = logo_key | append: '_height'
+                          assign logo_h = block.settings[logo_height_key] | default: 28
+                          assign logo_width = logo_h | times: logo.aspect_ratio | round
+                        -%}
                         {%- capture logo_sizes -%}{{ logo_width }}px{%- endcapture -%}
-                        {{- logo | image_url: width: 480 | image_tag: loading: 'lazy', sizes: logo_sizes, widths: '160, 240, 320, 480' -}}
+                        {%- capture logo_style -%}--logo-h: {{ logo_h }}px{%- endcapture -%}
+                        {{- logo | image_url: width: 480 | image_tag: loading: 'lazy', sizes: logo_sizes, widths: '160, 240, 320, 480', style: logo_style -}}
                       {%- endif -%}
                     {%- endfor -%}
                     {%- if block.settings.logos != blank -%}
@@ -479,13 +488,21 @@
           "default": "Europe"
         },
         { "type": "image_picker", "id": "logo_1", "label": "Logo 1" },
+        { "type": "range", "id": "logo_1_height", "label": "Logo 1 height", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 28 },
         { "type": "image_picker", "id": "logo_2", "label": "Logo 2" },
+        { "type": "range", "id": "logo_2_height", "label": "Logo 2 height", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 28 },
         { "type": "image_picker", "id": "logo_3", "label": "Logo 3" },
+        { "type": "range", "id": "logo_3_height", "label": "Logo 3 height", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 28 },
         { "type": "image_picker", "id": "logo_4", "label": "Logo 4" },
+        { "type": "range", "id": "logo_4_height", "label": "Logo 4 height", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 28 },
         { "type": "image_picker", "id": "logo_5", "label": "Logo 5" },
+        { "type": "range", "id": "logo_5_height", "label": "Logo 5 height", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 28 },
         { "type": "image_picker", "id": "logo_6", "label": "Logo 6" },
+        { "type": "range", "id": "logo_6_height", "label": "Logo 6 height", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 28 },
         { "type": "image_picker", "id": "logo_7", "label": "Logo 7" },
+        { "type": "range", "id": "logo_7_height", "label": "Logo 7 height", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 28 },
         { "type": "image_picker", "id": "logo_8", "label": "Logo 8" },
+        { "type": "range", "id": "logo_8_height", "label": "Logo 8 height", "min": 12, "max": 80, "step": 1, "unit": "px", "default": 28 },
         {
           "type": "textarea",
           "id": "logos",
