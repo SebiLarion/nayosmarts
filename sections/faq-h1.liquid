@@ -282,9 +282,25 @@
                     {%- if block.settings.logos != blank -%}
                       {%- assign logo_items = block.settings.logos | split: ',' -%}
                       {%- for logo_item in logo_items -%}
-                        {%- assign logo_parts = logo_item | strip | split: '|' -%}
-                        {%- assign logo_file = logo_parts[0] | strip -%}
-                        {%- if logo_file != blank -%}
+                        {%- liquid
+                          assign logo_parts = logo_item | strip | split: '|'
+                          assign logo_file = logo_parts[0] | strip
+
+                          # This is a text setting, so Shopify treats it as translatable content
+                          # and a translator can turn the asset file names into words, which then
+                          # point at assets that do not exist. Only render names that still look
+                          # like an asset: an image extension, and nothing url_encode has to
+                          # escape. Anything else is dropped rather than shown as a broken image.
+                          assign logo_ext = logo_file | split: '.' | last | downcase
+                          assign logo_is_asset = false
+                          if logo_ext == 'png' or logo_ext == 'jpg' or logo_ext == 'jpeg' or logo_ext == 'svg' or logo_ext == 'webp' or logo_ext == 'gif'
+                            assign logo_encoded = logo_file | url_encode
+                            unless logo_encoded contains '%'
+                              assign logo_is_asset = true
+                            endunless
+                          endif
+                        -%}
+                        {%- if logo_is_asset -%}
                           {%- assign logo_h = logo_parts[1] | strip | default: 28 -%}
                           {%- assign logo_alt = logo_file | remove: 'airline-' | remove: '-h1' | split: '.' | first | replace: '-', ' ' | capitalize -%}
                           {%- comment %}theme-check-disable ImgWidthAndHeight{% endcomment %}
@@ -474,7 +490,7 @@
           "type": "textarea",
           "id": "logos",
           "label": "Logos from theme assets",
-          "info": "Comma-separated asset file names, optionally with a display height, e.g. airline-lufthansa-h1.png|28. Rendered after the picked images."
+          "info": "Comma-separated asset file names, optionally with a display height, e.g. airline-lufthansa-h1.png|28. Rendered after the picked images. Do not translate this field in Translate & Adapt: these are file names, not copy, and translated names are skipped."
         }
       ]
     },

@@ -497,7 +497,8 @@
       "size_chart": "사이즈 차트",
       "save_html": "구하다 {{ saved_amount }}",
       "sale": "판매",
-      "show_more": "더 보기"
+      "show_more": "더 보기",
+      "show_less": "접기"
     },
     "product": {
       "product_variants": "제품 변형",

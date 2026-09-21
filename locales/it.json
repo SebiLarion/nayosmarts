@@ -497,7 +497,8 @@
       "size_chart": "Tabella delle dimensioni",
       "save_html": "Salva {{ saved_amount }}",
       "sale": "In offerta",
-      "show_more": "Mostra di più"
+      "show_more": "Mostra di più",
+      "show_less": "Mostra meno"
     },
     "product": {
       "product_variants": "Varianti di prodotto",

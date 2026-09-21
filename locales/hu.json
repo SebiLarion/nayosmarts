@@ -497,7 +497,8 @@
       "size_chart": "Mérettáblázat",
       "save_html": "Takarítson meg {{ saved_amount }}",
       "sale": "Eladás",
-      "show_more": "Mutass többet"
+      "show_more": "Mutass többet",
+      "show_less": "Mutass kevesebbet"
     },
     "product": {
       "product_variants": "Termékváltozatok",

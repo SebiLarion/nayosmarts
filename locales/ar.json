@@ -497,7 +497,8 @@
       "size_chart": "مخطط المقاسات",
       "save_html": "وفر {{ saved_amount }}",
       "sale": "تخفيضات",
-      "show_more": "عرض المزيد"
+      "show_more": "عرض المزيد",
+      "show_less": "عرض أقل"
     },
     "product": {
       "product_variants": "أنواع المنتج",

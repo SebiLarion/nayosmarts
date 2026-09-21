@@ -497,7 +497,8 @@
       "size_chart": "Табела величина",
       "save_html": "Уштедите {{ saved_amount }}",
       "sale": "Сале",
-      "show_more": "Покажи више"
+      "show_more": "Покажи више",
+      "show_less": "Покажи мање"
     },
     "product": {
       "product_variants": "Варијанте производа",

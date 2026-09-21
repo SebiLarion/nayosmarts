@@ -497,7 +497,8 @@
       "size_chart": "Izmēru tabula",
       "save_html": "Saglabāt {{ saved_amount }}",
       "sale": "Izpārdošana",
-      "show_more": "Rādīt vairāk"
+      "show_more": "Rādīt vairāk",
+      "show_less": "Rādīt mazāk"
     },
     "product": {
       "product_variants": "Preču varianti",

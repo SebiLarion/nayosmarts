@@ -497,7 +497,8 @@
       "size_chart": "Таблиця розмірів",
       "save_html": "Заощаджуйте {{ saved_amount }}",
       "sale": "Розпродаж",
-      "show_more": "Показати більше"
+      "show_more": "Показати більше",
+      "show_less": "Показати менше"
     },
     "product": {
       "product_variants": "Варіанти товару",

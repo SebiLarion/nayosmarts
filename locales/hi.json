@@ -497,7 +497,8 @@
       "size_chart": "आकार चार्ट",
       "save_html": "बचाना {{ saved_amount }}",
       "sale": "बिक्री",
-      "show_more": "और दिखाएँ"
+      "show_more": "और दिखाएँ",
+      "show_less": "कम दिखाएँ"
     },
     "product": {
       "product_variants": "उत्पाद प्रकार",

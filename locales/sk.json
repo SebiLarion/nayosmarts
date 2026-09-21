@@ -497,7 +497,8 @@
       "size_chart": "Tabuľka veľkostí",
       "save_html": "Zľava {{ saved_amount }}",
       "sale": "Zľava",
-      "show_more": "Zobraziť viac"
+      "show_more": "Zobraziť viac",
+      "show_less": "Zobraziť menej"
     },
     "product": {
       "product_variants": "Varianty produktu",

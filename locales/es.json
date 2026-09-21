@@ -497,7 +497,8 @@
       "size_chart": "Tabla de tallas",
       "save_html": "Ahorra {{ saved_amount }}",
       "sale": "Venta",
-      "show_more": "Mostrar más"
+      "show_more": "Mostrar más",
+      "show_less": "Mostrar menos"
     },
     "product": {
       "product_variants": "Variantes de producto",

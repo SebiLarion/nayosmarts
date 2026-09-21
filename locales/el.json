@@ -497,7 +497,8 @@
       "size_chart": "Πίνακας μεγεθών",
       "save_html": "Εκτός {{ saved_amount }}",
       "sale": "Πώληση",
-      "show_more": "Εμφάνιση περισσότερων"
+      "show_more": "Εμφάνιση περισσότερων",
+      "show_less": "Εμφάνιση λιγότερων"
     },
     "product": {
       "product_variants": "Παραλλαγές προϊόντων",

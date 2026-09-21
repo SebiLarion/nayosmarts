@@ -497,7 +497,8 @@
       "size_chart": "Beden Tablosu",
       "save_html": "{{ saved_amount }} indirim!",
       "sale": "Satış",
-      "show_more": "Daha fazlasını göster"
+      "show_more": "Daha fazlasını göster",
+      "show_less": "Daha az göster"
     },
     "product": {
       "product_variants": "Ürün Çeşitleri",

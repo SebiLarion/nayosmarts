@@ -497,7 +497,8 @@
       "size_chart": "サイズ表",
       "save_html": "{{ saved_amount }} 円節約",
       "sale": "プロモ",
-      "show_more": "もっと見る"
+      "show_more": "もっと見る",
+      "show_less": "閉じる"
     },
     "product": {
       "product_variants": "商品バリエーション",

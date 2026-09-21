@@ -1,0 +1,90 @@
+{%- doc -%}
+  Resolves the background of one H1 colour swatch and prints it as inline custom
+  properties, so the colour row and the sticky bar always agree.
+
+  Shopify's standard colour metaobject is checked first because its hex stays the
+  same in every language. The colour name does not: on a translated storefront it
+  no longer matches the theme's swatch_config, which is keyed by the default
+  locale's names. When nothing resolves, nothing is printed and the CSS fallback
+  in the caller keeps the swatch visible.
+
+  @param {object} swatch_product - Sibling product the swatch links to
+  @param {string} swatch_value - Colour name for that product, as translated
+  @param {boolean} use_variant_image - Show the product image instead of a colour
+
+  @example
+  {%- capture swatch_style -%}
+    {%- render 'h1-color-swatch-style',
+      swatch_product: product_variation,
+      swatch_value: value,
+      use_variant_image: true
+    -%}
+  {%- endcapture -%}
+{%- enddoc -%}
+
+{%- liquid
+  assign swatch_color = blank
+  assign swatch_image = blank
+
+  assign taxonomy_value = swatch_product.metafields.shopify['color-pattern'].value
+  if taxonomy_value == blank
+    assign taxonomy_value = swatch_product.metafields.shopify.color.value
+  endif
+
+  assign taxonomy_entry = blank
+  if taxonomy_value != blank
+    if taxonomy_value.color != blank or taxonomy_value.image != blank
+      assign taxonomy_entry = taxonomy_value
+    else
+      assign taxonomy_entry = taxonomy_value | first
+    endif
+  endif
+
+  if taxonomy_entry != blank
+    if taxonomy_entry.image
+      assign swatch_image = taxonomy_entry.image | image_url: width: 128
+    elsif taxonomy_entry.color != blank
+      assign swatch_color = taxonomy_entry.color
+    elsif taxonomy_entry.swatch.image
+      assign swatch_image = taxonomy_entry.swatch.image | image_url: width: 128
+    elsif taxonomy_entry.swatch.color
+      assign swatch_color = taxonomy_entry.swatch.color
+    endif
+  endif
+
+  if swatch_color == blank and swatch_image == blank and swatch_value.swatch != blank
+    if swatch_value.swatch.image
+      assign swatch_image = swatch_value.swatch.image | image_url: width: 128
+    elsif swatch_value.swatch.color
+      assign swatch_color = swatch_value.swatch.color
+    endif
+  endif
+
+  if swatch_color == blank and swatch_image == blank and settings.swatch_config != blank
+    assign value_downcase = swatch_value | downcase | strip
+    assign swatch_config = settings.swatch_config | newline_to_br | split: '<br />'
+    for swatch in swatch_config
+      assign swatch_parts = swatch | strip | split: ':'
+      assign swatch_name = swatch_parts.first | downcase | strip
+      if swatch_name == value_downcase
+        assign config_value = swatch_parts.last | strip
+        if config_value contains '#'
+          assign swatch_color = config_value
+        elsif images[config_value] != blank
+          assign swatch_image = images[config_value] | image_url: width: 128
+        elsif config_value contains '//cdn.shopify.com/'
+          assign swatch_image = config_value
+        endif
+        break
+      endif
+    endfor
+  endif
+
+  if use_variant_image and swatch_product.featured_media
+    assign swatch_image = swatch_product.featured_media | image_url: width: 128
+    assign swatch_color = blank
+  endif
+-%}
+
+{%- if swatch_color != blank -%}--swatch-background: {{ swatch_color }};{%- endif -%}
+{%- if swatch_image != blank -%}--swatch-background-image: url({{ swatch_image }});{%- endif -%}

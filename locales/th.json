@@ -497,7 +497,8 @@
       "size_chart": "ตารางขนาด",
       "save_html": "บันทึก {{ saved_amount }}",
       "sale": "ขาย",
-      "show_more": "แสดงเพิ่มเติม"
+      "show_more": "แสดงเพิ่มเติม",
+      "show_less": "แสดงน้อยลง"
     },
     "product": {
       "product_variants": "ตัวเลือกสินค้า",

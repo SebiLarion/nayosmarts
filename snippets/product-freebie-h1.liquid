@@ -16,7 +16,10 @@
   assign country_code = localization.country.iso_code | upcase
   assign heading = block.settings.heading | default: 'Included free'
   assign price_label = block.settings.price_label | default: 'Free'
-  assign option_name = block.settings.option_name | default: 'Color'
+  assign option_name = block.settings.option_name
+  if option_name == blank
+    assign option_name = 'products.general.color_swatch_trigger' | t
+  endif
   assign option_name_down = option_name | downcase
   assign use_variant_images = false
   if block.settings.color_swatch_type == 'variant'
@@ -427,7 +430,7 @@
                   endif
 
                   assign swatch_image = blank
-                  assign swatch_fallback = value_name | split: ' ' | last | handle
+                  assign swatch_fallback = blank
                   assign swatch_fallback_override = false
 
                   if matched_variant != blank
@@ -476,7 +479,7 @@
                       {% endif %}
                       aria-current="{% if is_selected %}true{% else %}false{% endif %}"
                       aria-label="{{ option_name | escape }}: {{ value_name | escape }}"
-                      style="--swatch-background: {{ swatch_fallback }};{% if swatch_fallback_override == false and swatch_image != blank %}--swatch-background-image: url({{ swatch_image }});{% endif %}"
+                      style="{% if swatch_fallback != blank %}--swatch-background: {{ swatch_fallback }};{% endif %}{% if swatch_fallback_override == false and swatch_image != blank %}--swatch-background-image: url({{ swatch_image }});{% endif %}"
                     >
                       <span class="sr-only">{{ value_name | escape }}</span>
                     </button>

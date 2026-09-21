@@ -497,7 +497,8 @@
       "size_chart": "尺寸表",
       "save_html": "立省{{ saved_amount }}",
       "sale": "促銷",
-      "show_more": "顯示更多"
+      "show_more": "顯示更多",
+      "show_less": "收起"
     },
     "product": {
       "product_variants": "產品型號",

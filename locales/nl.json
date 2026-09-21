@@ -497,7 +497,8 @@
       "size_chart": "Maattabel",
       "save_html": "Bespaar {{ saved_amount }}",
       "sale": "Verkoop",
-      "show_more": "Meer weergeven"
+      "show_more": "Meer weergeven",
+      "show_less": "Minder weergeven"
     },
     "product": {
       "product_variants": "Productvarianten",

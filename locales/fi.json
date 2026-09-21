@@ -497,7 +497,8 @@
       "size_chart": "Kokotaulukko",
       "save_html": "Tallentaa {{ saved_amount }}",
       "sale": "Myynti",
-      "show_more": "Näytä lisää"
+      "show_more": "Näytä lisää",
+      "show_less": "Näytä vähemmän"
     },
     "product": {
       "product_variants": "Tuotevariaatiot",

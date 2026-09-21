@@ -497,7 +497,8 @@
       "size_chart": "Storlekstabell",
       "save_html": "Spara {{ saved_amount }}",
       "sale": "Rea",
-      "show_more": "Visa mer"
+      "show_more": "Visa mer",
+      "show_less": "Visa mindre"
     },
     "product": {
       "product_variants": "Produktvarianter",

@@ -497,7 +497,8 @@
       "size_chart": "Bagan ukuran",
       "save_html": "Menyimpan {{ saved_amount }}",
       "sale": "Penjualan",
-      "show_more": "Tampilkan lebih banyak"
+      "show_more": "Tampilkan lebih banyak",
+      "show_less": "Tampilkan lebih sedikit"
     },
     "product": {
       "product_variants": "Varian produk",

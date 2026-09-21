@@ -497,7 +497,8 @@
       "size_chart": "Guide des tailles",
       "save_html": "Épargnez {{ saved_amount }}",
       "sale": "Réduit",
-      "show_more": "Afficher plus"
+      "show_more": "Afficher plus",
+      "show_less": "Afficher moins"
     },
     "product": {
       "product_variants": "Variantes de produits",

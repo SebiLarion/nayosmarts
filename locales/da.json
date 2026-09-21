@@ -497,7 +497,8 @@
       "size_chart": "Størrelsesguide",
       "save_html": "Gemme {{ saved_amount }}",
       "sale": "Rea",
-      "show_more": "Vis mere"
+      "show_more": "Vis mere",
+      "show_less": "Vis mindre"
     },
     "product": {
       "product_variants": "Produktvarianter",

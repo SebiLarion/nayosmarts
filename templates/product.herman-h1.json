@@ -54,7 +54,7 @@
         "product_variations_yiaQCW": {
           "type": "product_variations",
           "settings": {
-            "option_name": "Color",
+            "option_name": "",
             "option_value_metafield": "custom.color",
             "products": [
               "nayo-smart-herman-pro-backpack",

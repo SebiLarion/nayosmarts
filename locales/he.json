@@ -497,7 +497,8 @@
       "size_chart": "טבלת מידות",
       "save_html": "חסוך {{ saved_amount }}",
       "sale": "מבצע",
-      "show_more": "הצג עוד"
+      "show_more": "הצג עוד",
+      "show_less": "הצג פחות"
     },
     "product": {
       "product_variants": "וריאציות מוצר",
