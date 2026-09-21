@@ -758,6 +758,11 @@
           "type": "region",
           "settings": {
             "label": "MENA",
+            "logo_1": "shopify://shop_images/airline-emirates-h1.png",
+            "logo_2": "shopify://shop_images/airline-qatar-airways-h1.png",
+            "logo_3": "shopify://shop_images/airline-etihad-h1.png",
+            "logo_4": "shopify://shop_images/airline-saudia-h1.png",
+            "logo_5": "shopify://shop_images/airline-egyptair-h1.png",
             "logos": "airline-emirates-h1.png|46, airline-qatar-airways-h1.png|41, airline-etihad-h1.png|41, airline-saudia-h1.png|41, airline-egyptair-h1.png|27"
           }
         },
