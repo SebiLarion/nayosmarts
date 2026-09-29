@@ -555,31 +555,21 @@
           "type": "product",
           "settings": {
             "product": "urban-ul1-sling-bag",
-            "products": [
-              "urban-ul1-sling-bag",
-              "urban-ul1-sling-bag-white"
-            ]
+            "products": []
           }
         },
         "bundle_prod_3": {
           "type": "product",
           "settings": {
             "product": "nayo-smart-herman-h3-sling-bag",
-            "products": [
-              "nayo-smart-herman-h3-sling-bag",
-              "herman-h3-sling-bag-green",
-              "herman-h3-sling-bag-ash"
-            ]
+            "products": []
           }
         },
         "bundle_prod_4": {
           "type": "product",
           "settings": {
             "product": "urban-ul2-sling-bag-black",
-            "products": [
-              "urban-ul2-sling-bag-black",
-              "urban-ul2-sling-bag"
-            ]
+            "products": []
           }
         },
         "bundle_prod_1": {
