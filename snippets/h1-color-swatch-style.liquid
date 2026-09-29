@@ -11,6 +11,9 @@
   @param {object} swatch_product - Sibling product the swatch links to
   @param {string} swatch_value - Colour name for that product, as translated
   @param {boolean} use_variant_image - Show the product image instead of a colour
+  @param {boolean} [prefer_option_swatch] - Skip the product colour metafield and
+    use the option value swatch first. Needed when several colours live on one
+    product as variants, because the product metafield is only one colour.
 
   @example
   {%- capture swatch_style -%}
@@ -26,36 +29,38 @@
   assign swatch_color = blank
   assign swatch_image = blank
 
-  assign taxonomy_value = swatch_product.metafields.shopify['color-pattern'].value
-  if taxonomy_value == blank
-    assign taxonomy_value = swatch_product.metafields.shopify.color.value
-  endif
-
-  assign taxonomy_entry = blank
-  if taxonomy_value != blank
-    if taxonomy_value.color != blank or taxonomy_value.image != blank
-      assign taxonomy_entry = taxonomy_value
-    else
-      assign taxonomy_entry = taxonomy_value | first
+  if prefer_option_swatch != true
+    assign taxonomy_value = swatch_product.metafields.shopify['color-pattern'].value
+    if taxonomy_value == blank
+      assign taxonomy_value = swatch_product.metafields.shopify.color.value
     endif
-  endif
 
-  if taxonomy_entry != blank
-    if taxonomy_entry.image
-      assign swatch_image = taxonomy_entry.image | image_url: width: 128
-    elsif taxonomy_entry.color != blank
-      assign swatch_color = taxonomy_entry.color
-    elsif taxonomy_entry.swatch.image
-      assign swatch_image = taxonomy_entry.swatch.image | image_url: width: 128
-    elsif taxonomy_entry.swatch.color
-      assign swatch_color = taxonomy_entry.swatch.color
+    assign taxonomy_entry = blank
+    if taxonomy_value != blank
+      if taxonomy_value.color != blank or taxonomy_value.image != blank
+        assign taxonomy_entry = taxonomy_value
+      else
+        assign taxonomy_entry = taxonomy_value | first
+      endif
+    endif
+
+    if taxonomy_entry != blank
+      if taxonomy_entry.image
+        assign swatch_image = taxonomy_entry.image | image_url: width: 128
+      elsif taxonomy_entry.color != blank
+        assign swatch_color = taxonomy_entry.color
+      elsif taxonomy_entry.swatch.image
+        assign swatch_image = taxonomy_entry.swatch.image | image_url: width: 128
+      elsif taxonomy_entry.swatch.color
+        assign swatch_color = taxonomy_entry.swatch.color
+      endif
     endif
   endif
 
   if swatch_color == blank and swatch_image == blank and swatch_value.swatch != blank
     if swatch_value.swatch.image
       assign swatch_image = swatch_value.swatch.image | image_url: width: 128
-    elsif swatch_value.swatch.color
+    elsif swatch_value.swatch.color != blank
       assign swatch_color = swatch_value.swatch.color
     endif
   endif
@@ -78,6 +83,13 @@
         break
       endif
     endfor
+  endif
+
+  if swatch_color == blank and swatch_image == blank
+    assign file_name = swatch_value | handle | append: '.png'
+    if images[file_name] != blank
+      assign swatch_image = images[file_name] | image_url: width: 128
+    endif
   endif
 
   if use_variant_image and swatch_product.featured_media
