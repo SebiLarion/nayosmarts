@@ -414,19 +414,53 @@
                               endif
                               assign item_savings_text = 'products.general.save_html' | t: saved_amount: item_savings_price | strip_html
                             -%}
-                            {%- capture swatch_style -%}
-                              {%- render 'h1-color-swatch-style',
-                                swatch_product: card_product,
-                                swatch_value: value,
-                                use_variant_image: false,
-                                prefer_option_swatch: true
-                              -%}
-                            {%- endcapture -%}
-                            {%- assign swatch_style = swatch_style | strip -%}
-                            {%- if use_variant_images and matched_variant.featured_media -%}
-                              {%- assign swatch_image = matched_variant.featured_media | image_url: width: 128 -%}
-                              {%- assign swatch_style = '--swatch-background-image: url(' | append: swatch_image | append: ');' -%}
-                            {%- endif -%}
+                            {%- liquid
+                              assign swatch_color = blank
+                              assign swatch_image = blank
+                              if value.swatch != blank
+                                if value.swatch.image
+                                  assign swatch_image = value.swatch.image | image_url: width: 128
+                                elsif value.swatch.color != blank
+                                  assign swatch_color = value.swatch.color
+                                endif
+                              endif
+                              if swatch_color == blank and swatch_image == blank and settings.swatch_config != blank
+                                assign value_downcase = value_name | downcase | strip
+                                assign swatch_config_rows = settings.swatch_config | newline_to_br | split: '<br />'
+                                for swatch in swatch_config_rows
+                                  assign swatch_parts = swatch | strip | split: ':'
+                                  assign swatch_name = swatch_parts.first | downcase | strip
+                                  if swatch_name == value_downcase
+                                    assign config_value = swatch_parts.last | strip
+                                    if config_value contains '#'
+                                      assign swatch_color = config_value
+                                    elsif images[config_value] != blank
+                                      assign swatch_image = images[config_value] | image_url: width: 128
+                                    elsif config_value contains '//cdn.shopify.com/'
+                                      assign swatch_image = config_value
+                                    endif
+                                    break
+                                  endif
+                                endfor
+                              endif
+                              if swatch_color == blank and swatch_image == blank
+                                assign file_name = value_name | handle | append: '.png'
+                                if images[file_name] != blank
+                                  assign swatch_image = images[file_name] | image_url: width: 128
+                                endif
+                              endif
+                              if use_variant_images and matched_variant.featured_media
+                                assign swatch_image = matched_variant.featured_media | image_url: width: 128
+                                assign swatch_color = blank
+                              endif
+                              assign swatch_style = ''
+                              if swatch_color != blank
+                                assign swatch_style = swatch_style | append: '--swatch-background: ' | append: swatch_color | append: ';'
+                              endif
+                              if swatch_image != blank
+                                assign swatch_style = swatch_style | append: '--swatch-background-image: url(' | append: swatch_image | append: ');'
+                              endif
+                            -%}
                             <li>
                               <button
                                 type="button"
