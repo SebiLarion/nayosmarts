@@ -268,10 +268,9 @@
                 assign metafield_key = metafield_parts | last
               endif
 
-              assign colors_from_variants = block.settings.colors_from_variants
               assign color_products = block.settings.products
               assign has_color_products = false
-              if colors_from_variants != true and color_products != blank and color_products.size > 0
+              if color_products != blank and color_products.size > 0
                 assign has_color_products = true
               endif
 
@@ -872,18 +871,11 @@
           "label": "t:sections.global.settings.product.label"
         },
         {
-          "type": "checkbox",
-          "id": "colors_from_variants",
-          "label": "Colors from product variants",
-          "default": false,
-          "info": "Use the Color option on this product. Turn off to pick sibling color products instead."
-        },
-        {
           "type": "product_list",
           "id": "products",
           "label": "Color products",
           "limit": 12,
-          "info": "Used when Colors from product variants is off. Select every color sibling of this product, including the current one. Up to 12."
+          "info": "Select every color sibling of this product, including the current one. Up to 12. Leave empty to use Color variants on the selected product."
         }
       ]
     }
