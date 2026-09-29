@@ -540,7 +540,8 @@
       "open_media": "افتح الوسائط {{ index }} في النافذة المنبثقة",
       "play_model": "شاهد العرض ثلاثي الأبعاد",
       "play_video": "تشغيل الفيديو",
-      "gallery_viewer": "عارض المعرض"
+      "gallery_viewer": "عارض المعرض",
+      "watch_video": "شاهد الفيديو"
     },
     "quantity": {
       "label": "الكمية",

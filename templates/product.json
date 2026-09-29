@@ -73,6 +73,10 @@
             "show_below_media": true
           }
         },
+        "delivery_date_eta_eta_custom_position_with_section_y79wEW": {
+          "type": "shopify://apps/delivery-date-eta/blocks/ETA_custom_position_with_section/d8155dd1-6598-4174-aaeb-cbcf85a857bc",
+          "settings": {}
+        },
         "buy_buttons": {
           "type": "buy_buttons",
           "settings": {
@@ -181,6 +185,7 @@
         "variant_picker",
         "product_variations_yiaQCW",
         "icon_list_XF9net",
+        "delivery_date_eta_eta_custom_position_with_section_y79wEW",
         "buy_buttons",
         "collapsible_tab_YFpMgP",
         "collapsible_tab_tNyECa",

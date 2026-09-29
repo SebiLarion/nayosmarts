@@ -76,6 +76,7 @@
         },
         "product_variations_yiaQCW": {
           "type": "product_variations",
+          "disabled": true,
           "settings": {
             "option_name": "Color",
             "option_value_metafield": "custom.color",

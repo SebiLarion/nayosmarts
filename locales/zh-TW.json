@@ -540,7 +540,8 @@
       "open_media": "在模式中開啟媒體{{ index }}",
       "play_model": "播放 3D 檢視器",
       "play_video": "播放影片",
-      "gallery_viewer": "畫廊瀏覽器"
+      "gallery_viewer": "畫廊瀏覽器",
+      "watch_video": "觀看影片"
     },
     "quantity": {
       "label": "數量",
@@ -676,6 +677,69 @@
       "signup_form_email_label": "Email",
       "signup_form_success": "We will send you an email right before we open!",
       "password_link": "Enter using password"
+    }
+  },
+  "shopify": {
+    "checkout": {
+      "payment": {
+        "lpm": {
+          "konbini": {
+            "voucher": {
+              "label": "便利商店",
+              "outlets": {
+                "familymart": "全家便利商店",
+                "lawson": "Lawson",
+                "ministop": "Ministop",
+                "seicomart": "Seicomart"
+              },
+              "codes": {
+                "reference_number": "付款代碼",
+                "confirmation_number": "確認碼"
+              },
+              "steps": {
+                "familymart": {
+                  "1": "在多份影印機上，選擇代金支払い／チャージ（「付款／儲值」）",
+                  "2": "輸入您的付款代碼，然後按下「確定」",
+                  "3": "輸入您的確認碼，然後按下「確定」",
+                  "4": "檢查詳細資料，然後按下「確認」以列印您的單據",
+                  "5": "請在 30 分鐘內將單據拿到收銀台，並以現金或 FamiPay 付款"
+                },
+                "lawson": {
+                  "1": "在 Loppi 終端機上，選擇各種番号をお持ちの方（「我有號碼」）",
+                  "2": "請輸入您的付款代碼，然後按下「次へ」（「下一步」）",
+                  "3": "輸入您的確認碼，然後按下「下一步」",
+                  "4": "檢查詳細資訊，然後按下 はい（「是」）以列印您的單據",
+                  "5": "請在30分鐘內將單據拿到收銀台並以現金付款"
+                },
+                "ministop": {
+                  "1": "在 Loppi 終端機上，選擇各種番号をお持ちの方（「我有號碼」）",
+                  "2": "請輸入您的付款代碼，然後按下「次へ」（「下一步」）",
+                  "3": "輸入您的確認碼，然後按下「下一步」",
+                  "4": "檢查詳細資訊，然後按下 はい（「是」）以列印您的單據",
+                  "5": "請在30分鐘內將單據拿到收銀台並以現金付款"
+                },
+                "seicomart": {
+                  "1": "在收銀台告訴收銀員 インターネット支払い（「網路付款」）",
+                  "2": "在客戶畫面上輸入您的付款代碼，然後選擇 登録（「輸入」）",
+                  "3": "輸入您的確認碼，然後選取「登録」",
+                  "4": "檢查詳細資料並選取「確定」",
+                  "5": "以現金付款"
+                },
+                "1": "在優惠券到期前，攜帶付款代碼和確認碼到店內的終端機或收銀台，以現金付款。"
+              },
+              "pay": "支付 %{amount}",
+              "choose_outlet": "選擇一家便利商店，查看您的代碼和付款方式",
+              "expires_at": "到期日 %{date}",
+              "expiry_date_time": "%{date} %{time}（日本標準時間）",
+              "copy_code": "複製 %{label}",
+              "code_copied": "已複製",
+              "keep_receipt": "請保留收據作為付款證明",
+              "view_instructions": "查看付款說明",
+              "view_instructions_accessibility_label": "查看付款說明（會在新分頁中開啟）"
+            }
+          }
+        }
+      }
     }
   }
 }

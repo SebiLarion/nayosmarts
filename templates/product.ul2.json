@@ -76,6 +76,7 @@
         },
         "product_variations_R7e4Wm": {
           "type": "product_variations",
+          "disabled": true,
           "settings": {
             "option_name": "Color",
             "option_value_metafield": "custom.color",
@@ -85,6 +86,17 @@
             ],
             "enable_color_swatches": true,
             "color_swatch_type": "variant",
+            "size_chart": ""
+          }
+        },
+        "variant_picker_XdkQWp": {
+          "type": "variant_picker",
+          "settings": {
+            "enable_dynamic_variants": true,
+            "show_variant_labels": true,
+            "picker_type": "button",
+            "enable_color_swatches": true,
+            "color_swatch_type": "color",
             "size_chart": ""
           }
         },
@@ -214,6 +226,7 @@
         "text_MkCjyE",
         "text_8zqmPF",
         "product_variations_R7e4Wm",
+        "variant_picker_XdkQWp",
         "buy_buttons",
         "delivery_date_eta_eta_custom_position_with_section_nUgcPG",
         "qikify_upsell_product_rcmd_VVKMaR",

@@ -102,7 +102,7 @@
     "product_quick_add": true,
     "product_color_swatches": true,
     "product_max_color_swatches": 4,
-    "product_color_swatch_type": "variant",
+    "product_color_swatch_type": "file",
     "product_save_amount": true,
     "product_save_type": "percent",
     "product_icon_list_metafield": "custom.product_icons",
@@ -206,11 +206,6 @@
         "disabled": true,
         "settings": {}
       },
-      "7860399670564181960": {
-        "type": "shopify://apps/profy-banner-countdown-timer/blocks/app_embed/243a639f-ca73-4afe-b6aa-3a23277fb424",
-        "disabled": false,
-        "settings": {}
-      },
       "2567389343055140935": {
         "type": "shopify://apps/microsoft-clarity/blocks/clarity_js/31c3d126-8116-4b4a-8ba1-baeda7c4aeea",
         "disabled": false,
@@ -256,11 +251,6 @@
         "disabled": true,
         "settings": {}
       },
-      "16160716078332068383": {
-        "type": "shopify://apps/rubik-variant-images/blocks/rubik-variant-images/e684282e-1343-4a60-8fa2-6393aded15f6",
-        "disabled": false,
-        "settings": {}
-      },
       "4015264832934714879": {
         "type": "shopify://apps/cwillsendwill-popup-email/blocks/app/a5670cf8-5705-4b01-ad9e-447033feae26",
         "disabled": false,
@@ -268,11 +258,6 @@
           "enable_gdpr_mode": false,
           "enable_cwtracks_listener": false
         }
-      },
-      "9388344762370057067": {
-        "type": "shopify://apps/essential-cart-drawer/blocks/app-embed/824bb1f9-5f36-4608-a60c-1f2b6a6f8834",
-        "disabled": true,
-        "settings": {}
       },
       "13416097264177121472": {
         "type": "shopify://apps/design-packs/blocks/design_packs/1efa8e58-6fa1-4c9a-9c0a-e71446c20785",
@@ -318,6 +303,16 @@
       },
       "1877152918344802950": {
         "type": "shopify://apps/intelligems-a-b-testing/blocks/intelligems-script/fa83b64c-0c77-4c0c-b4b2-b94b42f5ef19",
+        "disabled": false,
+        "settings": {}
+      },
+      "11432920177897217407": {
+        "type": "shopify://apps/epa-easy-product-addons/blocks/speedup_link/0099190e-a0cb-49e7-8d26-026c9d26f337",
+        "disabled": true,
+        "settings": {}
+      },
+      "16160716078332068383": {
+        "type": "shopify://apps/rubik-variant-images/blocks/rubik-variant-images/e684282e-1343-4a60-8fa2-6393aded15f6",
         "disabled": false,
         "settings": {}
       }

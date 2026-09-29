@@ -11,12 +11,12 @@
   "context": {
     "market": "us"
   },
-  "parent": "product.ul1w.json",
+  "parent": "product.ul1.json",
   "sections": {
     "main-product": {
       "settings": {},
       "blocks": {
-        "text_cDrF7K": {
+        "text_66rHFN": {
           "disabled": true,
           "settings": {}
         },
