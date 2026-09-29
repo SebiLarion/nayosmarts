@@ -268,9 +268,10 @@
                 assign metafield_key = metafield_parts | last
               endif
 
+              assign colors_from_variants = block.settings.colors_from_variants
               assign color_products = block.settings.products
               assign has_color_products = false
-              if color_products != blank and color_products.size > 0
+              if colors_from_variants != true and color_products != blank and color_products.size > 0
                 assign has_color_products = true
               endif
 
@@ -380,7 +381,7 @@
                             assign value_name = value.name | default: value
                             assign matched_variant = blank
                             for variant in card_product.variants
-                              if variant.options[color_option_index] == value_name
+                              if variant.options[color_option_index] == value_name or variant.options[color_option_index] == value
                                 assign matched_variant = variant
                                 break
                               endif
@@ -390,41 +391,9 @@
                             if matched_variant != blank and current_color == value_name
                               assign is_selected = true
                             endif
-
-                            assign swatch_image = blank
-                            assign swatch_fallback = value_name | split: ' ' | last | handle
-                            assign swatch_fallback_override = false
-
-                            if matched_variant != blank
-                              if value.swatch != blank
-                                if value.swatch.image
-                                  assign swatch_image = value.swatch.image | image_url: width: 128
-                                elsif value.swatch.color
-                                  assign swatch_fallback = value.swatch.color
-                                  assign swatch_fallback_override = true
-                                endif
-                              elsif settings.swatch_config != blank
-                                assign value_downcase = value_name | downcase | strip
-                                assign swatch_config = settings.swatch_config | newline_to_br | split: '<br />'
-                                for swatch in swatch_config
-                                  assign swatch_parts = swatch | strip | split: ':'
-                                  assign swatch_name = swatch_parts.first | downcase | strip
-                                  if swatch_name == value_downcase
-                                    assign swatch_value = swatch_parts.last | strip
-                                    if swatch_value contains '#'
-                                      assign swatch_fallback = swatch_value
-                                      assign swatch_fallback_override = true
-                                    endif
-                                    break
-                                  endif
-                                endfor
-                              endif
-
-                              if use_variant_images and matched_variant.featured_media
-                                assign swatch_image = matched_variant.featured_media | image_url: width: 128
-                                assign swatch_fallback_override = false
-                              endif
-
+                          -%}
+                          {%- if matched_variant != blank -%}
+                            {%- liquid
                               assign item_media = matched_variant.featured_media | default: card_product.featured_media
                               if settings.currency_code_enabled
                                 assign item_price = matched_variant.price | money_with_currency | strip_html
@@ -444,13 +413,24 @@
                                 assign item_savings_price = item_savings_cents | money | strip_html
                               endif
                               assign item_savings_text = 'products.general.save_html' | t: saved_amount: item_savings_price | strip_html
-                            endif
-                          -%}
-                          {%- if matched_variant != blank -%}
+                            -%}
+                            {%- capture swatch_style -%}
+                              {%- render 'h1-color-swatch-style',
+                                swatch_product: card_product,
+                                swatch_value: value,
+                                use_variant_image: false,
+                                prefer_option_swatch: true
+                              -%}
+                            {%- endcapture -%}
+                            {%- assign swatch_style = swatch_style | strip -%}
+                            {%- if use_variant_images and matched_variant.featured_media -%}
+                              {%- assign swatch_image = matched_variant.featured_media | image_url: width: 128 -%}
+                              {%- assign swatch_style = '--swatch-background-image: url(' | append: swatch_image | append: ');' -%}
+                            {%- endif -%}
                             <li>
                               <button
                                 type="button"
-                                class="bundle-card-h1__swatch{% if swatch_image != blank %} with-image{% endif %}{% unless matched_variant.available %} is-unavailable{% endunless %}"
+                                class="bundle-card-h1__swatch{% if swatch_style contains '--swatch-background-image' %} with-image{% endif %}{% unless matched_variant.available %} is-unavailable{% endunless %}"
                                 data-bundle-swatch
                                 data-variant-id="{{ matched_variant.id }}"
                                 data-title="{{ card_product.title | escape }}"
@@ -465,7 +445,7 @@
                                 {% endif %}
                                 aria-current="{% if is_selected %}true{% else %}false{% endif %}"
                                 aria-label="{{ option_name | escape }}: {{ value_name | escape }}"
-                                style="--swatch-background: {{ swatch_fallback }};{% if swatch_fallback_override == false and swatch_image != blank %}--swatch-background-image: url({{ swatch_image }});{% endif %}"
+                                {% if swatch_style != blank %}style="{{ swatch_style }}"{% endif %}
                               >
                                 <span class="sr-only">{{ value_name | escape }}</span>
                               </button>
@@ -858,11 +838,18 @@
           "label": "t:sections.global.settings.product.label"
         },
         {
+          "type": "checkbox",
+          "id": "colors_from_variants",
+          "label": "Colors from product variants",
+          "default": false,
+          "info": "Use the Color option on this product. Turn off to pick sibling color products instead."
+        },
+        {
           "type": "product_list",
           "id": "products",
           "label": "Color products",
           "limit": 12,
-          "info": "Select every color sibling of this product, including the current one. Up to 12. If empty, Color variants on the selected product are used."
+          "info": "Used when Colors from product variants is off. Select every color sibling of this product, including the current one. Up to 12."
         }
       ]
     }
