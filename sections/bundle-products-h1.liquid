@@ -254,7 +254,9 @@
               assign current_variant = card_product.selected_or_first_available_variant
               assign form_id = 'BundleCardForm-' | append: section.id | append: '-' | append: block.id
               assign option_name = section.settings.option_name | default: 'Color'
-              assign option_name_down = option_name | downcase
+              assign option_name_down = option_name | downcase | strip
+              assign color_trigger_list = 'products.general.color_swatch_trigger' | t | downcase | split: ','
+              assign size_trigger = 'products.general.size_trigger' | t | downcase | strip
               assign use_variant_images = false
               if section.settings.color_swatch_type == 'variant'
                 assign use_variant_images = true
@@ -279,15 +281,44 @@
               assign size_option = blank
               assign size_option_index = -1
               for option in card_product.options_with_values
-                assign option_down = option.name | downcase
-                if color_option == blank and option_down == option_name_down or option_down == 'color' or option_down == 'colour'
+                assign option_down = option.name | downcase | strip
+                assign is_color_option = false
+
+                if option_down == option_name_down or option_down == 'color' or option_down == 'colour' or option_down contains 'color' or option_down contains 'colour'
+                  assign is_color_option = true
+                endif
+
+                unless is_color_option
+                  for trigger in color_trigger_list
+                    assign swatch_trigger = trigger | strip
+                    if option_down == swatch_trigger
+                      assign is_color_option = true
+                      break
+                    endif
+                  endfor
+                endunless
+
+                unless is_color_option
+                  for value in option.values
+                    if value.swatch != blank
+                      assign is_color_option = true
+                      break
+                    endif
+                  endfor
+                endunless
+
+                if color_option == blank and is_color_option
                   assign color_option = option
                   assign color_option_index = forloop.index0
-                elsif option_down == 'size' or option_down contains 'size'
+                elsif option_down == 'size' or option_down contains 'size' or option_down == size_trigger
                   assign size_option = option
                   assign size_option_index = forloop.index0
                 endif
               endfor
+
+              if color_option != blank
+                assign option_name = color_option.name
+              endif
 
               assign current_color = ''
               if has_color_products
