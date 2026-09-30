@@ -113,17 +113,6 @@
     },
     "176714964783487102": {
       "type": "apps",
-      "blocks": {
-        "profy_banner_countdown_timer_app_block_9qVBiw": {
-          "type": "shopify://apps/profy-banner-timer/blocks/app_block/243a639f-ca73-4afe-b6aa-3a23277fb424",
-          "settings": {
-            "banner_id": "8623857e-e5f1-11f0-b848-da56541e1029"
-          }
-        }
-      },
-      "block_order": [
-        "profy_banner_countdown_timer_app_block_9qVBiw"
-      ],
       "settings": {
         "color_text": "",
         "color_background": "",

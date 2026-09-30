@@ -72,12 +72,6 @@
             "liquid": "<div class='delivery_date_shortcode'></div>"
           }
         },
-        "profy_banner_countdown_timer_app_block_cYydqz": {
-          "type": "shopify://apps/profy-banner-timer/blocks/app_block/243a639f-ca73-4afe-b6aa-3a23277fb424",
-          "settings": {
-            "banner_id": "2fffe338-bee8-11f0-b848-da56541e1029"
-          }
-        },
         "collapsible_tab_mnztWD": {
           "type": "collapsible_tab",
           "settings": {
@@ -173,7 +167,6 @@
         "buy_buttons",
         "koala_upsells_gifts_product_page_banner_zmDYNY",
         "liquid_bt8z6c",
-        "profy_banner_countdown_timer_app_block_cYydqz",
         "collapsible_tab_mnztWD",
         "collapsible_tab_AH8AgT",
         "collapsible_tab_aKiT7k",

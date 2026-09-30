@@ -40,15 +40,6 @@
   
   assign product_variant = product.selected_or_first_available_variant
   assign featured_media = product_variant.featured_media | default: product.featured_media
-
-  # When the variant has a gang_media list, render media in the metafield order instead of product.media order
-  assign use_gang_order = false
-  unless product.has_only_default_variant
-    if product_variant.metafields.theme.gang_media.value != blank and product_variant.metafields.theme.gang_media.list?
-      assign use_gang_order = true
-      assign gang_media_list = product_variant.metafields.theme.gang_media.value
-    endif
-  endunless
 -%}
 {%- capture sizes -%}(max-width: 767px) calc(100vw - 40px), (max-width: 1023px) calc(100vw - 64px), 75vw{%- endcapture -%}
 
@@ -145,35 +136,6 @@
           {%- if gallery_layout == 'columns' %} lg:grid lg:gap-4 xl:gap-5 grid-cols-2{% endif -%}
           {%- if gallery_layout == 'scroll' %} lg:grid lg:gap-4 xl:gap-5 grid-cols-2{% endif -%}"
         >
-          {%- if use_gang_order -%}
-            {%- for gang_item in gang_media_list -%}
-              {%- assign gang_preload = forloop.first -%}
-              {%- for media in product.media -%}
-                {%- if media.id == gang_item.id -%}
-                  {%- render 'product-media',
-                    product: product,
-                    product_id: product_id,
-                    section_id: section_id,
-                    product_variant: product_variant,
-                    media: media,
-                    featured_media: featured_media,
-                    variant_images: variant_images,
-                    hide_variants: hide_variants,
-                    gallery_layout: gallery_layout,
-                    image_zoom: image_zoom,
-                    image_fill: image_fill,
-                    image_ratio: image_ratio,
-                    image_ratio_mobile: image_ratio_mobile,
-                    preload: gang_preload,
-                    sizes: sizes,
-                    autoplay: enable_video_autoplay,
-                    loop: enable_video_looping
-                  -%}
-                  {%- break -%}
-                {%- endif -%}
-              {%- endfor -%}
-            {%- endfor -%}
-          {%- else -%}
           {%- if featured_media != null -%}
             {%- render 'product-media',
               product: product,
@@ -219,7 +181,6 @@
               -%}
             {%- endif -%}
           {%- endfor -%}
-          {%- endif -%}
         </div>
       </slider-element>
 
@@ -244,28 +205,6 @@
         <scroll-shadow id="SliderThumbnails-{{ section_id }}-{{ product_id }}" class="product__thumbnails{% unless mobile_thumbnail %} with-dots{% endunless %}{% if gallery_layout == 'scroll' or gallery_layout == 'columns' %} lg:hidden{% endif %} product__thumbnails--{{ thumbnail_position }} grid items-center relative w-full">
         {%- endif -%}
           <media-dots class="product__thumbnails-list scroll-area grid items-end justify-start gap-4 w-full" aria-controls="SliderGallery-{{ section_id }}-{{ product_id }}">
-            {%- if use_gang_order -%}
-              {%- for gang_item in gang_media_list -%}
-                {%- assign gang_position = forloop.index0 -%}
-                {%- for media in product.media -%}
-                  {%- if media.id == gang_item.id -%}
-                    {%- render 'product-thumbnail',
-                      product: product,
-                      product_variant: product_variant,
-                      media: media,
-                      featured_media: featured_media,
-                      variant_images: variant_images,
-                      hide_variants: hide_variants,
-                      image_fill: image_fill,
-                      image_ratio: image_ratio,
-                      image_ratio_mobile: image_ratio_mobile,
-                      position: gang_position
-                    -%}
-                    {%- break -%}
-                  {%- endif -%}
-                {%- endfor -%}
-              {%- endfor -%}
-            {%- else -%}
             {%- if featured_media != null -%}
               {%- render 'product-thumbnail',
                 product: product,
@@ -297,7 +236,6 @@
                 -%}
               {%- endif -%}
             {%- endfor -%}
-            {%- endif -%}
           </media-dots>
         {%- if gallery_layout != 'dots' -%}
           <template>

@@ -109,13 +109,6 @@
             "text_size": "text-base"
           }
         },
-        "profy_banner_timer_app_block_X7napP": {
-          "type": "shopify://apps/profy-banner-timer/blocks/app_block/243a639f-ca73-4afe-b6aa-3a23277fb424",
-          "disabled": true,
-          "settings": {
-            "banner_id": "cc205406-4391-11f1-bde4-e2459c63f105"
-          }
-        },
         "collapsible_tab_hhME3k": {
           "type": "collapsible_tab",
           "settings": {
@@ -204,7 +197,6 @@
         "inventory",
         "buy_buttons",
         "description",
-        "profy_banner_timer_app_block_X7napP",
         "collapsible_tab_hhME3k",
         "collapsible_tab_GJTLh6",
         "collapsible_tab_krPgYM",
