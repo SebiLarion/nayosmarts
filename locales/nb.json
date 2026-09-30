@@ -497,8 +497,7 @@
       "size_chart": "Størrelsestabell",
       "save_html": "Lagre {{ saved_amount }}",
       "sale": "Salg",
-      "show_more": "Vis mer",
-      "show_less": "Vis mindre"
+      "show_more": "Vis mer"
     },
     "product": {
       "product_variants": "Produkt varianter",

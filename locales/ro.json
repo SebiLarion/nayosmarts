@@ -497,8 +497,7 @@
       "size_chart": "Tabel de mărimi",
       "save_html": "Economisiți {{ saved_amount }}",
       "sale": "Vânzare",
-      "show_more": "Arată mai multe",
-      "show_less": "Arată mai puține"
+      "show_more": "Arată mai multe"
     },
     "product": {
       "product_variants": "Variante de produs",
