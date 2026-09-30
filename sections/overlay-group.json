@@ -100,8 +100,21 @@
     "newsletter-popup": {
       "type": "newsletter-popup",
       "blocks": {
+        "icon_7x6aEc": {
+          "type": "icon",
+          "settings": {
+            "icon": "tag",
+            "icon_image": "shopify://shop_images/nayo-smart-logo-80096.png",
+            "iwidth": "custom",
+            "icon_width": 200,
+            "link": "",
+            "accessibility_info": "",
+            "external": false
+          }
+        },
         "text-1": {
           "type": "text",
+          "disabled": true,
           "settings": {
             "text": "<p>FIRST TIMER?</p>",
             "text_font": "body",
@@ -118,7 +131,7 @@
         "heading": {
           "type": "heading",
           "settings": {
-            "heading": "Sign up and get <em>10% off</em> your first order",
+            "heading": "<strong>UNLOCK </strong><em>10% OFF </em><strong>YOUR FIRST ORDER</strong>",
             "heading_size": "text-2xl lg:text-3xl",
             "heading_tag": "h2",
             "highlighted_text": "full_text",
@@ -140,7 +153,7 @@
         "text-2": {
           "type": "text",
           "settings": {
-            "text": "<p>Subscribe to our newsletter and be the first to hear about our new arrivals, special promotions and online exclusives.</p>",
+            "text": "<p>*By subscribing, you agree to receive emails from NAYO SMART. Unsubscribe anytime.</p>",
             "text_font": "body",
             "text_size": "text-sm",
             "text_max_size": 32,
@@ -154,6 +167,7 @@
         },
         "media": {
           "type": "media",
+          "disabled": true,
           "settings": {}
         },
         "floating": {
@@ -170,6 +184,7 @@
         }
       },
       "block_order": [
+        "icon_7x6aEc",
         "text-1",
         "heading",
         "spacing",
@@ -178,15 +193,15 @@
         "media",
         "floating"
       ],
-      "disabled": true,
       "settings": {
-        "mode": "enabled",
-        "only_homepage": true,
-        "only_visitor": true,
+        "mode": "testing",
+        "only_homepage": false,
+        "only_visitor": false,
         "delay": 7,
-        "expiry": 30,
-        "text_alignment": "left",
-        "content_position": "right-0",
+        "expiry": 4,
+        "text_alignment": "center",
+        "content_position": "center-0",
+        "image": "shopify://shop_images/a1-vs-u8-vs-u9-vs-ul5-which-nayo-smart-bag-is-right-for-you-5.jpg",
         "color_drawer_text": "#171717",
         "color_drawer_background": "#ffffff",
         "color_drawer_highlight": "#f59e0b",

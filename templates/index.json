@@ -155,7 +155,7 @@
           "settings": {
             "icon": "star",
             "custom_icon": "",
-            "heading": "Secure Payment",
+            "heading": "600k+ Global Trusted Users",
             "text": "",
             "highlighted_text": "none",
             "highlighted_scribble": "circle"
@@ -166,7 +166,7 @@
           "settings": {
             "icon": "return",
             "custom_icon": "",
-            "heading": "30-Day Trial",
+            "heading": "30-Day Easy Return",
             "text": "",
             "highlighted_text": "none",
             "highlighted_scribble": "circle"
@@ -249,7 +249,7 @@
             "products": [
               "herman-hl1-sling-bag",
               "herman-pro-half-roll-top-backpack-black",
-              "urban-ul1-sling-bag",
+              "urban-ul1-sling-bag-white",
               "nayo-smart-urban-u5-backpack",
               "nayo-smart-herman-h3-sling-bag",
               "nayo-smart-herman-h2-half-roll-top-backpack",
@@ -375,7 +375,7 @@
         "feed_YyYddP": {
           "type": "feed",
           "settings": {
-            "video": "shopify://files/videos/nayo‑smart‑ul5‑cylinder‑sling‑bag‑packing‑demo‑webm.webm",
+            "video": "shopify://files/videos/nayo‑smart‑ul5‑cylinder‑sling‑bag‑lifestyle‑vertical‑short‑video-Mobile.webm",
             "enable_video_autoplay": true,
             "enable_video_looping": true,
             "video_on_hover": false,

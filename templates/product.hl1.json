@@ -189,6 +189,10 @@
             "help_page": "faq",
             "help_page_external": false
           }
+        },
+        "epa_easy_product_addons_spice_addons_B9wEQn": {
+          "type": "shopify://apps/epa-easy-product-addons/blocks/spice_addons/0099190e-a0cb-49e7-8d26-026c9d26f337",
+          "settings": {}
         }
       },
       "block_order": [
@@ -209,7 +213,8 @@
         "collapsible_tab_WBtiEq",
         "collapsible_tab_fJErYQ",
         "collapsible_tab_VcV7VM",
-        "share"
+        "share",
+        "epa_easy_product_addons_spice_addons_B9wEQn"
       ],
       "settings": {
         "enable_sticky_info": true,
@@ -282,7 +287,9 @@
         "divider": false,
         "full_width": false,
         "rounded": false
-      }
+      },
+      "blocks": {},
+      "block_order": []
     },
     "help-drawer": {
       "type": "help-drawer",
@@ -1384,7 +1391,9 @@
         "divider": false,
         "full_width": false,
         "rounded": true
-      }
+      },
+      "blocks": {},
+      "block_order": []
     }
   },
   "order": [

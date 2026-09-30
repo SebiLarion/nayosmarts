@@ -156,6 +156,12 @@
             "help_page": "faq",
             "help_page_external": false
           }
+        },
+        "profy_banner_countdown_timer_app_block_cYydqz": {
+          "type": "shopify://apps/profy-banner-timer/blocks/app_block/243a639f-ca73-4afe-b6aa-3a23277fb424",
+          "settings": {
+            "banner_id": "2fffe338-bee8-11f0-b848-da56541e1029"
+          }
         }
       },
       "block_order": [
@@ -173,7 +179,8 @@
         "collapsible_tab_fJfwBw",
         "collapsible_tab_kpq3ND",
         "complementary",
-        "share"
+        "share",
+        "profy_banner_countdown_timer_app_block_cYydqz"
       ],
       "settings": {
         "enable_sticky_info": true,
@@ -427,7 +434,9 @@
         "divider": false,
         "full_width": true,
         "rounded": false
-      }
+      },
+      "blocks": {},
+      "block_order": []
     },
     "lookbook_rLXq7T": {
       "type": "lookbook",
@@ -464,7 +473,9 @@
         "divider": false,
         "full_width": true,
         "rounded": false
-      }
+      },
+      "blocks": {},
+      "block_order": []
     },
     "lookbook_cArTY4": {
       "type": "lookbook",
@@ -501,7 +512,9 @@
         "divider": false,
         "full_width": true,
         "rounded": false
-      }
+      },
+      "blocks": {},
+      "block_order": []
     },
     "product-recommendations": {
       "type": "product-recommendations",
@@ -533,7 +546,9 @@
         "divider": false,
         "full_width": false,
         "rounded": true
-      }
+      },
+      "blocks": {},
+      "block_order": []
     },
     "1745459688e1b8f795": {
       "type": "apps",
