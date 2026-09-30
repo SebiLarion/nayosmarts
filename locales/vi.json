@@ -497,7 +497,8 @@
       "size_chart": "Hướng dẫn kích thước",
       "save_html": "Tiết kiệm {{ saved_amount }}",
       "sale": "Giảm giá",
-      "show_more": "Hiển thị thêm"
+      "show_more": "Hiển thị thêm",
+      "show_less": "Hiển thị ít hơn"
     },
     "product": {
       "product_variants": "Mẫu mã sản phẩm",
