@@ -79,7 +79,7 @@
         </span>
       </div>
     {%- else -%}
-      <div class="alert alert--error inline-flex items-center gap-3">
+      <div class="alert alert--error inline-flex items-center gap-3" role="alert">
         {%- render 'icon', icon: 'ellipse', size: 'xs', class: 'shrink-0' -%}
         <span class="text-sm font-medium leading-tight">
           {{- 'products.inventory.out_of_stock' | t -}}

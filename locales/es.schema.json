@@ -2370,7 +2370,7 @@
           },
           "options__3": {
             "label": "Grande"
-          },
+          }
         },
         "menu_drawer_icon_label": {
           "label": "Etiqueta del icono del cajón de menú"
@@ -3163,9 +3163,7 @@
           }
         },
         "promotion-video": {
-          "name": "Video de promoción",
-          "settings": {
-          }
+          "name": "Video de promoción"
         }
       }
     },
@@ -4256,7 +4254,7 @@
       "name": "Cajón de búsqueda",
       "settings": {
         "paragraph": {
-          "content": "El cajón de búsqueda no se mostrará a sus clientes si ha habilitado la función de búsqueda en su [configuración del tema](/editor?context=theme&category=search)."
+          "content": "El cajón de búsqueda no se mostrará a sus clientes si ha configurado el tipo de búsqueda como \"Page\" en su [configuración del tema](/editor?context=theme&category=search)."
         }
       }
     },
@@ -4353,7 +4351,13 @@
       }
     },
     "shop-the-look": {
-      "name": "Compra el look"
+      "name": "Compra el look",
+      "settings": {
+        "show_content_aside": {
+          "label": "Mostrar el contenido junto a la imagen",
+          "info": "Desactiva esta opción para mostrar el contenido encima de la imagen. En pantallas más pequeñas, el contenido siempre aparece encima."
+        }
+      }
     },
     "slideshow": {
       "name": "Presentación de diapositivas",
@@ -5256,6 +5260,25 @@
         "enable_search": {
           "label": "Activar la búsqueda"
         },
+        "search_type": {
+          "label": "Tipo de búsqueda",
+          "options__1": {
+            "label": "Lateral"
+          },
+          "options__2": {
+            "label": "Inline"
+          },
+          "options__3": {
+            "label": "Página"
+          }
+        },
+        "header__3": {
+          "content": "Búsqueda por voz"
+        },
+        "enable_voice_search": {
+          "label": "Habilitar búsqueda por voz",
+          "info": "Añade un micrófono para la entrada por voz. Se oculta automáticamente en los navegadores que no la admiten (p. ej. Firefox)."
+        },
         "header__1": {
           "content": "Búsqueda predictiva"
         },
@@ -5301,6 +5324,10 @@
         "preload_links": {
           "label": "Precargar enlaces al pasar el cursor",
           "info": "Esto debería aumentar la velocidad de carga percibida de las páginas."
+        },
+        "preload_fonts": {
+          "label": "Precargar las fuentes del tema",
+          "info": "Carga las fuentes del tema antes. Es mejor desactivarla cuando la parte superior de la página es una imagen o un video, para que el contenido multimedia se cargue primero."
         },
         "external_links_new_tab": {
           "label": "Abrir enlaces externos en una nueva pestaña"

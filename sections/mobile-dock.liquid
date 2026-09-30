@@ -29,11 +29,19 @@
                 endif
               -%}
               <span class="text-3xs leading-none">{{ block.settings.title | escape }}</span>
-              </div>
+            </div>
           </shopify-account>
 
         {%- when 'cart' -%}
-          <a class="dock__item flex flex-col items-center justify-center gap-1d5 grow shrink-0 cursor-pointer" href="{{ routes.cart_url }}" aria-controls="CartDrawer" aria-expanded="false">
+          {%- liquid
+            if request.page_type != 'cart' and settings.cart_type == 'drawer'
+              assign cart_button_label = 'general.cart.open_cart' | t
+            else
+              assign cart_button_label = 'general.cart.view_cart' | t
+            endif
+          -%}
+          {%- capture dock_cart_content -%}
+            <span class="sr-only">{{ cart_button_label }}</span>
             <span class="relative">
               {%- liquid
                 if block.settings.custom_icon != blank
@@ -42,10 +50,22 @@
                   render 'icon-dock', icon: 'cart', size: 'sm'
                 endif
               -%}
-              <cart-count class="count absolute text-3xs leading-none" aria-label="{{ 'general.cart.cart_count' | t: count: cart.item_count | escape }}"{% if cart == empty %} hidden{% endif %}>{{ cart.item_count }}</cart-count>
+              <cart-count class="count absolute text-3xs leading-none"{% if cart == empty %} hidden{% endif %}>
+                <span aria-hidden="true">{{ cart.item_count }}</span>
+                <span class="sr-only">, {{ 'general.cart.cart_count' | t: count: cart.item_count }}</span>
+              </cart-count>
             </span>
             <span class="text-3xs leading-none">{{ block.settings.title | escape }}</span>
-          </a>
+          {%- endcapture -%}
+          {%- if request.page_type != 'cart' and settings.cart_type == 'drawer' -%}
+            <button type="button" class="dock__item flex flex-col items-center justify-center gap-1d5 grow shrink-0 cursor-pointer" aria-controls="CartDrawer" aria-haspopup="dialog">
+              {{- dock_cart_content -}}
+            </button>
+          {%- else -%}
+            <a class="dock__item flex flex-col items-center justify-center gap-1d5 grow shrink-0 cursor-pointer" href="{{ routes.cart_url }}" data-no-instant>
+              {{- dock_cart_content -}}
+            </a>
+          {%- endif -%}
 
         {%- when 'home' -%}
           <a class="dock__item flex flex-col items-center justify-center gap-1d5 grow shrink-0 cursor-pointer" href="{{ routes.root_url }}">

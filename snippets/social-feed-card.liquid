@@ -54,21 +54,19 @@
       {%- endif -%}
       
       {%- if block.settings.video != blank -%}
-        <video-media class="block{% if block.settings.video_on_hover %} absolute top-0 left-0 w-full h-full opacity-0 pointer-events-none{% endif %}" style="--aspect-ratio: {{ block.settings.video.aspect_ratio }};"{% if autoplay %} autoplay{% endif %} role="presentation" aria-hidden="true">
-          {%- if autoplay -%}
-            {{- block.settings.video | video_tag: playsinline: false, muted: autoplay, autoplay: autoplay, loop: loop, controls: false, preload: 'metadata', image_size: '1x' -}}
-          {%- else -%}
+        <video-media class="block{% if block.settings.video_on_hover %} absolute top-0 left-0 w-full h-full opacity-0 pointer-events-none{% endif %}" style="--aspect-ratio: {{ block.settings.video.aspect_ratio }};"{% if autoplay %} autoplay data-inview-full{% endif %} role="presentation" aria-hidden="true">
+          {%- unless block.settings.video_on_hover -%}
             {%- liquid
               assign video_alt = block.settings.video.alt | default: block.settings.image.alt
               assign alt = 'general.accessibility.load_video' | t: description: video_alt | escape
               assign poster = block.settings.video.preview_image | default: block.settings.image
             -%}
             {{- poster | image_url: width: poster.width | image_tag: loading: 'lazy', widths: '180,360,540,720,900,1080', sizes: sizes, is: 'lazy-image', class: 'inline-block', alt: alt -}}
-            <template>
-              {{- block.settings.video | video_tag: playsinline: false, muted: autoplay, autoplay: autoplay, loop: loop, controls: false, preload: 'metadata', image_size: '1x' -}}
-            </template>
-          {%- endif -%}
-          
+          {%- endunless -%}
+          <template>
+            {{- block.settings.video | video_tag: playsinline: true, muted: autoplay, autoplay: autoplay, loop: loop, controls: false, preload: 'metadata', image_size: '1x' -}}
+          </template>
+
           {%- unless autoplay -%}
             <button type="button" id="DeferredPoster-{{ block.settings.video.id }}" class="deferred-poster absolute top-0 left-0 w-full h-full" aria-label="{{ 'general.accessibility.play_video' | t | escape }}">
               <span class="play-button absolute flex items-center justify-center rounded-full pointer-events-auto z-10" role="button" aria-labelledby="DeferredPoster-{{ block.settings.video.id }}">
@@ -96,7 +94,7 @@
               <button type="button" class="horizontal-product__media color-swatch relative" aria-label="{{ 'products.product.choose_product_options' | t: title: product.title | escape }}" aria-controls="SocialFeed-{{ section.id }}-{{ block.id }}" tabindex="-1">
                 <picture class="media media--adapt block relative overflow-hidden">
                   {%- if product.featured_media != blank -%}
-                    {%- assign max_width = product.featured_media.width -%}
+                    {%- assign max_width = product.featured_media.width | default: product.featured_media.preview_image.width -%}
                     {%- capture sizes -%}64px{%- endcapture -%}
                     {%- capture widths -%}{{ 64 | times: 1.5 | at_most: max_width | round }}, {{ 64 | times: 2 | at_most: max_width }}, {{ 64 | times: 3 | at_most: max_width }}{%- endcapture -%}
                     {{- product.featured_media | image_url: width: max_width | image_tag: loading: 'lazy', widths: widths, sizes: sizes, is: 'lazy-image' -}}
@@ -159,7 +157,7 @@
       <div id="SocialFeed-{{ section.id }}-{{ block.id }}" class="social-feed quick-view x-modal drawer z-30 fixed bottom-0 left-0 h-full w-full pointer-events-none"></div>
     {%- else -%}
       <social-feed id="SocialFeed-{{ section.id }}-{{ block.id }}" class="social-feed quick-view x-modal drawer z-30 fixed bottom-0 left-0 h-full w-full pointer-events-none" role="dialog" aria-modal="true" hidden loaded>
-        <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="SocialFeed-{{ section.id }}-{{ block.id }}" aria-expanded="false"></overlay-element>
+        <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="SocialFeed-{{ section.id }}-{{ block.id }}" aria-hidden="true"></overlay-element>
         <div class="drawer__inner z-10 absolute top-0 flex flex-col w-full h-full overflow-hidden">
           <gesture-element class="drawer__header flex justify-between opacity-0 invisible relative" tabindex="0">
             <button class="button button--secondary button--close drawer__close z-1 absolute top-0 right-0 flex items-center justify-center opacity-0" type="button" is="hover-button" aria-controls="SocialFeed-{{ section.id }}-{{ block.id }}" aria-expanded="false" aria-label="{{ 'general.accessibility.close' | t | escape }}">
@@ -205,11 +203,11 @@
                       -%}
                       {%- if settings.product_quick_view -%}
                         {%- capture quick_view_id -%}Quickview-{{ section.id }}-{{ block.id }}-{{ product.id }}-{{ i }}{%- endcapture -%}
-                        <hover-element class="hotspot flex items-center justify-center absolute z-1 cursor-pointer" role="button" aria-label="{{ 'products.product.quick_view_label' | t: title: product.title | escape }}" aria-controls="{{ quick_view_id }}" aria-expanded="false" style="--hotspot-color: {{ color_text.rgb }};--hotspot-x: {{ horizontal }}%;--hotspot-y: {{ vertical }}%;">
-                          <div class="hotspot__content hidden md:flex gap-2 items-center absolute pointer-events-none{% if horizontal < 15 %} with-left{% elsif horizontal > 85 %} with-right{% endif %}{% if vertical > 70 %} with-bottom{% endif %}">
+                        <button type="button" class="hotspot flex items-center justify-center absolute z-1 cursor-pointer" is="hover-button" aria-label="{{ 'products.product.quick_view_label' | t: title: product.title | escape }}" aria-controls="{{ quick_view_id }}" aria-expanded="false" style="--hotspot-color: {{ color_text.rgb }};--hotspot-x: {{ horizontal }}%;--hotspot-y: {{ vertical }}%;">
+                          <div class="hotspot__content hidden md:flex gap-2 items-center absolute pointer-events-none{% if horizontal < 15 %} with-left{% elsif horizontal > 85 %} with-right{% endif %}{% if vertical > 70 %} with-bottom{% endif %} text-center{% if product.featured_media %} lg:text-left{% endif %}">
                             {%- if product.featured_media -%}
                               <div class="hidden lg:block media media--{{ settings.product_image_ratio }}{% unless settings.product_image_fill %} media--contain{% endunless %} relative overflow-hidden shrink-0">
-                                {%- assign max_width = product.featured_media.width -%}
+                                {%- assign max_width = product.featured_media.width | default: product.featured_media.preview_image.width -%}
                                 {%- capture sizes -%}80px{%- endcapture -%}
                                 {%- capture widths -%}{{ 80 | times: 1.5 | at_most: max_width | round }}, {{ 80 | times: 2 | at_most: max_width }}, {{ 80 | times: 3 | at_most: max_width }}{%- endcapture -%}
                                 {{- product.featured_media | image_url: width: max_width | image_tag: loading: 'lazy', widths: widths, sizes: sizes, is: 'lazy-image' -}}
@@ -222,9 +220,9 @@
                             </div>
                             {%- render 'icon', icon: 'caret', class: 'absolute' -%}
                           </div>
-                        </hover-element>
+                        </button>
                         <quick-view id="{{ quick_view_id }}" class="quick-view x-modal drawer z-40 fixed bottom-0 left-0 h-full w-full pointer-events-none" data-product-url="{{ product.url }}" role="dialog" aria-label="{{ 'products.product.choose_product_options' | t: title: product.title | escape }}" aria-modal="true" hidden>
-                          <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="{{ quick_view_id }}" aria-expanded="false"></overlay-element>
+                          <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="{{ quick_view_id }}" aria-hidden="true"></overlay-element>
                           <div class="drawer__inner z-10 absolute top-0 flex flex-col w-full h-full overflow-hidden">
                             <gesture-element class="drawer__header flex justify-between opacity-0 invisible relative" tabindex="0">
                               <button class="button button--secondary button--close drawer__close z-1 absolute top-0 right-0 flex items-center justify-center opacity-0" type="button" is="hover-button" aria-controls="{{ quick_view_id }}" aria-expanded="false" aria-label="{{ 'general.accessibility.close' | t | escape }}">
@@ -239,10 +237,10 @@
                         </quick-view>
                       {%- else -%}
                         <a class="hotspot flex items-center justify-center absolute z-1 cursor-pointer"{% if product != blank %} href="{{ product.url }}" aria-label="{{ product.title | escape }}"{% else %} role="link" aria-disabled="true"{% endif %} style="--hotspot-color: {{ color_text.rgb }};--hotspot-x: {{ horizontal }}%;--hotspot-y: {{ vertical }}%;">
-                          <div class="hotspot__content hidden md:flex gap-2 items-center absolute pointer-events-none{% if horizontal < 15 %} with-left{% elsif horizontal > 85 %} with-right{% endif %}{% if vertical > 70 %} with-bottom{% endif %}">
+                          <div class="hotspot__content hidden md:flex gap-2 items-center absolute pointer-events-none{% if horizontal < 15 %} with-left{% elsif horizontal > 85 %} with-right{% endif %}{% if vertical > 70 %} with-bottom{% endif %} text-center{% if product.featured_media %} lg:text-left{% endif %}">
                             {%- if product.featured_media -%}
                               <div class="hidden lg:block media media--{{ settings.product_image_ratio }}{% unless settings.product_image_fill %} media--contain{% endunless %} relative overflow-hidden shrink-0">
-                                {%- assign max_width = product.featured_media.width -%}
+                                {%- assign max_width = product.featured_media.width | default: product.featured_media.preview_image.width -%}
                                 {%- capture sizes -%}80px{%- endcapture -%}
                                 {%- capture widths -%}{{ 80 | times: 1.5 | at_most: max_width | round }}, {{ 80 | times: 2 | at_most: max_width }}, {{ 80 | times: 3 | at_most: max_width }}{%- endcapture -%}
                                 {{- product.featured_media | image_url: width: max_width | image_tag: loading: 'lazy', widths: widths, sizes: sizes, is: 'lazy-image' -}}
@@ -280,15 +278,11 @@
                   {%- if section.settings.heading != blank -%}
                     <p class="drawer__header heading lg:text-3xl text-2xl leading-none tracking-tight">
                       {%- liquid
-                        if section.settings.highlighted_text == 'none'
-                          echo section.settings.heading
-                        else
-                          assign with_gradient = false
-                          if section.settings.gradient_highlight != blank and section.settings.gradient_highlight != 'rgba(0,0,0,0)'
-                            assign with_gradient = true
-                          endif
-                          render 'highlighted-text', content: section.settings.heading, style: section.settings.highlighted_text, scribble: section.settings.highlighted_scribble, reveal: section.settings.highlighted_reveal, gradient: with_gradient
+                        assign with_gradient = false
+                        if section.settings.gradient_highlight != blank and section.settings.gradient_highlight != 'rgba(0,0,0,0)'
+                          assign with_gradient = true
                         endif
+                        render 'heading-content', content: section.settings.heading, style: section.settings.highlighted_text, scribble: section.settings.highlighted_scribble, reveal: section.settings.highlighted_reveal, gradient: with_gradient
                       -%}
                     </p>
                   {%- endif -%}

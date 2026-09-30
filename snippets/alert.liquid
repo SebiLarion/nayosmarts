@@ -3,6 +3,7 @@
 
   Displays inline alerts with automatic icon selection based on status type.
 
+  @param {string} [id] - Alert identifier
   @param {string} status - Alert status determining style and icon
     - 'success' - Check circle icon, success styling
     - 'error' - Alert triangle icon, error styling
@@ -10,6 +11,7 @@
     - undefined - No status class, requires parent styling
   @param {string} content - Alert message content (HTML supported)
   @param {boolean} [hide_icon] - Hide the status icon
+  @param {boolean} [focus] - Move keyboard focus to the alert on page load (server-side form errors)
 
   @example Success alert
   {% render 'alert',
@@ -31,7 +33,7 @@
   %}
 {%- enddoc -%}
 
-<div class="alert alert--{{ status }} flex items-start gap-3 text-sm md:text-base leading-tight">
+<div class="alert alert--{{ status }} flex items-start gap-3 text-sm md:text-base leading-tight"{% if status == 'error' %} role="alert"{% elsif status == 'success' %} role="status"{% endif %}{% if id %} id="{{ id }}"{% endif %}{% if focus %} tabindex="-1" data-focus-on-load{% endif %}>
   {%- liquid
     unless hide_icon
       case status

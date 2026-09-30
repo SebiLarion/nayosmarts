@@ -7,7 +7,7 @@
 
 {{ 'blog.css' | asset_url | stylesheet_tag }}
 {{ 'collection.css' | asset_url | stylesheet_tag }}
-<script src="{{ 'collection.js' | asset_url }}" defer></script>
+<script src="{{ 'collection.js' | asset_url }}" defer="defer"></script>
 
 {%- paginate blog.articles by section.settings.per_page -%}
   <div class="section section--padding{% if section.settings.divider %} section--divider{% endif %}{% if section.settings.rounded %} section--rounded relative{% endif %}">
@@ -43,7 +43,7 @@
           </div>
         {%- endif -%}
 
-        {%- if section.settings.show_tag_filter and blog.tags.size > 0 -%}
+        {%- if section.settings.show_tag_filter and blog.all_tags.size > 0 -%}
           <div class="hidden md:block">
             <ul class="subcollections inline-flex flex-wrap justify-center max-w-full">
               <li class="flex items-center justify-center relative{% if current_tags == blank %} active{% endif %}">

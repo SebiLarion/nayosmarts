@@ -1,9 +1,9 @@
 if (!customElements.get('mobile-dock')) {
   customElements.define(
     'mobile-dock',
-    class MobileDock extends HTMLElement {
-      constructor() {
-        super();
+    class MobileDock extends BaseElement {
+      connectedCallback() {
+        super.connectedCallback();
     
         if (Shopify.designMode) {
           this.init();
@@ -25,13 +25,13 @@ if (!customElements.get('mobile-dock')) {
         this.detectForHeader();
         this.detectForFooter();
         setTimeout(this.setHeight.bind(this));
-        document.addEventListener('matchSmall', this.setHeight.bind(this));
+        this.on(document, 'matchSmall', this.setHeight.bind(this));
     
         if (Shopify.designMode) {
-          this.section.addEventListener('shopify:section:select', () => {
+          this.on(this.section, 'shopify:section:select', () => {
             this.section.classList.add('shopify-active');
           });
-          this.section.addEventListener('shopify:section:deselect', () => {
+          this.on(this.section, 'shopify:section:deselect', () => {
             this.section.classList.remove('shopify-active');
           });
         }
@@ -45,8 +45,10 @@ if (!customElements.get('mobile-dock')) {
         }
         
         if (!header.classList.contains('header-sticky')) {
-          this.scrollY  = parseInt(header.getBoundingClientRect().bottom);
-          window.addEventListener('scroll', theme.utils.throttle(this.onScrollForHeader.bind(this)), false);
+          this.scrollY = parseInt(header.getBoundingClientRect().bottom + window.scrollY);
+          const onScroll = theme.utils.throttle(this.onScrollForHeader.bind(this));
+          this.on(window, 'scroll', onScroll, { passive: true });
+          this.registerCleanup(() => onScroll.cancel());
         }
       }
     
@@ -63,7 +65,9 @@ if (!customElements.get('mobile-dock')) {
         const footer = document.querySelector('.footer-copyright');
         if (footer === null) return;
     
-        window.addEventListener('scroll', theme.utils.throttle(this.onScrollForFooter.bind(this)), false);
+        const onScroll = theme.utils.throttle(this.onScrollForFooter.bind(this));
+        this.on(window, 'scroll', onScroll, { passive: true });
+        this.registerCleanup(() => onScroll.cancel());
       }
     
       onScrollForFooter() {

@@ -1,12 +1,3 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin language editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "general": {
     "404": {
@@ -120,7 +111,12 @@
       "results_with_count_and_term": {
         "one": "{{ count }} βρέθηκε αποτέλεσμα για \"{{ terms }}\"",
         "other": "{{ count }} αποτελέσματα βρέθηκαν για \"{{ terms }}\""
-      }
+      },
+      "placeholder_inline": "Τι ψάχνετε;",
+      "go": "Αναζήτηση",
+      "voice_search": "Φωνητική αναζήτηση",
+      "voice_search_unavailable": "Η φωνητική αναζήτηση δεν είναι διαθέσιμη σε αυτήν τη συσκευή",
+      "unsupported_locale_hint": "Κάντε κλικ στο κουμπί αναζήτησης για να δείτε αποτελέσματα"
     },
     "cart": {
       "title": "Καροτσάκι",
@@ -161,7 +157,9 @@
       },
       "recently_viewed": {
         "empty": "Η πρόσφατη προβολή σας είναι κενή."
-      }
+      },
+      "drawer_label": "Καλάθι αγορών",
+      "open_cart": "Άνοιγμα καλαθιού"
     },
     "drawers": {
       "navigation": "Πλοήγηση στον ιστότοπο"
@@ -179,6 +177,15 @@
       "s": "μικρό",
       "second": "Sec",
       "seconds": "Δευτ"
+    },
+    "form": {
+      "required": "Το πεδίο {{ field }} είναι υποχρεωτικό.",
+      "required_choice": "Κάντε μια επιλογή για το πεδίο {{ field }}.",
+      "required_email": "Εισαγάγετε τη διεύθυνση email σας.",
+      "invalid_email": "Εισαγάγετε μια έγκυρη διεύθυνση email, για παράδειγμα name@example.com.",
+      "invalid_url": "Εισαγάγετε μια έγκυρη διεύθυνση ιστότοπου, για παράδειγμα https://www.example.com.",
+      "too_short": "Το πεδίο {{ field }} πρέπει να περιέχει τουλάχιστον {{ min }} χαρακτήρες.",
+      "too_long": "Το πεδίο {{ field }} πρέπει να περιέχει έως {{ max }} χαρακτήρες."
     }
   },
   "sections": {

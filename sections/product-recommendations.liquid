@@ -30,12 +30,14 @@
 
         <slider-element id="Slider-{{ section.id }}" class="grid slider{% if section.settings.carousel_on_desktop %} slider--desktop{% endif %}{% if section.settings.swipe_on_mobile %} slider--tablet{% endif %}" selector=".card-grid>.card"{% if section.settings.carousel_on_desktop or section.settings.swipe_on_mobile %} tabindex="0"{% endif %}>
           <motion-list class="card-grid card-grid--{{ section.settings.columns }} mobile:card-grid--{{ section.settings.columns_mobile }} grid">
+            {%- capture card_sizes -%}(max-width: 639px) calc(100vw / {{ section.settings.columns_mobile }}), calc(min({{ settings.page_width }}px, 100vw) / {{ section.settings.columns }}){%- endcapture -%}
             {%- for recommendation in recommendations.products -%}
               {%- render 'product-card',
                 product: recommendation,
                 product_id: recommendation.id,
                 section_id: section.id,
                 lazy_load: false,
+                sizes: card_sizes,
                 image_ratio: settings.product_image_ratio,
                 image_fill: settings.product_image_fill,
                 show_secondary_image: settings.product_secondary_image,

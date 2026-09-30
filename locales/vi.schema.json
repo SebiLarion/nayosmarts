@@ -336,7 +336,7 @@
       }
     },
     "social-icons": {
-       "name": "Biểu tượng truyền thông xã hội",
+      "name": "Biểu tượng truyền thông xã hội",
       "settings": {
         "paragraph": {
           "content": "Để hiển thị các tài khoản mạng xã hội của bạn, hãy liên kết chúng trong [cài đặt chủ đề](/editor?context=theme&category=social%20media)."
@@ -1603,11 +1603,6 @@
         }
       },
       "blocks": {
-        "product": {
-          "settings": {
-
-          }
-        },
         "headings": {
           "name": "Cột tiêu đề",
           "settings": {
@@ -3168,9 +3163,7 @@
           }
         },
         "promotion-video": {
-          "name": "Video khuyến mãi",
-          "settings": {
-          }
+          "name": "Video khuyến mãi"
         }
       }
     },
@@ -4261,7 +4254,7 @@
       "name": "Ngăn tìm kiếm",
       "settings": {
         "paragraph": {
-          "content": "Ngăn tìm kiếm sẽ không xuất hiện với khách hàng nếu bạn đã đặt loại giỏ hàng thành \"Trang\" trong [cài đặt chủ đề](/editor?context=theme&category=search)."
+          "content": "Ngăn tìm kiếm sẽ không xuất hiện với khách hàng nếu bạn đã đặt loại tìm kiếm thành \"Page\" trong [cài đặt chủ đề](/editor?context=theme&category=search)."
         }
       }
     },
@@ -4358,7 +4351,13 @@
       }
     },
     "shop-the-look": {
-      "name": "Mua sắm theo gợi ý"
+      "name": "Mua sắm theo gợi ý",
+      "settings": {
+        "show_content_aside": {
+          "label": "Hiển thị nội dung bên cạnh hình ảnh",
+          "info": "Tắt để hiển thị nội dung phía trên hình ảnh. Trên màn hình nhỏ hơn, nội dung luôn hiển thị phía trên."
+        }
+      }
     },
     "slideshow": {
       "name": "Trình chiếu",
@@ -5261,6 +5260,25 @@
         "enable_search": {
           "label": "Bật tìm kiếm"
         },
+        "search_type": {
+          "label": "Loại tìm kiếm",
+          "options__1": {
+            "label": "Ngăn kéo"
+          },
+          "options__2": {
+            "label": "Inline"
+          },
+          "options__3": {
+            "label": "Trang"
+          }
+        },
+        "header__3": {
+          "content": "Tìm kiếm bằng giọng nói"
+        },
+        "enable_voice_search": {
+          "label": "Bật tìm kiếm bằng giọng nói",
+          "info": "Thêm micro để nhập bằng giọng nói. Tự động ẩn ở trình duyệt không hỗ trợ (ví dụ Firefox)."
+        },
         "header__1": {
           "content": "Gợi ý tìm kiếm"
         },
@@ -5306,6 +5324,10 @@
         "preload_links": {
           "label": "Tải trước liên kết khi di chuột qua",
           "info": "Điều này sẽ tăng tốc độ tải trang theo cảm nhận."
+        },
+        "preload_fonts": {
+          "label": "Tải trước phông chữ của theme",
+          "info": "Tải phông chữ của theme sớm hơn. Nên tắt khi đầu trang là hình ảnh hoặc video, để chúng tải trước."
         },
         "external_links_new_tab": {
           "label": "Mở các liên kết bên ngoài trong tab mới"

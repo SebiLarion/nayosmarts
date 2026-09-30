@@ -50,17 +50,13 @@ if (!customElements.get('cookie-banner')) {
     
         setTimeout(() => this.show(), delay * 1000);
     
-        if (this.acceptButton) this.acceptButton.addEventListener('click', this.acceptPolicy.bind(this));
-        if (this.declineButton) this.declineButton.addEventListener('click', this.declinePolicy.bind(this));
+        if (this.acceptButton) this.on(this.acceptButton, 'click', this.acceptPolicy.bind(this));
+        if (this.declineButton) this.on(this.declineButton, 'click', this.declinePolicy.bind(this));
       }
     
       acceptPolicy() {
         this.hide();
         window.Shopify.customerPrivacy?.setTrackingConsent(true, this.noop);
-    
-        document.addEventListener('trackingConsentAccepted', () => {
-          console.log('trackingConsentAccepted event fired');
-        });
       }
     
       declinePolicy() {
@@ -72,7 +68,7 @@ if (!customElements.get('cookie-banner')) {
         const userCanBeTracked = window.Shopify.customerPrivacy.userCanBeTracked();
         const userTrackingConsent = window.Shopify.customerPrivacy.getTrackingConsent();
     
-        if(!userCanBeTracked && userTrackingConsent === 'no_interaction') {
+        if (!userCanBeTracked && userTrackingConsent === 'no_interaction') {
           this.load(this.delay);
         }
       }
@@ -84,6 +80,7 @@ if (!customElements.get('cookie-banner')) {
         super.afterHide();
         document.body.classList.remove('has-cookie-banner');
       }
+      
       afterShow() {
         super.afterShow();
         document.body.classList.add('has-cookie-banner');

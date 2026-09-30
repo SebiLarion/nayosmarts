@@ -26,8 +26,8 @@
 
 {%- liquid
   assign featured_image = ''
-  if product.featured_image
-    assign featured_image = product.featured_image | image_url
+  if product.featured_media
+    assign featured_image = product.featured_media | image_url
   endif
   
   assign check_against_inventory = true
@@ -48,7 +48,7 @@
   is: 'product-bundle-form',
   aria-controls: controls
 -%}
-  <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" disabled />
+  <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" data-min="{{ product.selected_or_first_available_variant.quantity_rule.min }}" disabled />
 
   {%- unless product.has_only_default_variant -%}
     {%- liquid

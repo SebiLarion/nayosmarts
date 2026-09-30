@@ -5,6 +5,8 @@
 
   @param {string} section_id - Unique section ID for targeting and AJAX updates
   @param {string} context - Form context identifier ('page', 'drawer', 'header', etc.)
+  @param {string} [id_suffix] - Suffix to keep element ids unique (e.g. 'start'/'end')
+  @param {string} [icons_size] - Icon size for the voice search mic (sm/md/lg); defaults to 'lg'
   @param {object} [search] - Search results object (available on search.liquid template)
   @param {object} [predictive_search] - Live search results (auto-populated via AJAX)
 
@@ -15,36 +17,48 @@
   %}
 {%- enddoc -%}
 
+{%- liquid
+  assign search_placeholder = 'general.search.placeholder' | t
+  if context == 'header'
+    assign search_placeholder = 'general.search.placeholder_inline' | t
+  endif
+
+  assign use_predictive = settings.predictive_search_enabled
+
+  assign use_typewriter = settings.typewriter_effect_enabled
+  if context == 'header' or context == 'page' and search.terms != blank
+    assign use_typewriter = false
+  endif
+
+  assign field_id = 'SearchFormInput-' | append: section_id
+  assign results_id = 'PredictiveSearchResults-' | append: section_id
+  if id_suffix != blank
+    assign field_id = field_id | append: '-' | append: id_suffix
+    assign results_id = results_id | append: '-' | append: id_suffix
+  endif
+-%}
+
 <form class="search__form flex flex-col gap-8 h-full relative" action="{{ routes.search_url }}" method="GET" role="search"
-  {%- if settings.predictive_search_enabled %}
+  {%- if use_predictive %}
     is="predictive-search"
     data-section-id="{{ section_id }}"
     data-limit="{{ settings.predictive_search_limit }}"
   {% endif -%}
 >
   <input type="hidden" name="options[prefix]" value="last" />
-  <label class="sr-only" for="SearchFormInput-{{ section_id }}">{{ 'general.search.title' | t }}</label>
+  <label class="sr-only" for="{{ field_id }}">{{ 'general.search.title' | t }}</label>
   <div class="search__field field flex items-center gap-4 relative">
-    {%- if settings.predictive_search_enabled -%}
-      {%- liquid
-        assign typewriter_effect_enabled = settings.typewriter_effect_enabled
-
-        if context == 'page' and search.terms != blank
-          assign typewriter_effect_enabled = false
-        endif
-      -%}
-      {%- if typewriter_effect_enabled -%}
-        <div class="typed absolute top-0 left-0 w-full h-full flex items-center justify-start gap-2 font-medium text-base md:text-lg leading-none pointer-events-none">
-          <search-typed class="flex items-center h-full overflow-hidden whitespace-nowrap" data-delay="0.5" data-first-text="{{ settings.typewriter_starter_text | escape }}" data-last-text="{{ 'general.search.placeholder' | t | escape }}"></search-typed>
-        </div>
-      {%- endif -%}
+    {%- if use_typewriter -%}
+      <div class="typed absolute top-0 left-0 w-full h-full flex items-center justify-start gap-2 font-medium text-base md:text-lg leading-none pointer-events-none">
+        <search-typed class="flex items-center h-full overflow-hidden whitespace-nowrap" data-delay="0.5" data-first-text="{{ settings.typewriter_starter_text | escape }}" data-last-text="{{ search_placeholder | escape }}"></search-typed>
+      </div>
     {%- endif -%}
     <input
-      class="input{% if settings.predictive_search_enabled or settings.predictive_search_recommendation != blank %} search__input{% endif %}"
+      class="input{% if use_predictive or settings.predictive_search_recommendation != blank %} search__input{% endif %}"
       type="search"
       name="q"
-      id="SearchFormInput-{{ section_id }}"
-      placeholder="{{ 'general.search.placeholder' | t | escape }}"
+      id="{{ field_id }}"
+      placeholder="{{ search_placeholder | escape }}"
       autocomplete="off"
       autocorrect="off"
       autocapitalize="off"
@@ -53,15 +67,40 @@
         value="{{ search.terms | escape }}"
       {% endif -%}
     />
-    {%- if settings.predictive_search_enabled %}
-      <button class="clear absolute flex items-center justify-center text-xs opacity-0" type="reset">
-        <span>{{ 'general.search.clear' | t }}</span>
-        {%- render 'icon', icon: 'loader', size: 'sm absolute opacity-0 invisible animate-spin' -%}
-      </button>
+
+    {%- if use_predictive or settings.enable_voice_search or context == 'header' %}
+      <div class="search__suffix absolute flex items-center gap-4">
+        {%- if use_predictive %}
+          <button class="clear flex items-center justify-center text-xs opacity-0 pointer-events-none" type="reset">
+            <span>{{ 'general.search.clear' | t }}</span>
+            {%- render 'icon', icon: 'loader', size: 'sm absolute opacity-0 invisible animate-spin' -%}
+          </button>
+        {%- endif -%}
+        {%- if settings.enable_voice_search -%}
+          <button class="search__voice flex items-center justify-center text-opacity shrink-0" type="button" is="voice-search" aria-label="{{ 'general.search.voice_search' | t | escape }}" hidden>
+            {%- render 'icon', icon: 'micro', size: icons_size -%}
+          </button>
+        {%- endif -%}
+        {%- if context == 'header' -%}
+          <button class="search__go button button--primary shrink-0" type="submit" is="hover-button">
+            <span class="btn-fill" data-fill></span>
+            <span class="btn-text">{{ 'general.search.go' | t }}</span>
+          </button>
+        {%- endif -%}
+      </div>
     {%- endif -%}
   </div>
 
-  {%- if settings.predictive_search_recommendation != blank -%}
+  {%- if settings.enable_voice_search -%}
+    <div class="search__alert alert alert--error alert--transparent flex gap-2d5" data-voice-unavailable hidden>
+      {%- render 'icon', icon: 'alert-circle-filled', size: 'sm shrink-0' -%}
+      <div class="align-self-center text-sm leading-tight">
+        <p>{{ 'general.search.voice_search_unavailable' | t }}</p>
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- if use_predictive and settings.predictive_search_recommendation != blank -%}
     <ul class="search__box search__recommendation text-left grid gap-6 md:gap-9">
       {%- for link in settings.predictive_search_recommendation.links -%}
         {%- if link.links != blank -%}
@@ -90,8 +129,9 @@
     </ul>
   {%- endif -%}
 
-  {%- if settings.predictive_search_enabled %}
-    <div id="PredictiveSearchResults-{{ section_id }}" class="search__box search__results text-left flex flex-col items-start grow gap-10" role="listbox">
+  {%- if use_predictive -%}
+    <p class="search__status sr-only" role="status"></p>
+    <div id="{{ results_id }}" class="search__box search__results text-left flex flex-col items-start grow gap-10">
       {%- if predictive_search.performed -%}
         {%- if predictive_search.resources.queries.size > 0 -%}
           <div class="grid gap-3 md:gap-4 w-full">
@@ -216,7 +256,7 @@
         {%- endif -%}
       {%- endif -%}
     </div>
-    {%- if context == 'page' -%}
+    {%- if context == 'page' or context == 'header' -%}
       <predictive-search-overlay class="search__overlay block opacity-0 z-30 fixed top-0 left-0 w-full h-full pointer-events-none"></predictive-search-overlay>
     {%- endif -%}
   {%- endif -%}

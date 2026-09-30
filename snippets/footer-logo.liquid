@@ -20,7 +20,7 @@
           {%- capture sizes -%}{{ logo_width }}px{%- endcapture -%}
           {%- capture widths -%}{{ logo_width | times: 1.5 | at_most: max_width | round }}, {{ logo_width | times: 2 | at_most: max_width }}, {{ logo_width | times: 3 | at_most: max_width }}{%- endcapture -%}
           {%- capture style -%}--image-width: {{ logo_width }}px; --image-height: {{ block.settings.logo_height }}px;{%- endcapture -%}
-          {{- block.settings.logo | image_url: width: max_width | image_tag: loading: 'lazy', widths: widths, sizes: sizes, style: style, preload: true, is: 'lazy-image' -}}
+          {{- block.settings.logo | image_url: width: max_width | image_tag: loading: 'lazy', widths: widths, sizes: sizes, style: style, fetchpriority: 'low', is: 'lazy-image' -}}
         </a>
       </p>
     {%- endif -%}

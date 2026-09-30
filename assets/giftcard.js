@@ -16,27 +16,36 @@ theme.selectText = function (element) {
   }
 };
 
-class QrCode extends HTMLElement {
-  constructor() {
-    super();
+class QrCode extends BaseElement {
+  connectedCallback() {
+    super.connectedCallback();
 
-    document.addEventListener('DOMContentLoaded', () => {
+    if (this.initialized) return;
+
+    const build = () => {
+      this.initialized = true;
       new window.QRCode(this, {
         text: this.getAttribute('identifier'),
         width: 130,
         height: 130,
         imageAltText: theme.strings.qrImageAlt
       });
-    });
+    };
+
+    if (document.readyState !== 'loading') {
+      build();
+    } else {
+      this.on(document, 'DOMContentLoaded', build, { once: true });
+    }
   }
 }
 customElements.define('qr-code', QrCode);
 
 class CopyButton extends HoverButton {
-  constructor() {
-    super();
+  connectedCallback() {
+    super.connectedCallback();
 
-    this.addEventListener('click', this.onClick);
+    this.on(this, 'click', this.onClick);
   }
 
   get controlElement() {

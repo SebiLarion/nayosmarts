@@ -88,7 +88,7 @@
           {%- endif -%}
   
           {%- if block.settings.subheading != blank or block.settings.heading != blank or block.settings.content != blank -%}
-            <div class="flex flex-col gap-3">
+            <div class="flex flex-col gap-3 relative" id="Marquee-{{ block.id }}">
               {%- if block.settings.subheading != blank -%}
                 {%- liquid
                   assign subtext_size = 'text-sm-lg'
@@ -107,6 +107,23 @@
 
               {%- if block.settings.heading != blank -%}
                 {%- if block.settings.content_layout == 'marquee' -%}
+                  <button
+                    type="button"
+                    class="slideshow-control flex items-center justify-center rounded-full sr-only"
+                    is="control-button"
+                    aria-controls="Marquee-{{ block.id }}"
+                    aria-live="polite"
+                    aria-label="{{ 'general.accessibility.pause_scrolling' | t | escape }}"
+                    data-pause-label="{{ 'general.accessibility.pause_scrolling' | t | escape }}"
+                    data-play-label="{{ 'general.accessibility.play_scrolling' | t | escape }}"
+                  >
+                    <span class="slideshow-control__pause">
+                      {%- render 'icon', icon: 'pause' -%}
+                    </span>
+                    <span class="slideshow-control__play">
+                      {%- render 'icon', icon: 'play' -%}
+                    </span>
+                  </button>
                   <marquee-element class="scrolling-text--{{ block.settings.direction }} heading {{ block.settings.heading_size }} leading-none flex gap-1" data-speed="{{ block.settings.speed }}" data-direction="{{ block.settings.direction }}">
                     <div class="promo-title marquee whitespace-nowrap">{{ block.settings.heading }}</div>
                   </marquee-element>

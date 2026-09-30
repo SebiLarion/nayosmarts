@@ -34,7 +34,7 @@
 
 <div class="section section--padding{% if section.settings.divider %} section--divider{% endif %}{% if section.settings.rounded %} section--rounded relative{% endif %}" data-section-id="{{ section.id }}">
   <div class="page-width{% if section.settings.full_width %} page-width--full{% endif %} relative">
-    <shop-the-look class="shop-the-look grid gap-6">
+    <shop-the-look class="shop-the-look{% if section.settings.show_content_aside %} shop-the-look--aside{% endif %} grid gap-6">
       {%- render 'section-heading', section: section -%}
 
       <lookbook-element class="banner block media--adapt mobile:media--adapt{% if section.settings.image == blank %} media--placeholder{% endif %} relative overflow-hidden">
@@ -64,17 +64,19 @@
           {%- for block in section.blocks -%}
             {%- liquid
               assign product = block.settings.product
+              
+              assign placeholder = false
               if product == blank
                 assign placeholder = true
               endif
             -%}
             {% if product != blank %}
               {%- if settings.product_quick_view -%}
-                <hover-element class="hotspot flex items-center justify-center absolute z-1 cursor-pointer" role="button" aria-label="{{ 'products.product.quick_view_label' | t: title: product.title | escape }}" aria-controls="Quickview-{{ section.id }}-{{ product.id }}" aria-expanded="false" aria-current="{% if forloop.first %}true{% else %}false{% endif %}" id="shopify-block-{{ block.id }}" {{ block.shopify_attributes }}>
-                  <div class="hotspot__content hidden md:flex gap-2 items-center absolute pointer-events-none{% if block.settings.horizontal < 15 %} with-left{% elsif block.settings.horizontal > 85 %} with-right{% endif %}{% if block.settings.vertical > 70 %} with-bottom{% endif %}">
+                <button type="button" class="hotspot flex items-center justify-center absolute z-1 cursor-pointer" is="hover-button" aria-label="{{ 'products.product.quick_view_label' | t: title: product.title | escape }}" aria-controls="Quickview-{{ section.id }}-{{ block.id }}-{{ product.id }}" aria-expanded="false" aria-current="{% if forloop.first %}true{% else %}false{% endif %}" id="shopify-block-{{ block.id }}" {{ block.shopify_attributes }}>
+                  <div class="hotspot__content hidden md:flex gap-2 items-center absolute pointer-events-none{% if block.settings.horizontal < 15 %} with-left{% elsif block.settings.horizontal > 85 %} with-right{% endif %}{% if block.settings.vertical > 70 %} with-bottom{% endif %} text-center{% if product.featured_media %} lg:text-left{% endif %}">
                     {%- if product.featured_media -%}
                       <div class="hidden lg:block media media--{{ settings.product_image_ratio }}{% unless settings.product_image_fill %} media--contain{% endunless %} relative overflow-hidden shrink-0">
-                        {%- assign max_width = product.featured_media.width -%}
+                        {%- assign max_width = product.featured_media.width | default: product.featured_media.preview_image.width -%}
                         {%- capture sizes -%}80px{%- endcapture -%}
                         {%- capture widths -%}{{ 80 | times: 1.5 | at_most: max_width | round }}, {{ 80 | times: 2 | at_most: max_width }}, {{ 80 | times: 3 | at_most: max_width }}{%- endcapture -%}
                         {{- product.featured_media | image_url: width: max_width | image_tag: loading: 'lazy', widths: widths, sizes: sizes, is: 'lazy-image' -}}
@@ -87,13 +89,13 @@
                     </div>
                     {%- render 'icon', icon: 'caret', class: 'absolute' -%}
                   </div>
-                </hover-element>
+                </button>
               {%- else -%}
                 <a class="hotspot flex items-center justify-center absolute z-1 cursor-pointer"{% if product != blank %} href="{{ product.url }}" aria-label="{{ product.title | escape }}"{% else %} role="link" aria-disabled="true"{% endif %} aria-current="{% if forloop.first %}true{% else %}false{% endif %}" id="shopify-block-{{ block.id }}" {{ block.shopify_attributes }}>
-                  <div class="hotspot__content hidden md:flex gap-2 items-center absolute pointer-events-none{% if block.settings.horizontal < 15 %} with-left{% elsif block.settings.horizontal > 85 %} with-right{% endif %}{% if block.settings.vertical > 70 %} with-bottom{% endif %}">
+                  <div class="hotspot__content hidden md:flex gap-2 items-center absolute pointer-events-none{% if block.settings.horizontal < 15 %} with-left{% elsif block.settings.horizontal > 85 %} with-right{% endif %}{% if block.settings.vertical > 70 %} with-bottom{% endif %} text-center{% if product.featured_media %} lg:text-left{% endif %}">
                     {%- if product.featured_media -%}
                       <div class="hidden lg:block media media--{{ settings.product_image_ratio }}{% unless settings.product_image_fill %} media--contain{% endunless %} relative overflow-hidden shrink-0">
-                        {%- assign max_width = product.featured_media.width -%}
+                        {%- assign max_width = product.featured_media.width | default: product.featured_media.preview_image.width -%}
                         {%- capture sizes -%}80px{%- endcapture -%}
                         {%- capture widths -%}{{ 80 | times: 1.5 | at_most: max_width | round }}, {{ 80 | times: 2 | at_most: max_width }}, {{ 80 | times: 3 | at_most: max_width }}{%- endcapture -%}
                         {{- product.featured_media | image_url: width: max_width | image_tag: loading: 'lazy', widths: widths, sizes: sizes, is: 'lazy-image' -}}
@@ -116,13 +118,21 @@
       </lookbook-element>
 
       <carousel-element class="block">
+        {%- capture card_sizes -%}(max-width: 767px) 100vw, calc(min({{ settings.page_width }}px, 100vw) / 2){%- endcapture -%}
+        {%- liquid
+          assign card_lazy_load = true
+          if section.index == 1
+            assign card_lazy_load = false
+          endif
+        -%}
         {%- for block in section.blocks -%}
           {%- render 'product-card',
             product: block.settings.product,
             product_id: block.settings.product.id,
             section_id: section.id,
             block_id: block.id,
-            lazy_load: false,
+            lazy_load: card_lazy_load,
+            sizes: card_sizes,
             image_ratio: settings.product_image_ratio,
             image_fill: settings.product_image_fill,
             show_secondary_image: settings.product_secondary_image,
@@ -162,6 +172,13 @@
       "type": "image_picker",
       "id": "image_mobile",
       "label": "t:sections.global.settings.image_mobile.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_content_aside",
+      "default": true,
+      "label": "t:sections.shop-the-look.settings.show_content_aside.label",
+      "info": "t:sections.shop-the-look.settings.show_content_aside.info"
     },
     {
       "type": "header",

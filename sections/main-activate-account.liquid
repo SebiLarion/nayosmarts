@@ -22,7 +22,8 @@
         {%- liquid
           if form.errors
             assign form_errors = form.errors | default_errors
-            render 'alert', status: 'error', content: form_errors
+            assign alert_id = 'ActivateCustomerPasswordFormErrors-' | append: section.id
+            render 'alert', status: 'error', content: form_errors, id: alert_id, focus: true
           endif
         -%}
 
@@ -36,6 +37,7 @@
               id="Password"
               autocomplete="new-password"
               placeholder="{{ 'customer.activate_account.password' | t | escape }}"
+              {%- if form.errors contains 'password' %} aria-invalid="true" aria-describedby="ActivateCustomerPasswordFormErrors-{{ section.id }}"{% endif -%}
             />
             <label class="label is-floating" for="Password">{{ 'customer.activate_account.password' | t }}</label>
           </div>
@@ -49,6 +51,7 @@
               id="PasswordConfirmation"
               autocomplete="new-password"
               placeholder="{{ 'customer.activate_account.password_confirm' | t | escape }}"
+              {%- if form.errors contains 'password_confirmation' %} aria-invalid="true" aria-describedby="ActivateCustomerPasswordFormErrors-{{ section.id }}"{% endif -%}
             />
             <label class="label is-floating" for="PasswordConfirmation">{{ 'customer.activate_account.password_confirm' | t }}</label>
           </div>

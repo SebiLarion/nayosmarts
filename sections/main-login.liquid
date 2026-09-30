@@ -22,7 +22,8 @@
         {%- liquid
           if form.errors
             assign form_errors = form.errors | default_errors
-            render 'alert', status: 'error', content: form_errors
+            assign alert_id = 'RecoverFormErrors-' | append: section.id
+            render 'alert', status: 'error', content: form_errors, id: alert_id
           endif
 
           assign recover_success = form.posted_successfully?
@@ -40,7 +41,7 @@
             autocapitalize="off"
             autocomplete="email"
             placeholder="{{ 'customer.recover_password.email' | t | escape }}"
-            {%- if form.errors %} autofocus{% endif -%}
+            {%- if form.errors %} data-focus-on-load aria-invalid="true" aria-describedby="RecoverFormErrors-{{ section.id }}"{% endif -%}
           />
           <label class="label is-floating" for="RecoverEmail">{{ 'customer.recover_password.email' | t }}</label>
         </div>
@@ -73,7 +74,8 @@
         {%- liquid
           if form.errors
             assign form_errors = form.errors | default_errors
-            render 'alert', status: 'error', content: form_errors
+            assign alert_id = 'LoginFormErrors-' | append: section.id
+            render 'alert', status: 'error', content: form_errors, id: alert_id, focus: true
           endif
 
           if recover_success == true
@@ -101,6 +103,7 @@
               autocorrect="off"
               autocapitalize="off"
               placeholder="{{ 'customer.login.email' | t | escape }}"
+              {%- if form.errors contains 'form' %} aria-invalid="true" aria-describedby="LoginFormErrors-{{ section.id }}"{% endif -%}
             />
             <label class="label is-floating" for="CustomerEmail">{{ 'customer.login.email' | t }}</label>
           </div>
@@ -116,6 +119,7 @@
                 id="CustomerPassword"
                 autocomplete="current-password"
                 placeholder="{{ 'customer.login.password' | t | escape }}"
+                {%- if form.errors contains 'form' %} aria-invalid="true" aria-describedby="LoginFormErrors-{{ section.id }}"{% endif -%}
               />
               <label class="label is-floating" for="CustomerPassword">{{ 'customer.login.password' | t }}</label>
             </div>

@@ -205,8 +205,8 @@
     --page-width: {{ settings.page_width }}px;
     --gap-padding: clamp(var(--sp-5), 2.526vw, var(--sp-12));
     --grid-gap: clamp(40px, 20vw, 60px);
-    --page-padding: var(--sp-3);
-    --page-container: min(calc(100vw - var(--scrollbar-width, 0px) - var(--page-padding) * 2), var(--page-width));
+    --page-padding: var(--sp-5);
+    --page-container: min(calc(100vw - var(--page-padding) * 2), var(--page-width));
     --rounded-button: {{ rounded_button }};
     --rounded-input: {{ rounded_input }};
     --rounded-card: {{ rounded_card }};
@@ -226,24 +226,26 @@
     :root {
       --gap-padding: var(--sp-12);
       --page-padding: var(--sp-12);
-      --page-container: min(calc(100vw - var(--scrollbar-width, 0px) - var(--page-padding) * 2), max(var(--page-width), 1280px));
+      --page-container: min(calc(100vw - var(--page-padding) * 2), max(var(--page-width), 1280px));
     }
   }
 
   @media screen and (min-width: 1536px) {
     :root {
-      --page-padding: max(var(--sp-12), 50vw - var(--scrollbar-width, 0px)/2 - var(--page-width)/2);
+      --page-padding: max(var(--sp-12), 50vw - var(--page-width)/2);
     }
   }
 </style>
 
-{%- unless settings.type_body_font.system? -%}
-  {%- comment %}theme-check-disable AssetPreload{% endcomment %}
-  <link rel="preload" as="font" href="{{ settings.type_body_font | font_url }}" type="font/woff2" crossorigin>
-  {%- comment %}theme-check-enable AssetPreload{% endcomment %}
-{%- endunless -%}
-{%- unless settings.type_header_font.system? -%}
-  {%- comment %}theme-check-disable AssetPreload{% endcomment %}
-  <link rel="preload" as="font" href="{{ settings.type_header_font | font_url }}" type="font/woff2" crossorigin>
-  {%- comment %}theme-check-enable AssetPreload{% endcomment %}
-{%- endunless -%}
+{%- if settings.preload_fonts -%}
+  {%- unless settings.type_body_font.system? -%}
+    {%- comment %}theme-check-disable AssetPreload{% endcomment %}
+    <link rel="preload" as="font" href="{{ settings.type_body_font | font_url }}" type="font/woff2" crossorigin>
+    {%- comment %}theme-check-enable AssetPreload{% endcomment %}
+  {%- endunless -%}
+  {%- unless settings.type_header_font.system? -%}
+    {%- comment %}theme-check-disable AssetPreload{% endcomment %}
+    <link rel="preload" as="font" href="{{ settings.type_header_font | font_url }}" type="font/woff2" crossorigin>
+    {%- comment %}theme-check-enable AssetPreload{% endcomment %}
+  {%- endunless -%}
+{%- endif -%}

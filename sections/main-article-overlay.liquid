@@ -3,90 +3,6 @@
     --section-padding-top: {{ section.settings.padding_top }}px;
     --section-padding-bottom: {{ section.settings.padding_bottom }}px;
   }
-
-  .article-sidebar-card {
-    display: grid;
-    grid-template-columns: 80px 1fr;
-    gap: 12px;
-    align-items: start;
-    padding: 12px 0;
-    border-bottom: 1px solid rgb(var(--color-foreground) / 0.1);
-  }
-  .article-sidebar-card:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-  }
-  .article-sidebar-card__image {
-    aspect-ratio: 1;
-    overflow: hidden;
-    border-radius: var(--rounded-card, 4px);
-    display: block;
-  }
-  .article-sidebar-card__image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .article-sidebar-card__info {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .article-sidebar-card__title {
-    font-size: 0.875rem;
-    line-height: 1.4;
-    font-weight: 500;
-    color: rgb(var(--color-foreground));
-    text-decoration: none;
-  }
-  .article-sidebar-card__title:hover {
-    text-decoration: underline;
-  }
-  .article-sidebar-card__price {
-    font-size: 0.875rem;
-    color: rgb(var(--color-foreground) / 0.7);
-  }
-  .article-sidebar-card__price s {
-    opacity: 0.5;
-    margin-right: 4px;
-  }
-  .article-sidebar-card__buy {
-    margin-top: 4px;
-  }
-  .article-sidebar-card__buy .button {
-    width: 100%;
-    min-width: 0;
-    padding: 10px;
-    max-width: 100px;
-    font-size: 14px;
-  }
-  .article-sidebar-widget {
-    padding: 20px;
-    background: rgb(var(--color-background-2, var(--color-foreground) / 0.04));
-    border-radius: var(--rounded-card, 8px);
-    border: 1px solid rgb(var(--color-foreground) / 0.08);
-  }
-  .article-sidebar-widget__heading {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid rgb(var(--color-foreground) / 0.1);
-  }
-  .article-layout-with-sidebar {
-    display: grid;
-    gap: 48px;
-    align-items: start;
-  }
-  @media screen and (min-width: 1024px) {
-    .article-layout-with-sidebar {
-      grid-template-columns: 1fr 300px;
-    }
-    .article-sidebar {
-      position: sticky;
-      top: calc(var(--sticky-header-height, 0px) + 24px);
-    }
-  }
 </style>
 
 {%- liquid
@@ -96,99 +12,15 @@
   if comment.status == 'pending'
     assign number_of_comments = article.comments_count | plus: 1
   endif
-
-  assign show_sidebar = section.settings.show_sidebar
-  assign sidebar_source = section.settings.sidebar_source
-
-  if sidebar_source == 'collection'
-    assign sidebar_collection = collections[section.settings.sidebar_collection]
-    if sidebar_collection == blank or sidebar_collection.products_count == 0
-      assign show_sidebar = false
-    endif
-  elsif sidebar_source == 'product_list'
-    assign sidebar_products = section.settings.sidebar_products
-    if sidebar_products == blank or sidebar_products.size == 0
-      assign show_sidebar = false
-    endif
-  else
-    assign show_sidebar = false
-  endif
 -%}
 
-{%- if show_sidebar -%}
-  <div class="section section--padding{% if section.settings.divider %} section--divider{% endif %}{% if section.settings.rounded %} section--rounded relative{% endif %}">
-    <div class="page-width">
-      <div class="article-layout-with-sidebar">
-
-        <div>
-          <article class="article relative" itemscope itemtype="http://schema.org/BlogPosting">
-            <div class="rte text-base md:text-lg" itemprop="articleBody">
-              {{- article.content -}}
-            </div>
-          </article>
-        </div>
-
-        <aside class="article-sidebar">
-          <div class="article-sidebar-widget">
-            {%- if section.settings.sidebar_heading != blank -%}
-              <h3 class="article-sidebar-widget__heading">{{ section.settings.sidebar_heading }}</h3>
-            {%- endif -%}
-            <div>
-              {%- assign sidebar_limit = section.settings.sidebar_product_count -%}
-              {%- if sidebar_source == 'collection' -%}
-                {%- assign sidebar_items = sidebar_collection.products -%}
-              {%- else -%}
-                {%- assign sidebar_items = sidebar_products -%}
-              {%- endif -%}
-              {%- for product in sidebar_items limit: sidebar_limit -%}
-                <div class="article-sidebar-card">
-                  <a href="{{ product.url }}" class="article-sidebar-card__image" aria-label="{{ product.title | escape }}">
-                    {%- if product.featured_image -%}
-                      {{- product.featured_image | image_url: width: 160 | image_tag: loading: 'lazy', alt: product.featured_image.alt | default: product.title -}}
-                    {%- else -%}
-                      {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
-                    {%- endif -%}
-                  </a>
-                  <div class="article-sidebar-card__info">
-                    <a href="{{ product.url }}" class="article-sidebar-card__title">{{ product.title }}</a>
-                    <div class="article-sidebar-card__price">
-                      {%- if product.compare_at_price > product.price -%}
-                        <s>{{ product.compare_at_price | money }}</s>
-                      {%- endif -%}
-                      {{ product.price | money }}
-                    </div>
-                    <div class="article-sidebar-card__buy">
-                      {%- render 'button',
-                        label: section.settings.sidebar_buy_label,
-                        link: product.url,
-                        style: 'primary',
-                        size: 'sm'
-                      -%}
-                    </div>
-                  </div>
-                </div>
-              {%- endfor -%}
-            </div>
-            {%- if section.settings.sidebar_show_button and sidebar_source == 'collection' and sidebar_collection != blank -%}
-              <div style="margin-top:16px;">
-                {%- render 'button', label: section.settings.sidebar_button_label, link: sidebar_collection.url, style: 'secondary', size: 'sm' -%}
-              </div>
-            {%- endif -%}
-          </div>
-        </aside>
-
-      </div>
+<div class="section section--padding{% if section.settings.divider %} section--divider{% endif %}{% if section.settings.rounded %} section--rounded relative{% endif %}">
+  <article class="article page-width{% if section.settings.narrow %} page-width--narrow{% endif %} relative" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="rte text-base md:text-lg" itemprop="articleBody">
+      {{- article.content -}}
     </div>
-  </div>
-{%- else -%}
-  <div class="section section--padding{% if section.settings.divider %} section--divider{% endif %}{% if section.settings.rounded %} section--rounded relative{% endif %}">
-    <article class="article page-width{% if section.settings.narrow %} page-width--narrow{% endif %} relative" itemscope itemtype="http://schema.org/BlogPosting">
-      <div class="rte text-base md:text-lg" itemprop="articleBody">
-        {{- article.content -}}
-      </div>
-    </article>
-  </div>
-{%- endif -%}
+  </article>
+</div>
 
 {%- if section.blocks.size > 0 -%}
   <div class="comments-section section{% if section.settings.rounded %} section--rounded relative{% endif %}">
@@ -341,7 +173,8 @@
                       {%- liquid
                         if form.errors
                           assign form_errors = form.errors | default_errors
-                          render 'alert', status: 'error', content: form_errors
+                          assign alert_id = 'CommentFormErrors-' | append: section.id
+                          render 'alert', status: 'error', content: form_errors, id: alert_id, focus: true
                         endif
 
                         if form.posted_successfully?
@@ -363,16 +196,16 @@
                       <div class="grid gap-3d5 md:gap-4">
                         <div class="grid md:grid-cols-2 gap-3d5 md:gap-4">
                           <div class="field">
-                            <input required class="input is-floating" type="text" name="comment[author]" id="CommentAuthor" value="{{ form.author }}" placeholder="{{ 'blogs.comments.name' | t | escape }}" autocapitalize="words" />
+                            <input required class="input is-floating{% if form.errors contains 'author' %} invalid{% endif %}" type="text" name="comment[author]" id="CommentAuthor" value="{{ form.author }}" placeholder="{{ 'blogs.comments.name' | t | escape }}" autocapitalize="words" autocomplete="name"{% if form.errors contains 'author' %} aria-invalid="true" aria-describedby="CommentFormErrors-{{ section.id }}"{% endif %} />
                             <label class="label is-floating" for="CommentAuthor">{{ 'blogs.comments.name' | t }}</label>
                           </div>
                           <div class="field">
-                            <input required class="input is-floating" type="email" name="comment[email]" id="CommentEmail" value="{{ form.email }}" placeholder="{{ 'blogs.comments.email' | t | escape }}" autocorrect="off" autocapitalize="off" />
+                            <input required class="input is-floating{% if form.errors contains 'email' %} invalid{% endif %}" type="email" name="comment[email]" id="CommentEmail" value="{{ form.email }}" placeholder="{{ 'blogs.comments.email' | t | escape }}" autocorrect="off" autocapitalize="off" autocomplete="email"{% if form.errors contains 'email' %} aria-invalid="true" aria-describedby="CommentFormErrors-{{ section.id }}"{% endif %} />
                             <label class="label is-floating" for="CommentEmail">{{ 'blogs.comments.email' | t }}</label>
                           </div>
                         </div>
                         <div class="field">
-                          <textarea required class="textarea is-floating" name="comment[body]" id="CommentBody" placeholder=" " rows="5">{{ form.body }}</textarea>
+                          <textarea required class="textarea is-floating{% if form.errors contains 'body' %} invalid{% endif %}" name="comment[body]" id="CommentBody" placeholder=" " rows="5"{% if form.errors contains 'body' %} aria-invalid="true" aria-describedby="CommentFormErrors-{{ section.id }}"{% endif %}>{{ form.body }}</textarea>
                           <label class="label is-floating" for="CommentBody">{{ 'blogs.comments.message' | t }}</label>
                         </div>
                         <div class="field">
@@ -419,76 +252,6 @@
 {
   "name": "t:sections.main-article.name",
   "settings": [
-    {
-      "type": "header",
-      "content": "Product recommendations sidebar"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_sidebar",
-      "label": "Show product recommendations sidebar",
-      "default": false
-    },
-    {
-      "type": "select",
-      "id": "sidebar_source",
-      "label": "Product source",
-      "options": [
-        { "value": "collection", "label": "Option 1: Collection" },
-        { "value": "product_list", "label": "Option 2: Product list" }
-      ],
-      "default": "collection",
-      "visible_if": "{{ section.settings.show_sidebar == true }}"
-    },
-    {
-      "type": "collection",
-      "id": "sidebar_collection",
-      "label": "Collection"
-    },
-    {
-      "type": "product_list",
-      "id": "sidebar_products",
-      "label": "Products",
-      "limit": 8
-    },
-    {
-      "type": "text",
-      "id": "sidebar_heading",
-      "label": "Sidebar heading",
-      "default": "You might also like",
-      "visible_if": "{{ section.settings.show_sidebar == true }}"
-    },
-    {
-      "type": "range",
-      "id": "sidebar_product_count",
-      "label": "Number of products",
-      "min": 2,
-      "max": 8,
-      "step": 1,
-      "default": 4,
-      "visible_if": "{{ section.settings.show_sidebar == true }}"
-    },
-    {
-      "type": "text",
-      "id": "sidebar_buy_label",
-      "label": "Buy now button label",
-      "default": "Buy now",
-      "visible_if": "{{ section.settings.show_sidebar == true }}"
-    },
-    {
-      "type": "checkbox",
-      "id": "sidebar_show_button",
-      "label": "Show \"View all\" button",
-      "default": true,
-      "visible_if": "{{ section.settings.show_sidebar == true and section.settings.sidebar_source == 'collection' }}"
-    },
-    {
-      "type": "text",
-      "id": "sidebar_button_label",
-      "label": "Button label",
-      "default": "View all",
-      "visible_if": "{{ section.settings.show_sidebar == true and section.settings.sidebar_source == 'collection' and section.settings.sidebar_show_button == true }}"
-    },
     {
       "type": "header",
       "content": "t:sections.global.settings.header__section.content"

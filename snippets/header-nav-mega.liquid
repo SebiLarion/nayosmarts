@@ -179,7 +179,7 @@
                   <span class="heading link-text text-xl-3xl tracking-tighter leading-tight">{{ tab_target_heading | escape }}</span>
                 {%- endcapture -%}
                 {%- if block.settings[tab_target_link].type == 'collection_link' or block.settings[tab_target_link].type == 'catalog_link' -%}
-                  <button type="button" class="mega-menu__nav-item flex gap-2 items-center opacity-0 link icon-with-text text-left" role="tab" aria-controls="TabPanel-{{ block.id }}-{{ forloop_index }}" data-index="{{ forloop_index }}"{% if forloop_first %} disabled{% endif %}>
+                  <button type="button" class="mega-menu__nav-item flex gap-2 items-center opacity-0 link icon-with-text text-left" role="tab" aria-controls="TabPanel-{{ block.id }}-{{ forloop_index }}" data-index="{{ forloop_index }}"{% if forloop_first %} aria-selected="true" tabindex="0"{% else %} aria-selected="false" tabindex="-1"{% endif %}>
                     {{- tab_heading -}}
                   </button>
                   {%- liquid
@@ -252,6 +252,7 @@
                       assign min_column = 3
                     endif
                   -%}
+                  {%- capture card_sizes -%}(max-width: 1023px) 50vw, calc(min({{ settings.page_width }}px, 100vw) / {{ column | at_least: min_column | times: 2 }}){%- endcapture -%}
                   <slider-element id="Slider-{{ block.id }}-{{ forloop_index }}" class="grid slider slider--desktop slider--tablet" selector=".card-grid>.card" tabindex="0">
                     <motion-list class="product-grid card-grid card-grid--{{ column | at_least: min_column }} mobile:card-grid--1 grid" initialized>
                       {%- capture block_id -%}{{ block.id }}-{{ forloop_index }}{%- endcapture -%}
@@ -261,7 +262,7 @@
                           product_id: product.id,
                           section_id: section.id,
                           block_id: block_id,
-                          lazy_load: false,
+                          sizes: card_sizes,
                           image_ratio: settings.product_image_ratio,
                           image_fill: settings.product_image_fill,
                           show_secondary_image: settings.product_secondary_image,

@@ -1,11 +1,11 @@
 if (!customElements.get('remove-gift-wrap')) {
   customElements.define(
     'remove-gift-wrap',
-    class RemoveGiftWrap extends HTMLAnchorElement {
-      constructor() {
-        super();
+    class RemoveGiftWrap extends BaseElementMixin(HTMLAnchorElement) {
+      connectedCallback() {
+        super.connectedCallback();
 
-        this.addEventListener('click', this.onClick.bind(this));
+        this.on(this, 'click', this.onClick.bind(this));
       }
 
       get cartItems() {
@@ -14,10 +14,10 @@ if (!customElements.get('remove-gift-wrap')) {
 
       onClick(event) {
         event.preventDefault();
-        this.cartItems.enableLoading(this.getAttribute('data-index'));
+        this.cartItems?.enableLoading(this.getAttribute('data-index'));
 
         const giftWrapping = document.querySelector('gift-wrapping');
-        giftWrapping.removeGiftWrap();
+        giftWrapping?.removeGiftWrap();
       }
     }, { extends: 'a' }
   );
@@ -26,7 +26,7 @@ if (!customElements.get('remove-gift-wrap')) {
 if (!customElements.get('gift-wrapping')) {
   customElements.define(
     'gift-wrapping',
-    class GiftWrapping extends HTMLElement {
+    class GiftWrapping extends BaseElement {
       constructor() {
         super();
 
@@ -42,10 +42,12 @@ if (!customElements.get('gift-wrapping')) {
       }
 
       connectedCallback() {
+        super.connectedCallback();
+
         if (this.selector === null) return;
 
         // When the gift-wrapping checkbox is checked or unchecked.
-        this.selector.addEventListener('change', theme.utils.debounce((event) => {
+        this.on(this.selector, 'change', theme.utils.debounce((event) => {
           event.target.checked ? this.setGiftWrap() : this.removeGiftWrap();
         }, 300));
 
@@ -54,7 +56,7 @@ if (!customElements.get('gift-wrapping')) {
           return this.removeGiftWrap();
         }
         // If we don't have the right amount of gift-wrap items in the cart.
-        if (this.giftWrapsInCart > 0 & this.giftWrapsInCart != this.itemsInCart) {
+        if (this.giftWrapsInCart > 0 && this.giftWrapsInCart != this.itemsInCart) {
           return this.setGiftWrap();
         }
         // If we have a gift-wrap item in the cart but our gift-wrapping cart attribute has not been set.
@@ -107,13 +109,16 @@ if (!customElements.get('gift-wrapping')) {
       }
 
       fetchGiftWrap(body) {
-        fetch(theme.routes.cart_update_url, { ...theme.utils.fetchConfig(), ...{ body } })
+        this.giftWrapAbortController?.abort();
+        this.giftWrapAbortController = new AbortController();
+
+        fetch(theme.routes.cart_update_url, { ...theme.utils.fetchConfig(), ...{ body }, signal: this.giftWrapAbortController.signal })
           .then((response) => response.json())
           .then((parsedState) => {
             theme.pubsub.publish(theme.pubsub.PUB_SUB_EVENTS.cartUpdate, { source: 'gift-wrapping', cart: parsedState });
           })
           .catch((error) => {
-            console.log(error);
+            if (error.name !== 'AbortError') console.error(error);
           });
       }
 
@@ -128,11 +133,11 @@ if (!customElements.get('gift-wrapping')) {
 if (!customElements.get('gift-note')) {
   customElements.define(
     'gift-note',
-    class GiftNote extends HTMLElement {
-      constructor() {
-        super();
+    class GiftNote extends BaseElement {
+      connectedCallback() {
+        super.connectedCallback();
 
-        this.addEventListener('change', theme.utils.debounce(this.onChange.bind(this), 300));
+        this.on(this, 'change', theme.utils.debounce(this.onChange.bind(this), 300));
       }
 
       onChange(event) {
@@ -141,7 +146,9 @@ if (!customElements.get('gift-note')) {
             [theme.cartStrings.giftNoteAttribute]: event.target.value
           }
         });
-        fetch(theme.routes.cart_update_url, {...theme.utils.fetchConfig(), ...{ body }});
+        // Fire-and-forget attribute update — the response is ignored, so there is
+        // no stale-response risk and nothing to abort.
+        fetch(theme.routes.cart_update_url, { ...theme.utils.fetchConfig(), ...{ body } });
       }
     }
   );
@@ -150,7 +157,7 @@ if (!customElements.get('gift-note')) {
 if (!customElements.get('gift-wrap-selector')) {
   customElements.define(
     'gift-wrap-selector',
-    class GiftWrapSelector extends HTMLElement {
+    class GiftWrapSelector extends BaseElement {
       constructor() {
         super();
 
@@ -174,7 +181,9 @@ if (!customElements.get('gift-wrap-selector')) {
       }
 
       connectedCallback() {
-        this.addEventListener('change', this.onChange.bind(this));
+        super.connectedCallback();
+
+        this.on(this, 'change', this.onChange.bind(this));
 
         if (this.lineItem.properties[theme.cartStrings.giftWrapAttribute] === theme.cartStrings.giftWrapBooleanTrue && !this.giftItem.hasOwnProperty('key')) {
           this.unsetGiftWrap();
@@ -193,12 +202,15 @@ if (!customElements.get('gift-wrap-selector')) {
       setGiftWrap() {
         this.cartItems.enableLoading(this.lineItem.key);
 
+        // No abort signal on purpose: this is a two-step remove→re-add chain that
+        // MUST run to completion — aborting mid-chain could drop the line item.
+
         // Remove target product
         let body = JSON.stringify({
           id: this.lineItem.key,
           quantity: 0
         });
-        
+
         fetch(theme.routes.cart_change_url, { ...theme.utils.fetchConfig(), ...{ body } })
           .then((response) => response.json())
           .then((parsedState) => {
@@ -210,7 +222,7 @@ if (!customElements.get('gift-wrap-selector')) {
             // Re-add target product and gift wrapping to cart
             let sectionsToBundle = [];
             document.documentElement.dispatchEvent(new CustomEvent('cart:bundled-sections', { bubbles: true, detail: { sections: sectionsToBundle } }));
-            
+
             const lineItemProps = {
               ...this.lineItem.properties,
               [theme.cartStrings.giftWrapAttribute]: theme.cartStrings.giftWrapBooleanTrue
@@ -234,10 +246,10 @@ if (!customElements.get('gift-wrap-selector')) {
               sections: sectionsToBundle
             });
 
-            fetch(theme.routes.cart_add_url, { ...theme.utils.fetchConfig('javascript'), body })
+            return fetch(theme.routes.cart_add_url, { ...theme.utils.fetchConfig('javascript'), body })
               .then((response) => response.json())
               .then(async (parsedState) => {
-                const cartJson = await (await fetch(theme.routes.cart_url, { ...theme.utils.fetchConfig('json', 'GET')})).json();
+                const cartJson = await (await fetch(theme.routes.cart_url, { ...theme.utils.fetchConfig('json', 'GET') })).json();
                 cartJson['sections'] = parsedState['sections'];
                 theme.pubsub.publish(theme.pubsub.PUB_SUB_EVENTS.cartUpdate, { source: 'gift-wrap', cart: cartJson });
               });
@@ -249,6 +261,9 @@ if (!customElements.get('gift-wrap-selector')) {
 
       unsetGiftWrap() {
         this.cartItems.enableLoading(this.lineItem.key);
+
+        // No abort signal on purpose: this is a two-step remove→re-add chain that
+        // MUST run to completion — aborting mid-chain could drop the line item.
 
         // Remove target product and gift wrapping
         let updates = {
@@ -267,7 +282,7 @@ if (!customElements.get('gift-wrap-selector')) {
               theme.pubsub.publish(theme.pubsub.PUB_SUB_EVENTS.cartUpdate, { source: 'gift-wrap', cart: parsedState });
               return;
             }
-            
+
             // Re-add target product to cart
             let sectionsToBundle = [];
             document.documentElement.dispatchEvent(new CustomEvent('cart:bundled-sections', { bubbles: true, detail: { sections: sectionsToBundle } }));
@@ -282,10 +297,10 @@ if (!customElements.get('gift-wrap-selector')) {
               sections: sectionsToBundle
             });
 
-            fetch(theme.routes.cart_add_url, { ...theme.utils.fetchConfig('javascript'), body })
+            return fetch(theme.routes.cart_add_url, { ...theme.utils.fetchConfig('javascript'), body })
               .then((response) => response.json())
               .then(async (parsedState) => {
-                const cartJson = await (await fetch(theme.routes.cart_url, { ...theme.utils.fetchConfig('json', 'GET')})).json();
+                const cartJson = await (await fetch(theme.routes.cart_url, { ...theme.utils.fetchConfig('json', 'GET') })).json();
                 cartJson['sections'] = parsedState['sections'];
                 theme.pubsub.publish(theme.pubsub.PUB_SUB_EVENTS.cartUpdate, { source: 'gift-wrap', cart: cartJson });
               });
@@ -301,10 +316,7 @@ if (!customElements.get('gift-wrap-selector')) {
 if (!customElements.get('gift-wrap-item')) {
   customElements.define(
     'gift-wrap-item',
-    class GiftWrapItem extends HTMLElement {
-      constructor() {
-        super();
-      }
+    class GiftWrapItem extends BaseElement {
 
       get sectionId() {
         return this.getAttribute('data-section-id');
@@ -325,6 +337,8 @@ if (!customElements.get('gift-wrap-item')) {
       }
 
       connectedCallback() {
+        super.connectedCallback();
+
         const quantity = this.lineItem.quantity || 0;
         if (quantity !== this.giftItem.quantity) {
           this.updateGiftWrap(this.giftItem.key, quantity);
@@ -343,13 +357,16 @@ if (!customElements.get('gift-wrap-item')) {
           sections: sectionsToBundle
         });
 
-        fetch(theme.routes.cart_change_url, { ...theme.utils.fetchConfig(), ...{ body } })
+        this.updateAbortController?.abort();
+        this.updateAbortController = new AbortController();
+
+        fetch(theme.routes.cart_change_url, { ...theme.utils.fetchConfig(), ...{ body }, signal: this.updateAbortController.signal })
           .then((response) => response.json())
           .then((parsedState) => {
             theme.pubsub.publish(theme.pubsub.PUB_SUB_EVENTS.cartUpdate, { source: 'gift-wrap', cart: parsedState });
           })
           .catch((error) => {
-            console.error(error);
+            if (error.name !== 'AbortError') console.error(error);
           });
       }
 
@@ -366,11 +383,11 @@ if (!customElements.get('gift-wrap-item')) {
 if (!customElements.get('unset-gift-wrap')) {
   customElements.define(
     'unset-gift-wrap',
-    class UnsetGiftWrap extends HTMLAnchorElement {
-      constructor() {
-        super();
+    class UnsetGiftWrap extends BaseElementMixin(HTMLAnchorElement) {
+      connectedCallback() {
+        super.connectedCallback();
 
-        this.addEventListener('click', this.onClick.bind(this));
+        this.on(this, 'click', this.onClick.bind(this));
       }
 
       get giftWrapItem() {

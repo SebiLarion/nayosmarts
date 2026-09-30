@@ -264,7 +264,8 @@
                       {%- liquid
                         if form.errors
                           assign form_errors = form.errors | default_errors
-                          render 'alert', status: 'error', content: form_errors
+                          assign alert_id = 'CommentFormErrors-' | append: section.id
+                          render 'alert', status: 'error', content: form_errors, id: alert_id, focus: true
                         endif
 
                         if form.posted_successfully?
@@ -286,16 +287,16 @@
                       <div class="grid gap-3d5 md:gap-4">
                         <div class="grid md:grid-cols-2 gap-3d5 md:gap-4">
                           <div class="field">
-                            <input required class="input is-floating" type="text" name="comment[author]" id="CommentAuthor" value="{{ form.author }}" placeholder="{{ 'blogs.comments.name' | t | escape }}" autocapitalize="words" />
+                            <input required class="input is-floating{% if form.errors contains 'author' %} invalid{% endif %}" type="text" name="comment[author]" id="CommentAuthor" value="{{ form.author }}" placeholder="{{ 'blogs.comments.name' | t | escape }}" autocapitalize="words" autocomplete="name"{% if form.errors contains 'author' %} aria-invalid="true" aria-describedby="CommentFormErrors-{{ section.id }}"{% endif %} />
                             <label class="label is-floating" for="CommentAuthor">{{ 'blogs.comments.name' | t }}</label>
                           </div>
                           <div class="field">
-                            <input required class="input is-floating" type="email" name="comment[email]" id="CommentEmail" value="{{ form.email }}" placeholder="{{ 'blogs.comments.email' | t | escape }}" autocorrect="off" autocapitalize="off" />
+                            <input required class="input is-floating{% if form.errors contains 'email' %} invalid{% endif %}" type="email" name="comment[email]" id="CommentEmail" value="{{ form.email }}" placeholder="{{ 'blogs.comments.email' | t | escape }}" autocorrect="off" autocapitalize="off" autocomplete="email"{% if form.errors contains 'email' %} aria-invalid="true" aria-describedby="CommentFormErrors-{{ section.id }}"{% endif %} />
                             <label class="label is-floating" for="CommentEmail">{{ 'blogs.comments.email' | t }}</label>
                           </div>
                         </div>
                         <div class="field">
-                          <textarea required class="textarea is-floating" name="comment[body]" id="CommentBody" placeholder=" " rows="5">{{ form.body }}</textarea>
+                          <textarea required class="textarea is-floating{% if form.errors contains 'body' %} invalid{% endif %}" name="comment[body]" id="CommentBody" placeholder=" " rows="5"{% if form.errors contains 'body' %} aria-invalid="true" aria-describedby="CommentFormErrors-{{ section.id }}"{% endif %}>{{ form.body }}</textarea>
                           <label class="label is-floating" for="CommentBody">{{ 'blogs.comments.message' | t }}</label>
                         </div>
                         <div class="field">

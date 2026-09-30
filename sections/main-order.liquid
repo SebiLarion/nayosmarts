@@ -177,23 +177,7 @@
                           <span class="sr-only">{{ 'products.price.unit_price' | t }}</span>
                         </dt>
                         <dd>
-                          <span class="sr-only">{{ 'products.price.unit_price' | t }}</span>
-                          <span class="unit-price flex items-center">
-                            {%- liquid
-                              capture unit_price_base_unit
-                                if line_item.unit_price_measurement
-                                  if line_item.unit_price_measurement.reference_value != 1
-                                    echo line_item.unit_price_measurement.reference_value
-                                  endif
-                                  echo line_item.unit_price_measurement.reference_unit
-                                endif
-                              endcapture
-                            -%}
-                            ({{ line_item.unit_price | money }}
-                            <span aria-hidden="true">/</span>
-                            <span class="sr-only">&nbsp;{{ 'general.accessibility.unit_price_separator' | t }}&nbsp;</span>
-                            {{ unit_price_base_unit }})
-                          </span>
+                          {%- render 'unit-price', price: line_item.unit_price, measurement: line_item.unit_price_measurement, hide_accessibility_label: true -%}
                         </dd>
                       {%- endif -%}
                     </dl>

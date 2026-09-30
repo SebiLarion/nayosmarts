@@ -82,21 +82,21 @@
   transition: opacity var(--animation-primary);
 }
 
-.predictive-search-open .collection .search__field {
+.predictive-search-open .collection.search-active .search__field {
   z-index: 35;
 }
 
-.predictive-search-open .collection .search__input {
+.predictive-search-open .collection.search-active .search__input {
   background-color: rgb(var(--color-background));
 }
 
-.predictive-search-open .collection .search__overlay {
+.predictive-search-open .collection.search-active .search__overlay {
   cursor: none;
   opacity: 1;
   pointer-events: auto;
 }
 
-.predictive-search-open .collection .search__box {
+.predictive-search-open .collection.search-active .search__box {
   z-index: 35;
   opacity: 1;
   visibility: visible;

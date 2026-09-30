@@ -15,8 +15,26 @@
 -%}
 
 <div class="section section--padding{% if section.settings.divider %} section--divider{% endif %}{% if section.settings.rounded %} section--rounded relative{% endif %}{% if section.settings.enable_twin %} section--plain{% endif %}{% if solid_background %} section--solid{% endif %}">
-  <div class="relative z-1">
+  <div class="relative z-1" id="Marquee-{{ section.id }}">
     {%- if section.blocks.size > 0 -%}
+      <button
+        type="button"
+        class="slideshow-control flex items-center justify-center rounded-full sr-only"
+        is="control-button"
+        aria-controls="Marquee-{{ section.id }}"
+        aria-live="polite"
+        aria-label="{{ 'general.accessibility.pause_scrolling' | t | escape }}"
+        data-pause-label="{{ 'general.accessibility.pause_scrolling' | t | escape }}"
+        data-play-label="{{ 'general.accessibility.play_scrolling' | t | escape }}"
+      >
+        <span class="slideshow-control__pause">
+          {%- render 'icon', icon: 'pause' -%}
+        </span>
+        <span class="slideshow-control__play">
+          {%- render 'icon', icon: 'play' -%}
+        </span>
+      </button>
+
       {%- capture marquee -%}
         {%- liquid
           assign first_block = section.blocks | first

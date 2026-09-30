@@ -81,10 +81,10 @@
                 assign is_color = false
                 if enable_color_swatches
                   assign swatch_trigger_list = 'products.general.color_swatch_trigger' | t | downcase | split: ','
-                  assign downcased_label = filter.label | downcase
+                  assign downcased_label = filter.label | downcase | strip
                   for trigger in swatch_trigger_list
                     assign swatch_trigger = trigger | strip
-                    if downcased_label contains swatch_trigger
+                    if downcased_label == swatch_trigger
                       assign is_color = true
                     elsif swatch_trigger == 'color' and downcased_label contains 'colour'
                       assign is_color = true

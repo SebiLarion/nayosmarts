@@ -6,7 +6,8 @@
   }
 </style>
 
-{{ 'product-bundle.css' | asset_url | stylesheet_tag }}
+<link rel="stylesheet" href="{{ 'product-bundle.css' | asset_url }}" media="print" onload="this.media='all'">
+<noscript>{{ 'product-bundle.css' | asset_url | stylesheet_tag }}</noscript>
 <script src="{{ 'product-bundle.js' | asset_url }}" defer="defer"></script>
 
 {%- liquid

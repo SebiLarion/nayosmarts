@@ -36,6 +36,9 @@
           break
         endif
       endfor
+      if show_product_media == false and media.id == product_variant.featured_media.id
+        assign show_product_media = true
+      endif
     else
       assign gang_media_active = false
       assign gang_connect_alt = ''
@@ -91,27 +94,27 @@
 -%}
 
 {%- if show_product_media -%}
-<button type="button"
-  class="product__thumbnail media media--{{ image_ratio }} mobile:media--{{ image_ratio_mobile }}{% unless image_fill %} media--contain{% endunless %} relative overflow-hidden
-  {%- if hide_variants and variant_images contains media.src %} product__media--variant{% endif -%}"
-  data-media-id="{{ media.id }}"
-  aria-label="{{ 'general.accessibility.go_to_item' | t: index: position | escape }}"
-  aria-current="{% if media.id != featured_media.id %}false{% else %}true{% endif %}"
-  {%- if gang_exist == true %} data-gang-option="{{ gang_option_name }}" data-gang-connect="{{ gang_connect }}"{% if gang_media_active == false %} hidden{% endif %}{% else %} data-gang-default{% endif -%}
-  {%- if image_ratio == 'adapt' or image_ratio_mobile == 'adapt' %} style="--aspect-ratio: {{ media.aspect_ratio }};"{% endif -%}
->
-  {{- media.preview_image | image_url: width: 400 | image_tag: loading: 'lazy', sizes: '(max-width: 1279px) 180px, 200px', widths: '90,100,180,200,270,300,400', alt: media_alt, is: 'lazy-image' -}}
+  <button type="button"
+    class="product__thumbnail media media--{{ image_ratio }} mobile:media--{{ image_ratio_mobile }}{% unless image_fill %} media--contain{% endunless %} relative overflow-hidden
+    {%- if hide_variants and variant_images contains media.src %} product__media--variant{% endif -%}"
+    data-media-id="{{ media.id }}"
+    aria-label="{{ 'general.accessibility.go_to_item' | t: index: position | escape }}"
+    aria-current="{% if media.id != featured_media.id %}false{% else %}true{% endif %}"
+    {%- if gang_exist == true %} data-gang-option="{{ gang_option_name }}" data-gang-connect="{{ gang_connect }}"{% if gang_media_active == false %} hidden{% endif %}{% else %} data-gang-default{% endif -%}
+    {%- if image_ratio == 'adapt' or image_ratio_mobile == 'adapt' %} style="--aspect-ratio: {{ media.aspect_ratio }};"{% endif -%}
+  >
+    {{- media.preview_image | image_url: width: 400 | image_tag: loading: 'lazy', sizes: '(max-width: 1279px) 180px, 200px', widths: '90,100,180,200,270,300,400', alt: media_alt, is: 'lazy-image' -}}
 
-  {%- unless media.media_type == 'image' -%}
-    <span class="play-button absolute flex items-center justify-center rounded-full">
-      {%- liquid
-        if media.media_type == 'model'
-          render 'icon', icon: '3d-model'
-        else
-          render 'icon', icon: 'play'
-        endif
-      -%}
-    </span>
-  {% endunless %}
-</button>
+    {%- unless media.media_type == 'image' -%}
+      <span class="play-button absolute flex items-center justify-center rounded-full">
+        {%- liquid
+          if media.media_type == 'model'
+            render 'icon', icon: '3d-model'
+          else
+            render 'icon', icon: 'play'
+          endif
+        -%}
+      </span>
+    {% endunless %}
+  </button>
 {%- endif -%}

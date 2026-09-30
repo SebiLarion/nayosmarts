@@ -43,7 +43,7 @@
   endif
 -%}
 
-<div class="header__icons header__icons--{{ context }} flex justify-{{ context }} z-2">
+<div class="header__icons header__icons--{{ context }} flex justify-{{ context }} z-3">
   <div class="header__buttons flex items-center gap-1d5">
     {%- if show_toggle -%}
       <button class="menu-toggle-button hidden lg:flex items-center justify-center" type="button" is="menu-toggle" aria-controls="MenuToggle" aria-expanded="false">
@@ -187,7 +187,22 @@
     {%- endif -%}
 
     {%- if show_search and settings.enable_search -%}
-      <a href="{{ routes.search_url }}" class="search-drawer-button flex items-center justify-center" is="magnet-link" aria-controls="SearchDrawer" aria-expanded="false" >
+      {%- liquid
+        assign icon_class = 'search-drawer-button flex items-center justify-center'
+        if settings.search_type == 'inline'
+          assign icon_class = icon_class | append: ' lg:hidden'
+        endif
+      -%}
+
+      {%- if settings.search_type == 'inline' -%}
+        <div class="search-inline hidden lg:flex items-center relative">
+          {%- render 'predictive-search', section_id: section.id, context: 'header', id_suffix: context, icons_size: section.settings.icons_size -%}
+        </div>
+      {%- endif -%}
+
+      <a href="{{ routes.search_url }}" class="{{ icon_class }}" is="magnet-link"
+        {%- unless settings.search_type == 'page' %} aria-controls="SearchDrawer" aria-expanded="false"{% endunless -%}
+      >
         <span class="sr-only">{{ 'general.search.title' | t }}</span>
         {%- render 'icon', icon: 'search', size: section.settings.icons_size -%}
       </a>
@@ -211,11 +226,30 @@
     {%- endif -%}
 
     {%- if show_cart -%}
-      <a href="{{ routes.cart_url }}" class="cart-drawer-button flex items-center justify-center relative" is="magnet-link" aria-controls="CartDrawer" aria-expanded="false" data-no-instant>
-        <span class="sr-only">{{ 'general.cart.title' | t }}</span>
+      {%- liquid
+        if request.page_type != 'cart' and settings.cart_type == 'drawer'
+          assign cart_button_label = 'general.cart.open_cart' | t
+        else
+          assign cart_button_label = 'general.cart.view_cart' | t
+        endif
+      -%}
+      {%- capture cart_icon_content -%}
+        <span class="sr-only">{{ cart_button_label }}</span>
         {%- render 'icon', icon: 'cart', size: section.settings.icons_size -%}
-        <cart-count class="count absolute top-0 right-0 text-xs" aria-label="{{ 'general.cart.cart_count' | t: count: cart.item_count | escape }}"{% if cart == empty %} hidden{% endif %}>{{ cart.item_count }}</cart-count>
-      </a>
+        <cart-count class="count absolute top-0 right-0 text-xs"{% if cart == empty %} hidden{% endif %}>
+          <span aria-hidden="true">{{ cart.item_count }}</span>
+          <span class="sr-only">, {{ 'general.cart.cart_count' | t: count: cart.item_count }}</span>
+        </cart-count>
+      {%- endcapture -%}
+      {%- if request.page_type != 'cart' and settings.cart_type == 'drawer' -%}
+        <button type="button" class="cart-drawer-button flex items-center justify-center relative" is="magnet-button" aria-controls="CartDrawer" aria-haspopup="dialog">
+          {{- cart_icon_content -}}
+        </button>
+      {%- else -%}
+        <a href="{{ routes.cart_url }}" class="cart-drawer-button flex items-center justify-center relative" is="magnet-link" data-no-instant>
+          {{- cart_icon_content -}}
+        </a>
+      {%- endif -%}
     {%- endif -%}
 
     {%- if show_hamburger -%}
@@ -223,7 +257,7 @@
         <span class="sr-only">{{ 'general.drawers.navigation' | t }}</span>
         {%- render 'icon', icon: 'hamburger', size: section.settings.icons_size -%}
         {%- if section.settings.menu_drawer_icon_label != blank -%}
-          <span class="hidden md:inline">{{ section.settings.menu_drawer_icon_label }}</span>
+          <span class="hidden md:inline" aria-hidden="true">{{ section.settings.menu_drawer_icon_label }}</span>
         {%- endif -%}
       </button>
     {%- endif -%}

@@ -321,7 +321,10 @@
         "disabled": false,
         "settings": {}
       }
-    }
+    },
+    "search_type": "drawer",
+    "enable_voice_search": false,
+    "preload_fonts": true
   },
   "presets": {
     "Concept": {

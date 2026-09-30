@@ -1,7 +1,7 @@
 if (!customElements.get('recipient-form')) {
   customElements.define(
     'recipient-form',
-    class RecipientForm extends HTMLElement {
+    class RecipientForm extends BaseElement {
       constructor() {
         super();
         this.recipientFieldsLiveRegion = this.querySelector(`#Recipient-fields-live-region-${this.sectionId}-${this.productId}`);
@@ -20,8 +20,6 @@ if (!customElements.get('recipient-form')) {
         this.errorMessage = this.querySelector('.product-form__recipient-error-message');
         this.errorMessageList = this.errorMessage?.querySelector('ul');
         this.currentProductVariantId = this.getAttribute('data-product-variant-id');
-        this.addEventListener('change', this.onChange.bind(this));
-        this.onChange();
       }
 
       get sectionId() {
@@ -32,42 +30,32 @@ if (!customElements.get('recipient-form')) {
         return this.getAttribute('data-product-id');
       }
 
-      cartUpdateUnsubscriber = undefined;
-      variantChangeUnsubscriber = undefined;
-      cartErrorUnsubscriber = undefined;
-
       connectedCallback() {
-        this.cartUpdateUnsubscriber = theme.pubsub.subscribe(theme.pubsub.PUB_SUB_EVENTS.cartUpdate, (event) => {
+        super.connectedCallback();
+
+        this.on(this, 'change', this.onChange.bind(this));
+        this.onChange();
+
+        const cartUpdateUnsubscriber = theme.pubsub.subscribe(theme.pubsub.PUB_SUB_EVENTS.cartUpdate, (event) => {
           if (event.source === 'product-form' && event.productVariantId.toString() === this.currentProductVariantId) {
             this.resetRecipientForm();
           }
         });
+        this.registerCleanup(cartUpdateUnsubscriber);
 
-        this.variantChangeUnsubscriber = theme.pubsub.subscribe(theme.pubsub.PUB_SUB_EVENTS.variantChange, (event) => {
+        const variantChangeUnsubscriber = theme.pubsub.subscribe(theme.pubsub.PUB_SUB_EVENTS.variantChange, (event) => {
           if (event.data.sectionId === this.sectionId) {
             this.currentProductVariantId = event.data.variant.id.toString();
           }
         });
+        this.registerCleanup(variantChangeUnsubscriber);
 
-        this.cartUpdateUnsubscriber = theme.pubsub.subscribe(theme.pubsub.PUB_SUB_EVENTS.cartError, (event) => {
+        const cartErrorUnsubscriber = theme.pubsub.subscribe(theme.pubsub.PUB_SUB_EVENTS.cartError, (event) => {
           if (event.source === 'product-form' && event.productVariantId.toString() === this.currentProductVariantId) {
             this.displayErrorMessage(event.message, event.errors);
           }
         });
-      }
-
-      disconnectedCallback() {
-        if (this.cartUpdateUnsubscriber) {
-          this.cartUpdateUnsubscriber();
-        }
-
-        if (this.variantChangeUnsubscriber) {
-          this.variantChangeUnsubscriber();
-        }
-
-        if (this.cartErrorUnsubscriber) {
-          this.cartErrorUnsubscriber();
-        }
+        this.registerCleanup(cartErrorUnsubscriber);
       }
 
       onChange() {
@@ -120,6 +108,8 @@ if (!customElements.get('recipient-form')) {
             if (!inputElement) return;
 
             inputElement.classList.add('invalid');
+            inputElement.setAttribute('aria-invalid', 'true');
+            inputElement.setAttribute('aria-describedby', this.errorMessage.id);
           });
         }
       }
@@ -136,6 +126,8 @@ if (!customElements.get('recipient-form')) {
 
         [this.emailInput, this.messageInput, this.nameInput, this.sendonInput].forEach((inputElement) => {
           inputElement.classList.remove('invalid');
+          inputElement.removeAttribute('aria-invalid');
+          inputElement.removeAttribute('aria-describedby');
         });
       }
 

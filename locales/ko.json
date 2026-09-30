@@ -1,12 +1,3 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin language editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "general": {
     "404": {
@@ -120,7 +111,12 @@
       "results_with_count_and_term": {
         "one": "{{ count }} “{{ terms }}”에 대한 결과를 찾았습니다.",
         "other": "{{ count }} “{{ terms }}”에 대한 결과를 찾았습니다."
-      }
+      },
+      "placeholder_inline": "무엇을 찾고 계신가요?",
+      "go": "검색",
+      "voice_search": "음성 검색",
+      "voice_search_unavailable": "이 기기에서는 음성 검색을 사용할 수 없습니다",
+      "unsupported_locale_hint": "결과를 보려면 검색 버튼을 클릭하세요"
     },
     "cart": {
       "title": "카트",
@@ -161,7 +157,9 @@
       },
       "recently_viewed": {
         "empty": "최근 본 항목이 비어 있습니다."
-      }
+      },
+      "drawer_label": "장바구니",
+      "open_cart": "장바구니 열기"
     },
     "drawers": {
       "navigation": "사이트 탐색"
@@ -179,6 +177,15 @@
       "s": "에스",
       "second": "비서",
       "seconds": "초"
+    },
+    "form": {
+      "required": "{{ field }} 항목은 필수입니다.",
+      "required_choice": "{{ field }} 항목에서 옵션을 선택하세요.",
+      "required_email": "이메일 주소를 입력하세요.",
+      "invalid_email": "유효한 이메일 주소를 입력하세요(예: name@example.com).",
+      "invalid_url": "유효한 웹 주소를 입력하세요(예: https://www.example.com).",
+      "too_short": "{{ field }} 항목은 {{ min }}자 이상이어야 합니다.",
+      "too_long": "{{ field }} 항목은 {{ max }}자 이하여야 합니다."
     }
   },
   "sections": {

@@ -16,12 +16,18 @@
     <div class="product-bundle-wrapper block lg:flex lg:gap-10">
       <div class="lg:grow">
         <motion-list class="product-grid card-grid card-grid--{{ section.settings.columns }} mobile:card-grid--{{ section.settings.columns_mobile }} grid">
+          {%- liquid
+            assign card_lazy_load = true
+            if section.index == 1
+              assign card_lazy_load = false
+            endif
+          -%}
           {%- for product in products limit: section.settings.product_limit -%}
             {%- render 'product-card-bundle',
               product: product,
               product_id: product.id,
               section_id: section.id,
-              lazy_load: false,
+              lazy_load: card_lazy_load,
               image_ratio: settings.product_image_ratio,
               image_fill: settings.product_image_fill,
               show_secondary_image: settings.product_secondary_image,

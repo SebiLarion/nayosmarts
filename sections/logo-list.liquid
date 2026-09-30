@@ -29,7 +29,7 @@
                   {{- 'logo' | placeholder_svg_tag: 'placeholder' -}}
                 {%- endif -%}
                 {%- if block.settings.link != blank -%}
-                  <a href="{{ block.settings.link }}" class="block absolute top-0 left-0 w-full h-full" aria-hidden="true">&nbsp;</a>
+                  <a href="{{ block.settings.link }}" class="block absolute top-0 left-0 w-full h-full" aria-hidden="true" tabindex="-1">&nbsp;</a>
                 {%- endif -%}
               </div>
             {%- endfor -%}

@@ -1,17 +1,17 @@
 if (!customElements.get('quick-order-list-container')) {
   customElements.define(
     'quick-order-list-container',
-    class QuickOrderListContainer extends HTMLElement {
-      constructor() {
-        super();
-    
-        document.addEventListener('cart:bundled-sections', this.onPrepareBundledSections.bind(this));
-      }
-    
+    class QuickOrderListContainer extends BaseElement {
       get sectionId() {
         return this.getAttribute('data-section-id');
       }
-    
+
+      connectedCallback() {
+        super.connectedCallback();
+
+        this.on(document, 'cart:bundled-sections', this.onPrepareBundledSections.bind(this));
+      }
+
       onPrepareBundledSections(event) {
         event.detail.sections.push(this.sectionId);
       }
@@ -22,11 +22,11 @@ if (!customElements.get('quick-order-list-container')) {
 if (!customElements.get('quick-order-list-remove-button')) {
   customElements.define(
     'quick-order-list-remove-button',
-    class QuickOrderListRemoveButton extends HTMLAnchorElement {
-      constructor() {
-        super();
+    class QuickOrderListRemoveButton extends BaseElementMixin(HTMLAnchorElement) {
+      connectedCallback() {
+        super.connectedCallback();
 
-        this.addEventListener('click', this.onButtonClick);
+        this.on(this, 'click', this.onButtonClick);
       }
 
       get quickOrderList() {
@@ -44,7 +44,7 @@ if (!customElements.get('quick-order-list-remove-button')) {
 if (!customElements.get('quick-order-list-remove-all-button')) {
   customElements.define(
     'quick-order-list-remove-all-button',
-    class QuickOrderListRemoveAllButton extends HTMLElement {
+    class QuickOrderListRemoveAllButton extends BaseElement {
       constructor() {
         super();
 
@@ -53,8 +53,12 @@ if (!customElements.get('quick-order-list-remove-all-button')) {
           remove: 'remove',
           cancel: 'cancel',
         };
+      }
 
-        this.addEventListener('click', this.onButtonClick);
+      connectedCallback() {
+        super.connectedCallback();
+
+        this.on(this, 'click', this.onButtonClick);
       }
 
       get quickOrderList() {
@@ -103,15 +107,7 @@ if (!customElements.get('quick-order-list-remove-all-button')) {
 if (!customElements.get('quick-order-list')) {
   customElements.define(
     'quick-order-list',
-    class QuickOrderList extends HTMLFormElement {
-      cartUpdateUnsubscriber = undefined;
-
-      constructor() {
-        super();
-        
-        this.addEventListener('change', theme.utils.debounce(this.onChange.bind(this), 300));
-        this.cartUpdateUnsubscriber = theme.pubsub.subscribe(theme.pubsub.PUB_SUB_EVENTS.cartUpdate, this.onCartUpdate.bind(this));
-      }
+    class QuickOrderList extends BaseElementMixin(HTMLFormElement) {
 
       get sectionId() {
         return this.getAttribute('data-section-id');
@@ -120,11 +116,14 @@ if (!customElements.get('quick-order-list')) {
       get allVariants() {
         return this.querySelectorAll('[data-quantity-variant-id]');
       }
-    
-      disconnectedCallback() {
-        if (this.cartUpdateUnsubscriber) {
-          this.cartUpdateUnsubscriber();
-        }
+
+      connectedCallback() {
+        super.connectedCallback();
+
+        this.on(this, 'change', theme.utils.debounce(this.onChange.bind(this), 300));
+
+        const cartUpdateUnsubscriber = theme.pubsub.subscribe(theme.pubsub.PUB_SUB_EVENTS.cartUpdate, this.onCartUpdate.bind(this));
+        this.registerCleanup(cartUpdateUnsubscriber);
       }
     
       onChange(event) {
@@ -211,18 +210,18 @@ if (!customElements.get('quick-order-list')) {
           sections: sectionsToBundle,
           sections_url: this.getAttribute('data-product-url')
         });
-    
-        fetch(theme.routes.cart_update_url, { ...theme.utils.fetchConfig(), ...{ body } })
+
+        this.updateAbortController?.abort();
+        this.updateAbortController = new AbortController();
+
+        fetch(theme.routes.cart_update_url, { ...theme.utils.fetchConfig(), ...{ body }, signal: this.updateAbortController.signal })
           .then((response) => response.json())
           .then((parsedState) => {
             theme.pubsub.publish(theme.pubsub.PUB_SUB_EVENTS.cartUpdate, { source: 'quick-order-list', cart: parsedState, target, line, name });
           })
           .catch((error) => {
-            if (error.name === 'AbortError') {
-              console.log('Fetch aborted by user');
-            }
-            else {
-              console.log(error);
+            if (error.name !== 'AbortError') {
+              console.error(error);
               this.setErrorMessage(theme.cartStrings.error);
             }
           });

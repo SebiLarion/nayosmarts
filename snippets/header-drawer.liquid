@@ -20,7 +20,7 @@ endif
   data-section-id="{{ section.id }}"
   hidden
 >
-  <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="MenuDrawer" aria-expanded="false"></overlay-element>
+  <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="MenuDrawer" aria-hidden="true"></overlay-element>
   <div class="drawer__inner z-10 absolute top-0 flex flex-col w-full h-full overflow-hidden">
     <gesture-element class="drawer__header flex justify-between opacity-0 invisible relative" tabindex="0">
       <span class="drawer__title heading lg:text-3xl text-2xl leading-none tracking-tight"></span>
@@ -99,7 +99,7 @@ endif
 
             {%- if enable_language_selector -%}
               <modal-element id="LocalizationLanguage-{{ section.id }}" class="modal invisible absolute bottom-0 left-0 w-full h-full" role="dialog" hidden>
-                <overlay-element class="fixed-modal opacity-0 z-1 absolute top-0 left-0 w-full h-full" aria-controls="LocalizationLanguage-{{ section.id }}" aria-expanded="false"></overlay-element>
+                <overlay-element class="fixed-modal opacity-0 z-1 absolute top-0 left-0 w-full h-full" aria-controls="LocalizationLanguage-{{ section.id }}" aria-hidden="true"></overlay-element>
                 <div class="modal__container flex flex-col z-3 absolute left-0 bottom-0 w-full">
                   <button class="close items-center justify-center absolute top-0 right-0" type="button" is="magnet-button" aria-controls="LocalizationLanguage-{{ section.id }}" aria-expanded="false" aria-label="{{ 'general.accessibility.close' | t | escape }}">
                     <span class="inline-block" data-text>
@@ -137,7 +137,7 @@ endif
             {%- endif -%}
             {%- if enable_country_selector -%}
               <modal-element id="LocalizationCountry-{{ section.id }}" class="modal invisible absolute bottom-0 left-0 w-full h-full" role="dialog" hidden>
-                <overlay-element class="fixed-modal opacity-0 z-1 absolute top-0 left-0 w-full h-full" aria-controls="LocalizationCountry-{{ section.id }}" aria-expanded="false"></overlay-element>
+                <overlay-element class="fixed-modal opacity-0 z-1 absolute top-0 left-0 w-full h-full" aria-controls="LocalizationCountry-{{ section.id }}" aria-hidden="true"></overlay-element>
                 <div class="modal__container flex flex-col z-3 absolute left-0 bottom-0 w-full">
                   <button class="close items-center justify-center absolute top-0 right-0" type="button" aria-controls="LocalizationCountry-{{ section.id }}" aria-expanded="false" is="magnet-button" aria-label="{{ 'general.accessibility.close' | t | escape }}">
                     <span class="inline-block" data-text>

@@ -1,6 +1,4 @@
 <script>
-  document.documentElement.classList.replace('no-js', 'js');
-
   window.theme = window.theme || {};
   theme.routes = {
     shop_url: '{{ request.origin }}',
@@ -52,12 +50,24 @@
   };
 
   theme.cartStrings = {
+    itemCountOne: {{ 'general.cart.cart_count.one'   | t: count: '[count]' | json }},
+    itemCountOther: {{ 'general.cart.cart_count.other' | t: count: '[count]' | json }},
     error: {{ 'cart.general.cart_error' | t | json }},
     quantityError: {{ 'cart.general.cart_quantity_error_html' | t: quantity: '[quantity]' | json }},
     giftNoteAttribute: {{ 'cart.gift_wrapping.attributes.gift_note' | t | json }},
     giftWrapAttribute: {{ 'cart.gift_wrapping.attributes.gift_wrap' | t | json }},
     giftWrapBooleanTrue: {{ 'cart.gift_wrapping.boolean.true' | t | json }},
     targetProductAttribute: {{ 'cart.gift_wrapping.attributes.target_product' | t | json }}
+  };
+
+  theme.formStrings = {
+    required: {{ 'general.form.required' | t: field: '[field]' | json }},
+    requiredChoice: {{ 'general.form.required_choice' | t: field: '[field]' | json }},
+    requiredEmail: {{ 'general.form.required_email' | t | json }},
+    invalidEmail: {{ 'general.form.invalid_email' | t | json }},
+    invalidUrl: {{ 'general.form.invalid_url' | t | json }},
+    tooShort: {{ 'general.form.too_short' | t: field: '[field]', min: '[min]' | json }},
+    tooLong: {{ 'general.form.too_long' | t: field: '[field]', max: '[max]' | json }}
   };
 
   theme.dateStrings = {
@@ -88,7 +98,11 @@
     close: {{ 'general.accessibility.close' | t | json }},
     next: {{ 'general.pagination.next' | t | json }},
     previous: {{ 'general.pagination.previous' | t | json }},
-    qrImageAlt: {{ 'gift_cards.issued.qr_image_alt' | t | json }}
+    qrImageAlt: {{ 'gift_cards.issued.qr_image_alt' | t | json }},
+    searchResultsOne: {{ 'general.search.results_with_count.one' | t: count: '[count]' | json }},
+    searchResultsOther: {{ 'general.search.results_with_count.other' | t: count: '[count]' | json }},
+    searchNoResults: {{ 'general.search.no_results' | t: terms: '[terms]' | json }},
+    searchUnsupportedLocale: {{ 'general.search.unsupported_locale_hint' | t | json }}
   };
 
   theme.settings = {
@@ -97,10 +111,10 @@
     currencyCodeEnabled: {{ settings.currency_code_enabled | json }},
     externalLinksNewTab: {{ settings.external_links_new_tab | json }},
     cartType: {{ settings.cart_type | json }},
-    isCartTemplate: {% if request.page_type == 'cart' %}true{% else %}false{% endif %},
+    searchType: {{ settings.search_type | json }},
     pswpModule: {{ 'photoswipe.min.js' | asset_url | json }},
     themeName: 'Concept',
-    themeVersion: '5.3.1',
+    themeVersion: '6.0.3',
     agencyId: ''
   };
 

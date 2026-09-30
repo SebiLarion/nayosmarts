@@ -28,6 +28,7 @@
   @param {boolean} [mobile_quick_add] - Add mobile-specific quick add button
   @param {string} [display_mode] - Rating display mode ('count' or value)
   @param {boolean} [show_on_model] - Show on model image
+  @param {string} [sizes] - Responsive sizes hint for image srcset (e.g. '(max-width: 639px) 50vw, 33vw')
 
   @example
   {% render 'product-card',
@@ -56,6 +57,10 @@
       assign loading = 'eager'
       assign lazyimage = null
     endunless
+
+    unless sizes
+      assign sizes = '(max-width: 639px) 50vw, 33vw'
+    endunless
   -%}
   <div class="card product-card product-card--{{ settings.card_style }}{% if settings.card_border_thickness > 0 %} product-card--thickness{% endif %}{% unless featured_media %} no-media{% endunless %}{% if product.available and show_quick_add and mobile_quick_add %} mobile:with-quick-add{% endif %} flex flex-col leading-none relative">
     {%- if featured_media -%}
@@ -72,7 +77,7 @@
             </span>
           </button>
           <quick-view id="{{ quick_view_id }}" class="quick-view x-modal drawer z-40 fixed bottom-0 left-0 h-full w-full pointer-events-none" data-product-url="{{ product_url }}" role="dialog" aria-label="{{ 'products.product.choose_product_options' | t: title: product.title | escape }}" aria-modal="true" hidden>
-            <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="{{ quick_view_id }}" aria-expanded="false"></overlay-element>
+            <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="{{ quick_view_id }}" aria-hidden="true"></overlay-element>
             <div class="drawer__inner z-10 absolute top-0 flex flex-col w-full h-full overflow-hidden">
               <gesture-element class="drawer__header flex justify-between opacity-0 invisible relative" tabindex="0">
                 <button class="button button--secondary button--close drawer__close z-1 absolute top-0 right-0 flex items-center justify-center opacity-0" type="button" is="hover-button" aria-controls="{{ quick_view_id }}" aria-expanded="false" aria-label="{{ 'general.accessibility.close' | t | escape }}">
@@ -122,11 +127,12 @@
           {%- unless featured_media.media_type == 'video' or featured_media.media_type == 'external_video' -%}
             {%- if show_secondary_image and media_count > 1 and show_multiple_images -%}
               <template>
+                {%- capture media_class -%}media media--height{% unless image_fill %} media--contain{% endunless %} w-full h-full overflow-hidden{%- endcapture -%}
                 {%- for media in product_media limit: 4 -%}
-                  {%- capture media_class -%}media media--height{% unless image_fill %} media--contain{% endunless %} w-full h-full overflow-hidden{%- endcapture -%}
                   {%- unless media.media_type == 'video' or media.media_type == 'external_video' -%}
+                    {%- assign max_width = media.width | default: media.preview_image.width -%}
                     <div class="{{ media_class }}">
-                      {{- media | image_url: width: media.width | image_tag: loading: 'lazy', widths: '180,360,540,720,900,1080', is: 'lazy-image' -}}
+                      {{- media | image_url: width: max_width | image_tag: loading: 'lazy', widths: '180,360,540,720,900,1080', sizes: sizes, is: 'lazy-image' -}}
                     </div>
                   {%- else -%}
                     {%- render 'product-video',
@@ -144,7 +150,8 @@
               <secondary-media class="product-card__carousel block absolute top-0 left-0 w-full h-full hidden md:block" selected-index="0"></secondary-media>
             {%- endif -%}
 
-            {{- featured_media | image_url: width: featured_media.width | image_tag: loading: loading, widths: '180,360,540,720,900,1080', is: lazyimage -}}
+            {%- assign max_width = featured_media.width | default: featured_media.preview_image.width -%}
+            {{- featured_media | image_url: width: max_width | image_tag: loading: loading, widths: '180,360,540,720,900,1080', sizes: sizes, is: lazyimage -}}
 
             {%- if show_secondary_image and media_count > 1 and show_multiple_images == false -%}
               {%- liquid
@@ -157,8 +164,9 @@
                 endfor
               -%}
               {%- if secondary_media != blank -%}
+                {%- assign max_width = secondary_media.width | default: secondary_media.preview_image.width -%}
                 <div class="product-card__secondary media media--height{% unless image_fill %} media--contain{% endunless %} absolute top-0 left-0 w-full h-full hidden md:block opacity-0 invisible pointer-events-none overflow-hidden">
-                  {{- secondary_media | image_url: width: secondary_media.width | image_tag: loading: 'lazy', widths: '180,360,540,720,900,1080', is: 'lazy-image' -}}
+                  {{- secondary_media | image_url: width: max_width | image_tag: loading: 'lazy', widths: '180,360,540,720,900,1080', sizes: sizes, is: 'lazy-image' -}}
                 </div>
               {%- endif -%}
             {%- endif -%}
@@ -179,8 +187,9 @@
             {%- assign model_media = product.metafields.theme.model_media.value -%}
             {%- capture model_media_class -%}product-card__model media media--height{% unless image_fill %} media--contain{% endunless %} absolute top-0 left-0 w-full h-full opacity-0 invisible pointer-events-none overflow-hidden{%- endcapture -%}
             {%- if model_media.media_type != 'video' -%}
+              {%- assign max_width = model_media.width | default: model_media.preview_image.width -%}
               <div class="{{ model_media_class }}">
-                {{- model_media | image_url: width: model_media.width | image_tag: loading: loading, widths: '180,360,540,720,900,1080', is: lazyimage -}}
+                {{- model_media | image_url: width: max_width | image_tag: loading: loading, widths: '180,360,540,720,900,1080', sizes: sizes, is: lazyimage -}}
               </div>
             {%- else -%}
               {%- render 'product-video',
@@ -200,12 +209,12 @@
           {%- liquid
             assign should_show_size_variants = false
             if settings.product_quick_add_by_size and product.options.size == 1
-              assign size_trigger = 'products.general.size_trigger' | t | downcase
+              assign size_trigger = 'products.general.size_trigger' | t | downcase | strip
 
               for option in product.options_with_values
-                assign option_name = option.name | downcase
+                assign downcased_option = option.name | downcase | strip
 
-                if option_name contains size_trigger
+                if downcased_option == size_trigger
                   assign should_show_size_variants = true
                   break
                 endif
@@ -263,6 +272,7 @@
                 {%- capture product_form_id -%}QuickAddProductForm-{{ section_id }}-{{ product_id }}{%- endcapture -%}
                 {%- form 'product', product, is: 'product-form', id: product_form_id -%}
                   <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" />
+                  <input type="hidden" name="quantity" value="{{ product.selected_or_first_available_variant.quantity_rule.min }}" />
                   {%- liquid
                     if product.template_suffix != 'pre-order'
                       assign add_to_cart_label = 'products.product.add_to_cart' | t
@@ -374,26 +384,20 @@
         </p>
         <div class="flex flex-col gap-2">
           {%- render 'product-price', product: product, class: 'flex flex-wrap lg:flex-col lg:items-end gap-2 md:gap-1d5' -%}
-          {%- if product.quantity_price_breaks_configured? -%}
-            <div class="text-sm font-medium leading-tight">{{ 'products.volume_pricing.note' | t }}</div>
-          {%- endif -%}
         </div>
       </div>
 
       {%- if show_color_swatches -%}
-        {%- liquid
-          assign swatch_trigger_list = 'products.general.color_swatch_trigger' | t | downcase | split: ','
-          assign color_count = 0
-        -%}
+        {%- assign swatch_trigger_list = 'products.general.color_swatch_trigger' | t | downcase | split: ',' -%}
         {%- for option in product.options_with_values -%}
           {%- liquid
             assign is_color = false
-            assign option_name = option.name | downcase
+            assign downcased_option = option.name | downcase | strip
             for trigger in swatch_trigger_list
               assign swatch_trigger = trigger | strip
-              if option_name contains swatch_trigger
+              if downcased_option == swatch_trigger
                 assign is_color = true
-              elsif swatch_trigger == 'color' and option_name contains 'colour'
+              elsif swatch_trigger == 'color' and downcased_option contains 'colour'
                 assign is_color = true
               endif
 
@@ -404,39 +408,39 @@
           -%}
           {%- if is_color -%}
             {%- liquid
-              assign option_index = forloop.index0
-              assign values = ''
+              assign option_index_0 = forloop.index0
+              assign color_count = option.values.size
               assign max_color_count = settings.product_max_color_swatches
             -%}
             <div class="product-card__bottom flex items-center gap-2">
               <ul class="swatches swatches--{{ settings.rounded_swatch }}{% if settings.product_color_swatch_type == 'variant' %} swatches--variant{% endif %} swatches--{{ product.id }} inline-flex items-start gap-2">
-                {%- for variant in product.variants -%}
-                  {%- assign value = variant.options[option_index] %}
-                  {%- unless values contains value -%}
-                    {%- liquid
-                      assign values = values | join: ',' | append: ',' | append: value | split: ','
-                      assign color_count = color_count | plus: 1
-                      assign color_title = product.title | append: ' - ' | append: value
-                      assign color_url = variant.url | within: collection
-                      if settings.product_disable_collection_portion
-                        assign color_url = variant.url
+                {%- for value in option.values limit: max_color_count -%}
+                  {%- liquid
+                    assign downcased_value = value | downcase | strip
+                    assign value_variant = value.variant
+                    for variant in product.variants
+                      assign variant_value = variant.options[option_index_0] | downcase | strip
+                      if variant_value == downcased_value
+                        assign value_variant = variant
+                        break
                       endif
+                    endfor
 
-                      assign swatch = blank
-                      if value.swatch != blank
-                        assign swatch = value.swatch
-                      endif
+                    assign swatch = value.swatch
+                    if settings.product_color_swatch_type == 'variant' and value_variant.image
+                      assign swatch = value_variant
+                    endif
 
-                      if settings.product_color_swatch_type == 'variant' and variant.image
-                        assign swatch = variant
-                      endif
-                    -%}
-                    {%- if color_count <= max_color_count -%}
-                      <li>
-                        {%- render 'swatch', href: color_url, title: color_title, value: value, value_label: value, swatch: swatch -%}
-                      </li>
-                    {%- endif -%}
-                  {%- endunless -%}
+                    assign color_title = product.title | append: ' - ' | append: value
+                    assign color_url = value_variant.url | within: collection
+                    if settings.product_disable_collection_portion
+                      assign color_url = value_variant.url
+                    endif
+                    assign color_url = value.product_url | default: color_url
+                  -%}
+                  <li>
+                    {%- render 'swatch', href: color_url, title: color_title, value: value, value_label: value, swatch: swatch -%}
+                  </li>
                 {%- endfor -%}
               </ul>
               {%- if color_count > max_color_count -%}
@@ -514,6 +518,7 @@
             {%- capture product_form_id -%}MobileQuickAddProductForm-{{ section_id }}-{{ product_id }}{%- endcapture -%}
             {%- form 'product', product, is: 'product-form', id: product_form_id -%}
               <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" />
+              <input type="hidden" name="quantity" value="{{ product.selected_or_first_available_variant.quantity_rule.min }}" />
               <button type="submit" class="button button--primary button--small icon-with-text" is="hover-button" data-variant-id="{{ product.selected_or_first_available_variant.id }}" aria-label="{{ 'products.product.quick_add_label' | t: title: product.title | escape }}">
                 <span class="btn-fill" data-fill></span>
                 <span class="btn-text">

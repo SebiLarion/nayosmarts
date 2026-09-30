@@ -203,7 +203,7 @@
             "label": "Couverture"
           },
           "options__2": {
-            "label":"Contenir"
+            "label": "Contenir"
           },
           "label": "Position de la vidéo"
         },
@@ -242,7 +242,7 @@
         },
         "gradient_direction": {
           "options__1": {
-            "label":"Haut"
+            "label": "Haut"
           },
           "options__2": {
             "label": "Bas"
@@ -432,7 +432,7 @@
             "label": "Payage"
           },
           "options__5": {
-            "label":"Grand"
+            "label": "Grand"
           },
           "label": "Format d’image"
         },
@@ -861,7 +861,7 @@
             "label": "Payage"
           },
           "options__5": {
-            "label":"Grand"
+            "label": "Grand"
           },
           "options__6": {
             "label": "Arrondi"
@@ -3163,9 +3163,7 @@
           }
         },
         "promotion-video": {
-          "name": "Vidéo promotionnelle",
-          "settings": {
-          }
+          "name": "Vidéo promotionnelle"
         }
       }
     },
@@ -4256,7 +4254,7 @@
       "name": "Tiroir de recherche",
       "settings": {
         "paragraph": {
-          "content": "Le fenêtre de recherche n'apparaîtra pas à vos clients si vous avez activé la fonction de recherche dans les [paramètres du thème](/editor?context=theme&category=search)."
+          "content": "La fenêtre de recherche n'apparaîtra pas à vos clients si vous avez réglé le type de recherche sur «Page» dans les [paramètres du thème](/editor?context=theme&category=search)."
         }
       }
     },
@@ -4353,7 +4351,13 @@
       }
     },
     "shop-the-look": {
-      "name": "Achetez le look"
+      "name": "Achetez le look",
+      "settings": {
+        "show_content_aside": {
+          "label": "Afficher le contenu à côté de l'image",
+          "info": "Désactivez cette option pour afficher le contenu au-dessus de l'image. Sur les écrans plus petits, le contenu s'affiche toujours au-dessus."
+        }
+      }
     },
     "slideshow": {
       "name": "Diaporama",
@@ -4993,7 +4997,7 @@
             "label": "Payage"
           },
           "options__5": {
-            "label":"Grand"
+            "label": "Grand"
           }
         },
         "image_fill": {
@@ -5256,6 +5260,25 @@
         "enable_search": {
           "label": "Activer la recherche"
         },
+        "search_type": {
+          "label": "Type de recherche",
+          "options__1": {
+            "label": "Tiroir"
+          },
+          "options__2": {
+            "label": "Inline"
+          },
+          "options__3": {
+            "label": "Page"
+          }
+        },
+        "header__3": {
+          "content": "Recherche vocale"
+        },
+        "enable_voice_search": {
+          "label": "Activer la recherche vocale",
+          "info": "Ajoute un microphone pour la saisie vocale. Masqué automatiquement dans les navigateurs non compatibles (par ex. Firefox)."
+        },
         "header__1": {
           "content": "Recherche prédictive"
         },
@@ -5301,6 +5324,10 @@
         "preload_links": {
           "label": "Précharger les liens au survol",
           "info": "Cela devrait augmenter la vitesse de chargement perçue des pages."
+        },
+        "preload_fonts": {
+          "label": "Précharger les polices du thème",
+          "info": "Charge les polices du thème plus tôt. À désactiver de préférence lorsque le haut de la page est une image ou une vidéo, afin que le média se charge en premier."
         },
         "external_links_new_tab": {
           "label": "Ouvrir les liens externes dans un nouvel onglet"

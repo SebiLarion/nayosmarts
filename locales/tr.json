@@ -1,12 +1,3 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin language editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "general": {
     "404": {
@@ -120,7 +111,12 @@
       "results_with_count_and_term": {
         "one": "{{ count }} “{{ terms }}” için sonuç bulundu",
         "other": "{{ count }} “{{ terms }}” için bulunan sonuçlar"
-      }
+      },
+      "placeholder_inline": "Ne arıyorsunuz?",
+      "go": "Ara",
+      "voice_search": "Sesli arama",
+      "voice_search_unavailable": "Sesli arama bu cihazda kullanılamıyor",
+      "unsupported_locale_hint": "Sonuçları görmek için arama düğmesine tıklayın"
     },
     "cart": {
       "title": "Sepet",
@@ -161,7 +157,9 @@
       },
       "recently_viewed": {
         "empty": "Son görüntülenenleriniz boş."
-      }
+      },
+      "drawer_label": "Alışveriş sepeti",
+      "open_cart": "Sepeti aç"
     },
     "drawers": {
       "navigation": "Site navigasyonu"
@@ -179,6 +177,15 @@
       "s": "S",
       "second": "saniye",
       "seconds": "saniye"
+    },
+    "form": {
+      "required": "{{ field }} alanı zorunludur.",
+      "required_choice": "Lütfen {{ field }} için bir seçim yapınız.",
+      "required_email": "Lütfen e-posta adresinizi giriniz.",
+      "invalid_email": "Lütfen geçerli bir e-posta adresi giriniz, örneğin name@example.com.",
+      "invalid_url": "Lütfen geçerli bir web adresi giriniz, örneğin https://www.example.com.",
+      "too_short": "{{ field }} alanı en az {{ min }} karakter olmalıdır.",
+      "too_long": "{{ field }} alanı en fazla {{ max }} karakter olabilir."
     }
   },
   "sections": {

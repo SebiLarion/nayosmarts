@@ -45,6 +45,9 @@
           break
         endif
       endfor
+      if show_product_media == false and media.id == product_variant.featured_media.id
+        assign show_product_media = true
+      endif
     else
       assign gang_media_active = false
       assign gang_connect_alt = ''
@@ -61,7 +64,7 @@
             assign gang_split_param = localization.language.iso_code | append: ':'
             assign gang_connect_item = gang_connect_item | split: gang_split_param | last
           endif
-          
+
           if gang_connect_item contains '_'
             assign gang_option_name = gang_connect_item | split: '_' | first | handleize
 
@@ -106,7 +109,7 @@
     data-media-type="{{ media.media_type }}"
     data-media-id="{{ media.id }}"
     {%- if gang_exist == true %} data-gang-option="{{ gang_option_name }}" data-gang-connect="{{ gang_connect }}"{% if gang_media_active == false %} hidden{% endif %}{% else %} data-gang-default{% endif -%}
-    {%- if image_ratio == 'adapt' or image_ratio_mobile == 'adapt' %} style="--aspect-ratio: {{ media.aspect_ratio }};"{% endif -%}
+    {%- if image_ratio == 'adapt' or image_ratio_mobile == 'adapt' %} style="--aspect-ratio: {{ media.aspect_ratio | default: media.preview_image.aspect_ratio }};"{% endif -%}
   >
     {%- render 'media', section_id: section_id, product_id: product_id, media: media, media_alt: media_alt, sizes: sizes, preload: preload, autoplay: autoplay, loop: loop -%}
 

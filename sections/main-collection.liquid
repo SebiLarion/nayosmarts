@@ -6,7 +6,7 @@
 </style>
 
 {{ 'collection.css' | asset_url | stylesheet_tag }}
-<script src="{{ 'collection.js' | asset_url }}" defer></script>
+<script src="{{ 'collection.js' | asset_url }}" defer="defer"></script>
 
 {%- liquid
   assign filter_count = 0
@@ -110,12 +110,10 @@
 
             {%- if show_on_model -%}
               <div class="facet-wrapper">
-                {%- if show_on_model -%}
-                  <button class="link model-view text-sm md:text-base" type="button" is="model-view" aria-label="{{ 'collections.general.show_on_model' | t | escape }}">
-                    <span class="link-text">{{ 'collections.general.show_on_model' | t }}</span>
-                    <span class="link-text hidden">{{ 'collections.general.product_view' | t }}</span>
-                  </button>
-                {%- endif -%}
+                <button class="link model-view text-sm md:text-base" type="button" is="model-view" aria-label="{{ 'collections.general.show_on_model' | t | escape }}">
+                  <span class="link-text">{{ 'collections.general.show_on_model' | t }}</span>
+                  <span class="link-text hidden">{{ 'collections.general.product_view' | t }}</span>
+                </button>
               </div>
             {%- endif -%}
 
@@ -221,6 +219,7 @@
 
           {%- if collection.all_products_count > 0 -%}
             <motion-list class="card-grid card-grid--{{ section.settings.columns }} mobile:card-grid--{{ section.settings.columns_mobile }} grid relative">
+              {%- capture card_sizes -%}(max-width: 639px) calc(100vw / {{ section.settings.columns_mobile }}), calc(min({{ settings.page_width }}px, 100vw) / {{ section.settings.columns }}){%- endcapture -%}
               {%- for product in collection.products -%}
                 {%- liquid
                   for block in section.blocks
@@ -243,6 +242,7 @@
                   product_id: product.id,
                   section_id: section.id,
                   lazy_load: lazy_load,
+                  sizes: card_sizes,
                   image_ratio: settings.product_image_ratio,
                   image_fill: settings.product_image_fill,
                   show_secondary_image: settings.product_secondary_image,

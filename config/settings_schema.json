@@ -3,7 +3,7 @@
     "name": "theme_info",
     "theme_name": "Concept",
     "theme_author": "RoarTheme",
-    "theme_version": "5.3.1",
+    "theme_version": "6.0.3",
     "theme_documentation_url": "https://roartheme.co/blogs/concept",
     "theme_support_url": "https://haloroar.ticksy.com"
   },
@@ -1206,6 +1206,38 @@
         "default": true
       },
       {
+        "visible_if": "{{ settings.enable_search == true }}",
+        "type": "select",
+        "id": "search_type",
+        "label": "t:settings_schema.search.settings.search_type.label",
+        "options": [
+          {
+            "value": "drawer",
+            "label": "t:settings_schema.search.settings.search_type.options__1.label"
+          },
+          {
+            "value": "inline",
+            "label": "t:settings_schema.search.settings.search_type.options__2.label"
+          },
+          {
+            "value": "page",
+            "label": "t:settings_schema.search.settings.search_type.options__3.label"
+          }
+        ],
+        "default": "drawer"
+      },
+      {
+        "type": "header",
+        "content": "t:settings_schema.search.settings.header__3.content"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_voice_search",
+        "label": "t:settings_schema.search.settings.enable_voice_search.label",
+        "info": "t:settings_schema.search.settings.enable_voice_search.info",
+        "default": false
+      },
+      {
         "type": "header",
         "content": "t:settings_schema.search.settings.header__1.content"
       },
@@ -1418,6 +1450,13 @@
         "id": "preload_links",
         "label": "t:settings_schema.advanced.settings.preload_links.label",
         "info": "t:settings_schema.advanced.settings.preload_links.info",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "preload_fonts",
+        "label": "t:settings_schema.advanced.settings.preload_fonts.label",
+        "info": "t:settings_schema.advanced.settings.preload_fonts.info",
         "default": true
       },
       {

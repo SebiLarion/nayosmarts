@@ -1,12 +1,3 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin language editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "general": {
     "404": {
@@ -120,7 +111,12 @@
       "results_with_count_and_term": {
         "one": "تم العثور على {{ count }} نتيجة لـ “{{ terms }}”",
         "other": "تم العثور على {{ count }} نتائج لـ “{{ terms }}”"
-      }
+      },
+      "placeholder_inline": "عمّا تبحث؟",
+      "go": "بحث",
+      "voice_search": "البحث الصوتي",
+      "voice_search_unavailable": "البحث الصوتي غير متوفر على هذا الجهاز",
+      "unsupported_locale_hint": "يُرجى النقر على زر البحث لعرض النتائج"
     },
     "cart": {
       "title": "عربة التسوق",
@@ -161,7 +157,9 @@
       },
       "recently_viewed": {
         "empty": "قائمة المشاهدات الأخيرة فارغة."
-      }
+      },
+      "drawer_label": "عربة التسوق",
+      "open_cart": "فتح عربة التسوق"
     },
     "drawers": {
       "navigation": "تصفح الموقع"
@@ -179,6 +177,15 @@
       "s": "ثانية",
       "second": "ثانية",
       "seconds": "ثوانٍ"
+    },
+    "form": {
+      "required": "حقل {{ field }} مطلوب.",
+      "required_choice": "اختر خيارًا لـ {{ field }}.",
+      "required_email": "أدخل عنوان بريدك الإلكتروني.",
+      "invalid_email": "أدخل عنوان بريد إلكتروني صالحًا، على سبيل المثال name@example.com.",
+      "invalid_url": "أدخل عنوان ويب صالحًا، على سبيل المثال https://www.example.com.",
+      "too_short": "الحد الأدنى لعدد الأحرف في حقل {{ field }} هو {{ min }}.",
+      "too_long": "الحد الأقصى لعدد الأحرف في حقل {{ field }} هو {{ max }}."
     }
   },
   "sections": {

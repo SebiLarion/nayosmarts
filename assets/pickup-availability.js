@@ -1,13 +1,13 @@
 if (!customElements.get('pickup-availability')) {
   customElements.define(
     'pickup-availability',
-    class PickupAvailability extends HTMLElement {
-      constructor() {
-        super();
+    class PickupAvailability extends BaseElement {
+      connectedCallback() {
+        super.connectedCallback();
 
         if (!this.hasAttribute('available')) return;
 
-        this.errorHtml = this.querySelector('template').content.firstElementChild.cloneNode(true);
+        this.errorHtml = this.errorHtml || this.querySelector('template').content.firstElementChild.cloneNode(true);
         this.onClickRefreshList = this.onClickRefreshList.bind(this);
         this.fetchAvailability(this.getAttribute('data-variant-id'));
       }
@@ -19,7 +19,10 @@ if (!customElements.get('pickup-availability')) {
         }
         const variantSectionUrl = `${rootUrl}variants/${variantId}/?section_id=pickup-availability`;
 
-        fetch(variantSectionUrl)
+        this.availabilityAbortController?.abort();
+        this.availabilityAbortController = new AbortController();
+
+        fetch(variantSectionUrl, { signal: this.availabilityAbortController.signal })
           .then((response) => response.text())
           .then((responseText) => {
             const sectionInnerHTML = new DOMParser()
@@ -27,9 +30,9 @@ if (!customElements.get('pickup-availability')) {
               .querySelector('.shopify-section');
             this.renderPreview(sectionInnerHTML);
           })
-          .catch(() => {
-            const button = this.querySelector('button');
-            if (button) button.removeEventListener('click', this.onClickRefreshList);
+          .catch((error) => {
+            if (error.name === 'AbortError') return;
+
             this.renderError();
           });
       }
@@ -53,7 +56,8 @@ if (!customElements.get('pickup-availability')) {
         this.innerHTML = '';
         this.appendChild(this.errorHtml);
 
-        this.querySelector('button').addEventListener('click', this.onClickRefreshList);
+        const button = this.querySelector('button');
+        if (button) this.on(button, 'click', this.onClickRefreshList);
       }
 
       renderPreview(sectionInnerHTML) {

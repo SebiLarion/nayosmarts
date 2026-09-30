@@ -1,37 +1,66 @@
 if (!customElements.get('tab-list')) {
   customElements.define(
     'tab-list',
-    class TabList extends HTMLUListElement {
-      constructor() {
-        super();
+    class TabList extends BaseElementMixin(HTMLUListElement) {
+      connectedCallback() {
+        super.connectedCallback();
 
-        this.controls.forEach((button) => button.addEventListener('click', this.handleButtonClick.bind(this)));
+        this.setAttribute('role', 'tablist');
+        this.controls.forEach((button) => {
+          button.setAttribute('role', 'tab');
+          button.parentElement.setAttribute('role', 'presentation');
+          button.id ||= `${button.getAttribute('aria-controls')}-tab`;
+          this.panelOf(button)?.setAttribute('role', 'tabpanel');
+          this.panelOf(button)?.setAttribute('aria-labelledby', button.id);
+
+          this.on(button, 'click', this.handleButtonClick.bind(this));
+          this.on(button, 'keydown', this.handleKeydown.bind(this));
+        });
+
+        this.select(this.controls.find((button) => button.getAttribute('aria-selected') === 'true') || this.controls[0]);
       }
 
       get controls() {
         return this._controls = this._controls || Array.from(this.querySelectorAll('[aria-controls]'));
       }
 
+      panelOf(button) {
+        return document.getElementById(button.getAttribute('aria-controls'));
+      }
+
+      select(target) {
+        this.controls.forEach((button) => {
+          const selected = button === target;
+          button.setAttribute('aria-selected', selected ? 'true' : 'false');
+          button.setAttribute('tabindex', selected ? '0' : '-1');
+
+          const panel = this.panelOf(button);
+          if (!panel) return;
+          panel.toggleAttribute('open', selected);
+          panel.setAttribute('aria-hidden', selected ? 'false' : 'true');
+        });
+      }
+
       handleButtonClick(event) {
         event.preventDefault();
+        this.select(event.currentTarget);
+      }
 
-        this.controls.forEach((button) => {
-          button.setAttribute('aria-expanded', 'false');
+      handleKeydown(event) {
+        const index = this.controls.indexOf(event.currentTarget);
+        const forward = theme.config.rtl ? 'ArrowLeft' : 'ArrowRight';
+        const backward = theme.config.rtl ? 'ArrowRight' : 'ArrowLeft';
+        const next = { [forward]: index + 1, [backward]: index - 1, Home: 0, End: this.controls.length - 1 }[event.key];
+        if (next === undefined) return;
 
-          const panel = document.getElementById(button.getAttribute('aria-controls'));
-          panel?.removeAttribute('open');
-        });
-
-        const target = event.currentTarget;
-        target.setAttribute('aria-expanded', 'true');
-
-        const panel = document.getElementById(target.getAttribute('aria-controls'));
-        panel?.setAttribute('open', '');
+        event.preventDefault();
+        const button = this.controls[(next + this.controls.length) % this.controls.length];
+        button.focus();
+        button.click();
       }
 
       reset() {
-        const firstControl = this.controls[0];
-        firstControl.dispatchEvent(new Event('click'));
+        this.controls[0].dispatchEvent(new Event('click'));
       }
     }, { extends: 'ul' }
   );
@@ -67,18 +96,11 @@ if (!customElements.get('cart-drawer')) {
       connectedCallback() {
         super.connectedCallback();
 
-        document.addEventListener('cart:bundled-sections', this.onPrepareBundledSectionsListener);
-        document.addEventListener('cart:refresh', this.onCartRefreshListener);
+        this.on(document, 'cart:bundled-sections', this.onPrepareBundledSectionsListener);
+        this.on(document, 'cart:refresh', this.onCartRefreshListener);
         if (this.recentlyViewed) {
-          this.recentlyViewed.addEventListener('is-empty', this.onRecentlyViewedEmpty.bind(this));
+          this.on(this.recentlyViewed, 'is-empty', this.onRecentlyViewedEmpty.bind(this));
         }
-      }
-
-      disconnectedCallback() {
-        super.disconnectedCallback();
-    
-        document.removeEventListener('cart:bundled-sections', this.onPrepareBundledSectionsListener);
-        document.removeEventListener('cart:refresh', this.onCartRefreshListener);
       }
 
       onPrepareBundledSections(event) {
@@ -99,10 +121,21 @@ if (!customElements.get('cart-drawer')) {
         const id = `MiniCart-${this.sectionId}`;
         if (document.getElementById(id) === null) return;
 
-        const responseText = await (await fetch(`${theme.routes.root_url}?section_id=${this.sectionId}`)).text();
+        this.refreshAbortController?.abort();
+        this.refreshAbortController = new AbortController();
+
+        let responseText;
+        try {
+          responseText = await (await fetch(`${theme.routes.root_url}?section_id=${this.sectionId}`, { signal: this.refreshAbortController.signal })).text();
+        }
+        catch (error) {
+          if (error.name !== 'AbortError') console.error(error);
+          return;
+        }
         const parsedHTML = new DOMParser().parseFromString(responseText, 'text/html');
 
-        document.getElementById(id).innerHTML = parsedHTML.getElementById(id).innerHTML;
+        const source = parsedHTML.getElementById(id);
+        if (source) document.getElementById(id).innerHTML = source.innerHTML;
 
         if (event.detail.open === true) {
           this.show();
@@ -127,11 +160,11 @@ if (!customElements.get('cart-drawer')) {
 if (!customElements.get('cart-remove-button')) {
   customElements.define(
     'cart-remove-button',
-    class CartRemoveButton extends HTMLAnchorElement {
-      constructor() {
-        super();
+    class CartRemoveButton extends BaseElementMixin(HTMLAnchorElement) {
+      connectedCallback() {
+        super.connectedCallback();
 
-        this.addEventListener('click', (event) => {
+        this.on(this, 'click', (event) => {
           event.preventDefault();
 
           const cartItems = this.closest('cart-items');
@@ -145,24 +178,18 @@ if (!customElements.get('cart-remove-button')) {
 if (!customElements.get('cart-items')) {
   customElements.define(
     'cart-items',
-    class CartItems extends HTMLElement {
-      cartUpdateUnsubscriber = undefined;
-
-      constructor() {
-        super();
-
-        this.addEventListener('change', theme.utils.debounce(this.onChange.bind(this), 300));
-        this.cartUpdateUnsubscriber = theme.pubsub.subscribe(theme.pubsub.PUB_SUB_EVENTS.cartUpdate, this.onCartUpdate.bind(this));
-      }
+    class CartItems extends BaseElement {
 
       get sectionId() {
         return this.getAttribute('data-section-id');
       }
 
-      disconnectedCallback() {
-        if (this.cartUpdateUnsubscriber) {
-          this.cartUpdateUnsubscriber();
-        }
+      connectedCallback() {
+        super.connectedCallback();
+
+        this.on(this, 'change', theme.utils.debounce(this.onChange.bind(this), 300));
+        const cartUpdateUnsubscriber = theme.pubsub.subscribe(theme.pubsub.PUB_SUB_EVENTS.cartUpdate, this.onCartUpdate.bind(this));
+        this.registerCleanup(cartUpdateUnsubscriber);
       }
 
       onChange(event) {
@@ -185,7 +212,7 @@ if (!customElements.get('cart-items')) {
             if (event.source === 'cart-discount') {
               const cartDiscount = updatedElement.querySelector(`#CartDiscount-${this.sectionId}`);
               if (cartDiscount) {
-                cartDiscount.hidden = false
+                cartDiscount.hidden = false;
                 cartDiscount.setAttribute('open', 'immediate');
                 cartDiscount.setAttribute('active', '');
               }
@@ -201,7 +228,7 @@ if (!customElements.get('cart-items')) {
             if (event.source === 'cart-discount') {
               const cartDiscount = updatedElement.querySelector(`#CartDiscount-${this.sectionId}`);
               if (cartDiscount) {
-                cartDiscount.hidden = false
+                cartDiscount.hidden = false;
                 cartDiscount.setAttribute('open', '');
                 cartDiscount.setAttribute('aria-expanded', 'true');
               }
@@ -217,7 +244,6 @@ if (!customElements.get('cart-items')) {
                   behavior: 'instant'
                 });
               });
-              
             }
           }
           else {
@@ -258,12 +284,13 @@ if (!customElements.get('cart-items')) {
         else {
           window.location.href = theme.routes.cart_url;
         }
-
-        alert(errors);
       }
 
       updateQuantity(line, quantity, name, target) {
         this.enableLoading(line);
+
+        this.updateAbortController?.abort();
+        this.updateAbortController = new AbortController();
 
         let sectionsToBundle = [];
         document.documentElement.dispatchEvent(new CustomEvent('cart:bundled-sections', { bubbles: true, detail: { sections: sectionsToBundle } }));
@@ -274,18 +301,13 @@ if (!customElements.get('cart-items')) {
           sections: sectionsToBundle
         });
 
-        fetch(theme.routes.cart_change_url, { ...theme.utils.fetchConfig(), ...{ body } })
+        fetch(theme.routes.cart_change_url, { ...theme.utils.fetchConfig(), ...{ body }, signal: this.updateAbortController.signal })
           .then((response) => response.json())
           .then((parsedState) => {
             theme.pubsub.publish(theme.pubsub.PUB_SUB_EVENTS.cartUpdate, { source: 'cart-items', cart: parsedState, target, line, name });
           })
           .catch((error) => {
-            if (error.name === 'AbortError') {
-              console.log('Fetch aborted by user');
-            }
-            else {
-              console.error(error);
-            }
+            if (error.name !== 'AbortError') console.error(error);
           });
       }
 
@@ -342,15 +364,17 @@ if (!customElements.get('cart-items')) {
 if (!customElements.get('cart-note')) {
   customElements.define(
     'cart-note',
-    class CartNote extends HTMLElement {
-      constructor() {
-        super();
+    class CartNote extends BaseElement {
+      connectedCallback() {
+        super.connectedCallback();
 
-        this.addEventListener('change', theme.utils.debounce(this.onChange.bind(this), 300));
+        this.on(this, 'change', theme.utils.debounce(this.onChange.bind(this), 300));
       }
 
       onChange(event) {
         const body = JSON.stringify({ note: event.target.value });
+        // Fire-and-forget attribute update — the response is ignored, so there is
+        // no stale-response risk and nothing to abort.
         fetch(theme.routes.cart_update_url, { ...theme.utils.fetchConfig(), ...{ body } });
       }
     }
@@ -360,15 +384,15 @@ if (!customElements.get('cart-note')) {
 if (!customElements.get('main-cart')) {
   customElements.define(
     'main-cart',
-    class MainCart extends HTMLElement {
-      constructor() {
-        super();
-
-        document.addEventListener('cart:bundled-sections', this.onPrepareBundledSections.bind(this));
-      }
-
+    class MainCart extends BaseElement {
       get sectionId() {
         return this.getAttribute('data-section-id');
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+
+        this.on(document, 'cart:bundled-sections', this.onPrepareBundledSections.bind(this));
       }
 
       onPrepareBundledSections(event) {
@@ -381,13 +405,13 @@ if (!customElements.get('main-cart')) {
 if (!customElements.get('country-province')) {
   customElements.define(
     'country-province',
-    class CountryProvince extends HTMLElement {
-      constructor() {
-        super();
+    class CountryProvince extends BaseElement {
+      connectedCallback() {
+        super.connectedCallback();
 
         this.provinceElement = this.querySelector('[name="address[province]"]');
         this.countryElement = this.querySelector('[name="address[country]"]');
-        this.countryElement.addEventListener('change', this.handleCountryChange.bind(this));
+        this.on(this.countryElement, 'change', this.handleCountryChange.bind(this));
 
         if (this.getAttribute('country') !== '') {
           this.countryElement.selectedIndex = Math.max(0, Array.from(this.countryElement.options).findIndex((option) => option.textContent === this.getAttribute('data-country')));
@@ -420,7 +444,7 @@ if (!customElements.get('country-province')) {
 if (!customElements.get('shipping-calculator')) {
   customElements.define(
     'shipping-calculator',
-    class ShippingCalculator extends HTMLFormElement {
+    class ShippingCalculator extends BaseElementMixin(HTMLFormElement) {
       constructor() {
         super();
 
@@ -428,22 +452,25 @@ if (!customElements.get('shipping-calculator')) {
       }
 
       connectedCallback() {
+        super.connectedCallback();
+
         this.submitButton = this.querySelector('[type="submit"]');
         this.resultsElement = this.lastElementChild;
 
-        this.submitButton.addEventListener('click', this.onSubmitHandler);
+        this.on(this.submitButton, 'click', this.onSubmitHandler);
       }
 
       disconnectedCallback() {
-        this.abortController?.abort();
-        this.submitButton.removeEventListener('click', this.onSubmitHandler);
+        super.disconnectedCallback();
+
+        this.ratesAbortController?.abort();
       }
 
       onSubmit(event) {
         event.preventDefault();
 
-        this.abortController?.abort();
-        this.abortController = new AbortController();
+        this.ratesAbortController?.abort();
+        this.ratesAbortController = new AbortController();
 
         const zip = this.querySelector('[name="address[zip]"]').value,
           country = this.querySelector('[name="address[country]"]').value,
@@ -459,7 +486,7 @@ if (!customElements.get('shipping-calculator')) {
         // remove double `/` in case shop might have /en or language in URL
         sectionUrl = sectionUrl.replace('//', '/');
 
-        fetch(sectionUrl, { ...theme.utils.fetchConfig('javascript'), ...{ body }, signal: this.abortController.signal })
+        fetch(sectionUrl, { ...theme.utils.fetchConfig('javascript'), ...{ body }, signal: this.ratesAbortController.signal })
           .then((response) => response.json())
           .then((parsedState) => {
             if (parsedState.shipping_rates) {
@@ -470,12 +497,7 @@ if (!customElements.get('shipping-calculator')) {
             }
           })
           .catch((error) => {
-            if (error.name === 'AbortError') {
-              console.log('Fetch aborted by user');
-            }
-            else {
-              console.error(error);
-            }
+            if (error.name !== 'AbortError') console.error(error);
           })
           .finally(() => {
             this.resultsElement.hidden = false;
@@ -519,7 +541,7 @@ if (!customElements.get('shipping-calculator')) {
 if (!customElements.get('cart-discount')) {
   customElements.define(
     'cart-discount',
-    class CartDiscount extends HTMLFormElement {
+    class CartDiscount extends BaseElementMixin(HTMLFormElement) {
       constructor() {
         super();
 
@@ -529,17 +551,20 @@ if (!customElements.get('cart-discount')) {
       get sectionId() {
         return this.getAttribute('data-section-id');
       }
-      
+
       connectedCallback() {
+        super.connectedCallback();
+
         this.submitButton = this.querySelector('[type="submit"]');
         this.resultsElement = this.lastElementChild;
 
-        this.submitButton.addEventListener('click', this.onApplyDiscount);
+        this.on(this.submitButton, 'click', this.onApplyDiscount);
       }
 
       disconnectedCallback() {
-        this.abortController?.abort();
-        this.submitButton.removeEventListener('click', this.onApplyDiscount);
+        super.disconnectedCallback();
+
+        this.discountAbortController?.abort();
       }
 
       applyDiscount(event) {
@@ -548,8 +573,8 @@ if (!customElements.get('cart-discount')) {
         const discountCode = this.querySelector('[name="discount"]');
         if (!(discountCode instanceof HTMLInputElement) || typeof this.getAttribute('data-section-id') !== 'string') return;
 
-        this.abortController?.abort();
-        this.abortController = new AbortController();
+        this.discountAbortController?.abort();
+        this.discountAbortController = new AbortController();
 
         const discountCodeValue = discountCode.value.trim();
         if (discountCodeValue === '') return;
@@ -565,7 +590,7 @@ if (!customElements.get('cart-discount')) {
           sections: [this.sectionId]
         });
         
-        fetch(theme.routes.cart_update_url, { ...theme.utils.fetchConfig('json'), ...{ body }, signal: this.abortController.signal })
+        fetch(theme.routes.cart_update_url, { ...theme.utils.fetchConfig('json'), ...{ body }, signal: this.discountAbortController.signal })
           .then((response) => response.json())
           .then((parsedState) => {
             if (
@@ -603,12 +628,7 @@ if (!customElements.get('cart-discount')) {
             theme.pubsub.publish(theme.pubsub.PUB_SUB_EVENTS.cartUpdate, { source: 'cart-discount', cart: parsedState });
           })
           .catch((error) => {
-            if (error.name === 'AbortError') {
-              console.log('Fetch aborted by user');
-            }
-            else {
-              console.error(error);
-            }
+            if (error.name !== 'AbortError') console.error(error);
           })
           .finally(() => {
             this.submitButton.removeAttribute('aria-busy');
@@ -629,8 +649,8 @@ if (!customElements.get('cart-discount')) {
 
         existingDiscounts.splice(index, 1);
 
-        this.abortController?.abort();
-        this.abortController = new AbortController();
+        this.discountAbortController?.abort();
+        this.discountAbortController = new AbortController();
 
         this.setDiscountError('');
         event.target.setAttribute('loading', '');
@@ -640,18 +660,13 @@ if (!customElements.get('cart-discount')) {
           sections: [this.sectionId]
         });
         
-        fetch(theme.routes.cart_update_url, { ...theme.utils.fetchConfig('json'), ...{ body }, signal: this.abortController.signal })
+        fetch(theme.routes.cart_update_url, { ...theme.utils.fetchConfig('json'), ...{ body }, signal: this.discountAbortController.signal })
           .then((response) => response.json())
           .then((parsedState) => {
             theme.pubsub.publish(theme.pubsub.PUB_SUB_EVENTS.cartUpdate, { source: 'cart-discount', cart: parsedState });
           })
           .catch((error) => {
-            if (error.name === 'AbortError') {
-              console.log('Fetch aborted by user');
-            }
-            else {
-              console.error(error);
-            }
+            if (error.name !== 'AbortError') console.error(error);
           })
           .finally(() => {
             event.target.removeAttribute('loading');
@@ -681,10 +696,10 @@ if (!customElements.get('discount-remove')) {
   customElements.define(
     'discount-remove',
     class DiscountRemove extends MagnetButton {
-      constructor() {
-        super();
+      connectedCallback() {
+        super.connectedCallback();
 
-        this.addEventListener('click', this.onClick);
+        this.on(this, 'click', this.onClick);
       }
 
       onClick(event) {

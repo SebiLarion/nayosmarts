@@ -172,7 +172,7 @@
         {%- capture widths -%}{{ logo_width | times: 1.5 | at_most: max_width | round }}, {{ logo_width | times: 2 | at_most: max_width }}, {{ logo_width | times: 3 | at_most: max_width }}{%- endcapture -%}
         {%- capture style -%}max-height: min(100%, {{ logo_width | divided_by: section.settings.logo.aspect_ratio | round }}px);max-width: min(100%, {{ logo_width }}px);{%- endcapture -%}
         <div class="slideshow-logo page-width absolute bottom-0 left-0 w-full h-full pointer-events-none flex items-center justify-center" is="slideshow-parallax" data-start="0%" data-stop="-200%">
-          {{- section.settings.logo | image_url: width: max_width | image_tag: loading: 'lazy', widths: widths, sizes: sizes, style: style, preload: true, is: 'lazy-image', class: 'logo' -}}
+          {{- section.settings.logo | image_url: width: max_width | image_tag: loading: 'lazy', widths: widths, sizes: sizes, style: style, is: 'lazy-image', class: 'logo' -}}
         </div>
       {%- endif -%}
 

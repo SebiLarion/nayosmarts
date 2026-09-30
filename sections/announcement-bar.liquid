@@ -60,11 +60,12 @@
     {%- if enable_language_selector or enable_country_selector -%}
       <div class="localization hidden lg:flex items-center h-full">
         {%- if enable_language_selector -%}
-          <div class="localization__item h-full relative" role="combobox" aria-controls="LanguageLocalization-{{ section.id }}" aria-expanded="false" aria-label="{{ 'localization.language_label' | t | escape }}">
-            <button type="button" class="flex items-center gap-3 h-full z-2 relative">
+          <div class="localization__item h-full relative">
+            <button type="button" class="flex items-center gap-3 h-full z-2 relative" aria-controls="LanguageLocalization-{{ section.id }}" aria-expanded="false" aria-haspopup="true">
               {%- unless section_rendering_api -%}
                 <api-button class="api-only" data-id="announcement_localization_language_form" data-section-id="{{ section.id }}"></api-button>
               {%- endunless -%}
+              <span class="sr-only">{{ 'localization.language_label' | t }}:</span>
               {%- render 'icon', icon: 'language', size: 'xs', class: 'stroke-1 hidden xl:block' -%}
               <span class="leading-tight">{{ localization.language.endonym_name | capitalize }}</span>
               {%- render 'icon', icon: 'chevron-down', size: 'xs' -%}
@@ -103,11 +104,12 @@
           </div>
         {%- endif -%}
         {%- if enable_country_selector -%}
-          <div class="localization__item h-full relative" role="combobox" aria-controls="CountryLocalization-{{ section.id }}" aria-expanded="false" aria-label="{{ 'localization.country_label' | t | escape }}">
-            <button type="button" class="flex items-center gap-3 h-full z-2 relative">
+          <div class="localization__item h-full relative">
+            <button type="button" class="flex items-center gap-3 h-full z-2 relative" aria-controls="CountryLocalization-{{ section.id }}" aria-expanded="false" aria-haspopup="true">
               {%- unless section_rendering_api -%}
                 <api-button class="api-only" data-id="announcement_localization_country_form" data-section-id="{{ section.id }}"></api-button>
               {%- endunless -%}
+              <span class="sr-only">{{ 'localization.country_label' | t }}:</span>
               {%- render 'icon', icon: 'currency', size: 'xs', class: 'stroke-1 hidden xl:block' -%}
               <span class="leading-tight">{{ localization.country.name }} ({{ localization.country.currency.iso_code }} {{ localization.country.currency.symbol }})</span>
               {%- render 'icon', icon: 'chevron-down', size: 'xs' -%}

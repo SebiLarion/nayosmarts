@@ -97,12 +97,12 @@
   <cart-drawer id="CartDrawer" class="cart-drawer drawer drawer--end z-35 fixed bottom-0 left-0 h-full w-full pointer-events-none"
     role="dialog"
     aria-modal="true"
-    aria-label="{{ 'general.cart.title' | t | escape }}"
+    aria-label="{{ 'general.cart.drawer_label' | t | escape }}"
     data-section-id="{{ section.id }}"
     shopify-design-mode
     hidden
   >
-    <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="CartDrawer" aria-expanded="false"></overlay-element>
+    <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="CartDrawer" aria-hidden="true"></overlay-element>
     <div class="drawer__inner z-10 absolute top-0 flex flex-col w-full h-full overflow-hidden">
       <gesture-element class="drawer__header flex justify-between opacity-0 invisible relative" tabindex="0">
         <ul class="drawer__tabs flex gap-10" is="tab-list">
@@ -308,23 +308,14 @@
                                 {%- endif -%}
 
                                 {%- if item.variant.available and item.unit_price_measurement -%}
-                                  <span class="sr-only">{{ 'products.price.unit_price' | t }}</span>
-                                  <span class="unit-price flex items-center">
-                                    {%- liquid
-                                      capture unit_price_base_unit
-                                        if item.variant.unit_price_measurement
-                                          if item.variant.unit_price_measurement.reference_value != 1
-                                            echo item.variant.unit_price_measurement.reference_value
-                                          endif
-                                          echo item.variant.unit_price_measurement.reference_unit
-                                        endif
-                                      endcapture
-                                    -%}
-                                    ({{ item.variant.unit_price | money }}
-                                    <span aria-hidden="true">/</span>
-                                    <span class="sr-only">&nbsp;{{ 'general.accessibility.unit_price_separator' | t }}&nbsp;</span>
-                                    {{ unit_price_base_unit }})
-                                  </span>
+                                  {%- liquid
+                                    if settings.currency_code_enabled
+                                      assign unit_price = item.unit_price | money_with_currency
+                                    else
+                                      assign unit_price = item.unit_price | money
+                                    endif
+                                  -%}
+                                  {%- render 'unit-price', price: unit_price, measurement: item.unit_price_measurement -%}
                                 {%- endif -%}
                               </div>
 

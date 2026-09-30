@@ -6,7 +6,7 @@
 </style>
 
 {{ 'cart.css' | asset_url | stylesheet_tag }}
-<script src="{{ 'cart.js' | asset_url }}" defer></script>
+<script src="{{ 'cart.js' | asset_url }}" defer="defer"></script>
 {%- if settings.gift_wrap_product != blank and settings.gift_wrap_product.available -%}
   <script src="{{ 'gift-wrapping.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
@@ -186,23 +186,14 @@
                                     {%- endif -%}
                         
                                     {%- if item.variant.available and item.unit_price_measurement -%}
-                                      <span class="sr-only">{{ 'products.price.unit_price' | t }}</span>
-                                      <span class="unit-price flex items-center">
-                                        {%- liquid
-                                          capture unit_price_base_unit
-                                            if item.variant.unit_price_measurement
-                                              if item.variant.unit_price_measurement.reference_value != 1
-                                                echo item.variant.unit_price_measurement.reference_value
-                                              endif
-                                              echo item.variant.unit_price_measurement.reference_unit
-                                            endif
-                                          endcapture
-                                        -%}
-                                        ({{ item.variant.unit_price | money }}
-                                        <span aria-hidden="true">/</span>
-                                        <span class="sr-only">&nbsp;{{ 'general.accessibility.unit_price_separator' | t }}&nbsp;</span>
-                                        {{ unit_price_base_unit }})
-                                      </span>
+                                      {%- liquid
+                                        if settings.currency_code_enabled
+                                          assign unit_price = item.unit_price | money_with_currency
+                                        else
+                                          assign unit_price = item.unit_price | money
+                                        endif
+                                      -%}
+                                      {%- render 'unit-price', price: unit_price, measurement: item.unit_price_measurement -%}
                                     {%- endif -%}
                                   </div>
                         
@@ -264,7 +255,8 @@
                                 </div>
                               {%- endif -%}
                               {%- if has_vol_pricing -%}
-                                {{ 'volume-pricing.css' | asset_url | stylesheet_tag }}
+                                <link rel="stylesheet" href="{{ 'volume-pricing.css' | asset_url }}" media="print" onload="this.media='all'">
+                                <noscript>{{ 'volume-pricing.css' | asset_url | stylesheet_tag }}</noscript>
                                 <volume-pricing class="volume-pricing grid gap-6">
                                   <span class="caption-large font-medium">{{ 'products.volume_pricing.title' | t }}</span>
                                   <ul class="list-unstyled">
@@ -309,7 +301,7 @@
                                     aria-label="{{ item.product.title | escape }}"
                                     hidden
                                   >
-                                    <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="VolumePricing-{{ section.id }}-{{ item.key }}" aria-expanded="false"></overlay-element>
+                                    <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="VolumePricing-{{ section.id }}-{{ item.key }}" aria-hidden="true"></overlay-element>
                                     <div class="drawer__inner z-10 absolute top-0 flex flex-col w-full h-full overflow-hidden">
                                       <gesture-element class="drawer__header flex justify-between opacity-0 invisible relative" tabindex="0">
                                         <span class="drawer__title heading title-md grid gap-4">
@@ -514,7 +506,7 @@
                           </button>
                         </div>
                       </div>
-                      <div class="alert alert--error alert--transparent flex gap-2d5" hidden>
+                      <div class="alert alert--error alert--transparent flex gap-2d5" role="alert" hidden>
                         {%- render 'icon', icon: 'alert-circle-filled', size: 'sm', class: 'shrink-0' -%}
                         <div class="grid gap-2 align-self-center text-sm leading-tight"></div>
                       </div>
@@ -576,7 +568,7 @@
                         <span class="btn-fill" data-fill></span>
                         <span class="btn-text">{{ 'general.cart.discount.button' | t }}</span>
                       </button>
-                      <div class="alert alert--error alert--transparent flex gap-2d5" hidden>
+                      <div class="alert alert--error alert--transparent flex gap-2d5" role="alert" hidden>
                         {%- render 'icon', icon: 'alert-circle-filled', size: 'sm', class: 'shrink-0' -%}
                         <div class="grid gap-2 align-self-center text-sm leading-tight"></div>
                       </div>

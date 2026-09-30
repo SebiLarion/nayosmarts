@@ -6,7 +6,7 @@ if (!customElements.get('newsletter-modal')) {
         super();
     
         // Prevent popup on Shopify robot challenge page
-        if (window.location.pathname === '/challenge' || !theme.cookiesEnabled) {
+        if (window.location.pathname === '/challenge' || !theme.cookiesEnabled()) {
           return;
         }
     

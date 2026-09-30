@@ -90,25 +90,15 @@
   {%- endif -%}
 
   {%- unless hide_unit_price -%}
-    {%- assign product_variant = product.selected_or_first_available_variant -%}
-    {%- if product_variant.unit_price_measurement -%}
-      <span class="sr-only">{{ 'products.price.unit_price' | t }}</span>
-      <span class="unit-price flex items-center">
-        {%- liquid
-          capture unit_price_base_unit
-            if product_variant.unit_price_measurement
-              if product_variant.unit_price_measurement.reference_value != 1
-                echo product_variant.unit_price_measurement.reference_value
-              endif
-              echo product_variant.unit_price_measurement.reference_unit
-            endif
-          endcapture
-        -%}
-        ({{ product_variant.unit_price | money }}
-        <span aria-hidden="true">/</span>
-        <span class="sr-only">&nbsp;{{ 'general.accessibility.unit_price_separator' | t }}&nbsp;</span>
-        {{ unit_price_base_unit }})
-        </span>
+    {%- if target.unit_price_measurement -%}
+      {%- liquid
+        if settings.currency_code_enabled
+          assign unit_price = target.unit_price | money_with_currency
+        else
+          assign unit_price = target.unit_price | money
+        endif
+      -%}
+      {%- render 'unit-price', price: unit_price, measurement: target.unit_price_measurement -%}
     {%- endif -%}
   {%- endunless -%}
 </div>

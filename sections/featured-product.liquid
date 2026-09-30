@@ -14,13 +14,13 @@
   {%- assign first_media = section.settings.product.selected_or_first_available_variant.featured_media | default: section.settings.product.media.first -%}
   @media screen and (max-width: 767px) {
     #shopify-section-{{ section.id }} {
-      --aspect-ratio: {{ first_media.aspect_ratio }};
+      --first-aspect-ratio: {{ first_media.aspect_ratio | default: first_media.preview_image.aspect_ratio }};
     }
   }
 
   @media screen and (min-width: 768px) {
     #shopify-section-{{ section.id }} {
-      --aspect-ratio: {{ first_media.aspect_ratio }};
+      --first-aspect-ratio: {{ first_media.aspect_ratio | default: first_media.preview_image.aspect_ratio }};
     }
   }
 </style>
@@ -37,7 +37,8 @@
 -%}
 
 {%- if first_3d_model -%}
-  {{ 'model-viewer.css' | asset_url | stylesheet_tag }}
+  <link rel="stylesheet" href="{{ 'model-viewer.css' | asset_url }}" media="print" onload="this.media='all'">
+  <noscript>{{ 'model-viewer.css' | asset_url | stylesheet_tag }}</noscript>
   <link
     id="ModelViewerStyle"
     rel="stylesheet"
@@ -55,7 +56,8 @@
 {%- endif -%}
 
 {%- if product.quantity_price_breaks_configured? -%}
-  {{ 'volume-pricing.css' | asset_url | stylesheet_tag }}
+  <link rel="stylesheet" href="{{ 'volume-pricing.css' | asset_url }}" media="print" onload="this.media='all'">
+  <noscript>{{ 'volume-pricing.css' | asset_url | stylesheet_tag }}</noscript>
   <script src="{{ 'volume-pricing.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
 
@@ -126,10 +128,17 @@
       <div class="featured-product product product--{{ section.settings.gallery_layout }}{% if media_count == 0 %} no-media{% endif %} flex flex-col items-start lg:grid gap-5 w-full relative">
         {%- if media_count > 0 -%}
           <div class="product__gallery-container{% if section.settings.enable_sticky_info %} lg:sticky{% endif %} flex flex-col gap-0 md:gap-8 relative w-full">
+            {%- liquid
+              assign preload_first_media = false
+              if section.index == 1
+                assign preload_first_media = true
+              endif
+            -%}
             {%- render 'product-media-gallery',
               product: product,
               product_id: product.id,
               section_id: section.id,
+              preload_first_media: preload_first_media,
               gallery_layout: section.settings.gallery_layout,
               thumbnail_position: section.settings.thumbnail_position,
               image_ratio: section.settings.image_ratio,
@@ -574,7 +583,7 @@
                 <div class="flex justify-between items-center" {{ block.shopify_attributes }}>
                   {%- liquid
                     assign share_url = product.selected_variant.url | default: product.url | prepend: request.origin
-                    assign share_image = product.selected_variant.featured_image | default: product.featured_image
+                    assign share_image = product.selected_variant.featured_media | default: product.featured_media
                   -%}
                   {%- render 'social-sharing',
                     section_id: section.id,
@@ -778,15 +787,15 @@
                             endif
                           -%}
                           {%- if variant.product -%}
-                            {%- assign variant_image = variant.image | default: variant.product.featured_image -%}
+                            {%- assign variant_image = variant.featured_media | default: variant.product.featured_media -%}
                             <label class="product-bundle__info{% if variant_image %} with-image{% endif %} flex items-center gap-4 md:gap-6 relative" for="Recommendations-{{ section.id }}-{{ variant.id }}"{% if block.settings.variant_selection %} is="product-bundle-picker"{% endif %}>
-                              <input name="bundles" value="{{ variant.id }}" data-price="{{ variant.price }}" class="checkbox" id="Recommendations-{{ section.id }}-{{ variant.id }}" type="checkbox"{% unless variant.available %} disabled{% endunless %} />
+                              <input name="bundles" value="{{ variant.id }}" data-price="{{ variant.price }}" data-min="{{ variant.quantity_rule.min }}" class="checkbox" id="Recommendations-{{ section.id }}-{{ variant.id }}" type="checkbox"{% unless variant.available %} disabled{% endunless %} />
                               {%- if variant_image -%}
                                 <picture class="horizontal-product__media media media--{{ settings.product_image_ratio }}{% unless settings.product_image_fill %} media--contain{% endunless %} relative overflow-hidden shrink-0 pointer-events-none">
-                                  {%- assign max_width = variant_image.width -%}
+                                  {%- assign max_width = variant_image.width | default: variant_image.preview_image.width -%}
                                   {%- capture sizes -%}64px{%- endcapture -%}
                                   {%- capture widths -%}{{ 64 | times: 1.5 | at_most: max_width | round }}, {{ 64 | times: 2 | at_most: max_width }}, {{ 64 | times: 3 | at_most: max_width }}{%- endcapture -%}
-                                  {{- variant_image | image_url: width: variant_image.width | image_tag: loading: 'lazy', widths: widths, sizes: sizes, is: 'lazy-image' -}}
+                                  {{- variant_image | image_url: width: max_width | image_tag: loading: 'lazy', widths: widths, sizes: sizes, is: 'lazy-image' -}}
                                 </picture>
                               {%- endif -%}
                               <div class="horizontal-product__details grow flex flex-col justify-start gap-1d5">
@@ -806,12 +815,13 @@
                                         <div class="field inline-block">
                                           <select class="select" id="Variants-{{ section.id }}-{{ block.id }}-{{ product.id }}">
                                             {%- for product_variant in variant.product.variants -%}
-                                              {%- assign product_variant_image = product_variant.image | default: product_variant.product.featured_image -%}
+                                              {%- assign product_variant_image = product_variant.featured_media | default: product_variant.product.featured_media -%}
                                               <option
                                                 {% if product_variant == variant.product.selected_or_first_available_variant %}selected{% endif %}
                                                 {% if product_variant.available == false %}disabled{% endif %}
                                                 value="{{ product_variant.id }}"
                                                 data-price="{{ product_variant.price }}"
+                                                data-min="{{ product_variant.quantity_rule.min }}"
                                                 data-img-src="{{ product_variant_image | image_url }}"
                                                 data-img-srcset="{{ product_variant_image | image_url: width: '180x' }} 180w, {{ product_variant_image | image_url: width: '360x' }} 360w, {{ product_variant_image | image_url: width: '540x' }} 540w"
                                               >
@@ -849,100 +859,102 @@
 
               {%- when 'line_item_property' -%}
                 {%- assign custom_name = block.settings.title | escape -%}
-                <div class="field" {{ block.shopify_attributes }}>
-                  {%- if block.settings.type == 'checkbox' -%}
-                    <label for="LineItemInput-{{ section.id }}-{{ product.id }}-{{ block.id }}" class="flex items-center gap-3">
-                      <input
-                        type="hidden"
-                        name="properties[{{ custom_name }}]"
-                        form="{{ product_form_id }}"
-                        value="{{ block.settings.unchecked_value | escape }}"
-                      />
-                      <input
-                        type="checkbox"
-                        id="LineItemInput-{{ section.id }}-{{ product.id }}-{{ block.id }}"
-                        name="properties[{{ custom_name }}]"
-                        form="{{ product_form_id }}"
-                        value="{{ block.settings.checked_value | escape }}"
-                        {%- if block.settings.required %} required{% endif -%}
-                      />
-                      {{- block.settings.title | escape -}}
-                    </label>
-  
-                    {%- elsif block.settings.type == 'radio' -%}
-                    <div class="grid gap-4">
-                      <p>{{ block.settings.title | escape }}</p>
-                      {%- assign options = block.settings.radio_options | split: ',' -%}
-                      {%- if options.size > 0 -%}
-                        <ul class="grid gap-2 leading-none" role="list">
-                          {%- for option in options -%}
-                            {%- assign option_2 = option | strip | escape -%}
-                            <li>
-                              <label for="LineItemInput-{{ section.id }}-{{ product.id }}-{{ block.id }}-{{ forloop.index0 }}" class="inline-flex items-center gap-3">
-                                <input
-                                  type="radio"
-                                  id="LineItemInput-{{ section.id }}-{{ product.id }}-{{ block.id }}-{{ forloop.index0 }}"
-                                  name="properties[{{ custom_name }}]"
-                                  form="{{ product_form_id }}"
-                                  value="{{ option_2 }}"
-                                  {%- if block.settings.required %} required{% endif -%}
-                                />
-                                {{- option_2 -}}
-                              </label>
-                            </li>
-                          {%- endfor -%}
-                        </ul>
-                      {%- endif -%}
-                    </div>
-    
-                  {%- else -%}
-                    {%- case block.settings.type -%}
-                      {%- when 'text' -%}
+                {%- if custom_name != blank -%}
+                  <div class="field" {{ block.shopify_attributes }}>
+                    {%- if block.settings.type == 'checkbox' -%}
+                      <label for="LineItemInput-{{ section.id }}-{{ product.id }}-{{ block.id }}" class="flex items-center gap-3">
                         <input
-                          class="input is-floating"
-                          type="text"
+                          type="hidden"
+                          name="properties[{{ custom_name }}]"
+                          form="{{ product_form_id }}"
+                          value="{{ block.settings.unchecked_value | escape }}"
+                        />
+                        <input
+                          type="checkbox"
                           id="LineItemInput-{{ section.id }}-{{ product.id }}-{{ block.id }}"
                           name="properties[{{ custom_name }}]"
                           form="{{ product_form_id }}"
-                          placeholder="{{ block.settings.title | escape }}"
+                          value="{{ block.settings.checked_value | escape }}"
                           {%- if block.settings.required %} required{% endif -%}
                         />
-                        <label class="label is-floating" for="LineItemInput-{{ section.id }}-{{ product.id }}-{{ block.id }}">{{ block.settings.title | escape }}</label>
+                        {{- block.settings.title | escape -}}
+                      </label>
     
-                      {%- when 'textarea' -%}
-                        <textarea
-                          class="textarea is-floating"
-                          rows="5"
-                          id="LineItemInput-{{ section.id }}-{{ product.id }}-{{ block.id }}"
-                          name="properties[{{ custom_name }}]"
-                          form="{{ product_form_id }}"
-                          placeholder=" "
-                          {%- if block.settings.required %} required{% endif -%}
-                        ></textarea>
-                        <label class="label is-floating" for="LineItemInput-{{ section.id }}-{{ product.id }}-{{ block.id }}">{{ block.settings.title | escape }}</label>
-    
-                      {%- when 'select' -%}
-                        {%- assign options = block.settings.select_options | split: ',' -%}
+                      {%- elsif block.settings.type == 'radio' -%}
+                      <div class="grid gap-4">
+                        <p>{{ block.settings.title | escape }}</p>
+                        {%- assign options = block.settings.radio_options | split: ',' -%}
                         {%- if options.size > 0 -%}
-                          <select
-                            class="select is-floating"
+                          <ul class="grid gap-2 leading-none" role="list">
+                            {%- for option in options -%}
+                              {%- assign option_2 = option | strip | escape -%}
+                              <li>
+                                <label for="LineItemInput-{{ section.id }}-{{ product.id }}-{{ block.id }}-{{ forloop.index0 }}" class="inline-flex items-center gap-3">
+                                  <input
+                                    type="radio"
+                                    id="LineItemInput-{{ section.id }}-{{ product.id }}-{{ block.id }}-{{ forloop.index0 }}"
+                                    name="properties[{{ custom_name }}]"
+                                    form="{{ product_form_id }}"
+                                    value="{{ option_2 }}"
+                                    {%- if block.settings.required %} required{% endif -%}
+                                  />
+                                  {{- option_2 -}}
+                                </label>
+                              </li>
+                            {%- endfor -%}
+                          </ul>
+                        {%- endif -%}
+                      </div>
+      
+                    {%- else -%}
+                      {%- case block.settings.type -%}
+                        {%- when 'text' -%}
+                          <input
+                            class="input is-floating"
+                            type="text"
                             id="LineItemInput-{{ section.id }}-{{ product.id }}-{{ block.id }}"
                             name="properties[{{ custom_name }}]"
                             form="{{ product_form_id }}"
-                            {%- if block.settings.required %} required{% else %} is="custom-select"{% endif -%}
-                          >
-                            <option value="" disabled selected></option>
-                            {%- for option in options -%}
-                              {%- assign option_2 = option | strip | escape -%}
-                              <option value="{{ option_2 }}">{{ option_2 }}</option>
-                            {%- endfor -%}
-                          </select>
-                          {%- render 'icon', icon: 'chevron-up', size: 'sm', class: 'absolute pointer-events-none' -%}
-                        {%- endif -%}
-                        <label class="label{% if options.size > 0 %} is-floating{% endif %}" for="LineItemInput-{{ section.id }}-{{ product.id }}-{{ block.id }}">{{ block.settings.title | escape }}</label>
-                    {%- endcase -%}
-                  {%- endif -%}
-                </div>
+                            placeholder="{{ block.settings.title | escape }}"
+                            {%- if block.settings.required %} required{% endif -%}
+                          />
+                          <label class="label is-floating" for="LineItemInput-{{ section.id }}-{{ product.id }}-{{ block.id }}">{{ block.settings.title | escape }}</label>
+      
+                        {%- when 'textarea' -%}
+                          <textarea
+                            class="textarea is-floating"
+                            rows="5"
+                            id="LineItemInput-{{ section.id }}-{{ product.id }}-{{ block.id }}"
+                            name="properties[{{ custom_name }}]"
+                            form="{{ product_form_id }}"
+                            placeholder=" "
+                            {%- if block.settings.required %} required{% endif -%}
+                          ></textarea>
+                          <label class="label is-floating" for="LineItemInput-{{ section.id }}-{{ product.id }}-{{ block.id }}">{{ block.settings.title | escape }}</label>
+      
+                        {%- when 'select' -%}
+                          {%- assign options = block.settings.select_options | split: ',' -%}
+                          {%- if options.size > 0 -%}
+                            <select
+                              class="select is-floating"
+                              id="LineItemInput-{{ section.id }}-{{ product.id }}-{{ block.id }}"
+                              name="properties[{{ custom_name }}]"
+                              form="{{ product_form_id }}"
+                              {%- if block.settings.required %} required{% else %} is="custom-select"{% endif -%}
+                            >
+                              <option value="" disabled selected></option>
+                              {%- for option in options -%}
+                                {%- assign option_2 = option | strip | escape -%}
+                                <option value="{{ option_2 }}">{{ option_2 }}</option>
+                              {%- endfor -%}
+                            </select>
+                            {%- render 'icon', icon: 'chevron-up', size: 'sm', class: 'absolute pointer-events-none' -%}
+                          {%- endif -%}
+                          <label class="label{% if options.size > 0 %} is-floating{% endif %}" for="LineItemInput-{{ section.id }}-{{ product.id }}-{{ block.id }}">{{ block.settings.title | escape }}</label>
+                      {%- endcase -%}
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
             {%- endcase -%}
           {%- endfor -%}
         </product-info>

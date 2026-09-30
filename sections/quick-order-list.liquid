@@ -6,7 +6,8 @@
   }
 </style>
 
-{{ 'quick-order-list.css' | asset_url | stylesheet_tag }}
+<link rel="stylesheet" href="{{ 'quick-order-list.css' | asset_url }}" media="print" onload="this.media='all'">
+<noscript>{{ 'quick-order-list.css' | asset_url | stylesheet_tag }}</noscript>
 <script src="{{ 'quick-order-list.js' | asset_url }}" defer="defer"></script>
 
 {%- liquid
@@ -86,7 +87,7 @@
                     section_id: section.id,
                     product_id: product.id,
                     item: variant,
-                    image: variant.image,
+                    image: variant.featured_media,
                     sku: variant.sku,
                     variant: variant,
                     show_image: section.settings.show_image,

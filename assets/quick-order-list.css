@@ -122,11 +122,17 @@
   }
 
   .quick-order-list__sidebar :is(.quick-order-list-total__column, .quick-order-list-total__right) {
+    display: flex;
     flex-direction: column;
   }
 
   .quick-order-list__sidebar .quick-order-list-total__column {
     gap: var(--sp-7d5);
+  }
+
+  .quick-order-list__sidebar .quick-order-list-total__right > .flex {
+    display: flex;
+    flex-direction: column;
   }
 
   .quick-order-list__sidebar .totals {

@@ -155,7 +155,7 @@
             "label": "Stretto"
           },
           "options__2": {
-            "label":"Pagina"
+            "label": "Pagina"
           },
           "options__3": {
             "label": "Largo"
@@ -1603,11 +1603,6 @@
         }
       },
       "blocks": {
-        "product": {
-          "settings": {
-
-          }
-        },
         "headings": {
           "name": "Colonna intestazioni",
           "settings": {
@@ -3168,9 +3163,7 @@
           }
         },
         "promotion-video": {
-          "name": "Videopromozione",
-          "settings": {
-          }
+          "name": "Videopromozione"
         }
       }
     },
@@ -3585,7 +3578,7 @@
                 "label": "Finestra"
               },
               "options__2": {
-                "label":"Pagina"
+                "label": "Pagina"
               },
               "label": "Tipo di aiuto"
             },
@@ -4261,7 +4254,7 @@
       "name": "Cassetto di ricerca",
       "settings": {
         "paragraph": {
-          "content": "La casella di ricerca non apparirà ai tuoi clienti se hai abilitato la funzione di ricerca nelle [impostazioni del tema](/editor?context=theme&category=search)."
+          "content": "La casella di ricerca non apparirà ai tuoi clienti se hai impostato il tipo di ricerca su \"Page\" nelle [impostazioni del tema](/editor?context=theme&category=search)."
         }
       }
     },
@@ -4358,7 +4351,13 @@
       }
     },
     "shop-the-look": {
-      "name": "Compra il look"
+      "name": "Compra il look",
+      "settings": {
+        "show_content_aside": {
+          "label": "Mostra il contenuto accanto all'immagine",
+          "info": "Disattiva questa opzione per mostrare il contenuto sopra l'immagine. Sugli schermi più piccoli, il contenuto appare sempre sopra."
+        }
+      }
     },
     "slideshow": {
       "name": "Presentazione",
@@ -5261,6 +5260,25 @@
         "enable_search": {
           "label": "Abilita la ricerca"
         },
+        "search_type": {
+          "label": "Tipo di ricerca",
+          "options__1": {
+            "label": "Finestra"
+          },
+          "options__2": {
+            "label": "Inline"
+          },
+          "options__3": {
+            "label": "Pagina"
+          }
+        },
+        "header__3": {
+          "content": "Ricerca vocale"
+        },
+        "enable_voice_search": {
+          "label": "Abilita la ricerca vocale",
+          "info": "Aggiunge un microfono per l'input vocale. Nascosto automaticamente nei browser che non lo supportano (es. Firefox)."
+        },
         "header__1": {
           "content": "Ricerca predittiva"
         },
@@ -5306,6 +5324,10 @@
         "preload_links": {
           "label": "Precarica i link al passaggio del mouse",
           "info": "Ciò dovrebbe aumentare la velocità di caricamento percepita delle pagine.."
+        },
+        "preload_fonts": {
+          "label": "Precarica i font del tema",
+          "info": "Carica prima i font del tema. Meglio disattivarla quando la parte superiore della pagina è un'immagine o un video, così i contenuti multimediali vengono caricati per primi."
         },
         "external_links_new_tab": {
           "label": "Apri i collegamenti esterni in una nuova scheda"

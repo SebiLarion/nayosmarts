@@ -15,7 +15,7 @@
               {%- if block.settings.title != blank -%}
                 {%- assign target_id = block.settings.target_id | split: ',' -%}
                 <li class="scrollspy-item" {{ block.shopify_attributes }}>
-                  <a href="#{{ target_id | first | strip }}" 
+                  <a href="#{{ target_id | first | strip }}"
                     class="scrollspy-link menu__item text-sm-lg flex items-center font-medium z-2 relative cursor-pointer whitespace-nowrap"
                     data-target="{{ block.settings.target_id | remove: ' ' | strip_newlines }}"
                     aria-label="{{ block.settings.title }}"

@@ -13,16 +13,16 @@ class PasswordMain extends HTMLElement {
 }
 customElements.define('password-main', PasswordMain, { extends: 'main' });
 
-class PasswordHeader extends HTMLElement {
-  constructor() {
-    super();
+class PasswordHeader extends BaseElement {
+  connectedCallback() {
+    super.connectedCallback();
 
     this.init();
 
     if (Shopify.designMode) {
-      document.addEventListener('shopify:section:load', this.init.bind(this));
-      document.addEventListener('shopify:section:unload', this.init.bind(this));
-      document.addEventListener('shopify:section:reorder', this.init.bind(this));
+      this.on(document, 'shopify:section:load', this.init.bind(this));
+      this.on(document, 'shopify:section:unload', this.init.bind(this));
+      this.on(document, 'shopify:section:reorder', this.init.bind(this));
     }
   }
 
@@ -58,16 +58,16 @@ class PasswordHeader extends HTMLElement {
 }
 customElements.define('password-header', PasswordHeader, { extends: 'header' });
 
-class PasswordFooter extends HTMLElement {
-  constructor() {
-    super();
+class PasswordFooter extends BaseElement {
+  connectedCallback() {
+    super.connectedCallback();
 
     this.init();
 
     if (Shopify.designMode) {
-      document.addEventListener('shopify:section:load', this.init.bind(this));
-      document.addEventListener('shopify:section:unload', this.init.bind(this));
-      document.addEventListener('shopify:section:reorder', this.init.bind(this));
+      this.on(document, 'shopify:section:load', this.init.bind(this));
+      this.on(document, 'shopify:section:unload', this.init.bind(this));
+      this.on(document, 'shopify:section:reorder', this.init.bind(this));
     }
   }
 
@@ -104,12 +104,13 @@ class PasswordFooter extends HTMLElement {
 customElements.define('password-footer', PasswordFooter, { extends: 'footer' });
 
 class PasswordModal extends ModalElement {
-  constructor() {
-    super();
-  }
 
   get shouldLock() {
     return true;
+  }
+
+  get focusElement() {
+    return this.querySelector('[data-focus-on-load]') || super.focusElement;
   }
 
   connectedCallback() {

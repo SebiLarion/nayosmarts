@@ -1,12 +1,3 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin language editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "general": {
     "404": {
@@ -120,7 +111,12 @@
       "results_with_count_and_term": {
         "one": "{{ count }} resultaat gevonden voor “ {{ terms }} ”",
         "other": "{{ count }} resultaten gevonden voor “ {{ terms }} ”"
-      }
+      },
+      "placeholder_inline": "Waar ben je naar op zoek?",
+      "go": "Zoeken",
+      "voice_search": "Zoeken met spraak",
+      "voice_search_unavailable": "Spraakgestuurd zoeken is niet beschikbaar op dit apparaat",
+      "unsupported_locale_hint": "Klik op de zoekknop om resultaten te bekijken"
     },
     "cart": {
       "title": "Winkelwagen",
@@ -161,7 +157,9 @@
       },
       "recently_viewed": {
         "empty": "Uw recent bekeken pagina is leeg."
-      }
+      },
+      "drawer_label": "Winkelwagen",
+      "open_cart": "Winkelwagen openen"
     },
     "drawers": {
       "navigation": "Site navigatie"
@@ -179,6 +177,15 @@
       "s": "s",
       "second": "sec",
       "seconds": "seconden"
+    },
+    "form": {
+      "required": "{{ field }} is verplicht.",
+      "required_choice": "Maak een keuze voor {{ field }}.",
+      "required_email": "Voer uw e-mailadres in.",
+      "invalid_email": "Voer een geldig e-mailadres in, bijvoorbeeld name@example.com.",
+      "invalid_url": "Voer een geldig webadres in, bijvoorbeeld https://www.example.com.",
+      "too_short": "{{ field }} moet minimaal {{ min }} tekens bevatten.",
+      "too_long": "{{ field }} mag maximaal {{ max }} tekens bevatten."
     }
   },
   "sections": {

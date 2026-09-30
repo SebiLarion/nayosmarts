@@ -1,11 +1,11 @@
 if (!customElements.get('compact-product-bundle')) {
   customElements.define(
     'compact-product-bundle',
-    class CompactProductBundle extends HTMLElement {
-      constructor() {
-        super();
-    
-        this.submitButton.addEventListener('click', this.onSubmitHandler.bind(this));
+    class CompactProductBundle extends BaseElement {
+      connectedCallback() {
+        super.connectedCallback();
+
+        if (this.submitButton) this.on(this.submitButton, 'click', this.onSubmitHandler.bind(this));
       }
     
       get variants() {
@@ -24,7 +24,7 @@ if (!customElements.get('compact-product-bundle')) {
         const data = {
           items: this.variants.map(variant => ({
             id: variant.value,
-            quantity: 1
+            quantity: variant.getAttribute('data-min')
           }))
         };
     
@@ -38,7 +38,8 @@ if (!customElements.get('compact-product-bundle')) {
         }
         
         event.preventDefault();
-        if (this.submitButton.hasAttribute('aria-disabled')) return;
+        if (this.submitButton.hasAttribute('aria-busy')) return;
+        this.error = false;
         this.activeElement = event.submitter || event.currentTarget;
     
         this.handleErrorMessage();
@@ -74,7 +75,7 @@ if (!customElements.get('compact-product-bundle')) {
               return;
             }
     
-            const cartJson = await (await fetch(theme.routes.cart_url, { ...theme.utils.fetchConfig('json', 'GET')})).json();
+            const cartJson = await (await fetch(theme.routes.cart_url, { ...theme.utils.fetchConfig('json', 'GET') })).json();
             cartJson['sections'] = parsedState['sections'];
     
             theme.pubsub.publish(theme.pubsub.PUB_SUB_EVENTS.cartUpdate, { source: 'product-bundle', cart: cartJson });
@@ -87,7 +88,7 @@ if (!customElements.get('compact-product-bundle')) {
             this.cartDrawer?.show(this.activeElement);
           })
           .catch((error) => {
-            console.log(error);
+            console.error(error);
           })
           .finally(() => {
             this.submitButton.removeAttribute('aria-busy');

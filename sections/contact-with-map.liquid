@@ -38,7 +38,8 @@
               <div class="field field--full">
                 {%- liquid
                   assign form_errors = form.errors | default_errors
-                  render 'alert', status: 'error', content: form_errors
+                  assign alert_id = 'ContactFormErrors-' | append: section.id
+                  render 'alert', status: 'error', content: form_errors, id: alert_id, focus: true
                 -%}
               </div>
             {%- endif -%}
@@ -76,6 +77,7 @@
                 value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
                 placeholder="{{ 'contact.form.email' | t | escape }}"
                 required
+                {%- if form.errors contains 'email' %} aria-invalid="true" aria-describedby="ContactFormErrors-{{ section.id }}"{% endif -%}
               >
               <label class="label is-floating" for="ContactFormEmail-{{ section.id }}">{{ 'contact.form.email' | t }}</label>
             </div>

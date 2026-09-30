@@ -10,7 +10,24 @@
   {% render 'announcements-marquee', section: section %}
 {%- enddoc -%}
 
-<div class="announcement-bar h-full flex relative overflow-hidden">
+<div class="announcement-bar h-full flex relative overflow-hidden" id="Marquee-{{ section.id }}">
+  <button
+    type="button"
+    class="slideshow-control flex items-center justify-center rounded-full sr-only"
+    is="control-button"
+    aria-controls="Marquee-{{ section.id }}"
+    aria-live="polite"
+    aria-label="{{ 'general.accessibility.pause_scrolling' | t | escape }}"
+    data-pause-label="{{ 'general.accessibility.pause_scrolling' | t | escape }}"
+    data-play-label="{{ 'general.accessibility.play_scrolling' | t | escape }}"
+  >
+    <span class="slideshow-control__pause">
+      {%- render 'icon', icon: 'pause' -%}
+    </span>
+    <span class="slideshow-control__play">
+      {%- render 'icon', icon: 'play' -%}
+    </span>
+  </button>
   <marquee-element id="Slider-{{ section.id }}" class="scrolling-text scrolling-text--{{ section.settings.direction }} flex items-center w-full" data-speed="{{ section.settings.speed }}" data-direction="{{ section.settings.direction }}">
     <div class="marquee with-dot h-full flex items-center shrink-0 whitespace-nowrap">
       {%- liquid

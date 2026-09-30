@@ -22,7 +22,7 @@
   aria-modal="false"
   shopify-design-mode
 >
-  <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen" aria-controls="AgeVerifier" aria-expanded="false">
+  <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen" aria-controls="AgeVerifier" aria-hidden="true">
     {%- if section.settings.background_image != blank -%}
       {%- capture sizes -%}{% if section.settings.full_width %}100vw{% else %}min({{ settings.page_width }}px, 100vw){% endif %}{%- endcapture -%}
       <div class="media media--height{% if section.settings.blur_background_image %} media--blur{% endif %} block w-full h-full relative overflow-hidden">

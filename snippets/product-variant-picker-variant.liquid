@@ -28,10 +28,10 @@
     {%- liquid
       assign is_color = false
       assign swatch_trigger_list = 'products.general.color_swatch_trigger' | t | downcase | split: ','
-      assign downcased_option = option.name | downcase
+      assign downcased_option = option.name | downcase | strip
       for trigger in swatch_trigger_list
         assign swatch_trigger = trigger | strip
-        if downcased_option contains swatch_trigger
+        if downcased_option == swatch_trigger
           assign is_color = true
         elsif swatch_trigger == 'color' and downcased_option contains 'colour'
           assign is_color = true
@@ -44,9 +44,9 @@
 
       assign is_size = false
       if size_chart != blank
-        assign size_trigger = 'products.general.size_trigger' | t | downcase
-        assign downcased_option = option.name | downcase
-        if downcased_option contains size_trigger
+        assign size_trigger = 'products.general.size_trigger' | t | downcase | strip
+        assign downcased_option = option.name | downcase | strip
+        if downcased_option == size_trigger
           assign is_size = true
         endif
       endif
@@ -77,7 +77,7 @@
               aria-label="{{ size_chart.title | escape }}"
               hidden
             >
-              <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="SizeChart-{{ section_id }}-{{ product_id }}" aria-expanded="false"></overlay-element>
+              <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="SizeChart-{{ section_id }}-{{ product_id }}" aria-hidden="true"></overlay-element>
               <div class="drawer__inner z-10 absolute top-0 flex flex-col w-full h-full overflow-hidden">
                 <gesture-element class="drawer__header flex justify-between opacity-0 invisible relative" tabindex="0">
                   <span class="drawer__title heading title-md">{{ size_chart.title | escape }}</span>
@@ -100,6 +100,12 @@
       </div>
       {%- capture swatchs_content -%}
         {%- for value in option.values -%}
+          {%- liquid
+            assign sold_out_text = ''
+            unless value.available
+              assign sold_out_text = 'products.product.sold_out' | t | prepend: ' - '
+            endunless
+          -%}
           <li>
             <magnet-element class="block">
               <input
@@ -117,6 +123,8 @@
               />
               {%- if is_color or value.swatch != blank -%}
                 {%- liquid
+                  assign downcased_value = value | downcase | strip
+
                   if value.swatch == blank
                     assign file_extension = 'png'
                     assign file_name = value | handle | append: '.' | append: file_extension
@@ -124,13 +132,12 @@
                     assign swatch_fallback_override = false
 
                     if settings.swatch_config != blank
-                      assign value_downcase = value | downcase
                       assign swatch_config = settings.swatch_config | newline_to_br | split: '<br />'
                       for swatch in swatch_config
                         assign swatch_parts = swatch | strip | split: ':'
                         assign swatch_name = swatch_parts.first | downcase | strip
 
-                        if swatch_name == value_downcase
+                        if swatch_name == downcased_value
                           assign swatch_value = swatch_parts.last | strip
                           if swatch_value contains '#'
                             assign swatch_fallback = swatch_value
@@ -161,32 +168,47 @@
                   endif
 
                   for variant in product.variants
-                    assign variant_value = variant.options[option_index_0]
-                    if variant_value contains value and variant.image
+                    assign variant_value = variant.options[option_index_0] | downcase | strip
+                    if variant_value == downcased_value and variant.image
                       assign swatch_image = variant.image | image_url: width: 128
                       assign swatch_fallback_override = false
                       break
                     endif
                   endfor
+                  
+                  if value.product_url != blank
+                    assign sibling_image = value.variant.featured_media | default: value.variant.product.featured_media
+                    unless sibling_image
+                      assign sibling_handle = value.product_url | split: '/products/' | last | split: '?' | first
+                      assign sibling_product = all_products[sibling_handle]
+                      assign sibling_image = sibling_product.featured_media
+                    endunless
+                    if sibling_image
+                      assign swatch_image = sibling_image | image_url: width: 128
+                      assign swatch_fallback_override = false
+                    endif
+                  endif
                 -%}
                 <label
                   for="{{ section_id }}-{{ product_id }}-{{ option.name | handle }}-{{ forloop.index0 }}"
-                  class="color-swatch{% if swatch_image != blank %} with-image{% endif %} cursor-pointer block relative{% if image_ratio %} aspect-{{ image_ratio }} mobile:aspect-{{ image_ratio_mobile }}{% unless image_fill %} aspect-contain{% endunless %}{% endif %}"
-                  title="{{ value | escape }}"
+                  class="color-swatch{% if swatch_image != blank %} with-image{% endif %} cursor-pointer block relative"
                   style="--swatch-background: {{ swatch_fallback }};{% if swatch_fallback_override == false and swatch_image != blank %}--swatch-background-image: url({{ swatch_image }});{% endif %}"
                 >
-                  <span class="sr-only">{{ value | escape }}</span>
-                  {%- unless context == 'bundle' -%}
-                    <span class="tooltip opacity-0 pointer-events-none text-xs rounded-full z-10">{{ value | escape }}</span>
-                  {%- endunless -%}
+                  {%- if context == 'bundle' -%}
+                    <span class="sr-only">{{ value | escape }}{{ sold_out_text }}</span>
+                  {%- else -%}
+                    <span class="tooltip opacity-0 pointer-events-none text-xs rounded-full z-10">{{ value | escape }}{{ sold_out_text }}</span>
+                  {%- endif -%}
                 </label>
               {%- else -%}
                 <label
                   for="{{ section_id }}-{{ product_id }}-{{ option.name | handle }}-{{ forloop.index0 }}"
                   class="label-swatch text-sm font-medium leading-none cursor-pointer block relative"
-                  title="{{ value | escape }}"
                 >
                   {{- value -}}
+                  {%- if sold_out_text != blank -%}
+                    <span class="sr-only">{{ sold_out_text }}</span>
+                  {%- endif -%}
                 </label>
               {%- endif -%}
             </magnet-element>

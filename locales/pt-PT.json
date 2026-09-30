@@ -1,12 +1,3 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin language editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "general": {
     "404": {
@@ -120,7 +111,12 @@
       "results_with_count_and_term": {
         "one": "{{ count }} resultado encontrado para “{{ terms }}”",
         "other": "{{ count }} resultados encontrados para “{{ terms }}”"
-      }
+      },
+      "placeholder_inline": "O que procura?",
+      "go": "Pesquisar",
+      "voice_search": "Pesquisa por voz",
+      "voice_search_unavailable": "A pesquisa por voz não está disponível neste dispositivo",
+      "unsupported_locale_hint": "Clique no botão de pesquisa para ver os resultados"
     },
     "cart": {
       "title": "Carrinho",
@@ -161,7 +157,9 @@
       },
       "recently_viewed": {
         "empty": "O seu visualizado recentemente está vazio."
-      }
+      },
+      "drawer_label": "Carrinho de compras",
+      "open_cart": "Abrir carrinho"
     },
     "drawers": {
       "navigation": "Navegação no website"
@@ -179,6 +177,15 @@
       "s": "s",
       "second": "Seg",
       "seconds": "Segundos"
+    },
+    "form": {
+      "required": "O campo {{ field }} é obrigatório.",
+      "required_choice": "Seleciona uma opção para {{ field }}.",
+      "required_email": "Insere o teu endereço de email.",
+      "invalid_email": "Insere um endereço de email válido, por exemplo, name@example.com.",
+      "invalid_url": "Insere um endereço Web válido, por exemplo, https://www.example.com.",
+      "too_short": "O campo {{ field }} deve ter, pelo menos, {{ min }} caracteres.",
+      "too_long": "O campo {{ field }} deve ter, no máximo, {{ max }} caracteres."
     }
   },
   "sections": {

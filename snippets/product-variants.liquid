@@ -36,10 +36,10 @@
     assign is_color = false
     if block.settings.enable_color_swatches
       assign swatch_trigger_list = 'products.general.color_swatch_trigger' | t | downcase | split: ','
-      assign downcased_option = block.settings.option_name | downcase
+      assign downcased_option = block.settings.option_name | downcase | strip
       for trigger in swatch_trigger_list
         assign swatch_trigger = trigger | strip
-        if downcased_option contains swatch_trigger
+        if downcased_option == swatch_trigger
           assign is_color = true
         elsif swatch_trigger == 'color' and downcased_option contains 'colour'
           assign is_color = true
@@ -53,9 +53,9 @@
 
     assign is_size = false
     if block.settings.size_chart != blank
-      assign size_trigger = 'products.general.size_trigger' | t | downcase
-      assign downcased_option = block.settings.option_name | downcase
-      if downcased_option contains size_trigger
+      assign size_trigger = 'products.general.size_trigger' | t | downcase | strip
+      assign downcased_option = block.settings.option_name | downcase | strip
+      if downcased_option == size_trigger
         assign is_size = true
       endif
     endif
@@ -72,7 +72,6 @@
       <div class="form__label flex items-center justify-between gap-2 w-full">
         <div class="flex gap-2">{{ block.settings.option_name | escape }}:
           <span class="font-medium">{{ product.metafields[metafield_namespace][metafield_key].value | escape }}</span>
-          
         </div>
         {%- if is_size -%}
           <div class="flex items-center gap-2">
@@ -86,7 +85,7 @@
               aria-label="{{ block.settings.size_chart.title | escape }}"
               hidden
             >
-              <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="SizeChart-{{ section_id }}-{{ product_id }}" aria-expanded="false"></overlay-element>
+              <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="SizeChart-{{ section_id }}-{{ product_id }}" aria-hidden="true"></overlay-element>
               <div class="drawer__inner z-10 absolute top-0 flex flex-col w-full h-full overflow-hidden">
                 <gesture-element class="drawer__header flex justify-between opacity-0 invisible relative" tabindex="0">
                   <span class="drawer__title heading title-md">{{ block.settings.size_chart.title | escape }}</span>
@@ -110,6 +109,12 @@
       <ul class="swatches swatches--{{ settings.rounded_swatch }}{% if block.settings.color_swatch_type == 'variant' %} swatches--variant{% endif %} flex items-start flex-wrap gap-4">
         {%- for product_variation in block.settings.products -%}
           {%- assign value = product_variation.metafields[metafield_namespace][metafield_key].value -%}
+          {%- liquid
+            assign sold_out_text = ''
+            unless product_variation.available
+              assign sold_out_text = 'products.product.sold_out' | t | prepend: ' - '
+            endunless
+          -%}
           <li>
             <magnet-element class="block">
               <input
@@ -173,19 +178,22 @@
                 -%}
                 <a
                   href="{{ product_variation.url }}"
+                  tabindex="0"
                   class="color-swatch{% if swatch_image != blank %} with-image{% endif %} block relative{% if block.settings.color_swatch_type == 'variant' and swatch_image != blank %} aspect-{{ image_ratio }} mobile:aspect-{{ image_ratio_mobile }}{% unless image_fill %} aspect-contain{% endunless %}{% endif %}"
-                  title="{{ value | escape }}"
                   style="--swatch-background: {{ swatch_fallback }};{% if swatch_fallback_override == false and swatch_image != blank %}--swatch-background-image: url({{ swatch_image }});{% endif %}"
                 >
-                  <span class="tooltip opacity-0 pointer-events-none text-xs rounded-full z-10">{{ value | escape }}</span>
+                  <span class="tooltip opacity-0 pointer-events-none text-xs rounded-full z-10">{{ value | escape }}{{ sold_out_text }}</span>
                 </a>
               {%- else -%}
                 <a
                   href="{{ product_variation.url }}"
+                  tabindex="0"
                   class="label-swatch text-sm font-medium leading-none cursor-pointer block relative"
-                  title="{{ value | escape }}"
                 >
                   {{- value -}}
+                  {%- if sold_out_text != blank -%}
+                    <span class="sr-only">{{ sold_out_text }}</span>
+                  {%- endif -%}
                 </a>
               {%- endif -%}
             </magnet-element>

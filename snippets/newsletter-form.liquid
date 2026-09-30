@@ -27,7 +27,7 @@
   <div class="field relative">
     <input
       id="NewsletterForm--{{ section_id }}"
-      class="input is-floating input--fill"
+      class="input is-floating input--fill{% if form.errors contains 'email' %} invalid{% endif %}"
       type="email"
       name="contact[email]"
       value="{{ form.email }}"
@@ -36,7 +36,8 @@
       autocomplete="email"
       placeholder="{{ 'general.newsletter.label' | t | escape }}"
       required
-      {%- if form.errors %} autofocus{% endif -%}
+      {%- if form.errors and form.context == context %} data-focus-on-load{% endif -%}
+      {%- if form.errors contains 'email' %} aria-invalid="true" aria-describedby="NewsletterFormErrors-{{ section_id }}"{% endif -%}
     />
     <label class="label is-floating" for="NewsletterForm--{{ section_id }}">{{ 'general.newsletter.label' | t }}</label>
     <div class="self-submit-button absolute">
@@ -53,7 +54,8 @@
   {%- liquid
     if form.errors and form.context == context
       assign form_errors = form.errors | default_errors
-      render 'alert', status: 'error', content: form_errors
+      assign alert_id = 'NewsletterFormErrors-' | append: section_id
+      render 'alert', status: 'error', content: form_errors, id: alert_id
     endif
 
     if form.posted_successfully?

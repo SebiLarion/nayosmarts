@@ -12,6 +12,35 @@
     endif
   endif
 -%}
+
+{%- comment -%} Preload LCP image for the first slide to eliminate Resource Load Delay {%- endcomment -%}
+{%- if section.index == 1 and first_block_image != blank -%}
+  {%- capture lcp_sizes -%}{% if section.settings.full_width %}100vw{% else %}min({{ settings.page_width }}px, 100vw){% endif %}{%- endcapture -%}
+  {%- if first_block.settings.image_mobile != blank -%}
+    {%- comment %}theme-check-disable AssetPreload{% endcomment %}
+    <link rel="preload" as="image"
+      imagesrcset="{{ first_block_image_mobile | image_url: width: 400 }} 400w, {{ first_block_image_mobile | image_url: width: 600 }} 600w, {{ first_block_image_mobile | image_url: width: 800 }} 800w"
+      imagesizes="100vw"
+      media="(max-width: 767px)"
+      fetchpriority="high">
+    <link rel="preload" as="image"
+      href="{{ first_block_image | image_url: width: first_block_image.width }}"
+      imagesrcset="{{ first_block_image | image_url: width: 300 }} 300w, {{ first_block_image | image_url: width: 500 }} 500w, {{ first_block_image | image_url: width: 700 }} 700w, {{ first_block_image | image_url: width: 900 }} 900w, {{ first_block_image | image_url: width: 1000 }} 1000w, {{ first_block_image | image_url: width: 1200 }} 1200w, {{ first_block_image | image_url: width: 1400 }} 1400w, {{ first_block_image | image_url: width: 1600 }} 1600w, {{ first_block_image | image_url: width: 1800 }} 1800w, {{ first_block_image | image_url: width: 2000 }} 2000w, {{ first_block_image | image_url: width: 2200 }} 2200w"
+      imagesizes="{{ lcp_sizes }}"
+      media="(min-width: 768px)"
+      fetchpriority="high">
+    {%- comment %}theme-check-enable AssetPreload{% endcomment %}
+  {%- else -%}
+    {%- comment %}theme-check-disable AssetPreload{% endcomment %}
+    <link rel="preload" as="image"
+      href="{{ first_block_image | image_url: width: first_block_image.width }}"
+      imagesrcset="{{ first_block_image | image_url: width: 300 }} 300w, {{ first_block_image | image_url: width: 500 }} 500w, {{ first_block_image | image_url: width: 700 }} 700w, {{ first_block_image | image_url: width: 900 }} 900w, {{ first_block_image | image_url: width: 1000 }} 1000w, {{ first_block_image | image_url: width: 1200 }} 1200w, {{ first_block_image | image_url: width: 1400 }} 1400w, {{ first_block_image | image_url: width: 1600 }} 1600w, {{ first_block_image | image_url: width: 1800 }} 1800w, {{ first_block_image | image_url: width: 2000 }} 2000w, {{ first_block_image | image_url: width: 2200 }} 2200w"
+      imagesizes="{{ lcp_sizes }}"
+      fetchpriority="high">
+    {%- comment %}theme-check-enable AssetPreload{% endcomment %}
+  {%- endif -%}
+{%- endif -%}
+
 <style>
   #shopify-section-{{ section.id }} {
     --section-padding-top: {{ section.settings.padding_top }}px;
@@ -32,7 +61,7 @@
 </style>
 
 {%- if section.blocks.size > 0 -%}
-<div class="section section--padding{% if section.settings.divider %} section--divider{% endif %}{% if section.settings.rounded %} section--rounded relative{% endif %}" {% if section.settings.transparent_header %} allow-transparent-header{% endif %}>
+<div class="section section--padding{% if section.settings.divider %} section--divider{% endif %}{% if section.settings.rounded %} section--rounded relative{% endif %}">
   <div class="{% unless section.settings.full_width %}page-width {% endunless %}relative">
     {%- if section.blocks.size > 1 and section.settings.autoplay -%}
       <button
@@ -82,7 +111,7 @@
                       {%- if block.settings.image_mobile -%}
                         <source
                           media="(max-width: 767px)"
-                          srcset="{{ block.settings.image_mobile | image_url: width: '400x' }} 400w, {{ block.settings.image_mobile | image_url: width: '600x' }} 600w, {{ block.settings.image_mobile | image_url: width: '800x' }} 800w, {{ block.settings.image_mobile | image_url: width: '1000x' }} 1000w"
+                          srcset="{{ block.settings.image_mobile | image_url: width: '400x' }} 400w, {{ block.settings.image_mobile | image_url: width: '600x' }} 600w, {{ block.settings.image_mobile | image_url: width: '800x' }} 800w"
                           width="{{ block.settings.image_mobile.width }}"
                           height="{{ block.settings.image_mobile.height }}"
                         >
@@ -207,13 +236,6 @@
   "name": "t:sections.slideshow.name",
   "max_blocks": 5,
   "settings": [
-    {
-      "type": "checkbox",
-      "id": "transparent_header",
-      "label": "t:sections.global.settings.transparent_header.label",
-      "info": "t:sections.global.settings.transparent_header.info",
-      "default": false
-    },
     {
       "type": "checkbox",
       "id": "autoplay",

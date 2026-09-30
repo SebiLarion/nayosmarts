@@ -15,10 +15,6 @@
   --tw-scale-x: -1;
 }
 
-.mouse-cursor {
-  inset-inline-start: calc(100% - var(--x));
-}
-
 /*! image-comparison */
 
 .image-comparison[data-layout=horizontal] {

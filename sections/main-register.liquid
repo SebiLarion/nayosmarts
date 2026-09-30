@@ -21,7 +21,8 @@
         {%- liquid
           if form.errors
             assign form_errors = form.errors | default_errors
-            render 'alert', status: 'error', content: form_errors
+            assign alert_id = 'CreateCustomerFormErrors-' | append: section.id
+            render 'alert', status: 'error', content: form_errors, id: alert_id, focus: true
           endif
         -%}
 
@@ -62,6 +63,7 @@
               autocomplete="email"
               placeholder="{{ 'customer.register.email' | t | escape }}"
               {%- if form.email %} value="{{ form.email }}"{% endif -%}
+              {%- if form.errors contains 'email' %} aria-invalid="true" aria-describedby="CreateCustomerFormErrors-{{ section.id }}"{% endif -%}
             />
             <label class="label is-floating" for="RegisterFormEmail">{{ 'customer.register.email' | t }}</label>
           </div>
@@ -73,6 +75,7 @@
               name="customer[password]"
               id="RegisterFormPassword"
               placeholder="{{ 'customer.register.password' | t | escape }}"
+              {%- if form.errors contains 'password' %} aria-invalid="true" aria-describedby="CreateCustomerFormErrors-{{ section.id }}"{% endif -%}
             />
             <label class="label is-floating" for="RegisterFormPassword">{{ 'customer.register.password' | t }}</label>
           </div>

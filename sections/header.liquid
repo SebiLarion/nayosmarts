@@ -7,18 +7,6 @@
     --color-transparent: {{ section.settings.transparent_color_text.rgb }};
     --color-localization: {{ section.settings.color_localization.rgb }};
   }
-  {%- if section.settings.mega_menu_min_height > 0 -%}
-  #shopify-section-{{ section.id }} .mega-menu__list {
-    height: {{ section.settings.mega_menu_min_height }}px;
-    overflow-y: auto;
-  }
-  {%- endif -%}
-  {%- if section.settings.dropdown_max_height > 0 -%}
-  #shopify-section-{{ section.id }} .dropdown > .dropdown__container {
-    max-height: {{ section.settings.dropdown_max_height }}px;
-    overflow-y: auto;
-  }
-  {%- endif -%}
 </style>
 
 {%- liquid
@@ -96,7 +84,7 @@
 {%- if section.settings.hover_menu -%}
   <span class="overlay opacity-0 z-1 fixed left-0 w-full pointer-events-none"></span>
 {%- else -%}
-  <overlay-element class="overlay opacity-0 z-1 fixed left-0 w-full pointer-events-none"></overlay-element>
+  <overlay-element class="overlay opacity-0 z-1 fixed left-0 w-full pointer-events-none" aria-hidden="true"></overlay-element>
 {%- endif -%}
 
 {%- if request.design_mode -%}
@@ -156,35 +144,6 @@
       "id": "hover_menu",
       "default": true,
       "label": "t:sections.header.settings.hover_menu.label"
-    },
-    {
-      "visible_if": "{{ section.settings.header_layout != 'left-drawer' and section.settings.header_layout != 'center-drawer' }}",
-      "type": "header",
-      "content": "t:sections.header.settings.header__menu_height.content"
-    },
-    {
-      "visible_if": "{{ section.settings.header_layout != 'left-drawer' and section.settings.header_layout != 'center-drawer' }}",
-      "type": "range",
-      "id": "mega_menu_min_height",
-      "min": 0,
-      "max": 800,
-      "step": 10,
-      "unit": "px",
-      "label": "t:sections.header.settings.mega_menu_min_height.label",
-      "info": "t:sections.header.settings.mega_menu_min_height.info",
-      "default": 0
-    },
-    {
-      "visible_if": "{{ section.settings.header_layout != 'left-drawer' and section.settings.header_layout != 'center-drawer' }}",
-      "type": "range",
-      "id": "dropdown_max_height",
-      "min": 0,
-      "max": 600,
-      "step": 10,
-      "unit": "px",
-      "label": "t:sections.header.settings.dropdown_max_height.label",
-      "info": "t:sections.header.settings.dropdown_max_height.info",
-      "default": 0
     },
     {
       "type": "select",

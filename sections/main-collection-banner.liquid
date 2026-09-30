@@ -101,7 +101,24 @@
                       {%- render 'heading-content', content: collection.title, style: 'none', delay: delay -%}
                       {%- unless desktop_image -%}
                         {%- if collection.metafields.theme.marquee.value != blank -%}
-                          <div class="block absolute bottom-0 w-full pointer-events-none">
+                          <div class="block absolute bottom-0 w-full pointer-events-none" id="Marquee-{{ section.id }}">
+                            <button
+                              type="button"
+                              class="slideshow-control flex items-center justify-center rounded-full sr-only"
+                              is="control-button"
+                              aria-controls="Marquee-{{ section.id }}"
+                              aria-live="polite"
+                              aria-label="{{ 'general.accessibility.pause_scrolling' | t | escape }}"
+                              data-pause-label="{{ 'general.accessibility.pause_scrolling' | t | escape }}"
+                              data-play-label="{{ 'general.accessibility.play_scrolling' | t | escape }}"
+                            >
+                              <span class="slideshow-control__pause">
+                                {%- render 'icon', icon: 'pause' -%}
+                              </span>
+                              <span class="slideshow-control__play">
+                                {%- render 'icon', icon: 'play' -%}
+                              </span>
+                            </button>
                             <marquee-element class="flex normal-case heading {{ block.settings.title_size }}2x tracking-heading" data-speed="5" {% if section.settings.enable_parallax %} data-parallax="1.5"{% endif %}>
                               <div class="marquee whitespace-nowrap">{{ collection.metafields.theme.marquee.value }}</div>
                             </marquee-element>

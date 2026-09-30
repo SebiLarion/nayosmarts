@@ -25,9 +25,9 @@
     {%- liquid
       assign is_size = false
       if size_chart != blank
-        assign size_trigger = 'products.general.size_trigger' | t | downcase
-        assign downcased_option = option.name | downcase
-        if downcased_option contains size_trigger
+        assign size_trigger = 'products.general.size_trigger' | t | downcase | strip
+        assign downcased_option = option.name | downcase | strip
+        if downcased_option == size_trigger
           assign is_size = true
         endif
       endif
@@ -55,7 +55,7 @@
               aria-label="{{ size_chart.title | escape }}"
               hidden
             >
-              <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="SizeChart-{{ section_id }}-{{ product_id }}" aria-expanded="false"></overlay-element>
+              <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="SizeChart-{{ section_id }}-{{ product_id }}" aria-hidden="true"></overlay-element>
               <div class="drawer__inner z-10 absolute top-0 flex flex-col w-full h-full overflow-hidden">
                 <gesture-element class="drawer__header flex justify-between opacity-0 invisible relative" tabindex="0">
                   <span class="drawer__title heading title-md">{{ size_chart.title | escape }}</span>
@@ -83,8 +83,14 @@
           is="custom-select"
         >
           {%- for value in option.values -%}
+            {%- liquid
+              assign sold_out_text = ''
+              unless value.available
+                assign sold_out_text = 'products.product.sold_out' | t | prepend: ' - '
+              endunless
+            -%}
             <option value="{{ value | escape }}" data-option-value-id="{{ value.id }}" {% if option.selected_value == value %}selected{% endif %}{% if value.product_url != blank and value.product_url != product.url %} data-product-url="{{ value.variant.url | default: value.product_url }}"{% endif %} data-option-index="{{ option.position }}">
-              {{ value }}
+              {{- value -}}{{ sold_out_text }}
             </option>
           {%- endfor -%}
         </select>

@@ -8,8 +8,8 @@
 {{ 'blog.css' | asset_url | stylesheet_tag }}
 {{ 'collection.css' | asset_url | stylesheet_tag }}
 {{ 'search.css' | asset_url | stylesheet_tag }}
-<script src="{{ 'collection.js' | asset_url }}" defer></script>
-<script src="{{ 'search.js' | asset_url }}" defer></script>
+<script src="{{ 'collection.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'search.js' | asset_url }}" defer="defer"></script>
 
 {%- liquid
   assign filter_count = 0
@@ -214,6 +214,7 @@
 
           {%- if search.results_count > 0 -%}
             <motion-list class="card-grid card-grid--{{ section.settings.columns }} mobile:card-grid--{{ section.settings.columns_mobile }} grid relative">
+              {%- capture card_sizes -%}(max-width: 639px) calc(100vw / {{ section.settings.columns_mobile }}), calc(min({{ settings.page_width }}px, 100vw) / {{ section.settings.columns }}){%- endcapture -%}
               {%- for item in search.results -%}
                 {%- liquid
                   for block in section.blocks
@@ -239,6 +240,7 @@
                       product_id: item.id,
                       section_id: section.id,
                       lazy_load: lazy_load,
+                      sizes: card_sizes,
                       image_ratio: settings.product_image_ratio,
                       image_fill: settings.product_image_fill,
                       show_secondary_image: settings.product_secondary_image,
@@ -292,8 +294,9 @@
                         {%- endif -%}
 
                         {%- if featured_media -%}
+                          {%- assign max_width = featured_media.width | default: featured_media.preview_image.width -%}
                           <a class="block relative media media--{{ image_ratio }}{% unless image_fill %} media--contain{% endunless %} overflow-hidden" href="{{ article.url }}">
-                            {{- featured_media | image_url: width: featured_media.width | image_tag: loading: 'lazy', widths: '180,360,540,720,900,1080', is: 'lazy-image' -}}
+                            {{- featured_media | image_url: width: max_width | image_tag: loading: 'lazy', widths: '180,360,540,720,900,1080', is: 'lazy-image' -}}
                           </a>
                         {%- else -%}
                           <span class="block aspect-{{ image_ratio }}"></span>

@@ -1,20 +1,12 @@
 if (!customElements.get('price-per-item')) {
   customElements.define(
     'price-per-item',
-    class PricePerItem extends HTMLElement {
-      updatePricePerItemUnsubscriber = undefined;
-      variantIdChangedUnsubscriber = undefined;
-
+    class PricePerItem extends BaseElement {
       constructor() {
         super();
 
         this.variantId = this.getAttribute('data-variant-id');
         this.input = document.getElementById(`Quantity-${this.sectionId || this.variantId}-${this.productId}`);
-        if (this.input) {
-          this.input.addEventListener('change', this.onInputChange.bind(this));
-        }
-
-        this.getVolumePricingArray();
       }
 
       get sectionId() {
@@ -26,13 +18,22 @@ if (!customElements.get('price-per-item')) {
       }
 
       connectedCallback() {
+        super.connectedCallback();
+
+        this.getVolumePricingArray();
+
+        if (this.input) {
+          this.on(this.input, 'change', this.onInputChange.bind(this));
+        }
+
         // Update variantId if variant is switched on product page
-        this.variantIdChangedUnsubscriber = theme.pubsub.subscribe(theme.pubsub.PUB_SUB_EVENTS.variantChange, (event) => {
+        const variantIdChangedUnsubscriber = theme.pubsub.subscribe(theme.pubsub.PUB_SUB_EVENTS.variantChange, (event) => {
           this.variantId = event.data.variant.id.toString();
           this.getVolumePricingArray();
         });
+        this.registerCleanup(variantIdChangedUnsubscriber);
 
-        this.updatePricePerItemUnsubscriber = theme.pubsub.subscribe(theme.pubsub.PUB_SUB_EVENTS.cartUpdate, (response) => {
+        const updatePricePerItemUnsubscriber = theme.pubsub.subscribe(theme.pubsub.PUB_SUB_EVENTS.cartUpdate, (response) => {
           if (!response.cart || response.cart.errors) return;
 
           // Item was added to cart via product page
@@ -56,15 +57,7 @@ if (!customElements.get('price-per-item')) {
             this.updatePricePerItem(0);
           }
         });
-      }
-
-      disconnectedCallback() {
-        if (this.updatePricePerItemUnsubscriber) {
-          this.updatePricePerItemUnsubscriber();
-        }
-        if (this.variantIdChangedUnsubscriber) {
-          this.variantIdChangedUnsubscriber();
-        }
+        this.registerCleanup(updatePricePerItemUnsubscriber);
       }
 
       onInputChange() {
@@ -74,7 +67,7 @@ if (!customElements.get('price-per-item')) {
       updatePricePerItem(updatedCartQuantity) {
         if (this.input) {
           this.enteredQty = parseInt(this.input.value);
-          this.step = parseInt(this.input.step)
+          this.step = parseInt(this.input.step) || 1;
         }
 
         // updatedCartQuantity is undefined when qty is updated on product page. We need to sum entered qty and current qty in cart.
@@ -84,9 +77,10 @@ if (!customElements.get('price-per-item')) {
         if (this.classList.contains('variant-item__price-per-item')) {
           this.currentQtyForVolumePricing = this.getCartQuantity(updatedCartQuantity);
         }
+
+        const pricePerItemsCurrent = document.querySelectorAll(`price-per-item[id^="PricePerItem-${this.sectionId || this.variantId}-${this.productId}"] .price-per-item--current`);
         for (let pair of this.qtyPricePairs) {
           if (this.currentQtyForVolumePricing >= pair[0]) {
-            const pricePerItemsCurrent = document.querySelectorAll(`price-per-item[id^="PricePerItem-${this.sectionId || this.variantId}-${this.productId}"] .price-per-item--current`);
             pricePerItemsCurrent.forEach((pricePerItemCurrent) => {
               this.classList.contains('variant-item__price-per-item') ? pricePerItemCurrent.innerHTML = theme.quickOrderListStrings.each.replace('[money]', pair[1]) : pricePerItemCurrent.innerHTML = pair[1];
             });
@@ -119,12 +113,13 @@ if (!customElements.get('price-per-item')) {
 if (!customElements.get('show-more-button')) {
   customElements.define(
     'show-more-button',
-    class ShowMoreButton extends HTMLElement {
-      constructor() {
-        super();
-        
+    class ShowMoreButton extends BaseElement {
+      connectedCallback() {
+        super.connectedCallback();
+
         const button = this.querySelector('button');
-        button.addEventListener('click', (event) => {
+        if (!button) return;
+        this.on(button, 'click', (event) => {
           this.expandShowMore(event);
           const nextElementToFocus = event.target.closest('.volume-pricing').querySelector('.show-more-item');
           if (nextElementToFocus && !nextElementToFocus.classList.contains('hidden') && nextElementToFocus.querySelector('input')) {

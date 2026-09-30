@@ -60,7 +60,7 @@
                 <div class="horizontal-product flex items-start flex-col gap-4 md:flex-row md:gap-6" data-product="{{ forloop.index }}">
                   <a class="horizontal-product__media media media--{{ settings.product_image_ratio }}{% unless settings.product_image_fill %} media--contain{% endunless %} relative overflow-hidden shrink-0" href="{{ card_product.url }}">
                     {%- if featured_media -%}
-                      {%- assign max_width = featured_media.width -%}
+                      {%- assign max_width = featured_media.width | default: featured_media.preview_image.width -%}
                       {%- capture sizes -%}96px{%- endcapture -%}
                       {%- capture widths -%}{{ 96 | times: 1.5 | at_most: max_width | round }}, {{ 96 | times: 2 | at_most: max_width }}, {{ 96 | times: 3 | at_most: max_width }}{%- endcapture -%}
                       {{- featured_media | image_url: width: max_width | image_tag: loading: 'lazy', widths: widths, sizes: sizes, is: 'lazy-image' -}}
@@ -308,7 +308,7 @@
                 <div class="horizontal-product flex items-start flex-col gap-4 md:flex-row md:gap-6">
                   <a class="horizontal-product__media media media--{{ settings.product_image_ratio }}{% unless settings.product_image_fill %} media--contain{% endunless %} relative overflow-hidden shrink-0" href="{{ card_product.url }}">
                     {%- if featured_media -%}
-                      {%- assign max_width = featured_media.width -%}
+                      {%- assign max_width = featured_media.width | default: featured_media.preview_image.width -%}
                       {%- capture sizes -%}96px{%- endcapture -%}
                       {%- capture widths -%}{{ 96 | times: 1.5 | at_most: max_width | round }}, {{ 96 | times: 2 | at_most: max_width }}, {{ 96 | times: 3 | at_most: max_width }}{%- endcapture -%}
                       {{- featured_media | image_url: width: max_width | image_tag: loading: 'lazy', widths: widths, sizes: sizes, is: 'lazy-image' -}}

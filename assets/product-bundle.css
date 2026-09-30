@@ -137,7 +137,7 @@
 .compact-product-bundle .icon-bundle-plus {
   inset-block-end: 100%;
   inset-inline-start: 50%;
-  transform: translateX(-50%);
+  transform: translateX(calc(-50% * var(--transform-logical)));
   margin-block-end: var(--sp-1);
 }
 

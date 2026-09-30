@@ -108,23 +108,14 @@
                         {%- endif -%}
             
                         {%- if item.variant.available and item.unit_price_measurement -%}
-                          <span class="sr-only">{{ 'products.price.unit_price' | t }}</span>
-                          <span class="unit-price flex items-center">
-                            {%- liquid
-                              capture unit_price_base_unit
-                                if item.variant.unit_price_measurement
-                                  if item.variant.unit_price_measurement.reference_value != 1
-                                    echo item.variant.unit_price_measurement.reference_value
-                                  endif
-                                  echo item.variant.unit_price_measurement.reference_unit
-                                endif
-                              endcapture
-                            -%}
-                            ({{ item.variant.unit_price | money }}
-                            <span aria-hidden="true">/</span>
-                            <span class="sr-only">&nbsp;{{ 'general.accessibility.unit_price_separator' | t }}&nbsp;</span>
-                            {{ unit_price_base_unit }})
-                          </span>
+                          {%- liquid
+                            if settings.currency_code_enabled
+                              assign unit_price = item.unit_price | money_with_currency
+                            else
+                              assign unit_price = item.unit_price | money
+                            endif
+                          -%}
+                          {%- render 'unit-price', price: unit_price, measurement: item.unit_price_measurement -%}
                         {%- endif -%}
                       </div>
             
@@ -177,7 +168,8 @@
                       </div>
                     {%- endif -%}
                     {%- if has_vol_pricing -%}
-                      {{ 'volume-pricing.css' | asset_url | stylesheet_tag }}
+                      <link rel="stylesheet" href="{{ 'volume-pricing.css' | asset_url }}" media="print" onload="this.media='all'">
+                      <noscript>{{ 'volume-pricing.css' | asset_url | stylesheet_tag }}</noscript>
                       <volume-pricing class="volume-pricing grid gap-6">
                         <span class="caption-large font-medium">{{ 'products.volume_pricing.title' | t }}</span>
                         <ul class="list-unstyled">
@@ -268,7 +260,7 @@
 
 {%- if settings.gift_wrap_per_product_message != blank -%}
   <modal-element id="GiftWrapInfo-{{ section_id }}" class="modal invisible z-35 fixed bottom-0 left-0 w-full h-full" role="dialog" hidden>
-    <overlay-element class="fixed-modal opacity-0 z-1 absolute top-0 left-0 w-full h-full" aria-controls="GiftWrapInfo-{{ section_id }}" aria-expanded="false"></overlay-element>
+    <overlay-element class="fixed-modal opacity-0 z-1 absolute top-0 left-0 w-full h-full" aria-controls="GiftWrapInfo-{{ section_id }}" aria-hidden="true"></overlay-element>
     <div class="modal__container flex flex-col z-3 absolute left-0 bottom-0 w-full">
       <div class="modal__header flex items-center justify-between relative">
         <span class="font-medium text-sm md:text-base">{{ 'cart.gift_wrapping.gift_wrapping_label' | t }}</span>

@@ -22,7 +22,7 @@
 
   assign product_form_id = 'ProductForm-' | append: section_id | append: '-' | append: product_id
   assign product_variant = product.selected_or_first_available_variant
-  assign featured_media = product_variant.featured_image | default: product.featured_image
+  assign featured_media = product_variant.featured_media | default: product.featured_media
   assign media_count = 0
 
   if product.has_only_default_variant
@@ -55,7 +55,7 @@
           </span>
         </button>
         <quick-view id="{{ quick_view_id }}" class="quick-view x-modal drawer z-40 fixed bottom-0 left-0 h-full w-full pointer-events-none" data-product-url="{{ product_url }}" role="dialog" aria-label="{{ 'products.product.choose_product_options' | t: title: product.title | escape }}" aria-modal="true" hidden>
-          <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="{{ quick_view_id }}" aria-expanded="false"></overlay-element>
+          <overlay-element class="overlay fixed-modal invisible opacity-0 fixed bottom-0 left-0 w-full h-screen pointer-events-none" aria-controls="{{ quick_view_id }}" aria-hidden="true"></overlay-element>
           <div class="drawer__inner z-10 absolute top-0 flex flex-col w-full h-full overflow-hidden">
             <gesture-element class="drawer__header flex justify-between opacity-0 invisible relative" tabindex="0">
               <button class="button button--secondary button--close drawer__close z-1 absolute top-0 right-0 flex items-center justify-center opacity-0" type="button" is="hover-button" aria-controls="{{ quick_view_id }}" aria-expanded="false" aria-label="{{ 'general.accessibility.close' | t | escape }}">
@@ -105,29 +105,40 @@
         {%- unless featured_media.media_type == 'video' or featured_media.media_type == 'external_video' -%}
           {%- if show_secondary_image and media_count > 1 and show_multiple_images -%}
             <template>
+              {%- capture media_class -%}media media--height{% unless image_fill %} media--contain{% endunless %} w-full h-full overflow-hidden{%- endcapture -%}
+              {%- assign max_width = featured_media.width | default: featured_media.preview_image.width -%}
+              <div class="{{ media_class }}">
+                {{- featured_media | image_url: width: max_width | image_tag: loading: 'lazy', widths: '180,360,540,720,900,1080', is: 'lazy-image' -}}
+              </div>
+
+              {%- assign rendered_media_count = 1 -%}
               {%- for media in product_media limit: 4 -%}
-                {%- capture media_class -%}media media--height{% unless image_fill %} media--contain{% endunless %} w-full h-full overflow-hidden{%- endcapture -%}
-                {%- unless media.media_type == 'video' or media.media_type == 'external_video' -%}
-                  <div class="{{ media_class }}">
-                    {{- media | image_url: width: media.width | image_tag: loading: 'lazy', widths: '180,360,540,720,900,1080', is: 'lazy-image' -}}
-                  </div>
-                {%- else -%}
-                  {%- render 'product-video',
-                    video: media,
-                    muted: true,
-                    autoplay: false,
-                    loop: true,
-                    cover_image: media,
-                    show_play_button: false,
-                    class: media_class
-                  -%}
-                {%- endunless -%}
+                {%- if rendered_media_count < 4 and media.id != featured_media.id -%}
+                  {%- assign rendered_media_count = rendered_media_count | plus: 1 -%}
+                  {%- unless media.media_type == 'video' or media.media_type == 'external_video' -%}
+                    {%- assign max_width = media.width | default: media.preview_image.width -%}
+                    <div class="{{ media_class }}">
+                      {{- media | image_url: width: max_width | image_tag: loading: 'lazy', widths: '180,360,540,720,900,1080', is: 'lazy-image' -}}
+                    </div>
+                  {%- else -%}
+                    {%- render 'product-video',
+                      video: media,
+                      muted: true,
+                      autoplay: false,
+                      loop: true,
+                      cover_image: media,
+                      show_play_button: false,
+                      class: media_class
+                    -%}
+                  {%- endunless -%}
+                {%- endif -%}
               {%- endfor -%}
             </template>
             <secondary-media class="product-card__carousel block absolute top-0 left-0 w-full h-full hidden md:block" selected-index="0"></secondary-media>
           {%- endif -%}
 
-          {{- featured_media | image_url: width: featured_media.width | image_tag: loading: 'lazy', widths: '180,360,540,720,900,1080', is: 'lazy-image' -}}
+          {%- assign max_width = featured_media.width | default: featured_media.preview_image.width -%}
+          {{- featured_media | image_url: width: max_width | image_tag: loading: 'lazy', widths: '180,360,540,720,900,1080', is: 'lazy-image' -}}
 
           {%- if show_secondary_image and media_count > 1 and show_multiple_images == false -%}
             {%- liquid
@@ -140,8 +151,9 @@
               endfor
             -%}
             {%- if secondary_media != blank -%}
+              {%- assign max_width = secondary_media.width | default: secondary_media.preview_image.width -%}
               <div class="product-card__secondary media media--height{% unless image_fill %} media--contain{% endunless %} absolute top-0 left-0 w-full h-full hidden md:block opacity-0 invisible pointer-events-none overflow-hidden">
-                {{- secondary_media | image_url: width: secondary_media.width | image_tag: loading: 'lazy', widths: '180,360,540,720,900,1080', is: 'lazy-image' -}}
+                {{- secondary_media | image_url: width: max_width | image_tag: loading: 'lazy', widths: '180,360,540,720,900,1080', is: 'lazy-image' -}}
               </div>
             {%- endif -%}
           {%- endif -%}

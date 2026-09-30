@@ -1,7 +1,7 @@
 if (!customElements.get('facet-form')) {
   customElements.define(
     'facet-form',
-    class FacetForm extends HTMLFormElement {
+    class FacetForm extends BaseElementMixin(HTMLFormElement) {
       constructor() {
         super();
 
@@ -9,9 +9,19 @@ if (!customElements.get('facet-form')) {
         this.cachedMap = new Map();
         this.isMobile = theme.config.mqlSmall || theme.config.isTouch;
         this.motionReduced = theme.config.motionReduced || this.hasAttribute('motion-reduced');
+      }
 
-        this.addEventListener('change', this.onFormChange);
-        this.addEventListener('submit', this.onFormSubmit);
+      connectedCallback() {
+        super.connectedCallback();
+
+        this.on(this, 'change', this.onFormChange);
+        this.on(this, 'submit', this.onFormSubmit);
+      }
+
+      disconnectedCallback() {
+        super.disconnectedCallback();
+
+        this.renderAbortController?.abort();
       }
 
       getAnimationParams() {
@@ -128,69 +138,78 @@ if (!customElements.get('facet-form')) {
       }
 
       renderSection(url, event) {
+        this.renderAbortController?.abort();
+        this.renderAbortController = new AbortController();
+        const { signal } = this.renderAbortController;
+
         this.cachedMap.has(url)
-          ? this.renderSectionFromCache(url, event)
-          : this.renderSectionFromFetch(url, event);
+          ? this.renderSectionFromCache(url, event, signal)
+          : this.renderSectionFromFetch(url, event, signal);
 
         if (this.hasAttribute('data-history')) this.updateURLHash(url);
 
         this.dirty = false;
       }
 
-      renderSectionFromFetch(url, event) {
-        this.abortController?.abort();
-        this.abortController = new AbortController();
-        
+      renderSectionFromFetch(url, event, signal) {
         this.beforeRenderSection();
+
+        const delay = this.getAnimationParams().duration * 1000;
         const start = performance.now();
 
-        fetch(url, { signal: this.abortController.signal })
+        fetch(url, { signal })
           .then((response) => response.text())
           .then((responseText) => {
-            const execution = (performance.now() - start);
+            const remaining = Math.max(0, delay - (performance.now() - start));
 
             setTimeout(() => {
-              this.renderFilters(responseText, event);
-              this.renderFiltersActive(responseText);
-              this.renderProductGridContainer(responseText);
-              this.renderProductCount(responseText);
-              this.renderSortBy(responseText);
+              if (signal.aborted) return;
 
-              theme.pubsub.publish(theme.pubsub.PUB_SUB_EVENTS.facetUpdate, { responseText: responseText });
+              const parsedHTML = new DOMParser().parseFromString(responseText, 'text/html');
+              this.applyRender(parsedHTML, event);
+
+              theme.pubsub.publish(theme.pubsub.PUB_SUB_EVENTS.facetUpdate, { responseText, parsedHTML });
+
               this.cachedMap.set(url, responseText);
+              if (this.cachedMap.size > 50) {
+                this.cachedMap.delete(this.cachedMap.keys().next().value);
+              }
 
               this.afterRenderSection();
-            }, execution > 500 ? 0 : 500);
+            }, remaining);
           })
           .catch((error) => {
-            if (error.name === 'AbortError') {
-              console.log('Fetch aborted by user');
-            }
-            else {
-              console.error(error);
-            }
+            if (error.name !== 'AbortError') console.error(error);
           });
       }
 
-      renderSectionFromCache(url, event) {
+      renderSectionFromCache(url, event, signal) {
         this.beforeRenderSection();
 
-        setTimeout(() => {
-          const responseText = this.cachedMap.get(url);
-          this.renderFilters(responseText, event);
-          this.renderFiltersActive(responseText);
-          this.renderProductGridContainer(responseText);
-          this.renderProductCount(responseText);
-          this.renderSortBy(responseText);
+        const responseText = this.cachedMap.get(url);
+        const delay = this.getAnimationParams().duration * 1000;
 
-          theme.pubsub.publish(theme.pubsub.PUB_SUB_EVENTS.facetUpdate, { responseText: responseText });
+        setTimeout(() => {
+          if (signal.aborted) return;
+
+          const parsedHTML = new DOMParser().parseFromString(responseText, 'text/html');
+          this.applyRender(parsedHTML, event);
+
+          theme.pubsub.publish(theme.pubsub.PUB_SUB_EVENTS.facetUpdate, { responseText, parsedHTML });
 
           this.afterRenderSection();
-        }, 500);
+        }, delay);
       }
 
-      renderFilters(responseText, event) {
-        const parsedHTML = new DOMParser().parseFromString(responseText, 'text/html');
+      applyRender(parsedHTML, event) {
+        this.renderFilters(parsedHTML, event);
+        this.renderFiltersActive(parsedHTML);
+        this.renderProductGridContainer(parsedHTML);
+        this.renderProductCount(parsedHTML);
+        this.renderSortBy(parsedHTML);
+      }
+
+      renderFilters(parsedHTML, event) {
         const facetElements = parsedHTML.querySelectorAll(
           '#FacetFiltersContainer [data-filter], #MobileFacetFiltersContainer [data-filter]'
         );
@@ -214,22 +233,22 @@ if (!customElements.get('facet-form')) {
         });
       }
 
-      renderFiltersActive(responseText) {
-        this._updateSection(responseText, 'FacetFiltersActive');
+      renderFiltersActive(parsedHTML) {
+        this._updateSection(parsedHTML, 'FacetFiltersActive');
       }
 
-      renderProductGridContainer(responseText) {
-        this._updateSection(responseText, 'ProductGridContainer', (newContent) => {
+      renderProductGridContainer(parsedHTML) {
+        this._updateSection(parsedHTML, 'ProductGridContainer', (newContent) => {
           newContent.querySelector('motion-list')?.setAttribute('motion-reduced', '');
         });
       }
 
-      renderProductCount(responseText) {
-        this._updateSection(responseText, 'ProductCount');
+      renderProductCount(parsedHTML) {
+        this._updateSection(parsedHTML, 'ProductCount');
       }
 
-      renderSortBy(responseText) {
-        this._updateSection(responseText, 'SortByContainer', (newContent, oldContainer) => {
+      renderSortBy(parsedHTML) {
+        this._updateSection(parsedHTML, 'SortByContainer', (newContent, oldContainer) => {
           const oldFacetSort = oldContainer.querySelector('facet-sort');
           const newFacetSort = newContent.querySelector('facet-sort');
           if (!oldFacetSort || !newFacetSort) return;
@@ -240,11 +259,10 @@ if (!customElements.get('facet-form')) {
         });
       }
 
-      _updateSection(responseText, sectionId, modifier = null) {
+      _updateSection(parsedHTML, sectionId, modifier = null) {
         const container = document.getElementById(sectionId);
         if (!container) return false;
 
-        const parsedHTML = new DOMParser().parseFromString(responseText, 'text/html');
         const newContent = parsedHTML.getElementById(sectionId);
         if (!newContent) return false;
 
@@ -261,21 +279,13 @@ if (!customElements.get('facet-form')) {
 if (!customElements.get('facet-count')) {
   customElements.define(
     'facet-count',
-    class FacetCount extends HTMLElement {
-      constructor() {
-        super();
-      }
-
-      facetUpdateUnsubscriber = undefined;
+    class FacetCount extends BaseElement {
 
       connectedCallback() {
-        this.facetUpdateUnsubscriber = theme.pubsub.subscribe(theme.pubsub.PUB_SUB_EVENTS.facetUpdate, this.onFacetUpdate.bind(this));
-      }
+        super.connectedCallback();
 
-      disconnectedCallback() {
-        if (this.facetUpdateUnsubscriber) {
-          this.facetUpdateUnsubscriber();
-        }
+        const facetUpdateUnsubscriber = theme.pubsub.subscribe(theme.pubsub.PUB_SUB_EVENTS.facetUpdate, this.onFacetUpdate.bind(this));
+        this.registerCleanup(facetUpdateUnsubscriber);
       }
 
       get itemCount() {
@@ -283,7 +293,7 @@ if (!customElements.get('facet-count')) {
       }
 
       onFacetUpdate(event) {
-        const parsedHTML = new DOMParser().parseFromString(event.responseText, 'text/html');
+        const parsedHTML = event.parsedHTML || new DOMParser().parseFromString(event.responseText, 'text/html');
         const facetCount = parsedHTML.querySelector('facet-count');
         this.innerText = facetCount.innerHTML;
         this.hidden = this.itemCount === 0;
@@ -295,25 +305,17 @@ if (!customElements.get('facet-count')) {
 if (!customElements.get('results-count')) {
   customElements.define(
     'results-count',
-    class ResultsCount extends HTMLElement {
-      constructor() {
-        super();
-      }
-
-      facetUpdateUnsubscriber = undefined;
+    class ResultsCount extends BaseElement {
 
       connectedCallback() {
-        this.facetUpdateUnsubscriber = theme.pubsub.subscribe(theme.pubsub.PUB_SUB_EVENTS.facetUpdate, this.onFacetUpdate.bind(this));
-      }
+        super.connectedCallback();
 
-      disconnectedCallback() {
-        if (this.facetUpdateUnsubscriber) {
-          this.facetUpdateUnsubscriber();
-        }
+        const facetUpdateUnsubscriber = theme.pubsub.subscribe(theme.pubsub.PUB_SUB_EVENTS.facetUpdate, this.onFacetUpdate.bind(this));
+        this.registerCleanup(facetUpdateUnsubscriber);
       }
 
       onFacetUpdate(event) {
-        const parsedHTML = new DOMParser().parseFromString(event.responseText, 'text/html');
+        const parsedHTML = event.parsedHTML || new DOMParser().parseFromString(event.responseText, 'text/html');
         const resultsCount = parsedHTML.querySelector('results-count');
         this.innerText = resultsCount.innerHTML;
       }
@@ -325,10 +327,10 @@ if (!customElements.get('facet-remove')) {
   customElements.define(
     'facet-remove',
     class FacetRemove extends MagnetLink {
-      constructor() {
-        super();
+      connectedCallback() {
+        super.connectedCallback();
 
-        this.addEventListener('click', this.onClick);
+        this.on(this, 'click', this.onClick);
       }
 
       onClick(event) {
@@ -349,16 +351,20 @@ if (!customElements.get('facet-remove')) {
 if (!customElements.get('facet-sort')) {
   customElements.define(
     'facet-sort',
-    class FacetSort extends HTMLElement {
+    class FacetSort extends BaseElement {
       constructor() {
         super();
 
         Motion.inView(this, this.init.bind(this), { margin: '200px 0px 200px 0px' });
+      }
 
-        this.addEventListener('change', this.onChange);
-        this.button.addEventListener('click', this.show.bind(this));
-        this.close.addEventListener('click', this.hide.bind(this));
-        document.addEventListener('click', this.onWindowClick.bind(this));
+      connectedCallback() {
+        super.connectedCallback();
+
+        this.on(this, 'change', this.onChange);
+        this.on(this.button, 'click', this.show.bind(this));
+        this.on(this.close, 'click', this.hide.bind(this));
+        this.on(document, 'click', this.onWindowClick.bind(this));
       }
 
       get listbox() {
@@ -416,7 +422,7 @@ if (!customElements.get('facet-sort')) {
 
           if (theme.config.isTouch || document.body.getAttribute('data-button-hover') === 'none') return;
           
-          const btnFill = this.button.querySelector('[data-fill');
+          const btnFill = this.button.querySelector('[data-fill]');
           Motion.animate(btnFill, { y: ['0%', immediate ? '0%' : '-76%'] }, { duration: 0.6, delay: immediate ? 0 : 0.2 });
         }
       }
@@ -435,11 +441,16 @@ if (!customElements.get('facet-sort')) {
 if (!customElements.get('facet-sticky')) {
   customElements.define(
     'facet-sticky',
-    class FacetSticky extends HTMLElement {
+    class FacetSticky extends BaseElement {
       constructor() {
         super();
 
-        new IntersectionObserver(this.handleIntersection.bind(this), { rootMargin: `-${screen.availHeight - 200}px 0px ${screen.availHeight}px 0px` }).observe(document.querySelector('.collection-section'));
+        const collectionSection = document.querySelector('.collection-section');
+        if (collectionSection) {
+          const observer = new IntersectionObserver(this.handleIntersection.bind(this), { rootMargin: `-${screen.availHeight - 200}px 0px ${screen.availHeight}px 0px` });
+          observer.observe(collectionSection);
+          this.registerCleanup(() => observer.disconnect());
+        }
       }
 
       get button() {
@@ -461,37 +472,39 @@ if (!customElements.get('facet-sticky')) {
 if (!customElements.get('price-range')) {
   customElements.define(
     'price-range',
-    class PriceRange extends HTMLElement {
-      constructor() {
-        super();
+    class PriceRange extends BaseElement {
+      connectedCallback() {
+        super.connectedCallback();
 
         this.rangeMin = this.querySelector('input[type="range"]:first-child');
         this.rangeMax = this.querySelector('input[type="range"]:last-child');
         this.inputMin = this.querySelector('input[name="filter.v.price.gte"]');
         this.inputMax = this.querySelector('input[name="filter.v.price.lte"]');
 
-        this.inputMin.addEventListener('focus', this.inputMin.select);
-        this.inputMax.addEventListener('focus', this.inputMax.select);
-        this.inputMin.addEventListener('change', this.onInputMinChange.bind(this));
-        this.inputMax.addEventListener('change', this.onInputMaxChange.bind(this));
+        this.on(this.inputMin, 'focus', this.inputMin.select);
+        this.on(this.inputMax, 'focus', this.inputMax.select);
+        this.on(this.inputMin, 'change', this.onInputMinChange.bind(this));
+        this.on(this.inputMax, 'change', this.onInputMaxChange.bind(this));
 
-        this.rangeMin.addEventListener('change', this.onRangeMinChange.bind(this));
-        this.rangeMax.addEventListener('change', this.onRangeMaxChange.bind(this));
-        this.rangeMin.addEventListener('input', this.onRangeMinInput.bind(this));
-        this.rangeMax.addEventListener('input', this.onRangeMaxInput.bind(this));
+        this.on(this.rangeMin, 'change', this.onRangeMinChange.bind(this));
+        this.on(this.rangeMax, 'change', this.onRangeMaxChange.bind(this));
+        this.on(this.rangeMin, 'input', this.onRangeMinInput.bind(this));
+        this.on(this.rangeMax, 'input', this.onRangeMaxInput.bind(this));
       }
 
       onInputMinChange(event) {
         event.preventDefault();
-        event.target.value = Math.max(Math.min(parseInt(event.target.value), parseInt(this.inputMax.value || event.target.max) - 1), event.target.min);
-        this.rangeMin.value = event.target.value;
+        const target = event.target;
+        target.value = Math.max(Math.min(parseInt(target.value || target.min), parseInt(this.inputMax.value || target.max) - 1), target.min);
+        this.rangeMin.value = target.value;
         this.rangeMin.parentElement.style.setProperty('--range-min', `${parseInt(this.rangeMin.value) / parseInt(this.rangeMin.max) * 100}%`);
       }
 
       onInputMaxChange(event) {
         event.preventDefault();
-        event.target.value = Math.min(Math.max(parseInt(event.target.value), parseInt(this.inputMin.value || event.target.min) + 1), event.target.max);
-        this.rangeMax.value = event.target.value;
+        const target = event.target;
+        target.value = Math.min(Math.max(parseInt(target.value || target.max), parseInt(this.inputMin.value || target.min) + 1), target.max);
+        this.rangeMax.value = target.value;
         this.rangeMax.parentElement.style.setProperty('--range-max', `${parseInt(this.rangeMax.value) / parseInt(this.rangeMax.max) * 100}%`);
       }
 
@@ -533,7 +546,9 @@ if (!customElements.get('infinite-button')) {
       }
 
       connectedCallback() {
-        this.addEventListener('click', this.onClickHandler);
+        super.connectedCallback();
+
+        this.on(this, 'click', this.onClickHandler);
 
         if (this.getAttribute('mode') == 'infinite') {
           Motion.inView(this, this.onClickHandler, { margin: '200px 0px 200px 0px' });
@@ -541,39 +556,36 @@ if (!customElements.get('infinite-button')) {
       }
 
       disconnectedCallback() {
-        this.removeEventListener('click', this.onClickHandler);
+        super.disconnectedCallback();
+
+        this.loadMoreAbortController?.abort();
       }
 
       onClick() {
         if (this.hasAttribute('aria-busy')) return;
 
-        this.abortController?.abort();
-        this.abortController = new AbortController();
+        this.loadMoreAbortController?.abort();
+        this.loadMoreAbortController = new AbortController();
 
         this.enableLoading();
         const url = this.buildUrl().toString();
 
-        fetch(url, { signal: this.abortController.signal })
+        fetch(url, { signal: this.loadMoreAbortController.signal })
           .then((response) => response.text())
           .then((responseText) => {
-            this.renderPagination(responseText);
-            this.renderProductGridContainer(responseText);
+            const parsedHTML = new DOMParser().parseFromString(responseText, 'text/html');
+            this.renderPagination(parsedHTML);
+            this.renderProductGridContainer(parsedHTML);
           })
           .catch((error) => {
-            if (error.name === 'AbortError') {
-              console.log('Fetch aborted by user');
-            }
-            else {
-              console.error(error);
-            }
+            if (error.name !== 'AbortError') console.error(error);
           });
       }
 
-      renderPagination(responseText) {
+      renderPagination(parsedHTML) {
         const productGridContainer = document.getElementById('ProductGridContainer');
         if (productGridContainer === null) return;
 
-        const parsedHTML = new DOMParser().parseFromString(responseText, 'text/html');
         const destination = productGridContainer.querySelector('.pagination');
         const source = parsedHTML.querySelector('.pagination');
 
@@ -585,11 +597,10 @@ if (!customElements.get('infinite-button')) {
         }
       }
 
-      renderProductGridContainer(responseText) {
+      renderProductGridContainer(parsedHTML) {
         const productGridContainer = document.getElementById('ProductGridContainer');
         if (productGridContainer === null) return;
 
-        const parsedHTML = new DOMParser().parseFromString(responseText, 'text/html');
         const destination = productGridContainer.querySelector('motion-list');
         const source = parsedHTML.querySelector('motion-list');
 
@@ -620,9 +631,6 @@ if (!customElements.get('facets-topbar')) {
   customElements.define(
     'facets-topbar',
     class FacetsTopbar extends StickyElement {
-      constructor() {
-        super();
-      }
 
       positionStickySidebar() {
         const bounding = this.getBoundingClientRect();
@@ -667,11 +675,9 @@ if (!customElements.get('model-view')) {
       }
 
       connectedCallback() {
-        this.addEventListener('click', this.onClickHandler);
-      }
+        super.connectedCallback();
 
-      disconnectedCallback() {
-        this.removeEventListener('click', this.onClickHandler);
+        this.on(this, 'click', this.onClickHandler);
       }
 
       attributeChangedCallback(name, oldValue, newValue) {
@@ -718,10 +724,11 @@ if (!customElements.get('model-view')) {
 if (!customElements.get('sub-collections')) {
   customElements.define(
     'sub-collections',
-    class SubCollections extends HTMLSelectElement {
-      constructor() {
-        super();
-        this.addEventListener('change', this.onChange);
+    class SubCollections extends BaseElementMixin(HTMLSelectElement) {
+      connectedCallback() {
+        super.connectedCallback();
+
+        this.on(this, 'change', this.onChange);
       }
     
       onChange() {

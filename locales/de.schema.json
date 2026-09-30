@@ -3163,9 +3163,7 @@
           }
         },
         "promotion-video": {
-          "name": "Werbevideo",
-          "settings": {
-          }
+          "name": "Werbevideo"
         }
       }
     },
@@ -3755,7 +3753,8 @@
               "content": "Halten Sie die Schaltfläche Zum Warenkorb hinzufügen sichtbar, während Kunden stöbern und scrollen."
             }
           }
-        },"badges": {
+        },
+        "badges": {
           "name": "Abzeichen",
           "settings": {
             "paragraph": {
@@ -4255,7 +4254,7 @@
       "name": "Schublade suchen",
       "settings": {
         "paragraph": {
-          "content": "Die Suchleiste wird Ihren Kunden nicht angezeigt, wenn Sie die Suchfunktion in Ihren [Theme-Einstellungen](/editor?context=theme&category=search) aktiviert haben."
+          "content": "Die Suchleiste wird Ihren Kunden nicht angezeigt, wenn Sie den Suchtyp in Ihren [Theme-Einstellungen](/editor?context=theme&category=search) auf „Page“ eingestellt haben."
         }
       }
     },
@@ -4352,7 +4351,13 @@
       }
     },
     "shop-the-look": {
-      "name": "Den Look kaufen"
+      "name": "Den Look kaufen",
+      "settings": {
+        "show_content_aside": {
+          "label": "Inhalt neben dem Bild anzeigen",
+          "info": "Deaktivieren, um den Inhalt über dem Bild anzuzeigen. Auf kleineren Bildschirmen erscheint der Inhalt immer oben."
+        }
+      }
     },
     "slideshow": {
       "name": "Slideshow",
@@ -5255,6 +5260,25 @@
         "enable_search": {
           "label": "Suche aktivieren"
         },
+        "search_type": {
+          "label": "Suchstil",
+          "options__1": {
+            "label": "Einschub"
+          },
+          "options__2": {
+            "label": "Inline"
+          },
+          "options__3": {
+            "label": "Seite"
+          }
+        },
+        "header__3": {
+          "content": "Sprachsuche"
+        },
+        "enable_voice_search": {
+          "label": "Sprachsuche aktivieren",
+          "info": "Fügt ein Mikrofon für die Spracheingabe hinzu. Wird in nicht unterstützten Browsern (z. B. Firefox) automatisch ausgeblendet."
+        },
         "header__1": {
           "content": "Prädiktive Suche"
         },
@@ -5300,6 +5324,10 @@
         "preload_links": {
           "label": "Links beim Hover vorladen",
           "info": "Dies sollte die wahrgenommene Ladegeschwindigkeit der Seiten erhöhen."
+        },
+        "preload_fonts": {
+          "label": "Theme-Schriften vorladen",
+          "info": "Lädt die Theme-Schriften früher. Am besten deaktiviert, wenn oben auf der Seite ein Bild oder Video steht, damit die Medien zuerst geladen werden."
         },
         "external_links_new_tab": {
           "label": "Externe Links in einem neuen Tab öffnen"

@@ -20,6 +20,7 @@
   @param {boolean} [enable_video_looping] - Loop video playback
   @param {boolean} [first_3d_model] - Enable AR/3D viewer
   @param {object} [spinning_block] - Spinning text overlay config
+  @param {boolean} [preload_first_media] - Preload the first media as a high-priority resource
 
   @example
   {% render 'product-media-gallery',
@@ -40,6 +41,11 @@
   
   assign product_variant = product.selected_or_first_available_variant
   assign featured_media = product_variant.featured_media | default: product.featured_media
+
+  # Default preload to true so existing callers (main-product, featured-product) keep their LCP-priority behavior. Quick-view modal explicitly passes false.
+  unless preload_first_media == false
+    assign preload_first_media = true
+  endunless
 -%}
 {%- capture sizes -%}(max-width: 767px) calc(100vw - 40px), (max-width: 1023px) calc(100vw - 64px), 75vw{%- endcapture -%}
 
@@ -114,7 +120,7 @@
           {%- if gang_exist == true %} data-gang-option="{{ gang_option_name }}" data-gang-connect="{{ gang_connect }}"{% if gang_media_active == false %} hidden{% endif %}{% else %} data-gang-default{% endif -%}
         >
           {%- assign media_alt = featured_media.alt | default: product.title -%}
-          {%- render 'media', section_id: section_id, product_id: product_id, media: featured_media, sizes: featured_media_sizes, preload: true, autoplay: enable_video_autoplay, loop: enable_video_looping, media_alt: media_alt -%}
+          {%- render 'media', section_id: section_id, product_id: product_id, media: featured_media, sizes: featured_media_sizes, preload: preload_first_media, autoplay: enable_video_autoplay, loop: enable_video_looping, media_alt: media_alt -%}
 
           {%- if image_zoom != 'none' and featured_media.media_type == 'image' -%}
             <button type="button" class="absolute top-0 left-0 w-full h-full flex items-center justify-center" is="media-{{ image_zoom }}-button" aria-label="{{ 'products.media.open_media' | t: index: featured_media.position | escape }}" tabindex="-1">
@@ -130,9 +136,9 @@
     {%- if gallery_layout == 'thumbnail' %} items-start{% if thumbnail_position == 'beside' %} xl:flex-row{% endif %}{% endif -%}"
   >
     <div class="relative w-full h-full">
-      <slider-element id="SliderGallery-{{ section_id }}-{{ product_id }}" class="slider slider--desktop slider--tablet block w-full h-full" selector=".product__media" tabindex="0">
+      <slider-element id="SliderGallery-{{ section_id }}-{{ product_id }}" class="slider slider--desktop slider--tablet block w-full h-full" selector=".product__media" tabindex="0" adaptive-height>
         <div
-          class="product__media-list flex gap-1
+          class="product__media-list flex items-start gap-1
           {%- if gallery_layout == 'columns' %} lg:grid lg:gap-4 xl:gap-5 grid-cols-2{% endif -%}
           {%- if gallery_layout == 'scroll' %} lg:grid lg:gap-4 xl:gap-5 grid-cols-2{% endif -%}"
         >
@@ -151,7 +157,7 @@
               image_fill: image_fill,
               image_ratio: image_ratio,
               image_ratio_mobile: image_ratio_mobile,
-              preload: true,
+              preload: preload_first_media,
               sizes: sizes,
               autoplay: enable_video_autoplay,
               loop: enable_video_looping
